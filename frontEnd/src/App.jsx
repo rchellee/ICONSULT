@@ -1,9 +1,12 @@
-import React from 'react'
+
+import EmployeeHomePage from './employee/EmployeeHomePage';
 
 function App() {
   return (
-    <div>Hello World</div>
-  )
+    <div className="App">
+      <EmployeeHomePage />
+    </div>
+  );
 }
 
-export default App
+export default App;
