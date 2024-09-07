@@ -1,10 +1,10 @@
 
-import EmployeeHomePage from './employee/EmployeeHomePage';
+import ClientHomePage from './client/ClientHomePage';
 
 function App() {
   return (
     <div className="App">
-      <EmployeeHomePage />
+      <ClientHomePage />
     </div>
   );
 }

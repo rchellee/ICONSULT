@@ -15,7 +15,6 @@ function AdminHomePage() {
                     <li><a href="#clients">Clients</a></li>
                     <li><a href="#employees">Employees</a></li>
                     <li><a href="#survey">Survey</a></li>
-                    <li><a href="#employee">Survey</a></li>
                     
                 </ul>
             </div>

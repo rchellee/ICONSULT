@@ -1,8 +1,8 @@
-import './ClientAdminHomePage.css'; 
+import './ClientHomePage.css'; 
 
-function ClientAdminHomePage() {
+function ClientHomePage() {
     return (
-        <div className="client-admin-home-page">
+        <div className="client-home-page">
             <div className="sidebar">
                 <ul>
                     <li><a href="#my-services">My Services</a></li>
@@ -14,11 +14,11 @@ function ClientAdminHomePage() {
                 </ul>
             </div>
             <div className="content">
-                <h2>Client Admin Dashboard</h2>
+                <h2>Client Dashboard</h2>
                 <h1>Overview</h1>
             </div>
         </div>
     );
 }
 
-export default ClientAdminHomePage;
+export default ClientHomePage;
