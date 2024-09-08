@@ -1,9 +1,12 @@
 
+import './App.css';
+import LoginForm from './Login/LoginForm';
 import ClientHomePage from './client/ClientHomePage';
 
 function App() {
   return (
-    <div className="App">
+    <div>
+      <LoginForm/>
       <ClientHomePage />
     </div>
   );
