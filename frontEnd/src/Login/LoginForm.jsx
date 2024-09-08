@@ -44,6 +44,13 @@ const Login = () => {
           </form>
         </div>
       </div>
+      <footer className="footer">
+       <p>
+        <a href="#about">About</a> | <a href="#contact">Contact</a>
+      </p>
+        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2024</p>
+</footer>
+
     </div>
   );
 };
