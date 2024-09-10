@@ -32,7 +32,7 @@ app.get('/admin', (req, res) => {
 app.post('/Login', (req, res) => {
     const { username, password } = req.body;
 
-    // First, check the admin table
+    // Check admin table
     const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
     db.query(sqlAdmin, [username, password], (err, adminResults) => {
         if (err) {
@@ -40,10 +40,9 @@ app.post('/Login', (req, res) => {
         }
 
         if (adminResults.length > 0) {
-            // Admin login successful
             return res.status(200).json({ message: 'Login successful', role: 'admin' });
         } else {
-            // Check the employees table
+            // Check employees table
             const sqlEmployee = "SELECT * FROM employees WHERE email_add = ? AND password = ?";
             db.query(sqlEmployee, [username, password], (err, employeeResults) => {
                 if (err) {
@@ -51,10 +50,9 @@ app.post('/Login', (req, res) => {
                 }
 
                 if (employeeResults.length > 0) {
-                    // Employee login successful
                     return res.status(200).json({ message: 'Login successful', role: 'employee' });
                 } else {
-                    // Check the client table
+                    // Check client table
                     const sqlClient = "SELECT * FROM client WHERE email_add = ? AND password = ?";
                     db.query(sqlClient, [username, password], (err, clientResults) => {
                         if (err) {
@@ -62,10 +60,8 @@ app.post('/Login', (req, res) => {
                         }
 
                         if (clientResults.length > 0) {
-                            // Client login successful
                             return res.status(200).json({ message: 'Login successful', role: 'client' });
                         } else {
-                            // No match found in any table
                             return res.status(401).json({ message: 'Invalid username or password' });
                         }
                     });
