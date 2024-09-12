@@ -87,7 +87,8 @@ const Login = () => {
       </div>
       <footer className="footer">
         <p>
-          <a href="#about">About</a> | <a href="#contact">Contact</a>
+          {/* Modified the About link to use navigate and scroll to the About section */}
+          <a href="#about" onClick={() => navigate("/", { hash: "about" })}>About</a> | <a href="#contact">Contact</a>
         </p>
         <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2024</p>
       </footer>
