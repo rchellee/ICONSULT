@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Import axios
 import './LoginForm.css'; 
 import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
@@ -11,33 +12,28 @@ const Login = () => {
   const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-  
+    e.preventDefault();
+ 
     try {
-      const response = await fetch('http://localhost:8081/Login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+      const { data } = await axios.post('http://localhost:8081/Login', {
+        username,
+        password
       });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        // Navigate based on the role
-        if (data.role === 'admin') {
-          navigate('/admin'); 
-        } else if (data.role === 'employee') {
-          navigate('/employees'); 
-        } else if (data.role === 'client') {
-          navigate('/client'); 
-        }
+ 
+      // Navigate based on the role
+      if (data.role === 'admin') {
+        navigate('/admin'); 
+      } else if (data.role === 'employee') {
+        navigate('/employees'); 
+      } else if (data.role === 'client') {
+        navigate('/client'); 
       } else {
         setError(data.message || 'Login failed');
       }
     } catch (error) {
-      setError('An error occurred. Please try again.');
+      setError(error.response?.data?.message || 'An error occurred. Please try again.');
     }
-  };
+ };
 
   return (
     <div className='container'>
@@ -91,7 +87,8 @@ const Login = () => {
       </div>
       <footer className="footer">
         <p>
-          <a href="#about">About</a> | <a href="#contact">Contact</a>
+          {/* Modified the About link to use navigate and scroll to the About section */}
+          <a href="#about" onClick={() => navigate("/", { hash: "about" })}>About</a> | <a href="#contact">Contact</a>
         </p>
         <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2024</p>
       </footer>

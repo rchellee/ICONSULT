@@ -5,6 +5,7 @@ import Login from './Login/LoginForm';
 import AdminHomePage from './admin/AdminHomePage';
 import ClientHomePage from './client/ClientHomePage';
 import EmployeeHomePage from './employee/EmployeeHomePage';
+import LandingPage from './landingpage';
 
 function App() {
   // const[data, setData] = useState([])
@@ -34,7 +35,8 @@ function App() {
       </table> */}
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/client" element={<ClientHomePage />} />
         <Route path="/employees" element={<EmployeeHomePage />} />
