@@ -2,11 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/api/server.js",
+      "src": "Backend/api/server.js",
       "use": "@vercel/node"
     },
     {
-      "src": "frontend/package.json",
+      "src": "frontEnd/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
@@ -17,10 +17,6 @@
     {
       "src": "/api/(.*)",
       "dest": "backend/api/server.js"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "frontend/dist/assets/$1"
     },
     {
       "src": "/(.*)",
