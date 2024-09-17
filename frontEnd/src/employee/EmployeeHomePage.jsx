@@ -1,5 +1,4 @@
 import './EmployeeHomePage.css';
-
 function EmployeeHomePage() {
     return (
         <div className="employee-home-page">
@@ -9,7 +8,6 @@ function EmployeeHomePage() {
                     <li><a href="#tasks">Task</a></li>
                     <li><a href="#documents">Documents</a></li>
                 </ul>
-                <button className="logout-button">Log Out</button> {/* Added Log Out button */}
             </div>
             <div className="content">
                 <h2>Employee Dashboard</h2>

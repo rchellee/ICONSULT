@@ -12,7 +12,6 @@ function ClientHomePage() {
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-                <button className="logout-button">Log Out</button> {/* Added Log Out button */}
             </div>
             <div className="content">
                 <h2>Client Dashboard</h2>
