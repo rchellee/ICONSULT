@@ -15,14 +15,12 @@ function AdminHomePage() {
                     <li><a href="#clients">Clients</a></li>
                     <li><a href="#employees">Employees</a></li>
                     <li><a href="#survey">Survey</a></li>
-                    
                 </ul>
+                <button className="logout-button">Log Out</button> {/* Added Log Out button */}
             </div>
             <div className="content">
-            
                 <h2>Admin Dashboard</h2>
                 <h1>Overview</h1>
-               
             </div>
         </div>
     );

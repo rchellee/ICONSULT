@@ -4,13 +4,13 @@
 
 .sidebar {
     width: 200px;
-    background-color: #f4f4f4;
+    background-color: #395176;
     padding: 20px;
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-}
+  }
 
 .sidebar ul {
     list-style-type: none;
