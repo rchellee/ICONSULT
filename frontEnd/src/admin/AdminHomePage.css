@@ -1,17 +1,17 @@
+
 .admin-home-page {
     display: flex;
 }
 
-
 .sidebar {
     width: 200px;
-    background-color: #395176;
+    background-color: #f4f4f4;
     padding: 20px;
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-  }
+}
 
 .sidebar ul {
     list-style-type: none;
@@ -35,25 +35,7 @@
 }
 
 .content {
-    margin-left: 220px; 
+    margin-left: 250px; 
     padding: 20px;
     flex-grow: 1;
-}
-
-.logout-button {
-    width: 100%;
-    padding: 15px;
-    background-color: #395176;
-    color: white;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    font-size: 16px;
-    position: absolute;
-    bottom: 15px;
-    left: 0;
-}
-
-.logout-button:hover {
-    background-color: #555;
 }

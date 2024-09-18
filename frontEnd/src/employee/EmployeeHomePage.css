@@ -1,50 +1,40 @@
 .employee-home-page {
     display: flex;
 }
+
 .sidebar {
     width: 200px;
-    background-color: #395176;
+    background-color: #f4f4f4;
     padding: 20px;
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-  }
-
-.sidebar ul li {
-    padding: 5px;
 }
 
-.sidebar ul li a {
-    color: white;
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar li {
+    margin: 10px 0;
+}
+
+.sidebar a {
     text-decoration: none;
+    color: #333;
     display: block;
-    transition: background-color 0.3s;
+    padding: 10px;
+    border-radius: 4px;
 }
 
-.sidebar ul li a:hover {
-    background-color: #34495e;
+.sidebar a:hover {
+    background-color: #ddd;
 }
 
 .content {
-    flex: 1;
+    margin-left: 220px; 
     padding: 20px;
-}
-
-.logout-button {
-    width: 100%;
-    padding: 15px;
-    background-color: #395176;
-    color: white;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    font-size: 16px;
-    position: absolute;
-    bottom: 15px;
-    left: 0;
-}
-
-.logout-button:hover {
-    background-color: #555;
+    flex-grow: 1;
 }

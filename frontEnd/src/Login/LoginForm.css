@@ -1,13 +1,12 @@
-
 .container {
     display: flex;
-    height: calc(100vh - 60px); 
+    height: 100vh;
 }
 
 .left-side {
     flex: 1;
     display: flex;
-    flex-direction: column; /* Stack logo and text */
+    flex-direction: column; /* Change to column to stack logo and text */
     align-items: flex-start;
     justify-content: center;
     padding: 0 80px;
@@ -19,10 +18,11 @@
 }
 
 .logo-container {
-    margin-bottom: 50px;
+    margin-bottom: 50px; /* Adjust the margin as needed */
     position: relative;
-    top: -100px;
+    top: -100px; /* Move the logo up without affecting other elements */
 }
+
 
 .left-side h2 {
     font-size: 56px;
@@ -44,8 +44,9 @@
 }
 
 .wrapper .remember-forgot input[type="checkbox"] {
-    margin-right: 10px;
+    margin-right: 10px; /* Adjust this value to increase/decrease the space */
 }
+
 
 .wrapper {
     width: 550px;
@@ -103,7 +104,7 @@
 .wrapper button {
     width: 100%;
     height: 60px;
-    background: #395176;
+    background: #395176; /*ETO YUNG COLOR NG LOGIN BUTTON*/
     border: none;
     outline: none;
     border-radius: 50px;
@@ -116,7 +117,7 @@
 }
 
 .wrapper button:hover {
-    background: #5599CB;
+    background: #5599CB; /*ETO YUNG SA HOVER COLOR 2*/
     box-shadow: 0 0 15px rgba(95, 89, 89, 0.5);
 }
 
@@ -124,17 +125,6 @@
     font-size: 20px;
     text-align: center;
     margin: 30px 0 25px;
-}
-
-/* Styling for Forgot Password link */
-.remember-forgot a {
-    color: #333; 
-    text-decoration: none; 
-    font-weight: 600;
-}
-
-.remember-forgot a:hover {
-    text-decoration: underline; 
 }
 
 .register-link p a {
@@ -150,33 +140,4 @@
 .logo {
     max-width: 250px;
     height: auto;
-}
-
-/* Footer styles */
-footer {
-    display: flex;
-    flex-direction: column; 
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    background-color:transparent;
-    font-size: 16px;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-
-footer p {
-    margin: 5px 0;
-    color: #333;
-}
-
-footer a {
-    color: #333; 
-    text-decoration: none; /* Remove underline */
-}
-
-footer a:hover {
-    text-decoration: underline; 
 }
