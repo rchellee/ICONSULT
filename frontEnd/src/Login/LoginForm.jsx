@@ -1,9 +1,40 @@
-import React from 'react';
-import './LoginForm.css'; // Import the CSS file for styling
+import React, { useState } from 'react';
+import axios from 'axios'; // Import axios
+import './LoginForm.css'; 
 import { FaUser, FaLock } from "react-icons/fa";
-import logo from '../assets/logo1.png'; // Correct path
+import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo1.png'; 
 
 const Login = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+ 
+    try {
+      const { data } = await axios.post('http://localhost:8081/Login', {
+        username,
+        password
+      });
+ 
+      // Navigate based on the role
+      if (data.role === 'admin') {
+        navigate('/admin'); 
+      } else if (data.role === 'employee') {
+        navigate('/employees'); 
+      } else if (data.role === 'client') {
+        navigate('/client'); 
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'An error occurred. Please try again.');
+    }
+ };
+
   return (
     <div className='container'>
       <div className='left-side'>
@@ -17,16 +48,30 @@ const Login = () => {
       </div>
       <div className='right-side'>
         <div className='wrapper'>
-          <form action="">
+          <form onSubmit={handleSubmit}>
             <div className="input-box">
-              <input type="text" placeholder='Username' required />
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
               <FaUser className='icon' />
             </div>
 
             <div className='input-box'>
-              <input type="password" placeholder='Password' required />
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
               <FaLock className='icon'/>
             </div>
+
+            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <div className="remember-forgot">
               <label>
@@ -37,13 +82,16 @@ const Login = () => {
             </div>
 
             <button type="submit">Login</button>
-
-            <div className="register-link">
-              <p>Don't have an account? <a href="#">Register</a></p>
-            </div>
           </form>
         </div>
       </div>
+      <footer className="footer">
+        <p>
+          {/* Modified the About link to use navigate and scroll to the About section */}
+          <a href="#about" onClick={() => navigate("/", { hash: "about" })}>About</a> | <a href="#contact">Contact</a>
+        </p>
+        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2024</p>
+      </footer>
     </div>
   );
 };
