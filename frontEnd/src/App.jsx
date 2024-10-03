@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Login/LoginForm';
 import AdminHomePage from './admin/AdminHomePage';
 import ClientHomePage from './client/ClientHomePage';
-import EmployeeHomePage from './employee/EmployeeHomePage';
 import LandingPage from './landingpage';
 
 function App() {
@@ -39,7 +38,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/client" element={<ClientHomePage />} />
-        <Route path="/employees" element={<EmployeeHomePage />} />
       </Routes>
     </Router>
 

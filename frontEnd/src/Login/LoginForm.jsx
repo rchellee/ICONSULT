@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios'; // Import axios
 import './LoginForm.css'; 
 import { FaUser, FaLock } from "react-icons/fa";
