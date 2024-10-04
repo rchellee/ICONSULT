@@ -1,7 +1,16 @@
-
+/* Adjust the container to center its content */
 .container {
     display: flex;
-    height: calc(100vh - 60px); 
+    height: calc(100vh - 60px);
+    justify-content: center; /* Center content horizontally */
+    position: relative; /* To use positioning for right adjustment */
+}
+
+/* Move the content further to the right */
+.left-side,
+.right-side {
+    position: relative;
+    left: 300px; /* Increase this value to move content further right */
 }
 
 .left-side {
@@ -19,9 +28,10 @@
 }
 
 .logo-container {
-    margin-bottom: 50px;
+    margin-bottom: 125px;
     position: relative;
     top: -100px;
+    right: 50px;
 }
 
 .left-side h2 {
@@ -128,13 +138,13 @@
 
 /* Styling for Forgot Password link */
 .remember-forgot a {
-    color: #333; 
-    text-decoration: none; 
+    color: #333;
+    text-decoration: none;
     font-weight: 600;
 }
 
 .remember-forgot a:hover {
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 .register-link p a {
@@ -155,14 +165,14 @@
 /* Footer styles */
 footer {
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
     padding: 10px;
-    background-color:transparent;
+    background-color: transparent;
     font-size: 16px;
-    position: absolute;
+    position: fixed; /* Fixed position to keep at the bottom */
     bottom: 0;
     left: 0;
 }
@@ -173,10 +183,10 @@ footer p {
 }
 
 footer a {
-    color: #333; 
+    color: #333;
     text-decoration: none; /* Remove underline */
 }
 
 footer a:hover {
-    text-decoration: underline; 
+    text-decoration: underline;
 }
