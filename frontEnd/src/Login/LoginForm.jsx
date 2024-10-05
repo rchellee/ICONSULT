@@ -3,7 +3,7 @@ import axios from 'axios'; // Import axios
 import './LoginForm.css'; 
 import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo1.png';  
+import logo from '../assets/logo1.png'; 
 
 const Login = () => {
   const [username, setUsername] = useState('');
