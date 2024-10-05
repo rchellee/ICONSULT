@@ -1,60 +1,28 @@
-/* ClientList.css */
+.client-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-.client-list {
-    padding: 20px;
-    background-color: #f9f9f9; /* Light background for contrast */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
-  }
-  
-  .client-list h2 {
-    font-size: 24px;
-    margin-bottom: 20px; /* Space below the heading */
-  }
-  
-  .client-list button {
-    padding: 10px 15px;
-    margin-bottom: 20px; /* Space below the button */
-    border: none;
-    background-color: #007bff; /* Blue background */
-    color: white; /* White text color */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-  }
-  
-  .client-list button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-  }
-  
-  .client-list table {
-    width: 100%; /* Full width */
-    border-collapse: collapse; /* Remove gaps between table cells */
-  }
-  
-  .client-list th,
-  .client-list td {
-    border: 1px solid #ddd; /* Light gray border */
-    padding: 10px; /* Padding inside table cells */
-    text-align: left; /* Align text to the left */
-  }
-  
-  .client-list th {
-    background-color: #f2f2f2; /* Light gray background for headers */
-    font-weight: bold; /* Bold text for headers */
-  }
-  
-  .client-list tr:nth-child(even) {
-    background-color: #f9f9f9; /* Alternate row background color */
-  }
-  
-  .client-list tr:hover {
-    background-color: #f1f1f1; /* Highlight row on hover */
-  }
-  
-  .client-list .no-clients {
-    text-align: center; /* Center text for the 'no clients' message */
-    font-style: italic; /* Italics for the message */
-    color: #888; /* Gray color for the message */
-  }
-  
+.client-list th, .client-list td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.client-list th {
+    background-color: white;
+}
+
+.client-list td {
+    padding-right: 20px; /* Add right padding to create spacing between cells */
+}
+
+.client-list th, .client-list td {
+    min-width: 150px; /* Minimum width based on content size */
+}
+
+.client-list tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
