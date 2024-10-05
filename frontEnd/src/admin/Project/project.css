@@ -1,219 +1,34 @@
 
 .project-management-page {
-    display: flex; /* Use flexbox for layout */
-    height: 100vh; /* Make sure the page takes the full height */
-    margin: 0 20px; /* Add margin to left and right corners (adjust the value as needed) */
+    display: flex;
 }
 
 .sidebar {
-    width: 200px; /* Adjust sidebar width */
-    background-color: #f0f0f0; /* Sidebar background color */
-    padding: 10px; /* Padding around sidebar */
+    width: 200px;
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
 }
 
 .content {
-    flex: 1; /* Take remaining space */
-    padding: 40px 20px 20px; /* Add top padding to move all content down */
-    display: flex; /* Use flexbox to align items */
-    flex-direction: column; /* Align items in a column */
-    justify-content: flex-start; /* Align content at the top */
-    height: 100%; /* Ensure content takes full height */ 
+    padding: 20px;
+    flex-grow: 1;
 }
 
-
-h1 {
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove padding */
-    margin-bottom: 10px; /* Add space below the heading */
+.content h1 {
+    color: #007bff;
 }
-
-.create-button {
-    background-color: #3a9b9a; /* Button background color */
-    color: white; /* Button text color */
-    border: none; /* No border */
-    padding: 10px 20px; /* Some padding */
-    text-align: center; /* Center the text */
-    text-decoration: none; /* No underline */
-    display: inline-flex; /* Align items in a row */
-    align-items: center; /* Center vertically */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 16px; /* Font size */
-    margin-top: 10px; /* Space above the button */
-}
-
-.create-button:hover {
-    background-color: #51d1eb; /* Button hover color */
-}
-
-.create-button .icon {
-    margin-right: 8px; /* Adjust the value as needed */
-}
-
-/* Search box styles */
-.header-actions {
-    display: flex; /* Use flexbox for layout */
-    align-items: center; /* Align items vertically centered */
-    justify-content: space-between; /* Space between the create button and search box */
-    margin-top: 10px; /* Space above the actions */
-    width: 100%; /* Make header-actions take the full width */
-}
-
-.search-container {
-    display: flex; /* Use flexbox for search items */
-    align-items: center; /* Center vertically */
-    position: absolute;
-    right: 0;
-    margin-top: 75px; /* Move it down by adding top margin */
-    margin-right: 70px;
-}
-
-
-.search-label {
-    margin-right: 5px; /* Space between label and search box */
-    font-size: 16px; /* Font size for the label */
-}
-
-.search-box {
-    padding: 10px; /* Padding inside the search box */
-    border: 1px solid #ccc; /* Border style */
-    border-radius: 5px; /* Rounded corners */
-    font-size: 16px; /* Font size for input */
-    width: 150px; /* Width of the search box */
-}
-
-.search-box::placeholder {
-    color: #aaa; /* Placeholder text color */
-}
-
-.notification-icon {
-    margin-top: 10px; /* Space above the notification icon */
-    cursor: pointer; /* Pointer cursor on hover */
-    font-size: 24px; /* Increase the size of the icon */
-    color: #3a9b9a; /* Match the color with the create button */
-    position: absolute; /* Positioning relative to the nearest positioned ancestor */
-    right: 0; /* Align to the right */
-    top: 5px; /* Adjust this value to move the icon down (change from -5px to 5px) */
-    margin-right: 70px;
-    margin-top: 50px;
-}
-
-
-
-.notification-icon:hover {
-    color: #51d1eb; /* Change color on hover */
-}
-
-
-
-
-
-/* eto yung pag mag create ng project*/
-
-.modal-overlay {
-    position: fixed; /* Fixed position to cover the screen */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex; /* Use flex to center the modal */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    z-index: 1000; /* Ensure it appears above other content */
-}
-
-.modal-content {
-    background-color: white; /* White background for the modal */
-    padding: 20px; /* Padding inside modal */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
-    width: 400px; /* Width of the modal */
-}
-
-.modal-title {
-    text-align: center; /* Center the text */
-    margin: 0; /* Remove default margin */
-    margin-bottom: 20px; /* Space below the title */
-    font-size: 24px; /* Increase font size */
-}
-
-.modal-field {
-    margin-bottom: 20px; /* Space between fields */
-}
-
-.modal-field label {
-    display: block; /* Block display for labels */
-    margin-bottom: 10px; /* Space below labels */
-    font-size: 18px; /* Increase font size */
-}
-
-.modal-field input {
-    width: 100%; /* Full width for input fields */
-    padding: 15px; /* Increased padding for input */
-    border: 1px solid #ccc; /* Border for input */
-    border-radius: 4px; /* Rounded corners for input */
-    font-size: 18px; /* Increase font size */
-}
-
-.modal-actions {
-    display: flex; /* Flexbox for buttons */
-    justify-content: space-between; /* Space between buttons */
-}
-
-.cancel-button,
-.create-button {
-    background-color: #8db0b0; /* Button background color */
-    color: rgb(255, 255, 255); /* Button text color */
-    border: none; /* No border */
-    padding: 15px 30px; /* Increased padding for buttons */
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; /* Pointer on hover */
-    font-size: 18px; /* Increase font size */
-    height: 50px; /* Fixed height for both buttons */
-}
-
-.cancel-button {
-    background-color: red; /* Change color of cancel button */
-}
-
-.cancel-button:hover,
-.create-button:hover {
-    background-color: #51d1eb; /* Hover color for buttons */
-}
-
-.cancel-button {
-    background-color: red; /* Change color of cancel button */
-    margin-top: 10px; /* Add margin to move it down */
-}
-
-
-/*project creations*/
-
-.project-list {
-    display: flex;
-    flex-direction: column; /* Stack items vertically */
-    justify-content: flex-start; /* Align items to the top */
-    align-items: flex-start; /* Align items to the left */
-    height: auto; /* Allow height to adjust based on content */
-    margin-top: 20px; /* Add space above the image */
-    margin-left: 20px; /* Move away from the left edge */
-}
-
-.project-list img {
-    max-width: 40%; /* Make sure the image doesn't overflow */
-    height: auto; /* Maintain aspect ratio */
-    margin-left: 300px; /* Move the image to the right by 20px (adjust as needed) */  
-}
-
-.project-list p {
-    margin-top: 10px; /* Add space above the text */
-    font-size: 18px; /* Adjust font size as needed */
-    color: #000000; /* Change text color if desired */
-    margin-left: 0; /* Remove left margin to align with image */
-    font-size: 30px; /* Increase font size */
-}
-
-
-
-

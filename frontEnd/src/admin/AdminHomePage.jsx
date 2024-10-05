@@ -15,12 +15,20 @@ function AdminHomePage() {
                     <li><Link to="/project">Projects</Link></li>  {/* Links to Project Management */}
                     <li><Link to="/tasks">Tasks</Link></li>
                     <li><Link to="/documents">Documents</Link></li>
+<<<<<<< HEAD
+=======
+                    <li><Link to="/reports">Reports</Link></li>
+>>>>>>> parent of a70966d (frontend)
                     <li><Link to="/calendar">Calendar</Link></li>
                     <li><Link to="/create">Create</Link></li>
                     <li><Link to="/clients">Clients</Link></li>
                     <li><Link to="/employees">Employees</Link></li>
+<<<<<<< HEAD
                     <li><Link to="/reports">Reports</Link></li>
                     
+=======
+                    <li><Link to="/survey">Survey</Link></li>
+>>>>>>> parent of a70966d (frontend)
                 </ul>
             </div>
 
