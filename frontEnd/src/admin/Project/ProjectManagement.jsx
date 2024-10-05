@@ -110,7 +110,7 @@ function ProjectManagement() {
                     ) : (
                         <div style={{ textAlign: 'center' }}>
                             <img src={pic4} alt="No projects created" />
-                            <p style={{ marginLeft: '300px' }}>No projects created yet.</p> {/* Adjust margin as needed */}
+                            <p style={{ marginLeft: '300px' }}>No projects created yet.</p>
                         </div>
                     )}
                 </div>
