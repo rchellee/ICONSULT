@@ -1,5 +1,6 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import ClientForm from './ClientForm'; // Assuming ClientForm component exists
+import './ClientList.css'; // Import the CSS file
 
 const ClientList = () => {
   const [clients, setClients] = useState([]); // Client data
@@ -11,7 +12,7 @@ const ClientList = () => {
   };
 
   return (
-    <div>
+    <div className="client-list">
       <h2>Client List</h2>
       {/* Toggle between the form and the list */}
       {showForm ? (
@@ -35,7 +36,7 @@ const ClientList = () => {
             <tbody>
               {clients.length === 0 ? (
                 <tr>
-                  <td colSpan="4" style={{ textAlign: 'center' }}>
+                  <td colSpan="4" className="no-clients">
                     No clients available
                   </td>
                 </tr>
