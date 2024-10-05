@@ -1,0 +1,12 @@
+/* Ensure the container class is scoped to landing-page */
+.landing-page .container {
+    max-width: 85%; /* Controls the width */
+    margin: 0 auto; /* Centers the container horizontally on the screen */
+    padding: 20px;  /* Optional padding for extra spacing */
+}
+
+/* Flexbox for social icons */
+.flexSB {
+    display: flex;
+    justify-content: space-between;
+}
