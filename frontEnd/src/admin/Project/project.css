@@ -70,7 +70,7 @@ h1 {
 
 
 .search-label {
-    margin-right: 5px; 
+    margin-right: 20px; 
     font-size: 16px; 
 }
 
@@ -79,13 +79,13 @@ h1 {
     border: 1px solid #ccc; 
     border-radius: 5px; 
     font-size: 16px; 
-    width: 150px; 
+    width: 300px; 
+   
 }
 
 .search-box::placeholder {
     color: #aaa;
 }
-
 .notification-icon {
     margin-top: 10px; 
     cursor: pointer;
@@ -97,16 +97,17 @@ h1 {
     margin-right: 70px;
     margin-top: 50px;
 }
-
-
-
 .notification-icon:hover {
     color: #51d1eb; 
 }
 
-
-
-
+/*eto sa no project created yet*/
+.no-projects-message {
+    font-size: 30px; /* Increase the font size */
+    text-align: center; /* Center the text */
+    color: #333; /* Set a color for better readability */
+    margin-top: 20px; /* Add some margin at the top */
+}
 
 /* eto yung pag mag create ng project**************************************************/
 
@@ -163,7 +164,7 @@ h1 {
 
 .cancel-button,
 .create-button {
-    background-color: #8db0b0; 
+    background-color: #7eb3de; 
     color: rgb(255, 255, 255); 
     border: none; 
     padding: 15px 30px; 
@@ -187,7 +188,6 @@ h1 {
     margin-top: 10px; 
 }
 
-
 /*project creations************************************************************************/
 
 .project-list {
@@ -205,15 +205,63 @@ h1 {
     height: auto; 
     margin-left: 300px;
 }
-
-.project-list p {
-    margin-top: 10px; 
-    font-size: 18px; 
-    color: #000000; 
-    margin-left: 0; 
-    font-size: 30px; 
+.project-table {
+    display: grid; /* Use grid for the whole table */
+    grid-template-columns: repeat(5, 1fr); /* 5 equal columns for headers and rows */
+    gap: 50px; /* Space between columns */
+    position: absolute; /* Control positioning */
+    top: 190px; /* Position from the top */
+    right: 500Px; /* Position from the right */
 }
 
+.project-table-header {
+    display: contents; /* Make header cells participate in the grid */
+    background-color: #f2f2f2;
+    padding: 10px;
+    font-weight: bold;
+    border: 2px solid #4CAF50;
+}
 
+.project-row {
+    display: contents; /* Make row cells participate in the same grid structure */
+    padding: 10px;
+    
+    
+}
 
+.project-name {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.project-details {
+    text-align: left;
+    display: grid;
+    gap: 500px; /* Adds space between details */
+}
+
+/* task button csssssssssssssssssssssssssssssssssssssssssss*/
+
+.add-task {
+    width: 70px;         /* Adjust size as needed */
+    height: 70px;        /* Adjust size as needed */
+    border-radius: 70%;  /* Makes it a circle */
+    background-color: #7eb3de; /* Change to your desired color */
+    color: white;        /* Icon color */
+    border: none;        /* No border */
+    display: flex;       /* Flexbox for centering */
+    justify-content: center; 
+    align-items: center; 
+    cursor: pointer;     /* Pointer cursor on hover */
+    font-size: 20px;     /* Icon size */
+    position: fixed;   /* Position relative for any future adjustments */
+    right: 0;
+    margin-top: 140px; 
+    margin-right: 70px;
+}
+
+.add-task:hover {
+    background-color: #51d1eb; /* Darker shade on hover */
+}
 

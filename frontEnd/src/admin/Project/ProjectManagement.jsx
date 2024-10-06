@@ -2,38 +2,37 @@
 import  { useState } from 'react';
 import { Link } from 'react-router-dom'; 
 import './project.css'; 
-import { FaPlus, FaBell } from 'react-icons/fa'; // Import the notification icon
-// import pic4 from "../../Assets/pic4.png"; // Go up two levels to access the Assets folder
+import { FaPlus, FaBell } from 'react-icons/fa'; 
+import pic4 from "../../Assets/pic4.png"; 
 
 function ProjectManagement() {
-    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
-    const [projects, setProjects] = useState([]); // State to hold the list of projects
-    const [projectName, setProjectName] = useState(''); // State for project name
-    const [clientName, setClientName] = useState(''); // State for client name
+    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [projects, setProjects] = useState([]); 
+    const [projectName, setProjectName] = useState(''); 
+    const [clientName, setClientName] = useState(''); 
 
     const openModal = () => {
-        setIsModalOpen(true); // Open modal
+        setIsModalOpen(true); 
     };
 
     const closeModal = () => {
-        setIsModalOpen(false); // Close modal
-        setProjectName(''); // Reset project name
-        setClientName(''); // Reset client name
+        setIsModalOpen(false); 
+        setProjectName(''); 
+        setClientName(''); 
     };
 
     const createProject = () => {
         if (projectName && clientName) {
-            const newProject = { projectName, clientName };
-            setProjects([...projects, newProject]); // Add new project to the list
-            closeModal(); // Close the modal
+            const newProject = { projectName, clientName, progress: "0%", assigned: "Unassigned", status: "Pending", priority: "Low" };
+            setProjects([...projects, newProject]); 
+            closeModal(); 
         } else {
-            alert("Please fill in both fields."); // Alert user if fields are empty
+            alert("Please fill in both fields."); 
         }
     };
 
     return (
         <div className="project-management-page">
-            {/* Sidebar */}
             <div className="sidebar">
                 <ul>
                     <li><Link to="/admin">Dashboard</Link></li>
@@ -47,27 +46,26 @@ function ProjectManagement() {
                 </ul>
             </div>
 
-            {/* Content */}
             <div className="content">
                 <h1>Projects</h1>
                 <div className="header-actions">
-                    {/* Create Button Wrapper */}
                     <button className="create-button" onClick={openModal}>
                         <FaPlus className='icon'/> Create
                     </button>
-                    {/* Notification Icon */}
                     <div className="notification-icon" style={{ cursor: 'pointer' }}>
                         <FaBell className="icon" />
                     </div>
+                    {/* New Circle Button */}
+                    <button className="add-task">
+                        <FaPlus className='icon' />
+                    </button>
                 </div>
 
-                {/* Search Box Wrapper */}
                 <div className="search-container">
                     <span className="search-label">Search</span>
                     <input type="text" placeholder="..." className="search-box" />
                 </div>
 
-                {/* Modal */}
                 {isModalOpen && (
                     <div className="modal-overlay">
                         <div className="modal-content">
@@ -78,7 +76,7 @@ function ProjectManagement() {
                                     type="text" 
                                     placeholder="Enter project name" 
                                     value={projectName} 
-                                    onChange={(e) => setProjectName(e.target.value)} // Update project name
+                                    onChange={(e) => setProjectName(e.target.value)} 
                                 />
                             </div>
                             <div className="modal-field">
@@ -87,7 +85,7 @@ function ProjectManagement() {
                                     type="text" 
                                     placeholder="Enter client name" 
                                     value={clientName} 
-                                    onChange={(e) => setClientName(e.target.value)} // Update client name
+                                    onChange={(e) => setClientName(e.target.value)} 
                                 />
                             </div>
                             <div className="modal-actions">
@@ -101,22 +99,41 @@ function ProjectManagement() {
                 {/* Project List */}
                 <div className="project-list">
                     {projects.length > 0 ? (
-                        <ul>
-                            {projects.map((project, index) => (
-                                <li key={index}>
-                                    <strong>Project Name:</strong> {project.projectName}, <strong>Client Name:</strong> {project.clientName}
-                                </li>
-                            ))}
-                        </ul>
+                        projects.map((project, index) => (
+                            <div className="project-item" key={index}>
+                                {/* Project Name is displayed separately */}
+                                <div className="project-name" onClick={() => handleProjectClick(project)}>
+                                    {project.projectName}
+                                </div>
+                                
+                                {/* Project Details */}
+                                <div className="project-table">
+                                    <div className="project-table-header">
+                                        <span>Progress</span>
+                                        <span>Assigned</span>
+                                        <span>Status</span>
+                                        <span>Priority</span>
+                                        <span>Client</span>
+                                    </div>
+                                    <div className="project-row">
+                                        <span>{project.progress}</span>
+                                        <span>{project.assigned}</span>
+                                        <span>{project.status}</span>
+                                        <span>{project.priority}</span>
+                                        <span>{project.clientName}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
                     ) : (
                         <div style={{ textAlign: 'center' }}>
-                            <img src={3} alt="No projects created" />
-                            <p style={{ marginLeft: '300px' }}>No projects created yet.</p>
+                            <img src={pic4} alt="No projects created" />
+                            <p className="no-projects-message" style={{ marginLeft: '300px' }}>
+                                No projects created yet.
+                            </p>
                         </div>
                     )}
                 </div>
-
-                
             </div>
         </div>
     );
