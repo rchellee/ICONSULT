@@ -30,6 +30,7 @@ function ProjectManagement() {
             alert("Please fill in both fields."); // Alert user if fields are empty
         }
     };
+
     return (
         <div className="project-management-page">
             {/* Sidebar */}
@@ -110,7 +111,7 @@ function ProjectManagement() {
                     ) : (
                         <div style={{ textAlign: 'center' }}>
                             <img src={3} alt="No projects created" />
-                            <p style={{ marginLeft: '300px' }}>No projects created yet.</p> {/* Adjust margin as needed */}
+                            <p style={{ marginLeft: '300px' }}>No projects created yet.</p>
                         </div>
                     )}
                 </div>
