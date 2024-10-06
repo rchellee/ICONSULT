@@ -4,6 +4,7 @@ import AdminHomePage from './admin/AdminHomePage';
 import ClientHomePage from './client/ClientHomePage';
 import LandingPage from './landingpage';
 import ProjectManagement from './admin/Project/ProjectManagement';
+import ClientManagement from './admin/Client/ClientManagement.jsx';
 
 function App() {
   // const[data, setData] = useState([])
@@ -21,6 +22,7 @@ function App() {
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/client" element={<ClientHomePage />} />
         <Route path="/project" element={<ProjectManagement />} />
+         <Route path="/clients" element={<ClientManagement />} />  {/* Client page */}
       </Routes>
     </Router>
   );

@@ -1,0 +1,37 @@
+.client-management {
+    padding: 20px;
+}
+
+.add-client-form {
+    margin-bottom: 20px;
+}
+
+.add-client-form input, .add-client-form select {
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.add-client-form button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
