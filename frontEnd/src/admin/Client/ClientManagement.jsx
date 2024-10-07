@@ -1,80 +1,85 @@
 import { useState } from 'react';
-import './ClientManagement.css';
-import ClientForm from './ClientForm'; // Import ClientForm
+import ClientForm from './ClientForm'; // Assuming ClientForm is in the same directory
+import ClientDetails from './ClientDetails'; // Assuming ClientDetails is in the same directory
 
-function ClientManagement() {
-    const [clients, setClients] = useState([]);
-    const [isFormVisible, setFormVisible] = useState(false); // State to control form visibility
-    const [successMessage, setSuccessMessage] = useState(''); // State for success message
+const ClientManagement = () => {
+  const [clients, setClients] = useState([]); // State to store client data
+  const [isFormVisible, setIsFormVisible] = useState(false); // Toggle form visibility
+  const [selectedClient, setSelectedClient] = useState(null); // State to store selected client
 
-    const toggleFormVisibility = () => {
-        setFormVisible(!isFormVisible); // Toggle form visibility
-    };
+  // Function to toggle the form's visibility
+  const toggleForm = () => {
+    setIsFormVisible(!isFormVisible);
+  };
 
-    const handleClientAdded = (clientName) => {
-        // Show success message
-        setSuccessMessage(`Client ${clientName} added successfully!`);
+  // Function to handle client selection for viewing details
+  const viewClientDetails = (client) => {
+    setSelectedClient(client);
+  };
 
-        // Clear the success message after a timeout
-        setTimeout(() => {
-            setSuccessMessage('');
-        }, 3000); // Clear the message after 3 seconds
-    };
+  // Function to go back to the client list
+  const goBackToList = () => {
+    setSelectedClient(null);
+  };
 
-    return (
-        <div className="client-list">
-            <h2>Clients</h2>
+  // Function to update client details
+  const updateClient = (updatedClient) => {
+    setClients(clients.map(client => (client.id === updatedClient.id ? updatedClient : client)));
+    setSelectedClient(updatedClient); // Update the selected client to reflect changes
+  };
 
-            {/* Button to toggle Add Client Form */}
-            <button onClick={toggleFormVisibility}>
-                {isFormVisible ? 'Cancel' : 'Add Client'}
-            </button>
+  return (
+    <div>
+      <h2>Clients</h2>
 
-            {/* Add Client Form */}
-            {isFormVisible && (
-                <ClientForm
-                    clients={clients}
-                    setClients={setClients}
-                    toggleForm={toggleFormVisibility}
-                    onClientAdded={handleClientAdded} // Pass handleClientAdded as prop
-                />
-            )}
+      {/* If a client is selected, show ClientDetails component */}
+      {selectedClient ? (
+        <ClientDetails client={selectedClient} goBack={goBackToList} updateClient={updateClient} />
+      ) : (
+        <>
+          {/* Button to toggle form visibility */}
+          <button onClick={toggleForm}>
+            {isFormVisible ? 'Cancel' : 'Add Client'}
+          </button>
 
-            {/* Success Message */}
-            {successMessage && (
-                <div className="success-message">
-                    {successMessage}
-                </div>
-            )}
+          {/* Display the form when isFormVisible is true */}
+          {isFormVisible && (
+            <ClientForm clients={clients} setClients={setClients} toggleForm={toggleForm} />
+          )}
 
-            {/* Client Table - Only show this if there are clients and the form is not visible */}
-            {!isFormVisible && clients.length > 0 && (
-                <div className="client-table">
-                    <h3>Client List</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Contact</th>
-                                <th>Status</th>
-                                <th>Projects</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {clients.map((client, index) => (
-                                <tr key={index}>
-                                    <td>{client.name}</td>
-                                    <td>{client.contact}</td>
-                                    <td>{client.status}</td>
-                                    <td>{client.projects}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </div>
-    );
-}
+          {/* Display the client list only when form is not visible */}
+          {!isFormVisible && (
+            <>
+              <h3>Clients List</h3>
+              {clients.length === 0 ? (
+                <p>No clients added yet.</p>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clients.map((client, index) => (
+                      <tr key={index}>
+                        {/* When the client's name is clicked, viewClientDetails is triggered */}
+                        <td onClick={() => viewClientDetails(client)} style={{ cursor: 'pointer', color: 'black' }}>
+                          {client.firstName}
+                        </td>
+                        <td>{client.status}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
 export default ClientManagement;
