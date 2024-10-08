@@ -1,7 +1,6 @@
-
-import  { useState } from 'react';
-import { Link } from 'react-router-dom'; 
-import './project.css'; 
+import './project.css';
+import Sidebar from '../sidebar'; // Import the Sidebar component
+import { useState } from 'react';
 import { FaPlus, FaBell } from 'react-icons/fa'; 
 import pic4 from "../../Assets/pic4.png"; 
 
@@ -11,41 +10,26 @@ function ProjectManagement() {
     const [projectName, setProjectName] = useState(''); 
     const [clientName, setClientName] = useState(''); 
 
-    const openModal = () => {
-        setIsModalOpen(true); 
-    };
-
+    const openModal = () => setIsModalOpen(true);
     const closeModal = () => {
-        setIsModalOpen(false); 
-        setProjectName(''); 
-        setClientName(''); 
+        setIsModalOpen(false);
+        setProjectName('');
+        setClientName('');
     };
 
     const createProject = () => {
         if (projectName && clientName) {
             const newProject = { projectName, clientName, progress: "0%", assigned: "Unassigned", status: "Pending", priority: "Low" };
-            setProjects([...projects, newProject]); 
-            closeModal(); 
+            setProjects([...projects, newProject]);
+            closeModal();
         } else {
-            alert("Please fill in both fields."); 
+            alert("Please fill in both fields.");
         }
     };
 
     return (
         <div className="project-management-page">
-            <div className="sidebar">
-                <ul>
-                    <li><Link to="/admin">Dashboard</Link></li>
-                    <li><Link to="/project">Projects</Link></li>  
-                    <li><Link to="/reports">Reports</Link></li>
-                    <li><Link to="/calendar">Calendar</Link></li>
-                    <li><Link to="/create">Create</Link></li>
-                    <li><Link to="/clients">Clients</Link></li>
-                    <li><Link to="/employees">Employees</Link></li>
-                    <li><Link to="/logout">Logout</Link></li>
-                </ul>
-            </div>
-
+            <Sidebar /> 
             <div className="content">
                 <h1>Projects</h1>
                 <div className="header-actions">
@@ -55,7 +39,6 @@ function ProjectManagement() {
                     <div className="notification-icon" style={{ cursor: 'pointer' }}>
                         <FaBell className="icon" />
                     </div>
-                    {/* New Circle Button */}
                     <button className="add-task">
                         <FaPlus className='icon' />
                     </button>
@@ -96,17 +79,13 @@ function ProjectManagement() {
                     </div>
                 )}
 
-                {/* Project List */}
                 <div className="project-list">
                     {projects.length > 0 ? (
                         projects.map((project, index) => (
                             <div className="project-item" key={index}>
-                                {/* Project Name is displayed separately */}
-                                <div className="project-name" onClick={() => handleProjectClick(project)}>
+                                <div className="project-name">
                                     {project.projectName}
                                 </div>
-                                
-                                {/* Project Details */}
                                 <div className="project-table">
                                     <div className="project-table-header">
                                         <span>Progress</span>
@@ -128,9 +107,7 @@ function ProjectManagement() {
                     ) : (
                         <div style={{ textAlign: 'center' }}>
                             <img src={pic4} alt="No projects created" />
-                            <p className="no-projects-message" style={{ marginLeft: '300px' }}>
-                                No projects created yet.
-                            </p>
+                            <p className="no-projects-message">No projects created yet.</p>
                         </div>
                     )}
                 </div>

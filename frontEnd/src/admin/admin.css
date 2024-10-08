@@ -1,0 +1,155 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #F0F4FF;
+}
+
+.admin-home-page {
+  display: flex;
+}
+
+/* Sidebar container */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 85px;
+    display: flex;
+    flex-direction: column;
+    background: #161a2d;
+    padding: 25px 20px;
+    transition: all 0.4s ease;
+  }
+  
+  /* Expand sidebar on hover */
+  .sidebar:hover {
+    width: 260px;
+  }
+  
+  /* Sidebar header */
+  .sidebar .sidebar-header {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Admin logo */
+  .sidebar .sidebar-header img {
+    width: 42px;
+    border-radius: 50%;
+  }
+  
+  /* Admin text hidden initially */
+  .sidebar .sidebar-header h2 {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 23px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  
+  /* Show Admin text when sidebar is hovered */
+  .sidebar:hover .sidebar-header h2 {
+    opacity: 1;
+  }
+  
+  /* Sidebar links */
+  .sidebar-links {
+    list-style: none;
+    margin-top: 20px;
+    height: 80%;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  
+  .sidebar-links::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .sidebar-links h4 {
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    margin: 10px 0;
+    position: relative;
+  }
+  
+  /* Sidebar links icon transition */
+  .sidebar-links li a {
+    display: flex;
+    align-items: center;
+    gap: 0 20px;
+    color: #fff;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 15px 10px;
+    text-decoration: none;
+    transition: 0.2s ease;
+  }
+  
+  /* Change link background on hover */
+  .sidebar-links li a:hover {
+    color: #161a2d;
+    background: #fff;
+    border-radius: 4px;
+  }
+  
+  /* User account section hidden initially */
+  .user-account {
+    margin-top: auto;
+    padding: 12px 10px;
+    margin-left: -10px;
+  }
+  
+  /* User profile image */
+  .user-profile img {
+    width: 42px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+  }
+  
+  /* User name and role hidden initially */
+  .user-profile h3,
+  .user-profile span {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  
+  /* Show user name and role when sidebar is hovered */
+  .sidebar:hover .user-profile h3,
+  .sidebar:hover .user-profile span {
+    opacity: 1;
+  }
+  
+  .user-detail {
+    margin-left: 23px;
+    white-space: nowrap;
+  }
+  
+  /* Sidebar hover styles for user account */
+  .sidebar:hover .user-account {
+    background: #fff;
+    border-radius: 4px;
+  }
+  
+  .content {
+    margin-left: 85px;
+    padding: 20px;
+    transition: margin-left 0.4s ease;
+  }
+  
+  /* Shift content when sidebar expands */
+  .sidebar:hover ~ .content {
+    margin-left: 260px;
+  }
