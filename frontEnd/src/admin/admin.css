@@ -76,6 +76,31 @@ body {
   .sidebar-links::-webkit-scrollbar {
     display: none;
   }
+
+  .logout-btn {
+    display: flex; 
+    align-items: center; 
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    padding: 10px; 
+    width: 100%;
+  }
+  
+  .logout-btn h4 {
+      color: #fff;
+      font-size: 20px;
+      font-weight: 500;
+      white-space: nowrap;
+      padding-left: 20px;
+      position: relative;
+  }
+
+  .logout-btn:hover {
+    color: #161a2d;
+    background: #444343;
+    border-radius: 4px;
+  }
   
   .sidebar-links h4 {
     color: #fff;
@@ -86,6 +111,10 @@ body {
   }
   
   /* Sidebar links icon transition */
+  .sidebar-links li {
+    list-style: none;
+  }
+
   .sidebar-links li a {
     display: flex;
     align-items: center;
@@ -153,3 +182,5 @@ body {
   .sidebar:hover ~ .content {
     margin-left: 260px;
   }
+
+  

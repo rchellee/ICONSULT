@@ -71,6 +71,26 @@ app.post('/Login', (req, res) => {
     });
 });
 
+// Add a new endpoint to save a client
+app.post('/client', (req, res) => {
+    const { firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status } = req.body;
+
+    const sql = "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status], (err, result) => {
+        if (err) return res.status(500).json(err);
+        return res.status(201).json({ id: result.insertId, firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, username, status });
+    });
+});
+
+// Add a new endpoint to fetch all clients
+app.get('/clients', (req, res) => {
+    const sql = "SELECT * FROM client";
+    db.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    });
+});
+
 // Start the server
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");

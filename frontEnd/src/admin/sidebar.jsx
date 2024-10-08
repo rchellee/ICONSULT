@@ -1,12 +1,18 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './admin.css';
-import admin from "../assets/admin.jpg"
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./admin.css";
+import admin from "../assets/admin.jpg";
+
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate('/');
+  };
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <img src={ admin } alt="Admin Logo" />
+        <img src={admin} alt="Admin Logo" />
         <h2>Admin</h2> {/* Appears when sidebar is expanded */}
       </div>
       <ul className="sidebar-links">
@@ -34,12 +40,12 @@ const Sidebar = () => {
             <h4>Reports</h4>
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link to="/create">
             <span className="material-symbols-outlined">add_circle</span>
             <h4>Create</h4>
           </Link>
-        </li>
+        </li> */}
         <li>
           <Link to="/clients">
             <span className="material-symbols-outlined">group</span>
@@ -53,18 +59,18 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/logout">
+          <button onClick={handleLogout} className="logout-btn">
             <span className="material-symbols-outlined">logout</span>
             <h4>Logout</h4>
-          </Link>
+          </button>
         </li>
       </ul>
 
       <div className="user-account">
         <div className="user-profile">
-          <img src={ admin } alt="User Profile" />
+          <img src={admin} alt="User Profile" />
           <div className="user-detail">
-            <h3>John Doe</h3> {/* Placeholder name */}
+            <h3>John Doe</h3>
             <span>Admin</span>
           </div>
         </div>

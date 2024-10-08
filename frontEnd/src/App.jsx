@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Login/LoginForm';
 import AdminHomePage from './admin/AdminHomePage';
 import ClientHomePage from './client/ClientHomePage';
-import LandingPage from './landingpage';
+import LandingPage from '../src/Landingpage.jsx';
 import ProjectManagement from './admin/Project/ProjectManagement';
 import ClientManagement from './admin/Client/ClientManagement.jsx';
 
