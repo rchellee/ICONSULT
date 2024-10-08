@@ -42,32 +42,40 @@ app.post('/Login', (req, res) => {
         if (adminResults.length > 0) {
             return res.status(200).json({ message: 'Login successful', role: 'admin' });
         } else {
-            // Check employees table
-            const sqlEmployee = "SELECT * FROM employees WHERE email_add = ? AND password = ?";
-            db.query(sqlEmployee, [username, password], (err, employeeResults) => {
+            // Check client table
+            const sqlClient = "SELECT * FROM client WHERE username = ? AND password = ?";
+            db.query(sqlClient, [username, password], (err, clientResults) => {
                 if (err) {
-                    return res.status(500).json({ message: 'An error occurred checking the employees table' });
+                    return res.status(500).json({ message: 'An error occurred checking the client table' });
                 }
 
-                if (employeeResults.length > 0) {
-                    return res.status(200).json({ message: 'Login successful', role: 'employee' });
+                if (clientResults.length > 0) {
+                    return res.status(200).json({ message: 'Login successful', role: 'client' });
                 } else {
-                    // Check client table
-                    const sqlClient = "SELECT * FROM client WHERE email_add = ? AND password = ?";
-                    db.query(sqlClient, [username, password], (err, clientResults) => {
-                        if (err) {
-                            return res.status(500).json({ message: 'An error occurred checking the client table' });
-                        }
-
-                        if (clientResults.length > 0) {
-                            return res.status(200).json({ message: 'Login successful', role: 'client' });
-                        } else {
-                            return res.status(401).json({ message: 'Invalid username or password' });
-                        }
-                    });
+                    return res.status(401).json({ message: 'Invalid username or password' });
                 }
             });
         }
+    });
+});
+
+// Add a new endpoint to save a client
+app.post('/client', (req, res) => {
+    const { firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status } = req.body;
+
+    const sql = "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status], (err, result) => {
+        if (err) return res.status(500).json(err);
+        return res.status(201).json({ id: result.insertId, firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, username, status });
+    });
+});
+
+// Add a new endpoint to fetch all clients
+app.get('/clients', (req, res) => {
+    const sql = "SELECT * FROM client";
+    db.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
     });
 });
 
