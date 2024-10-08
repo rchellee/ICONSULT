@@ -42,29 +42,17 @@ app.post('/Login', (req, res) => {
         if (adminResults.length > 0) {
             return res.status(200).json({ message: 'Login successful', role: 'admin' });
         } else {
-            // Check employees table
-            const sqlEmployee = "SELECT * FROM employees WHERE email_add = ? AND password = ?";
-            db.query(sqlEmployee, [username, password], (err, employeeResults) => {
+            // Check client table
+            const sqlClient = "SELECT * FROM client WHERE username = ? AND password = ?";
+            db.query(sqlClient, [username, password], (err, clientResults) => {
                 if (err) {
-                    return res.status(500).json({ message: 'An error occurred checking the employees table' });
+                    return res.status(500).json({ message: 'An error occurred checking the client table' });
                 }
 
-                if (employeeResults.length > 0) {
-                    return res.status(200).json({ message: 'Login successful', role: 'employee' });
+                if (clientResults.length > 0) {
+                    return res.status(200).json({ message: 'Login successful', role: 'client' });
                 } else {
-                    // Check client table
-                    const sqlClient = "SELECT * FROM client WHERE email_add = ? AND password = ?";
-                    db.query(sqlClient, [username, password], (err, clientResults) => {
-                        if (err) {
-                            return res.status(500).json({ message: 'An error occurred checking the client table' });
-                        }
-
-                        if (clientResults.length > 0) {
-                            return res.status(200).json({ message: 'Login successful', role: 'client' });
-                        } else {
-                            return res.status(401).json({ message: 'Invalid username or password' });
-                        }
-                    });
+                    return res.status(401).json({ message: 'Invalid username or password' });
                 }
             });
         }

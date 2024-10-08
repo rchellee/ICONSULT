@@ -23,8 +23,6 @@ const Login = () => {
       // Navigate based on the role
       if (data.role === 'admin') {
         navigate('/admin'); 
-      } else if (data.role === 'employee') {
-        navigate('/employees'); 
       } else if (data.role === 'client') {
         navigate('/client'); 
       } else {
