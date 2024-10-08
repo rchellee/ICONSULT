@@ -76,33 +76,25 @@ const ClientManagement = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Middle Initial</th>
-                        <th>Birthday</th>
-                        <th>Mobile Number</th>
-                        <th>Email Address</th>
-                        <th>Address</th>
-                        <th>Username</th>
-                        <th>Password</th>
+                        <th>Name</th>
                         <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {clients.map((client, index) => (
                         <tr key={index}>
-                          <td>{client.id}</td>
-                          <td>{client.firstName}</td>
-                          <td>{client.lastName}</td>
-                          <td>{client.middleInitial}</td>
-                          <td>{client.birthday}</td>
-                          <td>{client.mobile_number}</td>
-                          <td>{client.email_add}</td>
-                          <td>{client.address}</td>
-                          <td>{client.username}</td>
-                          <td>{client.password}</td>
-                          <td>{client.status}</td>
+                          <td
+                            onClick={() => viewClientDetails(client)}
+                            style={{ cursor: "pointer", color: "blue" }}
+                          >
+                            {client.firstName} {client.lastName}
+                          </td>
+                          <td
+                            onClick={() => viewClientDetails(client)}
+                            style={{ cursor: "pointer", color: "blue" }}
+                          >
+                            {client.status}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
