@@ -6,6 +6,15 @@ import LandingPage from './landingpage';
 import ProjectManagement from './admin/Project/ProjectManagement';
 import ClientManagement from './admin/Client/ClientManagement.jsx';
 
+
+// for google icons
+const link = document.createElement('link');
+link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
+link.rel = 'stylesheet';
+document.head.appendChild(link);
+
+
+
 function App() {
   // const[data, setData] = useState([])
   // useEffect(() =>{
@@ -22,7 +31,7 @@ function App() {
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/client" element={<ClientHomePage />} />
         <Route path="/project" element={<ProjectManagement />} />
-         <Route path="/clients" element={<ClientManagement />} />  {/* Client page */}
+         <Route path="/clients" element={<ClientManagement />} />
       </Routes>
     </Router>
   );

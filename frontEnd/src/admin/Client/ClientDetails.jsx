@@ -73,11 +73,10 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
             </label>
 
             <button type="submit" className="btn-save">Udpate</button>
-            {/* <button type="button" className="btn-cancel" onClick={toggleEdit}>Cancel</button> */}
           </form>
         ) : (
           <>
-            {/* Display client details */}
+            {/* display yung clients */}
             <p><strong>ID:</strong> {client.id}</p>
             <p><strong>Last Name:</strong> {client.lastName}</p>
             <p><strong>First Name:</strong> {client.firstName}</p>
@@ -89,8 +88,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
           </>
         )}
       </div>
-
-      {/* Buttons to edit and go back */}
       {isEditing ? null : (
         <button className="btn-edit" onClick={toggleEdit}>Edit</button>
       )}
