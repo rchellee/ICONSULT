@@ -434,7 +434,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 .action-menu {
     position: absolute;
-    right: 50px;
+    right: 180px;
     margin-top: 10px;
 }
 
