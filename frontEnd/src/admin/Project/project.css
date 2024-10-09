@@ -1,3 +1,17 @@
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px; /* Adjust width as needed */
+    display: inline-block; /* Necessary for text-overflow to work */
+}
+
+.truncate:hover {
+    overflow: visible;
+    white-space: normal; /* Allow text to wrap */
+    z-index: 1; /* Bring tooltip above other elements */
+}
+
 
 
 .project-management-page {
@@ -111,7 +125,7 @@ h1 {
     margin-top: 20px; 
     position: absolute;
     margin-top: 180px;
-    margin-left: 50px;
+    margin-left: 10px;
 
 }
 
@@ -215,75 +229,84 @@ h1 {
     margin-top: 10px; 
 }
 
+ct-list-header h3:nth-child(3) { /* Client */
+    width: 25%;
+}
+
 .project-list {
-    display: table; /* Use table display */
-    width: 100%; /* Make the list take full width */
-    margin-top: 100px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    margin-top: 170px;
-    margin-left: 370px;
+    width: 100%; /* Full width of the container */
+    max-width: 1200px; /* Set a maximum width for the table */
+    margin: -15px auto 0; /* Decrease the top margin to move the table up */
+    border-collapse: collapse; /* Ensures borders are collapsed */
+    table-layout: fixed; /* Enables fixed layout for proper column widths */
+    margin-left: auto; /* Aligns the table to the right */
+    margin-right: 100px; /* Optional: Adjusts distance from the right edge */
 }
 
-.project-list-header {
-    display: table-row; /* Use table-row display */
-    font-weight: bold;
-    background-color: #bcd8f4; /* Add background for headers */
+
+
+.project-list-header,
+.project-item {
+    display: table-row; /* Ensures they behave like table rows */
 }
 
-.project-list-header h3 {
-    display: table-cell; /* Use table-cell display */
-    margin: 0; /* Remove margin */
-    padding: 10px; /* Add padding */
-    text-align: left; /* Align text to the left */
-    width: 20%; /* Adjusted default width for other columns */
+/*PROJECT CSS*/
+.project-list-header h3,
+.project-item p {
+    display: table-cell; /* Ensures they behave like table cells */
+    padding: 15px; /* Adds padding inside cells */
+    border: 1px solid #ccc; /* Adds border for better visibility */
+    overflow: hidden; /* Ensures text doesn't overflow */
+    text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
+    white-space: nowrap; /* Prevents wrapping of text */
 }
 
-/* Update width for specific columns */
+/* Customize widths for columns with truncation */
+.project-list-header h3:nth-child(2), /* Project Name */
+.project-item p:nth-child(2) {
+    width: 100px; /* Fixed width for Project Name */
+}
+
+.project-list-header h3:nth-child(3), /* Client */
+.project-item p:nth-child(3) {
+    width: 200px; /* Fixed width for Client */
+}
+
 .project-list-header h3:nth-child(1) { /* ID */
-    width: 10%;
+    width: 15%; /* Increased width */
 }
 
 .project-list-header h3:nth-child(2) { /* Name */
-    width: 25%;
+    width: 30%; /* Increased width */
 }
 
 .project-list-header h3:nth-child(3) { /* Client */
-    width: 25%;
+    width: 25%; /* Increased width */
 }
 
 .project-list-header h3:nth-child(4) { /* Progress */
-    width: 10%;
+    width: 10%; /* Adjusted width */
 }
 
 .project-list-header h3:nth-child(5) { /* Date Start */
-    width: 30%; /* Increased width for Date Start */
+    width: 20%; /* Adjusted width */
 }
 
-.project-item {
-    display: table-row; /* Use table-row display */
+.project-list-header h3:nth-child(6) { /* Status */
+    width: 15%; /* New Status column */
 }
 
-.project-item p {
-    display: table-cell; /* Use table-cell display */
-    margin: 0; /* Remove margin */
-    padding: 10px; /* Add padding */
-    border: 1px solid #ccc; /* Optional: Border around each item */
+.project-list-header h3:nth-child(7) { /* Action */
+    width: 10%; /* Action column */
 }
 
 /* Match widths for project items */
 .project-item p:nth-child(1) { /* ID */
-    width: 10%;
+    width: 15%;
 }
 
 .project-item p:nth-child(2) { /* Name */
-    width: 25%;
+    width: 30%;
 }
 
 .project-item p:nth-child(3) { /* Client */
@@ -295,10 +318,16 @@ h1 {
 }
 
 .project-item p:nth-child(5) { /* Date Start */
-    width: 30%; /* Match the Date Start width */
+    width: 20%;
 }
 
-/*sortingggggggggggggggggg*/
+.project-item p:nth-child(6) { /* Status */
+    width: 15%;
+}
+
+.project-item p:nth-child(7) { /* Action */
+    width: 10%;
+}
 
 /* Sorting CSS */
 
@@ -363,20 +392,79 @@ h1 {
     background-color: #51d1eb;
 }
 
-
-/* LEFT SIDE PROJECT NAMES*/
+/* LEFT SIDE PROJECT NAMES */
 /* LEFT SIDE PROJECT NAMES */
 .project-names-section {
-    margin-top: 20px; /* Space above the project names section */
+    margin-top: 10px; /* Move the section up */
     padding: 10px;
     position: absolute;
-    margin-left: 80px;
-    margin-top: 220px;
-    
-    
+    margin-left: 33px;
+    margin-top: 220px;  
+    border-right: 5px solid #ccc; /* Added right border for separation */
+    height: 100%; /* Ensure the height covers the entire section */
+}
+
+.project-name-item {
+    position: relative; /* Position relative for the pseudo-element */
+    padding: 12px; 
+    transition: background-color 0.3s; 
+    cursor: pointer; 
+    margin-bottom: 5px; /* Reduced space between items */
+    margin-right: 30px; /* Adjust this value to increase or decrease distance from the border */
+    margin-top: 5px; /* Decrease this value to move items up */
+}
+
+/* Pseudo-element for longer bottom border */
+.project-name-item::after {
+    content: ''; /* Required for pseudo-element */
+    position: absolute; /* Position it absolutely within the item */
+    left: -10px; /* Adjust this value to move the border left */
+    bottom: 0; /* Align to the bottom */
+    width: calc(100% + 20px); /* Full width plus some extra space on both sides */
+    height: 1px; /* Height of the border */
+    background-color: #4e2929; /* Color of the border */
+    z-index: -1; /* Place it behind the text */
 }
 
 
 
 
 
+/*action cssssssssssssssss*/
+
+.action-menu {
+    position: absolute;
+    right: 50px;
+    margin-top: 10px;
+}
+
+.action-menu-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px; 
+    padding: 5px 10px; 
+}
+
+.dropdown-menu {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    z-index: 1000;
+    min-width: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu button {
+    display: block;
+    padding: 8px;
+    text-align: left;
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    background-color: #9c5959;
+}

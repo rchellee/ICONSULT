@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './project.css';
@@ -14,6 +13,7 @@ function ProjectManagement() {
     const [projectCounter, setProjectCounter] = useState(1);
     const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
     const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+    const [activeDropdown, setActiveDropdown] = useState(null); // To handle active dropdown
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -35,7 +35,6 @@ function ProjectManagement() {
                 progress: "0%",
                 dateStart: startDate,
                 status: "Pending",
-                priority: "Low"
             };
             setProjects([...projects, newProject]);
             setProjectCounter(projectCounter + 1);
@@ -76,6 +75,27 @@ function ProjectManagement() {
         alert(`Total number of projects: ${projects.length}`);
     };
 
+    const toggleDropdown = (projectId) => {
+        setActiveDropdown(activeDropdown === projectId ? null : projectId);
+    };
+
+    const handleEdit = (projectId) => {
+        const projectToEdit = projects.find((project) => project.id === projectId);
+        if (projectToEdit) {
+            setProjectName(projectToEdit.projectName);
+            setClientName(projectToEdit.clientName);
+            setStartDate(projectToEdit.dateStart);
+            openModal(); // Open modal to edit the project
+        }
+        toggleDropdown(null); // Close dropdown after selecting
+    };
+
+    const handleDelete = (projectId) => {
+        const updatedProjects = projects.filter((project) => project.id !== projectId);
+        setProjects(updatedProjects);
+        toggleDropdown(null); // Close dropdown after deleting
+    };
+
     return (
         <div className="project-management-page">
             <div className="sidebar">
@@ -90,17 +110,14 @@ function ProjectManagement() {
                     <li><Link to="/logout">Logout</Link></li>
                 </ul>
             </div>
-
             <div className="content">
                 <h1>Projects</h1>
-
                 {projects.length > 0 && (
                     <div className="home-section">
                         <FaHome className='home-icon' />
                         <Link to="/home" className='home-link'>Home</Link>
                     </div>
                 )}
-
                 <div className="header-actions">
                     <button className="create-button" onClick={openModal}>
                         <FaPlus className='icon' /> Create
@@ -109,41 +126,25 @@ function ProjectManagement() {
                         <FaBell className="icon" />
                     </div>
                 </div>
-
                 <div className="search-container">
                     <span className="search-label">Search</span>
                     <input type="text" placeholder="..." className="search-box" />
                 </div>
-
                 {isModalOpen && (
                     <div className="modal-overlay">
                         <div className="modal-content">
                             <h2 className="modal-title">Project</h2>
                             <div className="modal-field">
                                 <label>Project Name:</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter project name"
-                                    value={projectName}
-                                    onChange={(e) => setProjectName(e.target.value)}
-                                />
+                                <input type="text" placeholder="Enter project name" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
                             </div>
                             <div className="modal-field">
                                 <label>Client Name:</label>
-                                <input
-                                    type="text"
-                                    placeholder="Enter client name"
-                                    value={clientName}
-                                    onChange={(e) => setClientName(e.target.value)}
-                                />
+                                <input type="text" placeholder="Enter client name" value={clientName} onChange={(e) => setClientName(e.target.value)} />
                             </div>
                             <div className="modal-field">
                                 <label>Date to Start the Project:</label>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                />
+                                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                             </div>
                             <div className="modal-actions">
                                 <button className="cancel-button" onClick={closeModal}>Cancel</button>
@@ -152,23 +153,16 @@ function ProjectManagement() {
                         </div>
                     </div>
                 )}
-
                 {projects.length === 0 ? (
                     <div style={{ textAlign: 'center' }}>
                         <img src={pic4} alt="No projects created" />
-                        <p className="no-projects-message" style={{ marginLeft: '300px' }}>
-                            No projects created yet.
-                        </p>
+                        <p className="no-projects-message" style={{ marginLeft: '300px' }}> No projects created yet. </p>
                     </div>
                 ) : (
                     <div className="project-list">
                         <div className="sort-button-container">
-                            <button className="sort-button" onClick={toggleSortDropdown}>
-                                Sort <FaSort />
-                            </button>
-                            <button className="detail-button" onClick={showProjectCount}>
-                                Detail
-                            </button>
+                            <button className="sort-button" onClick={toggleSortDropdown}> Sort <FaSort /> </button>
+                            <button className="detail-button" onClick={showProjectCount}> Detail </button>
                             {isSortDropdownOpen && (
                                 <div className="sort-dropdown">
                                     <button onClick={() => requestSort('projectName')}>Name</button>
@@ -176,7 +170,6 @@ function ProjectManagement() {
                                 </div>
                             )}
                         </div>
-
                         <div className="project-list-header">
                             <h3 onClick={() => requestSort('id')}>ID</h3>
                             <h3>Project Name</h3>
@@ -184,28 +177,36 @@ function ProjectManagement() {
                             <h3>Progress</h3>
                             <h3>Date Start</h3>
                             <h3>Status</h3>
+                            <h3>Action</h3>
                         </div>
-
                         {projects.map((project, index) => (
-                            <div key={index} className="project-item">
+                            <div key={project.id} className="project-item">
                                 <p>{project.id}</p>
-                                <p>{project.projectName}</p>
-                                <p>{project.clientName}</p>
+                                <p className="truncate" title={project.projectName}>{project.projectName}</p>
+                                <p className="truncate" title={project.clientName}>{project.clientName}</p> {/* Truncated client name */}
                                 <p>{project.progress}</p>
                                 <p>{project.dateStart}</p>
                                 <p>{project.status}</p>
+                                <p>{project.action}</p>
+                                <div className="action-menu">
+                                    <button className="action-menu-button" onClick={() => toggleDropdown(project.id)}> &#x22EE; </button>
+                                    {activeDropdown === project.id && (
+                                        <div className="dropdown-menu">
+                                            <button onClick={() => handleEdit(project.id)}>Edit</button>
+                                            <button onClick={() => handleDelete(project.id)}>Delete</button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
                 )}
-
-                {/* Display Project Names Below Buttons */}
                 {projects.length > 0 && (
                     <div className="project-names-section">
                         <h3>Folders</h3>
                         {projects.map((project) => (
                             <div key={project.id} className="project-name-item">
-                                {project.projectName}
+                                <p className="truncate" title={project.projectName}>{project.projectName}</p> {/* Truncated project name */}
                             </div>
                         ))}
                     </div>
