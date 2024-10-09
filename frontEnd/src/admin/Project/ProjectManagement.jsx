@@ -111,7 +111,7 @@ function ProjectManagement() {
                 </ul>
             </div>
             <div className="content">
-                <h1>Projects</h1>
+                <h1>Project Consultant</h1>
                 {projects.length > 0 && (
                     <div className="home-section">
                         <FaHome className='home-icon' />
