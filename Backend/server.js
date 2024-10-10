@@ -79,6 +79,29 @@ app.get('/clients', (req, res) => {
     });
 });
 
+// Add a new project (POST request)
+app.post('/projects', (req, res) => {
+    const { clientname, projectname, description, start_date, end_date, status } = req.body;
+
+    const sql = "INSERT INTO project (clientname, projectname, description, start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+    db.query(sql, [clientname, projectname, description, start_date, end_date, status], (err, result) => {
+        if (err) return res.status(500).json(err);
+        return res.status(201).json({ id: result.insertId, clientname, projectname, description, start_date, end_date, status });
+    });
+});
+
+
+// Get all projects (GET request)
+app.get('/projects', (req, res) => {
+    const sql = "SELECT * FROM project";
+    db.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    });
+});
+
+
+
 // Start the server
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");
