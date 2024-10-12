@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 08, 2024 at 12:51 PM
+-- Generation Time: Oct 10, 2024 at 06:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -71,6 +71,47 @@ INSERT INTO `client` (`id`, `firstName`, `lastName`, `middleInitial`, `birthday`
 (4, 'Monique', 'Cabigting', 'h', '2005-06-07', '098765432', 'ritchellerueras@gmail.com', 'df', 'CABIGTING12345', 'Cabigting12345', 'active'),
 (5, 'claireza', 'bautista', 'h', '2024-10-01', '09709573613', 'clarieza@gmail.com', 'pasig city', 'BAUTISTA12345', 'bautista.claireza', 'active');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project`
+--
+
+CREATE TABLE `project` (
+  `id` int(11) NOT NULL,
+  `clientname` varchar(255) NOT NULL,
+  `projectname` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `status` enum('pending','in_progress','completed','on_hold') NOT NULL DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `project`
+--
+
+INSERT INTO `project` (`id`, `clientname`, `projectname`, `description`, `start_date`, `end_date`, `status`) VALUES
+(1, 'nfn', 'kfn', 'hjvgzvgs', '2024-10-24', '2024-10-30', 'pending');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `task`
+--
+
+CREATE TABLE `task` (
+  `id` int(11) NOT NULL,
+  `employeename` varchar(255) NOT NULL,
+  `projectname` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `duedate` date NOT NULL,
+  `taskstatus` enum('not_started','in_progress','completed','on_hold') NOT NULL DEFAULT 'not_started',
+  `paymentstatus` enum('pending','paid','overdue') NOT NULL DEFAULT 'pending',
+  `paymentmethod` enum('paypal','credit_card','bank_transfer','cash') NOT NULL,
+  `payment` enum('before_completion','after_completion') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -82,6 +123,18 @@ ALTER TABLE `client`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `project`
+--
+ALTER TABLE `project`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `task`
+--
+ALTER TABLE `task`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -90,6 +143,18 @@ ALTER TABLE `client`
 --
 ALTER TABLE `client`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `project`
+--
+ALTER TABLE `project`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `task`
+--
+ALTER TABLE `task`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
