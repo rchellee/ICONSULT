@@ -54,7 +54,7 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/employees">
+          <Link to="/employee">
             <span className="material-symbols-outlined">badge</span>
             <h4>Employees</h4>
           </Link>

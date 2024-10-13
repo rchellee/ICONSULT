@@ -1,77 +1,77 @@
 import { useState, useEffect } from "react";
-import ClientForm from "./ClientForm";
-import ClientDetails from "./ClientDetails";
+import EmployeeForm from "./EmployeeForm";
+import EmployeeDetails from "./EmployeeDetails";
 import Sidebar from "../sidebar";
 
-const ClientManagement = () => {
-  const [clients, setClients] = useState([]);
+const EmployeeManagement = () => {
+  const [employees, setEmployees] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
-  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  // Fetch clients from the database when the component mounts
+  // Fetch employees from the database when the component mounts
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchEmployees = async () => {
       try {
-        const response = await fetch("http://localhost:8081/clients");
+        const response = await fetch("http://localhost:8081/employee");
         const data = await response.json();
-        setClients(data);
+        setEmployees(data);
       } catch (error) {
-        console.error("Error fetching clients:", error);
+        console.error("Error fetching employee:", error);
       }
     };
 
-    fetchClients();
+    fetchEmployees();
   }, []); // Empty dependency array means this runs once on mount
 
   const toggleForm = () => {
     setIsFormVisible(!isFormVisible);
   };
 
-  const viewClientDetails = (client) => {
-    setSelectedClient(client);
+  const viewEmployeeDetails = (employee) => {
+    setSelectedEmployee(employee);
   };
 
   const goBackToList = () => {
-    setSelectedClient(null);
+    setSelectedEmployee(null);
   };
 
-  const updateClient = (updatedClient) => {
-    setClients(
-      clients.map((client) =>
-        client.id === updatedClient.id ? updatedClient : client
+  const updateEmployee = (updatedEmployee) => {
+    setEmployees(
+      employees.map((employee) =>
+        employee.id === updatedEmployee.id ? updatedEmployee : employee
       )
     );
-    setSelectedClient(updatedClient);
+    setSelectedEmployee(updatedEmployee);
   };
 
   return (
     <div className="admin-home-page">
       <Sidebar />
       <div className="content">
-        <h2>Clients</h2>
-        {selectedClient ? (
-          <ClientDetails
-            client={selectedClient}
+        <h2>Employees</h2>
+        {selectedEmployee ? (
+          <EmployeeDetails
+            employee={selectedEmployee}
             goBack={goBackToList}
-            updateClient={updateClient}
+            updateEmployee={updateEmployee}
           />
         ) : (
           <>
             <button onClick={toggleForm}>
-              {isFormVisible ? "Cancel" : "Add Client"}
+              {isFormVisible ? "Cancel" : "Add Employee"}
             </button>
             {isFormVisible && (
-              <ClientForm
-                clients={clients}
-                setClients={setClients}
+              <EmployeeForm
+                employees={employees}
+                setEmployees={setEmployees}
                 toggleForm={toggleForm}
               />
             )}
             {!isFormVisible && (
               <>
-                <h3>Clients List</h3>
-                {clients.length === 0 ? (
-                  <p>No clients added yet.</p>
+                <h3>Employees List</h3>
+                {employees.length === 0 ? (
+                  <p>No employees added yet.</p>
                 ) : (
                   <table>
                     <thead>
@@ -81,19 +81,19 @@ const ClientManagement = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {clients.map((client, index) => (
+                      {employees.map((employee, index) => (
                         <tr key={index}>
                           <td
-                            onClick={() => viewClientDetails(client)}
+                            onClick={() => viewEmployeeDetails(employee)}
                             style={{ cursor: "pointer", color: "blue" }}
                           >
-                            {client.firstName} 
+                            {employee.firstName} 
                           </td>
                           <td
-                            onClick={() => viewClientDetails(client)}
+                            onClick={() => viewEmployeeDetails(employee)}
                             style={{ cursor: "pointer", color: "blue" }}
                           >
-                            {client.status}
+                            {employee.status}
                           </td>
                         </tr>
                       ))}
@@ -109,4 +109,4 @@ const ClientManagement = () => {
   );
 };
 
-export default ClientManagement;
+export default EmployeeManagement;

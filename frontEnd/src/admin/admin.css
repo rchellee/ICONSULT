@@ -124,7 +124,7 @@ body {
 /* Change link background on hover to match logout button */
 .sidebar-links li a:hover {
   color: #161a2d;
-  background: #fff;
+  background: white;
   border-radius: 4px;
 }
 
