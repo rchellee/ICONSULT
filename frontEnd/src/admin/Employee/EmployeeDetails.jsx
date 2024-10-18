@@ -102,7 +102,6 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
             <p><strong>Last Name:</strong> {employee.lastName}</p>
             <p><strong>First Name:</strong> {employee.firstName}</p>
             <p><strong>Email:</strong> {employee.email_add}</p>
-            <p><strong>Username:</strong> {employee.username}</p>
             <p><strong>Address:</strong> {employee.address}</p>
             <p><strong>Contact Number:</strong> {employee.mobile_number}</p>
             <p><strong>Status:</strong> {employee.status}</p>
