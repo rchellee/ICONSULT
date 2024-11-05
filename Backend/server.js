@@ -79,6 +79,26 @@ app.get('/clients', (req, res) => {
     });
 });
 
+// Save a new employee (POST request)
+app.post('/employee', (req, res) => {
+    const { firstName, lastName, middleName, address, mobile_number, email_add, status, birthday } = req.body;
+
+    const sql = "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [firstName, lastName, middleName, address, mobile_number, email_add, status, birthday], (err, result) => {
+        if (err) return res.status(500).json(err);
+        return res.status(201).json({ id: result.insertId, firstName, lastName, middleName, address, mobile_number, email_add, status, birthday });
+    });
+});
+
+// Fetch all employees (GET request)
+app.get('/employees', (req, res) => {
+    const sql = "SELECT * FROM employee";
+    db.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    });
+});
+
 // Add a new project (POST request)
 app.post('/projects', (req, res) => {
     const { clientname, projectname, description, start_date, end_date, status } = req.body;

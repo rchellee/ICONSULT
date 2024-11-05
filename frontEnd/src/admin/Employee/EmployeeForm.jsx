@@ -5,7 +5,7 @@ import Sidebar from "../sidebar";
 const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) => {
   const [formData, setFormData] = useState({
     lastName: "",
-    middleInitial: "",
+    middleName: "",
     firstName: "",
     address: "",
     mobile_number: "",
@@ -79,7 +79,7 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
       // Reset form state
       setFormData({
         lastName: "",
-        middleInitial: "",
+        middleName: "",
         firstName: "",
         address: "",
         mobile_number: "",
@@ -110,9 +110,9 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
 
           <input
             type="text"
-            name="middleInitial"
+            name="middleName"
             placeholder="Middle Initial"
-            value={formData.middleInitial}
+            value={formData.middleName}
             onChange={handleChange}
           />
 
