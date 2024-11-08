@@ -1,0 +1,210 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: #F0F4FF;
+}
+
+.client-home-page {
+  display: flex;
+}
+
+/* Sidebar container */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 85px;
+  display: flex;
+  flex-direction: column;
+  background: #395176;
+  padding: 25px 20px;
+  transition: all 0.4s ease;
+}
+
+/* Expand sidebar on hover */
+.sidebar:hover {
+  width: 260px;
+}
+
+/* Sidebar header */
+.sidebar .sidebar-header {
+  display: flex;
+  align-items: center;
+}
+
+/* Profile initials */
+.profile-initials {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background-color: #395176; /* or choose a color that matches your theme */
+    border-radius: 50%;
+    text-transform: uppercase;
+  }
+  
+
+/* Client logo */
+.sidebar .sidebar-header img {
+  width: 42px;
+  border-radius: 50%;
+}
+
+/* Client text hidden initially */
+.sidebar .sidebar-header h2 {
+  color: rgb(10, 10, 10);
+  font-size: 1rem;
+  font-weight: 550;
+  white-space: nowrap;
+  margin-left: 23px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Show Client text when sidebar is hovered */
+.sidebar:hover .sidebar-header h2 {
+  opacity: 1;
+}
+
+
+
+/* Sidebar links */
+.sidebar-links {
+  list-style: none;
+  margin-top: 20px;
+  height: 80%;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.sidebar-links::-webkit-scrollbar {
+  display: none;
+}
+
+.logout-btn {
+  display: flex; 
+  align-items: center; 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  padding: 10px; 
+  width: 100%;
+  color: white;
+}
+
+.logout-btn h4 {
+  
+  font-size: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding-left: 20px;
+  position: relative;
+}
+
+.logout-btn:hover {
+  
+  border-radius: 4px;
+  background: #fff;
+  color: black;
+  transition: background 0.2s ease;
+}
+
+/* Sidebar links style */
+.sidebar-links li {
+  list-style: none;
+}
+
+.sidebar-links li a {
+  display: flex;
+  align-items: center;
+  gap: 0 20px;
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 15px 10px;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+/* Change link background on hover to match logout button */
+.sidebar-links li a:hover {
+  color: #161a2d;
+  background: white;
+  border-radius: 4px;
+}
+
+/* Sidebar links text */
+.sidebar-links h4 {
+ 
+  font-weight: 500;
+  white-space: nowrap;
+  margin: 10px 0;
+  position: relative;
+}
+
+/* User account section hidden initially */
+.user-account {
+  margin-top: auto;
+  padding: 12px 10px;
+  margin-left: -10px;
+}
+
+/* User profile image */
+.user-profile img {
+  width: 42px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* Client text hidden initially */
+.user-profile h3 {
+    color: rgb(10, 10, 10);
+    font-size: 1rem;
+    font-weight: 550;
+    white-space: nowrap;
+    margin-left: 23px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+
+/* Show user name and role when sidebar is hovered */
+.sidebar:hover .user-profile h3,
+.sidebar:hover .user-profile span {
+  opacity: 1;
+}
+
+.user-detail {
+  margin-left: 23px;
+  white-space: nowrap;
+}
+
+/* Sidebar hover styles for user account */
+.sidebar:hover .user-account {
+  background: #fff;
+  border-radius: 4px;
+}
+
+.content {
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
+
+/* Shift content when sidebar expands */
+.sidebar:hover ~ .content {
+  margin-left: 260px;
+}

@@ -43,14 +43,15 @@ app.post('/Login', (req, res) => {
             return res.status(200).json({ message: 'Login successful', role: 'admin' });
         } else {
             // Check client table
-            const sqlClient = "SELECT * FROM client WHERE username = ? AND password = ?";
+            const sqlClient = "SELECT firstName, lastName FROM client WHERE username = ? AND password = ?";
             db.query(sqlClient, [username, password], (err, clientResults) => {
                 if (err) {
                     return res.status(500).json({ message: 'An error occurred checking the client table' });
                 }
 
                 if (clientResults.length > 0) {
-                    return res.status(200).json({ message: 'Login successful', role: 'client' });
+                    const { firstName, lastName } = clientResults[0];
+                    return res.status(200).json({ message: 'Login successful', role: 'client', firstName, lastName });
                 } else {
                     return res.status(401).json({ message: 'Invalid username or password' });
                 }
@@ -58,6 +59,7 @@ app.post('/Login', (req, res) => {
         }
     });
 });
+
 
 // Add a new endpoint to save a client
 app.post('/client', (req, res) => {
