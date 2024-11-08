@@ -103,12 +103,12 @@ app.get('/employees', (req, res) => {
 
 // Add a new project (POST request)
 app.post('/projects', (req, res) => {
-    const { clientname, projectname, description, start_date, end_date, status } = req.body;
+    const { clientName, projectName, description, startDate, endDate, status } = req.body;
 
-    const sql = "INSERT INTO project (clientname, projectname, description, start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?)";
-    db.query(sql, [clientname, projectname, description, start_date, end_date, status], (err, result) => {
+    const sql = "INSERT INTO project (clientName, projectName, description, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?)";
+    db.query(sql, [clientName, projectName, description, startDate, endDate, status], (err, result) => {
         if (err) return res.status(500).json(err);
-        return res.status(201).json({ id: result.insertId, clientname, projectname, description, start_date, end_date, status });
+        return res.status(201).json({ id: result.insertId, clientName, projectName, description, startDate, endDate, status });
     });
 });
 
