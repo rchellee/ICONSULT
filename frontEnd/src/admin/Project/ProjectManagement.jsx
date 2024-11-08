@@ -10,6 +10,7 @@ function ProjectManagement() {
     const [projectName, setProjectName] = useState('');
     const [clientName, setClientName] = useState('');
     const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [projectCounter, setProjectCounter] = useState(1);
     const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
     const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
@@ -25,6 +26,7 @@ function ProjectManagement() {
         setProjectName('');
         setClientName('');
         setStartDate('');
+        setEndDate('');
     };
 
     const createProject = () => {
@@ -35,6 +37,7 @@ function ProjectManagement() {
                 clientName,
                 progress: "0%",
                 dateStart: startDate,
+                dateEnd: endDate,
                 status: "Pending",
             };
             setProjects([...projects, newProject]);
@@ -86,7 +89,9 @@ function ProjectManagement() {
             setProjectName(projectToEdit.projectName);
             setClientName(projectToEdit.clientName);
             setStartDate(projectToEdit.dateStart);
+            setEndDate(projectToEdit.dateEnd);
             openModal(); // Open modal to edit the project
+            
         }
         toggleDropdown(null); // Close dropdown after selecting
     };
@@ -145,6 +150,11 @@ function ProjectManagement() {
                                 <label>Date to Start the Project:</label>
                                 <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
                             </div>
+                            <div className="modal-field">
+                                <label>Date to Finish the Project:</label>
+                                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                            </div>
+
                             <div className="modal-actions">
                                 <button className="cancel-button" onClick={closeModal}>Cancel</button>
                                 <button className="create-button" onClick={createProject}>Create</button>
@@ -184,6 +194,7 @@ function ProjectManagement() {
                             <h3>Client</h3>
                             <h3>Progress</h3>
                             <h3>Date Start</h3>
+                            <h3>Date End</h3>
                             <h3>Status</h3>
                             <h3>Action</h3>
                         </div>
@@ -194,6 +205,7 @@ function ProjectManagement() {
                                 <p className="truncate" title={project.clientName}>{project.clientName}</p> {/* Truncated client name */}
                                 <p>{project.progress}</p>
                                 <p>{project.dateStart}</p>
+                                <p>{project.dateEnd}</p>
                                 <p>{project.status}</p>
                                 <p>{project.action}</p>
                                 <div className="action-menu">
