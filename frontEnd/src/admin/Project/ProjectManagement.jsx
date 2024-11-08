@@ -14,6 +14,7 @@ function ProjectManagement() {
     const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
     const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null); // To handle active dropdown
+    const [searchTerm, setSearchTerm] = useState('');
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -96,6 +97,14 @@ function ProjectManagement() {
         toggleDropdown(null); // Close dropdown after deleting
     };
 
+    const handleSearch = (term) => {
+        setSearchTerm(term);
+    };
+
+    const filteredProjects = projects.filter((project) =>
+        project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="project-management-page">
             <div className="sidebar">
@@ -111,13 +120,7 @@ function ProjectManagement() {
                 </ul>
             </div>
             <div className="content">
-                <h1>Project Consultant</h1>
-                {projects.length > 0 && (
-                    <div className="home-section">
-                        <FaHome className='home-icon' />
-                        <Link to="/home" className='home-link'>Home</Link>
-                    </div>
-                )}
+                <h1>Project Management</h1>
                 <div className="header-actions">
                     <button className="create-button" onClick={openModal}>
                         <FaPlus className='icon' /> Create
@@ -125,10 +128,6 @@ function ProjectManagement() {
                     <div className="notification-icon" style={{ cursor: 'pointer' }}>
                         <FaBell className="icon" />
                     </div>
-                </div>
-                <div className="search-container">
-                    <span className="search-label">Search</span>
-                    <input type="text" placeholder="..." className="search-box" />
                 </div>
                 {isModalOpen && (
                     <div className="modal-overlay">
@@ -163,6 +162,15 @@ function ProjectManagement() {
                         <div className="sort-button-container">
                             <button className="sort-button" onClick={toggleSortDropdown}> Sort <FaSort /> </button>
                             <button className="detail-button" onClick={showProjectCount}> Detail </button>
+                            {/* Updated Search box */}
+                            <div className="search-box-container">
+                                <input
+                                    type="text"
+                                    className="search-box"
+                                    placeholder="Search project"
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                />
+                            </div>
                             {isSortDropdownOpen && (
                                 <div className="sort-dropdown">
                                     <button onClick={() => requestSort('projectName')}>Name</button>
@@ -179,7 +187,7 @@ function ProjectManagement() {
                             <h3>Status</h3>
                             <h3>Action</h3>
                         </div>
-                        {projects.map((project, index) => (
+                        {filteredProjects.map((project, index) => (
                             <div key={project.id} className="project-item">
                                 <p>{project.id}</p>
                                 <p className="truncate" title={project.projectName}>{project.projectName}</p>
@@ -203,7 +211,7 @@ function ProjectManagement() {
                 )}
                 {projects.length > 0 && (
                     <div className="project-names-section">
-                        <h3>Folders</h3>
+                         <h3 className="folder-title">Folders</h3>
                         {projects.map((project) => (
                             <div key={project.id} className="project-name-item">
                                 <p className="truncate" title={project.projectName}>{project.projectName}</p> {/* Truncated project name */}
