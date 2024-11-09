@@ -81,6 +81,30 @@ app.get('/clients', (req, res) => {
     });
 });
 
+// Update a client's status (PUT request)
+app.put('/clients/:id', (req, res) => {
+    const clientId = req.params.id;
+    const { status } = req.body; // Status will be passed in the request body
+
+    // Ensure the status is valid (e.g., 'active' or 'inactive')
+    if (status !== 'active' && status !== 'inactive') {
+        return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const sql = "UPDATE client SET status = ? WHERE id = ?";
+    db.query(sql, [status, clientId], (err, result) => {
+        if (err) return res.status(500).json({ message: "Error updating client status", error: err });
+
+        // Check if any row was affected
+        if (result.affectedRows > 0) {
+            return res.status(200).json({ message: `Client status updated to ${status}` });
+        } else {
+            return res.status(404).json({ message: "Client not found" });
+        }
+    });
+});
+
+
 // Save a new employee (POST request)
 app.post('/employee', (req, res) => {
     const { firstName, lastName, middleName, address, mobile_number, email_add, status, birthday } = req.body;

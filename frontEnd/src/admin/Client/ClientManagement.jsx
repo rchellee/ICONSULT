@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import ClientForm from "./ClientForm";
 import ClientDetails from "./ClientDetails";
+import "./client.css";
 import Sidebar from "../sidebar";
 
 const ClientManagement = () => {
   const [clients, setClients] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [activeClients, setActiveClients] = useState({}); // Use an object to track active state for each client
 
   // Fetch clients from the database when the component mounts
   useEffect(() => {
@@ -35,13 +37,49 @@ const ClientManagement = () => {
     setSelectedClient(null);
   };
 
-  const updateClient = (updatedClient) => {
+  const updateClientStatus = (clientId, newStatus) => {
     setClients(
       clients.map((client) =>
-        client.id === updatedClient.id ? updatedClient : client
+        client.id === clientId ? { ...client, status: newStatus } : client
       )
     );
-    setSelectedClient(updatedClient);
+  };
+
+  // Function to update client status in the database
+  const updateStatusInDatabase = async (clientId, newStatus) => {
+    try {
+      const response = await fetch(`http://localhost:8081/clients/${clientId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update status in database");
+      }
+      console.log("Status updated successfully in database");
+    } catch (error) {
+      console.error("Error updating status in database:", error);
+    }
+  };
+
+  // Handle toggle click for each client
+  const handleToggle = async (clientId) => {
+    const newActiveState = !activeClients[clientId];
+    setActiveClients({
+      ...activeClients,
+      [clientId]: newActiveState, // Toggle active state for specific client
+    });
+
+    // Update client status in the state
+    const newStatus = newActiveState ? "active" : "inactive";
+    updateClientStatus(clientId, newStatus);
+
+    // Update client status in the database
+    await updateStatusInDatabase(clientId, newStatus);
   };
 
   return (
@@ -53,7 +91,7 @@ const ClientManagement = () => {
           <ClientDetails
             client={selectedClient}
             goBack={goBackToList}
-            updateClient={updateClient}
+            updateClient={updateClientStatus}
           />
         ) : (
           <>
@@ -87,13 +125,20 @@ const ClientManagement = () => {
                             onClick={() => viewClientDetails(client)}
                             style={{ cursor: "pointer", color: "blue" }}
                           >
-                            {client.firstName} 
+                            {`${client.firstName} ${client.lastName}`.toUpperCase()}
                           </td>
-                          <td
-                            onClick={() => viewClientDetails(client)}
+                          {/* <td
                             style={{ cursor: "pointer", color: "blue" }}
                           >
-                            {client.status}
+                            {`${client.status}`.toUpperCase()}
+                          </td> */}
+                          <td>
+                            <div
+                              className={`toggle ${
+                                activeClients[client.id] ? "active" : ""
+                              }`}
+                              onClick={() => handleToggle(client.id)} // Toggle for specific client
+                            ></div>
                           </td>
                         </tr>
                       ))}

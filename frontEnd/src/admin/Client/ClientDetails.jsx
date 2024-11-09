@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 
 const ClientDetails = ({ client, goBack, updateClient }) => {
@@ -34,7 +32,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
       <div className="client-info">
         {isEditing ? (
           <form onSubmit={handleSave}>
-            {/* Editable fields */}
             <label>
               <strong>First Name:</strong>
               <input
@@ -97,7 +94,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
           </form>
         ) : (
           <>
-            {/* Display client details */}
             <p><strong>ID:</strong> {client.id}</p>
             <p><strong>Last Name:</strong> {client.lastName}</p>
             <p><strong>First Name:</strong> {client.firstName}</p>
