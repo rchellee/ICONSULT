@@ -125,6 +125,30 @@ app.get('/employees', (req, res) => {
     });
 });
 
+// Update employee's status (PUT request)
+app.put('/employees/:id', (req, res) => {
+    const employeeId = req.params.id;
+    const { status } = req.body; // Status will be passed in the request body
+
+    // Ensure the status is valid (e.g., 'active' or 'inactive')
+    if (status !== 'active' && status !== 'inactive') {
+        return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const sql = "UPDATE employee SET status = ? WHERE id = ?";
+    db.query(sql, [status, employeeId], (err, result) => {
+        if (err) return res.status(500).json({ message: "Error updating employee status", error: err });
+
+        // Check if any row was affected
+        if (result.affectedRows > 0) {
+            return res.status(200).json({ message: `Employee status updated to ${status}` });
+        } else {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+    });
+});
+
+
 // Add a new project (POST request)
 app.post('/projects', (req, res) => {
     const { clientName, projectName, description, startDate, endDate, status } = req.body;

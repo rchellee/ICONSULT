@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeDetails from "./EmployeeDetails";
+import "./employee.css";  // Import the CSS file for the toggle button
 import Sidebar from "../sidebar";
 
 const EmployeeManagement = () => {
@@ -12,11 +13,11 @@ const EmployeeManagement = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch("http://localhost:8081/employee");
+        const response = await fetch("http://localhost:8081/employees");
         const data = await response.json();
         setEmployees(data);
       } catch (error) {
-        console.error("Error fetching employee:", error);
+        console.error("Error fetching employees:", error);
       }
     };
 
@@ -42,6 +43,30 @@ const EmployeeManagement = () => {
       )
     );
     setSelectedEmployee(updatedEmployee);
+  };
+
+  const toggleStatus = async (employeeId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    try {
+      const response = await fetch(`http://localhost:8081/employees/${employeeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        // Update the status of the employee in the state
+        setEmployees(
+          employees.map((employee) =>
+            employee.id === employeeId ? { ...employee, status: newStatus } : employee
+          )
+        );
+      } else {
+        console.error('Failed to update status:', result.message);
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
   return (
@@ -87,13 +112,23 @@ const EmployeeManagement = () => {
                             onClick={() => viewEmployeeDetails(employee)}
                             style={{ cursor: "pointer", color: "blue" }}
                           >
-                            {employee.firstName} 
+                            {employee.firstName}
                           </td>
-                          <td
+                          {/* <td
                             onClick={() => viewEmployeeDetails(employee)}
                             style={{ cursor: "pointer", color: "blue" }}
                           >
                             {employee.status}
+                          </td> */}
+                          <td>
+                            <label className="toggle-btn">
+                              <input
+                                type="checkbox"
+                                checked={employee.status === "active"}
+                                onChange={() => toggleStatus(employee.id, employee.status)}
+                              />
+                              <span className="slider"></span>
+                            </label>
                           </td>
                         </tr>
                       ))}

@@ -48,15 +48,18 @@ const ClientManagement = () => {
   // Function to update client status in the database
   const updateStatusInDatabase = async (clientId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:8081/clients/${clientId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:8081/clients/${clientId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+          }),
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to update status in database");
       }
