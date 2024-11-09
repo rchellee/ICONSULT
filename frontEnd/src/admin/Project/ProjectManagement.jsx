@@ -10,23 +10,34 @@ function ProjectManagement() {
   const [projects, setProjects] = useState([]);
   const [projectName, setProjectName] = useState("");
   const [clientName, setClientName] = useState("");
+  const [clients, setClients] = useState([]); // State to store fetched clients
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
   const [projectCounter, setProjectCounter] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null); // To handle active dropdown
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingProjectId, setEditingProjectId] = useState(null); // New state for editing
 
   // useEffect for fetching projects from the server
   useEffect(() => {
-    fetch("http://localhost:8081/projects")  // Adjust the API endpoint accordingly
+    //fetch projects
+    fetch("http://localhost:8081/projects")
       .then((response) => response.json())
       .then((data) => {
         setProjects(data); // Set the fetched data to state
       })
       .catch((error) => console.error("Error fetching projects:", error));
+
+    // Fetch clients
+    fetch("http://localhost:8081/clients")
+      .then((response) => response.json())
+      .then((data) => {
+        setClients(data); // Set fetched clients to state
+      })
+      .catch((error) => console.error("Error fetching clients:", error));
   }, []);
 
   const openModal = () => {
@@ -39,39 +50,61 @@ function ProjectManagement() {
     setClientName("");
     setStartDate("");
     setEndDate("");
+    setDescription("");
+    setEditingProjectId(null); // Reset editing project ID
   };
 
-  const createProject = () => {
-    if (projectName && clientName && startDate) {
-      const newProject = {
-        projectName,
-        clientName,
-        description,
-        startDate,
-        endDate,
-        status: "Ongoing", // Set the status to 'Ongoing'
-      };
+  // Helper function to format date to DD/MM/YY
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
 
-      // Send project data to the server
-      fetch("http://localhost:8081/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProject),
+  const saveProject = () => {
+    const projectData = {
+      projectName,
+      clientName,
+      description,
+      startDate,
+      endDate,
+      status: "Ongoing",
+    };
+
+    if (editingProjectId) {
+      // Update existing project
+      fetch(`http://localhost:8081/projects/${editingProjectId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(projectData),
       })
         .then((response) => response.json())
-        .then((data) => {
-          console.log("Project saved:", data);
-          setProjects([...projects, data]);
+        .then((updatedProject) => {
+          setProjects(
+            projects.map((project) =>
+              project.id === editingProjectId ? updatedProject : project
+            )
+          );
+          closeModal();
+        })
+        .catch((error) => console.error("Error updating project:", error));
+    } else {
+      // Create new project
+      fetch("http://localhost:8081/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(projectData),
+      })
+        .then((response) => response.json())
+        .then((newProject) => {
+          setProjects([...projects, newProject]);
           setProjectCounter(projectCounter + 1);
           closeModal();
         })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    } else {
-      alert("Please fill in all fields.");
+        .catch((error) => console.error("Error creating project:", error));
     }
   };
 
@@ -115,19 +148,22 @@ function ProjectManagement() {
     if (projectToEdit) {
       setProjectName(projectToEdit.projectName);
       setClientName(projectToEdit.clientName);
-      setStartDate(projectToEdit.dateStart);
-      setEndDate(projectToEdit.dateEnd);
+      setStartDate(projectToEdit.startDate);
+      setEndDate(projectToEdit.endDate);
+      setDescription(projectToEdit.description);
+      setEditingProjectId(projectId); // Set editing project ID
       openModal(); // Open modal to edit the project
     }
     toggleDropdown(null); // Close dropdown after selecting
   };
 
   const handleDelete = (projectId) => {
-    const updatedProjects = projects.filter(
-      (project) => project.id !== projectId
-    );
-    setProjects(updatedProjects);
-    toggleDropdown(null); // Close dropdown after deleting
+    fetch(`http://localhost:8081/projects/${projectId}`, { method: "DELETE" })
+      .then(() => {
+        setProjects(projects.filter((project) => project.id !== projectId));
+        toggleDropdown(null);
+      })
+      .catch((error) => console.error("Error deleting project:", error));
   };
 
   const handleSearch = (term) => {
@@ -140,23 +176,24 @@ function ProjectManagement() {
 
   return (
     <div className="project-management-page">
-      <div className="admin-home-page">
-        <Sidebar />
-      </div>
+      <Sidebar />
       <div className="content">
         <h1>Project Management</h1>
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> Create
           </button>
-          <div className="notification-icon" style={{ cursor: "pointer" }}>
-            <FaBell className="icon" />
-          </div>
+          <FaBell
+            className="icon notification-icon"
+            style={{ cursor: "pointer" }}
+          />
         </div>
         {isModalOpen && (
           <div className="modal-overlay">
             <div className="modal-content">
-              <h2 className="modal-title">Project</h2>
+              <h2 className="modal-title">
+                {editingProjectId ? "Edit Project" : "Create Project"}
+              </h2>
               <div className="modal-field">
                 <label>Project Name:</label>
                 <input
@@ -168,15 +205,22 @@ function ProjectManagement() {
               </div>
               <div className="modal-field">
                 <label>Client Name:</label>
-                <input
-                  type="text"
-                  placeholder="Enter client name"
+                <select
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
-                />
+                >
+                  <option value="">Select client</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.firstName}{" "}
+                      {client.middleInitial && `${client.middleInitial}.`}{" "}
+                      {client.lastName}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="modal-field">
-                <label>Date to Start the Project:</label>
+                <label>Start Date:</label>
                 <input
                   type="date"
                   value={startDate}
@@ -184,7 +228,7 @@ function ProjectManagement() {
                 />
               </div>
               <div className="modal-field">
-                <label>Date to Finish the Project:</label>
+                <label>End Date:</label>
                 <input
                   type="date"
                   value={endDate}
@@ -197,16 +241,15 @@ function ProjectManagement() {
                   type="text"
                   placeholder="Enter project description"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)} // Assuming you create a state for description
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
-
               <div className="modal-actions">
                 <button className="cancel-button" onClick={closeModal}>
                   Cancel
                 </button>
-                <button className="create-button" onClick={createProject}>
-                  Create
+                <button className="create-button" onClick={saveProject}>
+                  {editingProjectId ? "Update" : "Create"}
                 </button>
               </div>
             </div>
@@ -254,8 +297,7 @@ function ProjectManagement() {
               <h3>Project Name</h3>
               <h3>Client</h3>
               <h3>Progress</h3>
-              <h3>Date Start</h3>
-              <h3>Date End</h3>
+              <h3>Timeline</h3>
               <h3>Status</h3>
               <h3>Action</h3>
             </div>
@@ -270,8 +312,10 @@ function ProjectManagement() {
                 </p>{" "}
                 {/* Truncated client name */}
                 <p>{project.progress}</p>
-                <p>{project.dateStart}</p>
-                <p>{project.dateEnd}</p>
+                <p>
+                  {formatDate(project.startDate)} -{" "}
+                  {formatDate(project.endDate)}
+                </p>
                 <p>{project.status}</p>
                 <p>{project.action}</p>
                 <div className="action-menu">

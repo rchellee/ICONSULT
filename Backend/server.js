@@ -122,6 +122,38 @@ app.get('/projects', (req, res) => {
     });
 });
 
+// Update an existing project (PUT request)
+app.put('/projects/:id', (req, res) => {
+    const projectId = req.params.id;
+    const { clientName, projectName, description, startDate, endDate, status } = req.body;
+
+    const sql = "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ? WHERE id = ?";
+    db.query(sql, [clientName, projectName, description, startDate, endDate, status, projectId], (err, result) => {
+        if (err) return res.status(500).json(err);
+
+        // Respond with the updated project details
+        return res.json({ id: projectId, clientName, projectName, description, startDate, endDate, status });
+    });
+});
+
+// Delete a project (DELETE request)
+app.delete('/projects/:id', (req, res) => {
+    const projectId = req.params.id;
+
+    const sql = "DELETE FROM project WHERE id = ?";
+    db.query(sql, [projectId], (err, result) => {
+        if (err) return res.status(500).json(err);
+        
+        // Check if any row was affected (deleted)
+        if (result.affectedRows > 0) {
+            return res.status(200).json({ message: 'Project deleted successfully' });
+        } else {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+    });
+});
+
+
 
 
 // Start the server
