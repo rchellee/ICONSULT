@@ -1,8 +1,29 @@
 import React, { useState } from 'react';
 
-const ClientDetails = ({ client, goBack, updateClient }) => {
+const ClientDetails = ({ client, goBack }) => {
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit modes
   const [formData, setFormData] = useState({ ...client }); // Initialize form data with client details
+
+  const updateClient = async (updatedClient) => {
+    try {
+        const response = await fetch(`http://localhost:8081/client/${updatedClient.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedClient),
+        });
+
+        if (response.ok) {
+            // Update local client data if needed
+            console.log("Client updated successfully");
+        } else {
+            console.error("Failed to update client");
+        }
+    } catch (error) {
+        console.error("Error updating client:", error);
+    }
+};
 
   // Handle input changes
   const handleChange = (e) => {
@@ -76,18 +97,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                 value={formData.birthday}
                 onChange={handleChange}
               />
-            </label>
-
-            <label>
-              <strong>Status:</strong>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
             </label>
 
             <button type="submit" className="btn-save">Update</button>

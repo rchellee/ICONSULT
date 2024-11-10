@@ -8,7 +8,7 @@ const ClientManagement = () => {
   const [clients, setClients] = useState([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
-  const [activeClients, setActiveClients] = useState({}); // Use an object to track active state for each client
+  const [activeClients, setActiveClients] = useState({});
 
   // Fetch clients from the database when the component mounts
   useEffect(() => {
@@ -17,13 +17,20 @@ const ClientManagement = () => {
         const response = await fetch("http://localhost:8081/clients");
         const data = await response.json();
         setClients(data);
+
+        // Initialize activeClients based on database status values
+        const initialActiveStates = data.reduce((acc, client) => {
+          acc[client.id] = client.status === "active";
+          return acc;
+        }, {});
+        setActiveClients(initialActiveStates);
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
     };
 
     fetchClients();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   const toggleForm = () => {
     setIsFormVisible(!isFormVisible);
@@ -74,7 +81,7 @@ const ClientManagement = () => {
     const newActiveState = !activeClients[clientId];
     setActiveClients({
       ...activeClients,
-      [clientId]: newActiveState, // Toggle active state for specific client
+      [clientId]: newActiveState,
     });
 
     // Update client status in the state
@@ -130,17 +137,12 @@ const ClientManagement = () => {
                           >
                             {`${client.firstName} ${client.lastName}`.toUpperCase()}
                           </td>
-                          {/* <td
-                            style={{ cursor: "pointer", color: "blue" }}
-                          >
-                            {`${client.status}`.toUpperCase()}
-                          </td> */}
                           <td>
                             <div
                               className={`toggle ${
                                 activeClients[client.id] ? "active" : ""
                               }`}
-                              onClick={() => handleToggle(client.id)} // Toggle for specific client
+                              onClick={() => handleToggle(client.id)}
                             ></div>
                           </td>
                         </tr>

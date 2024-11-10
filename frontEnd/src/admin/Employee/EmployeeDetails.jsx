@@ -32,7 +32,6 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
       <div className="employee-info">
         {isEditing ? (
           <form onSubmit={handleSave}>
-            {/* Editable fields */}
             <label>
               <strong>First Name:</strong>
               <input
@@ -77,18 +76,6 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
                 value={formData.birthday}
                 onChange={handleChange}
               />
-            </label>
-
-            <label>
-              <strong>Status:</strong>
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-              >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
             </label>
 
             <button type="submit" className="btn-save">Update</button>

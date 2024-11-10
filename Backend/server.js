@@ -104,6 +104,23 @@ app.put('/clients/:id', (req, res) => {
     });
 });
 
+// Endpoint to update client details
+app.put('/client/:id', (req, res) => {
+    const clientId = req.params.id;
+    const { firstName, lastName, middleInitial, birthday, mobile_number, email_add, address } = req.body;
+    const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ? WHERE id = ?`;
+
+    db.query(sql, [firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, clientId], (err, result) => {
+        if (err) return res.status(500).json({ message: "Error updating client information", error: err });
+        if (result.affectedRows > 0) {
+            return res.status(200).json({ message: "Client updated successfully" });
+        } else {
+            return res.status(404).json({ message: "Client not found" });
+        }
+    });
+});
+
+
 
 // Save a new employee (POST request)
 app.post('/employee', (req, res) => {
@@ -151,10 +168,10 @@ app.put('/employees/:id', (req, res) => {
 // Update employee's information (PUT request)
 app.put('/employee/:id', (req, res) => {
     const employeeId = req.params.id;
-    const { firstName, lastName, middleName, address, mobile_number, email_add, status, birthday } = req.body;
+    const { firstName, lastName, middleName, address, mobile_number, email_add, birthday } = req.body;
 
-    const sql = "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, status = ?, birthday = ? WHERE id = ?";
-    db.query(sql, [firstName, lastName, middleName, address, mobile_number, email_add, status, birthday, employeeId], (err, result) => {
+    const sql = "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
+    db.query(sql, [firstName, lastName, middleName, address, mobile_number, email_add, birthday, employeeId], (err, result) => {
         if (err) return res.status(500).json({ message: "Error updating employee information", error: err });
 
         // Check if any row was affected
