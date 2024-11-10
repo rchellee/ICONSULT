@@ -36,14 +36,34 @@ const EmployeeManagement = () => {
     setSelectedEmployee(null);
   };
 
-  const updateEmployee = (updatedEmployee) => {
-    setEmployees(
-      employees.map((employee) =>
-        employee.id === updatedEmployee.id ? updatedEmployee : employee
-      )
-    );
-    setSelectedEmployee(updatedEmployee);
+  const updateEmployee = async (updatedEmployee) => {
+    try {
+      // Send a PUT request to update employee information in the database
+      const response = await fetch(`http://localhost:8081/employee/${updatedEmployee.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedEmployee),
+      });
+  
+      // Check if the response is successful
+      if (response.ok) {
+        const result = await response.json();
+        // Update the employee in the local state only if the database update was successful
+        setEmployees(
+          employees.map((employee) =>
+            employee.id === updatedEmployee.id ? updatedEmployee : employee
+          )
+        );
+        setSelectedEmployee(updatedEmployee); // Update the selected employee
+        console.log("Employee updated successfully:", result.message);
+      } else {
+        console.error("Failed to update employee:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error updating employee:", error);
+    }
   };
+ 
 
   const toggleStatus = async (employeeId, currentStatus) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';

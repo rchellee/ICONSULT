@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 10, 2024 at 06:21 PM
+-- Generation Time: Nov 10, 2024 at 11:35 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -67,9 +67,37 @@ CREATE TABLE `client` (
 INSERT INTO `client` (`id`, `firstName`, `lastName`, `middleInitial`, `birthday`, `mobile_number`, `email_add`, `address`, `password`, `username`, `status`) VALUES
 (1, 'John', 'Doe', 'A', '1990-05-15', '09123456789', 'john.doe@example.com', '123 Main St, Cityville', 'password1234', '', 'active'),
 (2, 'Jane', 'Smith', 'B', '1985-08-20', '09234567890', 'jane.smith@example.com', '456 Elm St, Townsville', 'password12345', '', 'active'),
-(3, 'Ritchelle', 'Rueras', 'T', '2001-05-22', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', 'RUERAS12345', 'Rueras12345', 'active'),
+(3, 'Ritchelle', 'Rueras', 'T', '2001-05-20', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', 'RUERAS12345', 'Rueras12345', 'inactive'),
 (4, 'Monique', 'Cabigting', 'h', '2005-06-07', '098765432', 'ritchellerueras@gmail.com', 'df', 'CABIGTING12345', 'Cabigting12345', 'active'),
-(5, 'claireza', 'bautista', 'h', '2024-10-01', '09709573613', 'clarieza@gmail.com', 'pasig city', 'BAUTISTA12345', 'bautista.claireza', 'active');
+(5, 'claireza', 'bautista', 'h', '2024-10-01', '09709573613', 'clarieza@gmail.com', 'pasig city', 'BAUTISTA12345', 'bautista.claireza', 'active'),
+(6, 'mimi', 'mema', 'm', '2013-06-09', '09709573613', 'clarieza@gmail.com', 'Surigao City', 'MEMA12345', 'mema.mimi', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employee`
+--
+
+CREATE TABLE `employee` (
+  `id` int(11) NOT NULL,
+  `lastName` varchar(50) NOT NULL,
+  `middleName` varchar(50) DEFAULT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `address` text DEFAULT NULL,
+  `mobile_number` varchar(15) DEFAULT NULL,
+  `email_add` varchar(100) DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `birthday` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employee`
+--
+
+INSERT INTO `employee` (`id`, `lastName`, `middleName`, `firstName`, `address`, `mobile_number`, `email_add`, `status`, `birthday`) VALUES
+(1, 'rueras', 'xasd', 'Monique', 'pasig city', '09709573613', 'ritchellerueras@gmail.com', 'active', '2011-06-05'),
+(2, 'Cabigting', 'xasd', 'claireza', 'pasig city', '09709573613', 'ritchellerueras@gmail.com', 'inactive', '2024-11-01'),
+(3, 'mema', 'haha', 'mimi', 'santa mesa', '09709573613', 'ritchellerueras@gmail.com', 'active', '2024-10-29');
 
 -- --------------------------------------------------------
 
@@ -79,20 +107,20 @@ INSERT INTO `client` (`id`, `firstName`, `lastName`, `middleInitial`, `birthday`
 
 CREATE TABLE `project` (
   `id` int(11) NOT NULL,
-  `clientname` varchar(255) NOT NULL,
-  `projectname` varchar(255) NOT NULL,
+  `clientName` varchar(255) NOT NULL,
+  `projectName` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `status` enum('pending','in_progress','completed','on_hold') NOT NULL DEFAULT 'pending'
+  `startDate` date NOT NULL,
+  `endDate` date NOT NULL,
+  `status` enum('ongoing','in_progress','completed','on_hold') NOT NULL DEFAULT 'ongoing'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`id`, `clientname`, `projectname`, `description`, `start_date`, `end_date`, `status`) VALUES
-(1, 'nfn', 'kfn', 'hjvgzvgs', '2024-10-24', '2024-10-30', 'pending');
+INSERT INTO `project` (`id`, `clientName`, `projectName`, `description`, `startDate`, `endDate`, `status`) VALUES
+(6, '1', 'qwqw', 'dnasjdjs', '2024-11-16', '2024-11-23', 'ongoing');
 
 -- --------------------------------------------------------
 
@@ -123,6 +151,12 @@ ALTER TABLE `client`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `employee`
+--
+ALTER TABLE `employee`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `project`
 --
 ALTER TABLE `project`
@@ -142,13 +176,19 @@ ALTER TABLE `task`
 -- AUTO_INCREMENT for table `client`
 --
 ALTER TABLE `client`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `employee`
+--
+ALTER TABLE `employee`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `task`

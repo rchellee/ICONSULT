@@ -148,6 +148,23 @@ app.put('/employees/:id', (req, res) => {
     });
 });
 
+// Update employee's information (PUT request)
+app.put('/employee/:id', (req, res) => {
+    const employeeId = req.params.id;
+    const { firstName, lastName, middleName, address, mobile_number, email_add, status, birthday } = req.body;
+
+    const sql = "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, status = ?, birthday = ? WHERE id = ?";
+    db.query(sql, [firstName, lastName, middleName, address, mobile_number, email_add, status, birthday, employeeId], (err, result) => {
+        if (err) return res.status(500).json({ message: "Error updating employee information", error: err });
+
+        // Check if any row was affected
+        if (result.affectedRows > 0) {
+            return res.status(200).json({ message: "Employee information updated successfully" });
+        } else {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+    });
+});
 
 // Add a new project (POST request)
 app.post('/projects', (req, res) => {
