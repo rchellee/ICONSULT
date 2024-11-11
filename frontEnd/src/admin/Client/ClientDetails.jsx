@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import "./client.css";
 
 const ClientDetails = ({ client, goBack }) => {
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit modes
   const [formData, setFormData] = useState({ ...client }); // Initialize form data with client details
+  const [showToast, setShowToast] = useState(false);
 
   const updateClient = async (updatedClient) => {
     try {
@@ -17,6 +19,8 @@ const ClientDetails = ({ client, goBack }) => {
         if (response.ok) {
             // Update local client data if needed
             console.log("Client updated successfully");
+            setShowToast(true);
+            setTimeout(() => setShowToast(false), 3000);
         } else {
             console.error("Failed to update client");
         }
@@ -49,6 +53,13 @@ const ClientDetails = ({ client, goBack }) => {
   return (
     <div className="client-details">
       <h3>{isEditing ? 'Edit Client Details' : 'Client Details'}</h3>
+
+      {showToast && (
+        <div className="toast">
+          Client information updated successfully!
+          <div className="toast-progress"></div>
+        </div>
+      )}
 
       <div className="client-info">
         {isEditing ? (

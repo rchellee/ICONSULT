@@ -9,7 +9,9 @@ const ClientManagement = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [activeClients, setActiveClients] = useState({});
-
+  const [toastVisible, setToastVisible] = useState(false); // State to manage toast visibility
+  
+  
   // Fetch clients from the database when the component mounts
   useEffect(() => {
     const fetchClients = async () => {
@@ -92,6 +94,11 @@ const ClientManagement = () => {
     await updateStatusInDatabase(clientId, newStatus);
   };
 
+  const showToast = () => {
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 5000); // Hide the toast after 5 seconds
+  };
+
   return (
     <div className="admin-home-page">
       <Sidebar />
@@ -113,6 +120,7 @@ const ClientManagement = () => {
                 clients={clients}
                 setClients={setClients}
                 toggleForm={toggleForm}
+                showToast={showToast} // Pass showToast function to ClientForm
               />
             )}
             {!isFormVisible && (
@@ -153,6 +161,21 @@ const ClientManagement = () => {
               </>
             )}
           </>
+        )}
+
+        {/* Toast Notification */}
+        {toastVisible && (
+          <div className="toast active">
+            <div className="toast-content">
+              <i className="fas fa-solid fa-check check"></i>
+              <div className="message">
+                <span className="text text-1">Success</span>
+                <span className="text text-2">Your client has been added.</span>
+              </div>
+            </div>
+            <i className="fa-solid fa-xmark close" onClick={() => setToastVisible(false)}></i>
+            <div className="progress active"></div>
+          </div>
         )}
       </div>
     </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "./clientForm.css"; // Assuming you have CSS for styling
 import Sidebar from "../sidebar";
 
-const ClientForm = ({ clients, setClients, toggleForm, editingClient }) => {
+const ClientForm = ({ clients, setClients, toggleForm, editingClient, showToast }) => {
   const [formData, setFormData] = useState({
     lastName: "",
     middleInitial: "", // Added field for Middle Initial
@@ -62,6 +62,7 @@ const ClientForm = ({ clients, setClients, toggleForm, editingClient }) => {
         const result = await response.json();
         if (response.ok) {
           setClients([...clients, result]); // Add the new client to the local state
+          showToast(); // Show the toast notification
         } else {
           console.error("Error saving client:", result);
         }
