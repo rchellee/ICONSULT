@@ -1,10 +1,11 @@
-
-
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import './project.css';
 import { FaPlus, FaBell, FaHome, FaSort } from 'react-icons/fa';
+import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
+
+
 
 function ProjectManagement() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -114,17 +115,8 @@ function ProjectManagement() {
 
     return (
         <div className="project-management-page">
-            <div className="sidebar">
-                <ul>
-                    <li><Link to="/admin">Dashboard</Link></li>
-                    <li><Link to="/project">Projects</Link></li>
-                    <li><Link to="/reports">Reports</Link></li>
-                    <li><Link to="/calendar">Calendar</Link></li>
-                    <li><Link to="/create">Create</Link></li>
-                    <li><Link to="/clients">Clients</Link></li>
-                    <li><Link to="/employees">Employees</Link></li>
-                    <li><Link to="/logout">Logout</Link></li>
-                </ul>
+          <Sidebar />
+            <div className="content">
             </div>
             <div className="content">
                 <h1>Project Management</h1>
