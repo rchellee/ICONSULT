@@ -18,19 +18,15 @@
     margin: 0 20px; 
 }
 
-/* .sidebar {
-    width: 200px; 
-    background-color: #f0f0f0; 
-    padding: 10px; 
-} */
+
 
 .content {
-    flex: 1; 
-    padding: 40px 20px 20px; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: flex-start; 
-    height: 100%; 
+    margin-left: 200px; /* eto yung distance sa sidebar */
+    padding: 40px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
 }
 
 
@@ -175,14 +171,16 @@ ct-list-header h3:nth-child(3) { /* Client */
     width: 25%;
 }
 
-/*PROJECT CSS*/
+/*PROJECT CSS-------------------------------------------*/
 .project-list {
     width: 100%; /* Full width of the container */
     max-width: 1200px; /* Set a maximum width for the table */
-    margin: -50px auto 0; /* Centering the table */
+    margin: -50px 0 0 0; /* Remove centering and move the table to the left */
     border-collapse: collapse; /* Ensures borders are collapsed */
-    table-layout: fixed; /* Enables fixed layout for proper column widths */
+    margin-left: 300px;
+    
 }
+
 
 .project-list-header,
 .project-item {
@@ -243,6 +241,8 @@ ct-list-header h3:nth-child(3) { /* Client */
     align-items: center; /* Center items vertically */
     gap: 10px; /* Add space between elements */
     margin-bottom: 50px; /* Adds space below the container */
+    justify-content: flex-start; /* Aligns buttons to the left */
+    margin-left: 1px;
 }
 
 .sort-button, .detail-button {
@@ -277,11 +277,11 @@ ct-list-header h3:nth-child(3) { /* Client */
 .search-box-container {
     flex-grow: 1; /* Allows the search box to take up remaining space */
     max-width: 400px; /* Optional: Limit max width */
-    margin-left: 970px;
+    margin-left: 805px;
 }
 
 .search-box {
-    width: 100%;
+    width: 200%;
     padding: 8px;
     font-size: 14px;
     border-radius: 4px;
