@@ -18,10 +18,8 @@
     margin: 0 20px; 
 }
 
-
-
 .content {
-    margin-left: 200px; /* eto yung distance sa sidebar */
+    margin-left: 85px; /* eto yung distance sa sidebar */
     padding: 40px 20px 20px;
     display: flex;
     flex-direction: column;
@@ -336,3 +334,4 @@ ct-list-header h3:nth-child(3) { /* Client */
     position: absolute; /* Keeps the sort button inline */  
 
 }
+
