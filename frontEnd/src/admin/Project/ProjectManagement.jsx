@@ -5,9 +5,8 @@ import { FaPlus, FaBell, FaHome, FaSort } from 'react-icons/fa';
 import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
 
-
-
 function ProjectManagement() {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // state to control sidebar
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [projects, setProjects] = useState([]);
     const [projectName, setProjectName] = useState('');
@@ -19,6 +18,10 @@ function ProjectManagement() {
     const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
     const [activeDropdown, setActiveDropdown] = useState(null); // To handle active dropdown
     const [searchTerm, setSearchTerm] = useState('');
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen); // Toggle sidebar open/close
+    };
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -94,7 +97,6 @@ function ProjectManagement() {
             setStartDate(projectToEdit.dateStart);
             setEndDate(projectToEdit.dateEnd);
             openModal(); // Open modal to edit the project
-            
         }
         toggleDropdown(null); // Close dropdown after selecting
     };
@@ -115,10 +117,8 @@ function ProjectManagement() {
 
     return (
         <div className="project-management-page">
-          <Sidebar />
-            <div className="content">
-            </div>
-            <div className="content">
+            <Sidebar />
+            <div className={`content ${isSidebarOpen ? 'shifted' : ''}`}>
                 <h1>Project Management</h1>
                 <div className="header-actions">
                     <button className="create-button" onClick={openModal}>

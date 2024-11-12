@@ -19,7 +19,7 @@
 }
 
 .content {
-    margin-left: 85px; /* eto yung distance sa sidebar */
+    margin-left: 200px; /* eto yung distance sa sidebar */
     padding: 40px 20px 20px;
     display: flex;
     flex-direction: column;
@@ -199,7 +199,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
 .project-item p:nth-child(2) {
-    width: 100px; /* Fixed width for Project Name */
+    width: 200px; /* Fixed width for Project Name */
 }
 
 .project-list-header h3:nth-child(3), /* Client */
@@ -215,7 +215,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 .project-list-header h3:nth-child(4), /* Progress */
 .project-item p:nth-child(4) {
-    width: 200px; /* Fixed width for Progress */
+    width: 150px; /* Fixed width for Progress */
 }
 
 .project-list-header h3:nth-child(5), /* Date Start */
@@ -316,7 +316,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 }
 
 .project-name-item:hover {
-    background-color: #e6eae9;
+    background-color: #b0f0f8;
 }
 
 .project-name-item:last-child {
