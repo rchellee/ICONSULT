@@ -25,11 +25,11 @@ const Sidebar = () => {
         {clientFirstName}</h2> 
       </div>
       <ul className="sidebar-links">
-        <li>
-          <Link to="/client">
-            <span className="material-symbols-outlined">dashboard</span>
-            <h4>Dashboard</h4>
-          </Link>
+      <li>
+    <Link to="/client">
+        <span className="material-symbols-outlined">dashboard</span>
+        <h4>Dashboard</h4>
+    </Link>
         </li>
         <li>
           <Link to="/projectlist">

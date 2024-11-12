@@ -6,7 +6,7 @@ import LandingPage from '../src/Landingpage.jsx';
 import ProjectManagement from './admin/Project/ProjectManagement';
 import ClientManagement from './admin/Client/ClientManagement.jsx';
 import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
-
+import Dashboard from './client/Dashboard';
 
 
 // for google icons
@@ -35,6 +35,7 @@ function App() {
         <Route path="/clients" element={<ClientManagement />} />
         <Route path="/client" element={<ClientHomePage />} />
         <Route path="/employee" element={<EmployeeManagement />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
