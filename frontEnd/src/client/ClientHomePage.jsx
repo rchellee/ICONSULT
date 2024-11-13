@@ -1,6 +1,6 @@
 // import { Link } from 'react-router-dom';  // Import Link from React Router
 import Sidebar from '../client/sidebar';
-import Dashboard from './Dashboard';
+import Dashboard from './Appointment/Appointment';
 
 function ClientHomePage() {
     return (
