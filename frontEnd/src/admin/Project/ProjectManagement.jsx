@@ -4,12 +4,18 @@ import "./project.css";
 import { FaPlus, FaBell, FaHome, FaSort } from "react-icons/fa";
 import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
+import TaskForm from "./TaskForm";
+import ProjectList from "./ProjectList";
+import ProjectForm from "./ProjectForm";
+import ProjectFolders from "./ProjectFolders";
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // state to control sidebar
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]); // State to hold tasks
+  const [tasks, setTasks] = useState(
+    JSON.parse(localStorage.getItem("tasks")) || []
+  );
   const [selectedProjectId, setSelectedProjectId] = useState(null); // Store selected project
   const [selectedTaskId, setSelectedTaskId] = useState(null); // Store selected task
   const [projectName, setProjectName] = useState("");
@@ -24,6 +30,19 @@ const ProjectManagement = () => {
   const [clients, setClients] = useState([]); // Add this line
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [description, setDescription] = useState("");
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+
+  const openTaskForm = () => setIsTaskFormOpen(true);
+  const closeTaskForm = () => setIsTaskFormOpen(false);
+
+  const saveTaskToLocalStorage = (newTask) => {
+    const updatedTasks = [
+      ...tasks,
+      { ...newTask, projectId: selectedProjectId },
+    ];
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  };
 
   // useEffect for fetching projects from the server
   useEffect(() => {
@@ -51,15 +70,17 @@ const ProjectManagement = () => {
   }, []);
 
   // Filter tasks by selected project
-  const filteredTasks = tasks.filter((task) => task.projectId === selectedProjectId);
+  const filteredTasks = tasks.filter(
+    (task) => task.projectId === selectedProjectId
+  );
 
   const handleProjectClick = (projectId) => {
     setSelectedProjectId(projectId); // Set selected project
     setSelectedTaskId(null); // Reset selected task
   };
 
-  const handleTaskClick = (taskId) => {
-    setSelectedTaskId(taskId); // Set selected task
+  const handleTaskClick = () => {
+    setIsTaskFormOpen(true); // Open the TaskForm
   };
 
   const toggleSidebar = () => {
@@ -217,70 +238,29 @@ const ProjectManagement = () => {
           </div>
         </div>
         {isModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal-content">
-              <h2 className="modal-title">Project</h2>
-              <div className="modal-field">
-                <label>Project Name:</label>
-                <input
-                  type="text"
-                  placeholder="Enter project name"
-                  value={projectName}
-                  onChange={(e) => setProjectName(e.target.value)}
-                />
-              </div>
-              <div className="modal-field">
-                <label>Client Name:</label>
-                <select
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                >
-                  <option value="">Select a client</option>
-                  {clients.map((client) => (
-                    <option
-                      key={client.id}
-                      value={client.firstName + " " + client.lastName}
-                    >
-                      {client.firstName} {client.lastName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="modal-field">
-                <label>Start Date:</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
-              <div className="modal-field">
-                <label>End Date:</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
-              <div className="modal-field">
-                <label>Description:</label>
-                <input
-                  type="text"
-                  placeholder="Enter project description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
-
-              <div className="modal-actions">
-                <button className="cancel-button" onClick={closeModal}>
-                  Cancel
-                </button>
-                <button className="create-button" onClick={saveProject}>
-                  {editingProjectId ? "Update" : "Create"}
-                </button>
-              </div>
-            </div>
+          <ProjectForm
+            projectName={projectName}
+            setProjectName={setProjectName}
+            clientName={clientName}
+            setClientName={setClientName}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            description={description}
+            setDescription={setDescription}
+            clients={clients}
+            onCancel={closeModal}
+            onSave={saveProject}
+            editingProjectId={editingProjectId}
+          />
+        )}
+        {/* naka display dapat sa rightside */}
+        {selectedProjectId && (
+          <div className="add-task-button">
+            <button onClick={openTaskForm}>
+              <FaPlus className="icon" /> Task
+            </button>
           </div>
         )}
 
@@ -303,99 +283,33 @@ const ProjectManagement = () => {
             </p>
           </div>
         ) : (
-          <div className="project-list">
-            <div className="sort-button-container">
-              <button className="sort-button" onClick={toggleSortDropdown}>
-                {" "}
-                Sort <FaSort />{" "}
-              </button>
-              <button className="detail-button" onClick={showProjectCount}>
-                {" "}
-                Detail{" "}
-              </button>
-              {isSortDropdownOpen && (
-                <div className="sort-dropdown">
-                  <button onClick={() => requestSort("projectName")}>
-                    Name
-                  </button>
-                  <button onClick={() => requestSort("dateStart")}>Date</button>
-                </div>
-              )}
-            </div>
-            <div className="project-list-header">
-              <h3>Project Name</h3>
-              <h3>Client</h3>
-              <h3>Progress</h3>
-              <h3>Timeline</h3>
-              <h3>Status</h3>
-              <h3>Action</h3>
-            </div>
-            {filteredProjects.map((project) => (
-              <div key={project.id} className="project-item">
-                <p className="truncate" title={project.projectName}>
-                  {project.projectName}
-                </p>
-                <p className="truncate" title={project.clientName}>
-                  {project.clientName}
-                </p>{" "}
-                {/* Truncated client name */}
-                <p>{project.progress}</p>
-                <p>
-                  {formatDate(project.startDate)} -{" "}
-                  {formatDate(project.endDate)}
-                </p>
-                <p>{project.status}</p>
-                <p>{project.action}</p>
-                <div className="action-menu">
-                  <button
-                    className="action-menu-button"
-                    onClick={() => toggleDropdown(project.id)}
-                  >
-                    {" "}
-                    &#x22EE;{" "}
-                  </button>
-                  {activeDropdown === project.id && (
-                    <div className="dropdown-menu">
-                      <button onClick={() => handleEdit(project.id)}>
-                        Edit
-                      </button>
-                      <button onClick={() => handleDelete(project.id)}>
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProjectList
+            projects={projects}
+            searchTerm={searchTerm}
+            filteredProjects={filteredProjects}
+            formatDate={formatDate}
+            toggleSortDropdown={toggleSortDropdown}
+            showProjectCount={showProjectCount}
+            isSortDropdownOpen={isSortDropdownOpen}
+            requestSort={requestSort}
+            activeDropdown={activeDropdown}
+            toggleDropdown={toggleDropdown}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
         )}
-        
         {projects.length > 0 && (
-          <div className="project-names-section">
-            <h3 className="folder-title">Folders</h3>
-            {projects.map((project) => (
-              <div
-              key={project.id}
-              className="project-name-item"
-              onClick={() => handleProjectClick(project.id)}
-            >
-              <p className="truncate" title={project.projectName}>
-                {project.projectName}
-              </p>
-            </div>
-            ))}
-          </div>
-        )}
-
-        {/* Display "+task" button when a project is selected */}
-        {selectedProjectId && (
-          
-          <button className="create-button" onClick={openModal}>
-            <FaPlus className="icon" /> Task
-          </button>
-          
-        )}
+        <ProjectFolders
+          projects={projects}
+          tasks={tasks}
+          onProjectClick={handleProjectClick}
+        />
+      )}
       </div>
+      {/* TaskForm Modal */}
+      {isTaskFormOpen && (
+        <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
+      )}
     </div>
   );
 };
