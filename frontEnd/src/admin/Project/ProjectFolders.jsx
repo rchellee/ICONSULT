@@ -1,7 +1,7 @@
 import React from "react";
 import "./project.css";
 
-const ProjectFolders = ({ projects, tasks, onProjectClick }) => {
+const ProjectFolders = ({ projects, tasks, onProjectClick, onTaskClick }) => {
   return (
     <div className="project-names-section">
       <h3 className="folder-title">Folders</h3>
@@ -17,7 +17,11 @@ const ProjectFolders = ({ projects, tasks, onProjectClick }) => {
           {tasks
             .filter((task) => task.projectId === project.id)
             .map((task) => (
-              <p key={task.id} style={{ paddingLeft: "20px" }}>
+              <p
+                key={task.id}
+                style={{ paddingLeft: "20px", cursor: "pointer" }}
+                onClick={() => onTaskClick(task)}
+              >
                 &gt; {task.taskName}
               </p>
             ))}

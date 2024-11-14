@@ -8,6 +8,7 @@ import TaskForm from "./TaskForm";
 import ProjectList from "./ProjectList";
 import ProjectForm from "./ProjectForm";
 import ProjectFolders from "./ProjectFolders";
+import Task from "./Task";
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // state to control sidebar
@@ -17,6 +18,7 @@ const ProjectManagement = () => {
     JSON.parse(localStorage.getItem("tasks")) || []
   );
   const [selectedProjectId, setSelectedProjectId] = useState(null); // Store selected project
+  const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null); // Store selected task
   const [projectName, setProjectName] = useState("");
   const [clientName, setClientName] = useState("");
@@ -264,6 +266,10 @@ const ProjectManagement = () => {
           </div>
         )}
 
+        {selectedTask && (
+        <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
+      )}
+
         {/* Search and Sort */}
         <div className="search-box-container">
           <input
@@ -299,12 +305,13 @@ const ProjectManagement = () => {
           />
         )}
         {projects.length > 0 && (
-        <ProjectFolders
-          projects={projects}
-          tasks={tasks}
-          onProjectClick={handleProjectClick}
-        />
-      )}
+          <ProjectFolders
+            projects={projects}
+            tasks={tasks}
+            onProjectClick={handleProjectClick}
+            onTaskClick={(task) => setSelectedTask(task)} // Pass function to set selected task
+          />
+        )}
       </div>
       {/* TaskForm Modal */}
       {isTaskFormOpen && (
