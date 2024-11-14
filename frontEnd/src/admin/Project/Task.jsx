@@ -1,5 +1,5 @@
 import React from "react";
-import "./project.css";
+import "./Task.css";
 
 const Task = ({ task, onClose }) => {
   if (!task) return null;
