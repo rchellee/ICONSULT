@@ -208,3 +208,15 @@ body {
 .sidebar:hover ~ .content {
   margin-left: 260px;
 }
+
+/* Shift dashboard content when sidebar expands */
+.dashboard-content {
+  margin-left: 40px;
+  padding: 10px;
+  transition: margin-left 0.4s ease;
+}
+
+.sidebar:hover ~ .dashboard-content {
+  margin-left: 245px;
+}
+
