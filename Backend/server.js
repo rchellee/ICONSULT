@@ -183,6 +183,21 @@ app.put('/employee/:id', (req, res) => {
     });
 });
 
+// Mark a project as deleted (PATCH request - Soft Delete)
+app.patch("/projects/:id", (req, res) => {
+    const { id } = req.params;
+    const { isDeleted } = req.body;
+
+    const query = "UPDATE project SET isDeleted = ? WHERE id = ?";
+    db.query(query, [isDeleted, id], (error, results) => { // using db.query for consistency
+      if (error) {
+        console.error("Error updating project:", error);
+        return res.status(500).json({ error: "Failed to update project" });
+      }
+      return res.status(200).json({ message: "Project deleted successfully" });
+    });
+});
+ 
 // Add a new project (POST request)
 app.post('/projects', (req, res) => {
     const { clientName, projectName, description, startDate, endDate, status } = req.body;
@@ -195,9 +210,9 @@ app.post('/projects', (req, res) => {
 });
 
 
-// Get all projects (GET request)
+// Get all active (not deleted) projects (GET request)
 app.get('/projects', (req, res) => {
-    const sql = "SELECT * FROM project";
+    const sql = "SELECT * FROM project WHERE isDeleted = 0"; // Exclude deleted projects
     db.query(sql, (err, data) => {
         if (err) return res.json(err);
         return res.json(data);
