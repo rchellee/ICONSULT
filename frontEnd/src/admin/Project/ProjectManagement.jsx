@@ -267,8 +267,8 @@ const ProjectManagement = () => {
         )}
 
         {selectedTask && (
-        <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
-      )}
+          <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
+        )}
 
         {/* Search and Sort */}
         <div className="search-box-container">
@@ -309,7 +309,8 @@ const ProjectManagement = () => {
             projects={projects}
             tasks={tasks}
             onProjectClick={handleProjectClick}
-            onTaskClick={(task) => setSelectedTask(task)} // Pass function to set selected task
+            onTaskClick={(task) => setSelectedTask(task)}
+            selectedProjectId={selectedProjectId}
           />
         )}
       </div>
