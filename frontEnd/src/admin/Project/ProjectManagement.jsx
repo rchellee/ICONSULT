@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "./project.css";
 import { FaPlus, FaBell, FaHome, FaSort } from "react-icons/fa";
@@ -33,9 +33,24 @@ const ProjectManagement = () => {
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [description, setDescription] = useState("");
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+  const taskButtonRef = useRef(null);
 
   const openTaskForm = () => setIsTaskFormOpen(true);
   const closeTaskForm = () => setIsTaskFormOpen(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if the click is outside the task button
+      if (taskButtonRef.current && !taskButtonRef.current.contains(event.target)) {
+        setSelectedProjectId(null); // Deselect project if clicked outside
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const saveTaskToLocalStorage = (newTask) => {
     const updatedTasks = [
@@ -78,6 +93,7 @@ const ProjectManagement = () => {
 
   const handleProjectClick = (projectId) => {
     setSelectedProjectId(projectId); // Set selected project
+    setIsTaskFormOpen(false); // Reset task form
     setSelectedTaskId(null); // Reset selected task
   };
 
@@ -259,12 +275,15 @@ const ProjectManagement = () => {
         )}
         {/* naka display dapat sa rightside */}
         {selectedProjectId && (
-          <div className="add-task-button">
-            <button onClick={openTaskForm}>
-              <FaPlus className="icon" /> Task
-            </button>
-          </div>
-        )}
+        <div className="add-task-button" ref={taskButtonRef}>
+          <button onClick={openTaskForm}>
+            <FaPlus className="icon" /> Task
+          </button>
+        </div>
+      )}
+      {isTaskFormOpen && (
+        <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
+      )}
 
         {selectedTask && (
           <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
@@ -314,10 +333,7 @@ const ProjectManagement = () => {
           />
         )}
       </div>
-      {/* TaskForm Modal */}
-      {isTaskFormOpen && (
-        <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
-      )}
+      
     </div>
   );
 };
