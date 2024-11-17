@@ -204,14 +204,15 @@ app.patch("/projects/:id", (req, res) => {
  
 // Add a new project (POST request)
 app.post('/projects', (req, res) => {
-    const { clientName, projectName, description, startDate, endDate, status } = req.body;
+    const { clientId, clientName, projectName, description, startDate, endDate, status } = req.body;
 
-    const sql = "INSERT INTO project (clientName, projectName, description, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?)";
-    db.query(sql, [clientName, projectName, description, startDate, endDate, status], (err, result) => {
+    const sql = "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [clientId, clientName, projectName, description, startDate, endDate, status], (err, result) => {
         if (err) return res.status(500).json(err);
-        return res.status(201).json({ id: result.insertId, clientName, projectName, description, startDate, endDate, status });
+        return res.status(201).json({ id: result.insertId, clientId, clientName, projectName, description, startDate, endDate, status });
     });
 });
+
 // Get all active (not deleted) projects (GET request)
 app.get('/projects', (req, res) => {
     const sql = "SELECT * FROM project WHERE isDeleted = 0"; // Exclude deleted projects
