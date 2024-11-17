@@ -1,33 +1,8 @@
 import React, { useState } from 'react';
-import "./client.css";
 
-const ClientDetails = ({ client, goBack }) => {
+const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit modes
-  const [formData, setFormData] = useState({ ...client }); // Initialize form data with client details
-  const [showToast, setShowToast] = useState(false);
-
-  const updateClient = async (updatedClient) => {
-    try {
-        const response = await fetch(`http://localhost:8081/client/${updatedClient.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedClient),
-        });
-
-        if (response.ok) {
-            // Update local client data if needed
-            console.log("Client updated successfully");
-            setShowToast(true);
-            setTimeout(() => setShowToast(false), 3000);
-        } else {
-            console.error("Failed to update client");
-        }
-    } catch (error) {
-        console.error("Error updating client:", error);
-    }
-};
+  const [formData, setFormData] = useState({ ...employee }); // Initialize form data with employee details
 
   // Handle input changes
   const handleChange = (e) => {
@@ -46,22 +21,15 @@ const ClientDetails = ({ client, goBack }) => {
   // Handle save action
   const handleSave = (e) => {
     e.preventDefault();
-    updateClient(formData); // Update client details in the parent component
+    updateEmployee(formData); // Update employee details in the parent component
     toggleEdit(); // Exit edit mode
   };
 
   return (
-    <div className="client-details">
-      <h3>{isEditing ? 'Edit Client Details' : 'Client Details'}</h3>
+    <div className="employee-details">
+      <h3>{isEditing ? 'Edit Employee Details' : 'Employee Details'}</h3>
 
-      {showToast && (
-        <div className="toast">
-          Client information updated successfully!
-          <div className="toast-progress"></div>
-        </div>
-      )}
-
-      <div className="client-info">
+      <div className="employee-info">
         {isEditing ? (
           <form onSubmit={handleSave}>
             <label>
@@ -114,21 +82,21 @@ const ClientDetails = ({ client, goBack }) => {
           </form>
         ) : (
           <>
-            <p><strong>ID:</strong> {client.id}</p>
-            <p><strong>Last Name:</strong> {client.lastName}</p>
-            <p><strong>First Name:</strong> {client.firstName}</p>
-            <p><strong>Email:</strong> {client.email_add}</p>
-            <p><strong>Username:</strong> {client.username}</p>
-            <p><strong>Address:</strong> {client.address}</p>
-            <p><strong>Contact Number:</strong> {client.mobile_number}</p>
-            <p><strong>Status:</strong> {client.status}</p>
-            <p><strong>Birthday:</strong> {client.birthday}</p>
+            {/* Display employee details */}
+            <p><strong>ID:</strong> {employee.id}</p>
+            <p><strong>Last Name:</strong> {employee.lastName}</p>
+            <p><strong>First Name:</strong> {employee.firstName}</p>
+            <p><strong>Email:</strong> {employee.email_add}</p>
+            <p><strong>Address:</strong> {employee.address}</p>
+            <p><strong>Contact Number:</strong> {employee.mobile_number}</p>
+            <p><strong>Status:</strong> {employee.status}</p>
+            <p><strong>Birthday:</strong> {employee.birthday}</p>
           </>
         )}
       </div>
 
       {/* Combined History Sections with 5 columns */}
-      <div className="client-history">
+      <div className="employee-history">
         <h4>Appointment History</h4>
         <table>
           <thead>
@@ -141,8 +109,8 @@ const ClientDetails = ({ client, goBack }) => {
             </tr>
           </thead>
           <tbody>
-            {client.appointments && client.appointments.length > 0 ? (
-              client.appointments.map((appointment, index) => (
+            {employee.appointments && employee.appointments.length > 0 ? (
+              employee.appointments.map((appointment, index) => (
                 <tr key={index}>
                   <td>{appointment.id}</td>
                   <td>{appointment.date}</td>
@@ -171,8 +139,8 @@ const ClientDetails = ({ client, goBack }) => {
             </tr>
           </thead>
           <tbody>
-            {client.projects && client.projects.length > 0 ? (
-              client.projects.map((project, index) => (
+            {employee.projects && employee.projects.length > 0 ? (
+              employee.projects.map((project, index) => (
                 <tr key={index}>
                   <td>{project.id}</td>
                   <td>{project.name}</td>
@@ -201,8 +169,8 @@ const ClientDetails = ({ client, goBack }) => {
             </tr>
           </thead>
           <tbody>
-            {client.payments && client.payments.length > 0 ? (
-              client.payments.map((payment, index) => (
+            {employee.payments && employee.payments.length > 0 ? (
+              employee.payments.map((payment, index) => (
                 <tr key={index}>
                   <td>{payment.id}</td>
                   <td>{payment.date}</td>
@@ -231,8 +199,8 @@ const ClientDetails = ({ client, goBack }) => {
             </tr>
           </thead>
           <tbody>
-            {client.documents && client.documents.length > 0 ? (
-              client.documents.map((document, index) => (
+            {employee.documents && employee.documents.length > 0 ? (
+              employee.documents.map((document, index) => (
                 <tr key={index}>
                   <td>{document.id}</td>
                   <td>{document.name}</td>
@@ -263,4 +231,4 @@ const ClientDetails = ({ client, goBack }) => {
   );
 };
 
-export default ClientDetails;
+export default EmployeeDetails;

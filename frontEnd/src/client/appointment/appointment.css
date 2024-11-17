@@ -1,0 +1,246 @@
+  /* Import Google font - Poppins */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+  
+  .content {
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
+
+.appointment-form-container {
+    max-width: 1500px;
+    margin: 0 auto; /* Center horizontally */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+.content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button + button {
+  margin-left: 10px;
+}
+
+.calendar-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 days a week */
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .calendar-date {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .calendar-date.available {
+    background-color: #d4edda; /* Green for available */
+    color: #155724;
+  }
+  
+  .calendar-date.unavailable {
+    background-color: #f8d7da; /* Red for unavailable */
+    color: #721c24;
+    cursor: not-allowed;
+  }
+  
+  .calendar-date.selected {
+    border: 2px solid #007bff;
+  }
+
+  .calendar-time-container {
+    display: flex;
+    gap: 20px; /* Space between calendar and time slots */
+  }
+  
+  .calendar-time-container .wrapper {
+    flex: 2; /* Calendar takes more space */
+  }
+  
+  .calendar-time-container .time-slots {
+    flex: 1; /* Time slots take less space */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .time-slots h4 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+  }
+  
+  .time-slot {
+    color: #0f0e0e;
+    width: 100%;
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .time-slot:hover {
+    background-color: #ddd;
+  }
+  
+  .time-slot.selected {
+    background-color: #007bff;
+    color: #fcf9f9;
+  }
+
+.wrapper{
+  width: 550px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+.wrapper header{
+  display: flex;
+  align-items: center;
+  padding: 25px 30px 10px;
+  justify-content: space-between;
+}
+header .icons{
+  display: flex;
+}
+header .icons span{
+  height: 38px;
+  width: 38px;
+  margin: 0 1px;
+  cursor: pointer;
+  color: #878787;
+  text-align: center;
+  line-height: 38px;
+  font-size: 1.9rem;
+  user-select: none;
+  border-radius: 50%;
+}
+.icons span:last-child{
+  margin-right: -10px;
+}
+header .icons span:hover{
+  background: #f2f2f2;
+}
+header .current-date{
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+.calendar{
+  padding: 20px;
+}
+.calendar ul{
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  text-align: center;
+}
+.calendar .days{
+  margin-bottom: 20px;
+}
+.calendar li{
+  color: #333;
+  width: calc(100% / 7);
+  font-size: 1.07rem;
+}
+.calendar .weeks li{
+  font-weight: 500;
+  cursor: default;
+}
+.calendar .days li{
+  z-index: 1;
+  cursor: pointer;
+  position: relative;
+  margin-top: 30px;
+}
+.calendar .days li.selected-date {
+    border: 2px solid #007bff;
+    font-weight: bold;
+  }
+.days li.inactive{
+  color: #aaa;
+}
+.days li.active{
+  color: #fff;
+}
+.days li::before{
+  position: absolute;
+  content: "";
+  left: 50%;
+  top: 50%;
+  height: 40px;
+  width: 40px;
+  z-index: -1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.days li.active::before{
+  background: #9B59B6;
+}
+.days li:not(.active):hover::before{
+  background: #f2f2f2;
+}
+
+.available {
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .fully-booked {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .unavailable {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+  }
+  
+  .inactive {
+    background-color: transparent;
+    color: #ccc;
+    cursor: not-allowed;
+  }
+  

@@ -2,7 +2,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 150px; /* Adjust width as needed */
+    max-width: 122px; /* Adjust width as needed */
     display: inline-block; /* Necessary for text-overflow to work */
 }
 
@@ -12,27 +12,19 @@
     z-index: 1; /* Bring tooltip above other elements */
 }
 
-
-
 .project-management-page {
     display: flex; 
     height: 100vh; 
     margin: 0 20px; 
 }
 
-.sidebar {
-    width: 200px; 
-    background-color: #f0f0f0; 
-    padding: 10px; 
-}
-
 .content {
-    flex: 1; 
-    padding: 40px 20px 20px; 
-    display: flex; 
-    flex-direction: column; 
-    justify-content: flex-start; 
-    height: 100%; 
+    margin-left: 200px; /* eto yung distance sa sidebar */
+    padding: 40px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
 }
 
 
@@ -66,42 +58,8 @@ h1 {
     margin-right: 8px; 
 } 
 
-/* Search box styles *****************************************************************/
-.header-actions {
-    display: flex;
-    align-items: center; 
-    justify-content: space-between; 
-    margin-top: 10px; 
-    width: 100%; 
-}
+/* notification box styles *****************************************************************/
 
-.search-container {
-    display: flex; 
-    align-items: center; 
-    position: absolute;
-    right: 0;
-    margin-top: 80px; 
-    margin-right: 70px;
-}
-
-
-.search-label {
-    margin-right: 20px; 
-    font-size: 16px; 
-}
-
-.search-box {
-    padding: 10px; 
-    border: 1px solid #ccc; 
-    border-radius: 5px; 
-    font-size: 16px; 
-    width: 300px; 
-   
-}
-
-.search-box::placeholder {
-    color: #aaa;
-}
 .notification-icon {
     margin-top: 10px; 
     cursor: pointer;
@@ -117,29 +75,7 @@ h1 {
     color: #51d1eb; 
 }
 
-/*eto yung css ng home*/
 
-.home-section {
-    display: flex;
-    align-items: center;
-    margin-top: 20px; 
-    position: absolute;
-    margin-top: 180px;
-    margin-left: 10px;
-
-}
-
-.home-icon {
-    font-size: 24px; 
-    margin-right: 8px; 
-    color: #3a9b9a; 
-}
-
-.home-link {
-    font-size: 20px; 
-    color: #333; 
-    text-decoration: none; 
-}
 
 
 /*eto sa no project created yet*/
@@ -233,16 +169,15 @@ ct-list-header h3:nth-child(3) { /* Client */
     width: 25%;
 }
 
+/*PROJECT CSS-------------------------------------------*/
 .project-list {
     width: 100%; /* Full width of the container */
     max-width: 1200px; /* Set a maximum width for the table */
-    margin: -15px auto 0; /* Decrease the top margin to move the table up */
+    margin: -50px 0 0 0; /* Remove centering and move the table to the left */
     border-collapse: collapse; /* Ensures borders are collapsed */
-    table-layout: fixed; /* Enables fixed layout for proper column widths */
-    margin-left: auto; /* Aligns the table to the right */
-    margin-right: 100px; /* Optional: Adjusts distance from the right edge */
+    margin-left: 300px;
+    
 }
-
 
 
 .project-list-header,
@@ -250,7 +185,7 @@ ct-list-header h3:nth-child(3) { /* Client */
     display: table-row; /* Ensures they behave like table rows */
 }
 
-/*PROJECT CSS*/
+
 .project-list-header h3,
 .project-item p {
     display: table-cell; /* Ensures they behave like table cells */
@@ -264,7 +199,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
 .project-item p:nth-child(2) {
-    width: 100px; /* Fixed width for Project Name */
+    width: 200px; /* Fixed width for Project Name */
 }
 
 .project-list-header h3:nth-child(3), /* Client */
@@ -272,199 +207,131 @@ ct-list-header h3:nth-child(3) { /* Client */
     width: 200px; /* Fixed width for Client */
 }
 
-.project-list-header h3:nth-child(1) { /* ID */
-    width: 15%; /* Increased width */
+/* Other column widths */
+.project-list-header h3:nth-child(1), /* ID */
+.project-item p:nth-child(1) {
+    width: 100px; /* Fixed width for ID */
 }
 
-.project-list-header h3:nth-child(2) { /* Name */
-    width: 30%; /* Increased width */
+.project-list-header h3:nth-child(4), /* Progress */
+.project-item p:nth-child(4) {
+    width: 150px; /* Fixed width for Progress */
 }
 
-.project-list-header h3:nth-child(3) { /* Client */
-    width: 25%; /* Increased width */
+.project-list-header h3:nth-child(5), /* Date Start */
+.project-item p:nth-child(5) {
+    width: 200px; /* Fixed width for Date Start */
 }
 
-.project-list-header h3:nth-child(4) { /* Progress */
-    width: 10%; /* Adjusted width */
+.project-list-header h3:nth-child(6), /* Status */
+.project-item p:nth-child(6) {
+    width: 150px; /* Fixed width for Status */
 }
 
-.project-list-header h3:nth-child(5) { /* Date Start */
-    width: 20%; /* Adjusted width */
+.project-list-header h3:nth-child(7), /* Action */
+.project-item p:nth-child(7) {
+    width: 150px; /* Fixed width for Action */
 }
 
-.project-list-header h3:nth-child(6) { /* Status */
-    width: 15%; /* New Status column */
-}
-
-.project-list-header h3:nth-child(7) { /* Action */
-    width: 10%; /* Action column */
-}
-
-/* Match widths for project items */
-.project-item p:nth-child(1) { /* ID */
-    width: 15%;
-}
-
-.project-item p:nth-child(2) { /* Name */
-    width: 30%;
-}
-
-.project-item p:nth-child(3) { /* Client */
-    width: 25%;
-}
-
-.project-item p:nth-child(4) { /* Progress */
-    width: 10%;
-}
-
-.project-item p:nth-child(5) { /* Date Start */
-    width: 20%;
-}
-
-.project-item p:nth-child(6) { /* Status */
-    width: 15%;
-}
-
-.project-item p:nth-child(7) { /* Action */
-    width: 10%;
-}
-
-/* Sorting CSS */
-
+/* Container for Sort, Details, and Search */
 .sort-button-container {
-    display: inline-block; /* Keeps the sort button inline */
-    margin-bottom: 10px; /* Adds space below the sort button */
+    display: flex; /* Use flex layout to align items side by side */
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Add space between elements */
+    margin-bottom: 50px; /* Adds space below the container */
+    justify-content: flex-start; /* Aligns buttons to the left */
+    margin-left: 1px;
+}
+
+.sort-button, .detail-button {
+    padding: 12px 16px; /* Uniform padding for buttons */
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 .sort-button {
-    padding: 12px 16px; /* Increase padding for a bigger button */
-    font-size: 16px; /* Increase font size for better visibility */
-    border: none; /* Ensures no border is applied */
-    cursor: pointer; /* Cursor changes to pointer on hover */
-    background-color: #f0f0f0; /* Optional: change background color */
-    border-radius: 5px; /* Optional: add some rounding */
-    transition: background-color 0.3s; /* Optional: smooth background transition */
-    width: 100px; /* Set the width of the button */
-    /* Adjust the width as needed */
+    background-color: #8cbdf2;
+    transition: background-color 0.3s;
+    width: 100px;
 }
-
-.sort-dropdown {
-    position: absolute;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
-.sort-dropdown button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border: none;
-    text-align: left;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-.sort-dropdown button:hover {
-    background-color: #85cfed;
-}
-
-/*css ng detai button*/
 
 .detail-button {
     background-color: #b1d1d1;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-left: 10px; /* Adds some space between buttons */
-    position: absolute;
-    
+    width: 100px;
+}
+
+.sort-button:hover {
+    background-color: #7aa8d8;
 }
 
 .detail-button:hover {
     background-color: #51d1eb;
 }
 
+/* Search box styling */
+.search-box-container {
+    flex-grow: 1; /* Allows the search box to take up remaining space */
+    max-width: 400px; /* Optional: Limit max width */
+    margin-left: 805px;
+}
+
+.search-box {
+    width: 200%;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+
 /* LEFT SIDE PROJECT NAMES */
-/* LEFT SIDE PROJECT NAMES */
+.folder-title {
+    font-size: 20px; /* Make Folder title slightly larger */
+    font-weight: bold;
+    margin-bottom: -20px; /* Adjust space after the title */
+    position: relative; /* Allows control of its position */
+    top: -40px; /* Adjust this to move the title down or up */
+    left: 0; /* Adjust this to move the title horizontally if needed */
+    /* You can add other positioning properties like `right`, `bottom` here if necessary */
+}
+
 .project-names-section {
-    margin-top: 10px; /* Move the section up */
-    padding: 10px;
+    margin-top: 30px;
+    padding: 15px;
     position: absolute;
-    margin-left: 33px;
-    margin-top: 220px;  
-    border-right: 5px solid #ccc; /* Added right border for separation */
-    height: 100%; /* Ensure the height covers the entire section */
+    margin-left: 10px;
+    margin-top: 230px;
 }
 
 .project-name-item {
-    position: relative; /* Position relative for the pseudo-element */
-    padding: 12px; 
-    transition: background-color 0.3s; 
-    cursor: pointer; 
-    margin-bottom: 5px; /* Reduced space between items */
-    margin-right: 30px; /* Adjust this value to increase or decrease distance from the border */
-    margin-top: 5px; /* Decrease this value to move items up */
-}
-
-/* Pseudo-element for longer bottom border */
-.project-name-item::after {
-    content: ''; /* Required for pseudo-element */
-    position: absolute; /* Position it absolutely within the item */
-    left: -10px; /* Adjust this value to move the border left */
-    bottom: 0; /* Align to the bottom */
-    width: calc(100% + 20px); /* Full width plus some extra space on both sides */
-    height: 1px; /* Height of the border */
-    background-color: #4e2929; /* Color of the border */
-    z-index: -1; /* Place it behind the text */
-}
-
-
-
-
-
-/*action cssssssssssssssss*/
-
-.action-menu {
-    position: absolute;
-    right: 50px;
-    margin-top: 10px;
-}
-
-.action-menu-button {
-    background: none;
-    border: none;
+    padding: 12px;
+    transition: background-color 0.3s;
     cursor: pointer;
-    font-size: 24px; 
-    padding: 5px 10px; 
+    margin-bottom: 1px;
+    position: relative;
 }
 
-.dropdown-menu {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    z-index: 1000;
-    min-width: 100px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.project-name-item:hover {
+    background-color: #b0f0f8;
 }
 
-.dropdown-menu button {
-    display: block;
-    padding: 8px;
-    text-align: left;
-    width: 100%;
-    border: none;
-    background: none;
-    cursor: pointer;
+.project-name-item:last-child {
+    border-bottom: none;
 }
 
-.dropdown-menu button:hover {
-    background-color: #9c5959;
+.project-name-item::before {
+    content: '> ';
+    color: #333;
+    font-weight: bold;
+    margin-right: 5px;
 }
+
+.search-box-container {
+    position: absolute; /* Keeps the sort button inline */  
+
+}
+

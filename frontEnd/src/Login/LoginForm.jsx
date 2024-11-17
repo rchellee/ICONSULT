@@ -13,25 +13,30 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
- 
+  
     try {
       const { data } = await axios.post('http://localhost:8081/Login', {
         username,
         password
       });
- 
+  
       // Navigate based on the role
       if (data.role === 'admin') {
         navigate('/admin'); 
       } else if (data.role === 'client') {
-        navigate('/client'); 
+        // After a successful login as a client, store firstName and lastName in localStorage
+        localStorage.setItem("clientId", data.clientId); // Save clientId
+        localStorage.setItem("firstName", data.firstName);
+        localStorage.setItem("lastName", data.lastName);
+        navigate('/clientdashboard'); 
       } else {
         setError(data.message || 'Login failed');
       }
     } catch (error) {
       setError(error.response?.data?.message || 'An error occurred. Please try again.');
     }
- };
+  };
+  
 
   return (
     <div className='container'>
