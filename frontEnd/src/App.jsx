@@ -7,6 +7,7 @@ import ProjectManagement from './admin/Project/ProjectManagement';
 import ClientManagement from './admin/Client/ClientManagement.jsx';
 import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
 import AppointmentForm from './client/appointment/AppointmentForm.jsx';
+import Project from './client/project/Project.jsx';
 
 
 // for google icons
@@ -36,6 +37,7 @@ function App() {
         <Route path="/clientdashboard" element={<ClientDashboard />} />
         <Route path="/employee" element={<EmployeeManagement />} />
         <Route path="/appointments/new" element={<AppointmentForm />} />
+        <Route path="/clientproject" element={<Project />} />
       </Routes>
     </Router>
   );

@@ -32,7 +32,7 @@ const Sidebar = () => {
     </Link>
         </li>
         <li>
-          <Link to="/projectlist">
+          <Link to="/clientproject">
             <span className="material-symbols-outlined">folder</span>
             <h4>Projects</h4>
           </Link>
