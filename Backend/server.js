@@ -43,16 +43,22 @@ app.post('/Login', (req, res) => {
             return res.status(200).json({ message: 'Login successful', role: 'admin' });
         } else {
             // Check client table
-            const sqlClient = "SELECT firstName, lastName FROM client WHERE username = ? AND password = ?";
+            const sqlClient = "SELECT id, firstName, lastName FROM client WHERE username = ? AND password = ?";
             db.query(sqlClient, [username, password], (err, clientResults) => {
                 if (err) {
                     return res.status(500).json({ message: 'An error occurred checking the client table' });
                 }
 
                 if (clientResults.length > 0) {
-                    const { firstName, lastName } = clientResults[0];
-                    return res.status(200).json({ message: 'Login successful', role: 'client', firstName, lastName });
-                } else {
+                    const { id: clientId, firstName, lastName } = clientResults[0];
+                    return res.status(200).json({ 
+                        message: 'Login successful', 
+                        role: 'client', 
+                        clientId, 
+                        firstName, 
+                        lastName 
+                    });
+                }else {
                     return res.status(401).json({ message: 'Invalid username or password' });
                 }
             });
@@ -119,8 +125,6 @@ app.put('/client/:id', (req, res) => {
         }
     });
 });
-
-
 
 // Save a new employee (POST request)
 app.post('/employee', (req, res) => {
@@ -208,8 +212,6 @@ app.post('/projects', (req, res) => {
         return res.status(201).json({ id: result.insertId, clientName, projectName, description, startDate, endDate, status });
     });
 });
-
-
 // Get all active (not deleted) projects (GET request)
 app.get('/projects', (req, res) => {
     const sql = "SELECT * FROM project WHERE isDeleted = 0"; // Exclude deleted projects
@@ -218,7 +220,6 @@ app.get('/projects', (req, res) => {
         return res.json(data);
     });
 });
-
 // Update an existing project (PUT request)
 app.put('/projects/:id', (req, res) => {
     const projectId = req.params.id;
@@ -232,7 +233,6 @@ app.put('/projects/:id', (req, res) => {
         return res.json({ id: projectId, clientName, projectName, description, startDate, endDate, status });
     });
 });
-
 // Delete a project (DELETE request)
 app.delete('/projects/:id', (req, res) => {
     const projectId = req.params.id;
@@ -249,8 +249,53 @@ app.delete('/projects/:id', (req, res) => {
         }
     });
 });
+// Add a new appointment (POST request)
+app.post('/appointments', (req, res) => {
+    const {
+        date,
+        time,
+        name,
+        email,
+        contact, // Add contact here
+        consultationType,
+        additionalInfo,
+        platform,
+        clientId,
+    } = req.body;
 
+    if (!clientId || clientId === 0) {
+        return res.status(400).json({ message: "Invalid client ID" });
+    }
 
+    const sql = `
+        INSERT INTO appointments (date, time, name, email, contact, consultationType, additionalInfo, platform, client_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(sql, [date, time, name, email, contact, consultationType, additionalInfo, platform, clientId], (err, result) => {
+        if (err) {
+            console.error("Error inserting appointment:", err);
+            return res.status(500).json({ message: "Failed to save appointment", error: err });
+        }
+        return res.status(201).json({ message: "Appointment saved successfully", appointmentId: result.insertId });
+    });
+});
+// Fetch appointments for a specific client
+app.get('/appointments/client/:clientId', (req, res) => {
+    const { clientId } = req.params;
+
+    const sql = `
+        SELECT * FROM appointments WHERE client_id = ?
+    `;
+
+    db.query(sql, [clientId], (err, data) => {
+        if (err) {
+            console.error("Error fetching appointments:", err);
+            return res.status(500).json({ message: "Failed to fetch appointments", error: err });
+        }
+        return res.status(200).json(data);
+    });
+});
 
 
 // Start the server

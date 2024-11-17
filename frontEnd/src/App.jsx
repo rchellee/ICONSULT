@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Login/LoginForm';
 import AdminHomePage from './admin/AdminHomePage';
-import ClientHomePage from './client/ClientHomePage';
+import ClientDashboard from './client/ClientDashboard';
 import LandingPage from '../src/Landingpage.jsx';
 import ProjectManagement from './admin/Project/ProjectManagement';
 import ClientManagement from './admin/Client/ClientManagement.jsx';
 import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
-import Appointment from './client/Appointment/Appointment.jsx';
+import AppointmentForm from './client/appointment/AppointmentForm.jsx';
 
 
 // for google icons
@@ -33,9 +33,9 @@ function App() {
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/project" element={<ProjectManagement />} />
         <Route path="/clients" element={<ClientManagement />} />
-        <Route path="/client" element={<ClientHomePage />} />
+        <Route path="/clientdashboard" element={<ClientDashboard />} />
         <Route path="/employee" element={<EmployeeManagement />} />
-        <Route path="/dashboard" element={<Appointment />} />
+        <Route path="/appointments/new" element={<AppointmentForm />} />
       </Routes>
     </Router>
   );

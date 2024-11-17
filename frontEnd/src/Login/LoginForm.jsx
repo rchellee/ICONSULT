@@ -25,9 +25,10 @@ const Login = () => {
         navigate('/admin'); 
       } else if (data.role === 'client') {
         // After a successful login as a client, store firstName and lastName in localStorage
+        localStorage.setItem("clientId", data.clientId); // Save clientId
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
-        navigate('/client'); 
+        navigate('/clientdashboard'); 
       } else {
         setError(data.message || 'Login failed');
       }

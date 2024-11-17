@@ -220,3 +220,31 @@ body {
   margin-left: 245px;
 }
 
+
+/* style ng appointment schedule sa dashboard */
+.appointment-list {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.appointment-list h2 {
+  margin-bottom: 10px;
+}
+
+.appointment-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.appointment-list li {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.appointment-list li:last-child {
+  border-bottom: none;
+}

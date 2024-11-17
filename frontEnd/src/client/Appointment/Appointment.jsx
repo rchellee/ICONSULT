@@ -1,7 +1,7 @@
 // Dashboard.jsx
 import React, { useState } from 'react';
 import Sidebar from '../sidebar';
-import AppointmentForm from './AppointmentForm';
+
 
 function Appointment() {
     const [appointments, setAppointments] = useState([]);

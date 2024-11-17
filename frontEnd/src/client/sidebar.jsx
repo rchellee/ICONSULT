@@ -26,7 +26,7 @@ const Sidebar = () => {
       </div>
       <ul className="sidebar-links">
       <li>
-    <Link to="/client">
+    <Link to="/clientdashboard">
         <span className="material-symbols-outlined">dashboard</span>
         <h4>Dashboard</h4>
     </Link>
