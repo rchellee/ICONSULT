@@ -1,58 +1,57 @@
 /* Overlay background to darken the area */
 .task-details-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999; /* Ensure it's above other content */
-  }
-  
-  /* Box styling for task details */
-  .task-details {
-    background-color: #161a2d; /* Set the background color */
-    color: white; /* Set text color to white for contrast */
-    padding: 20px;
-    border-radius: 8px; /* Optional: rounded corners */
-    width: 400px; /* Set a fixed width */
-    max-width: 90%; /* Ensure it is responsive */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add some shadow */
-  }
-  
-  /* Close button styling */
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    font-size: 24px;
-    color: white;
-    cursor: pointer;
-  }
-  
-  /* Close button hover effect */
-  .close-button:hover {
-    color: #f44336; /* Red color on hover */
-  }
-  
-  /* Title styling */
-  h3 {
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-  }
-  
-  /* Paragraph styling */
-  p {
-    margin-bottom: 10px;
-    font-size: 1rem;
-  }
-  
-  strong {
-    font-weight: bold;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Ensure it's above other content */
+}
+
+/* Box styling for task details */
+.task-details {
+  background-color: #161a2d; /* Set the background color */
+  color: white; /* Set text color to white for contrast */
+  padding: 20px;
+  border-radius: 8px; /* Optional: rounded corners */
+  width: 400px; /* Set a fixed width */
+  max-width: 90%; /* Ensure it is responsive */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add some shadow */
+}
+
+/* Close button styling */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Close button hover effect */
+.close-button:hover {
+  color: #f44336; /* Red color on hover */
+}
+
+/* Title styling */
+h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+/* Paragraph styling */
+p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+strong {
+  font-weight: bold;
+}
