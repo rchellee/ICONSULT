@@ -280,6 +280,25 @@ app.post('/appointments', (req, res) => {
         return res.status(201).json({ message: "Appointment saved successfully", appointmentId: result.insertId });
     });
 });
+
+//Fetch appointments
+app.get('/appointments', (req, res) => {
+    console.log("Received GET request to /appointments");
+    const sql = `
+        SELECT * FROM appointments
+    `;
+    
+    db.query(sql, (err, data) => {
+        console.log("Query executed successfully");
+        if (err) {
+            console.error("Error fetching appointments:", err);
+            return res.status(500).json({ message: "Failed to fetch appointments", error: err });
+        }
+        console.log("Sending response");
+        return res.json(data);
+    });
+});
+
 // Fetch appointments for a specific client
 app.get('/appointments/client/:clientId', (req, res) => {
     const { clientId } = req.params;

@@ -1,0 +1,40 @@
+/* Availability.css */
+.calendar-wrapper {
+  margin-left: 220px; /* Ensure the calendar starts after the sidebar */
+  padding: 20px; /* Add padding to separate the calendar from the sidebar */
+}
+
+.calendar-container {
+    flex-grow: 1; /* Take up remaining space */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding: 20px; /* Add some padding */
+}
+
+/* Style the calendar */
+.rbc-header {
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+.rbc-header-label {
+    font-weight: bold;
+}
+
+.rbc-header + .rbc-header {
+    margin-top: 10px;
+}
+
+.rbc-btn-group button {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.rbc-btn-group button:hover {
+    background-color: #f0f0f0;
+}
+
+.rbc-btn-group button.rbc-active {
+    background-color: #e0e0e0;
+}
+
