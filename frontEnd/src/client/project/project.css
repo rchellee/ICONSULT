@@ -1,5 +1,89 @@
+.client-project-page {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
 .content {
-  margin-left: 85px;
+  flex-grow: 1;
   padding: 20px;
-  transition: margin-left 0.4s ease;
+  overflow-y: auto;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Wider boxes */
+  gap: 20px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-top: 50px; 
+  cursor: pointer;
+}
+
+.project-box:hover {
+  background-color: #e6e6e6; 
+}
+
+
+.project-box {
+  background-color: #f3f3f3;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.logo-box {
+  width: 70px;
+  height: 70px;
+  background-color: #0078d4; 
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 15px;
+  border-radius: 12px; 
+}
+
+.project-title {
+  margin: 10px 0 0 0; 
+  font-size: 26px; 
+  font-weight: bold;
+  color: #333;
+}
+
+
+.project-info {
+  margin-left: 10px; 
+}
+
+.project-info p {
+  margin: 5px 0;
+  color: #555;
+  font-size: 16px; 
+}
+
+.project-info p:first-child {
+  margin-left: 75px; 
+}
+
+.project-info p:last-child {
+  margin-left: 75px; 
 }

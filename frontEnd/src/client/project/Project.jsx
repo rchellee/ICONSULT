@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import Sidebar from "../sidebar";
 import "./project.css";
 
@@ -8,7 +7,19 @@ function Project() {
     <div className="client-project-page">
       <Sidebar />
       <div className="content">
-        <h1>Project</h1>
+        <div className="project-grid">
+          <div className="project-box">
+            <div className="project-header">
+              <div className="logo-box">P1</div>
+              <h2 className="project-title">Project 1</h2>
+            </div>
+            <div className="project-info">
+              <p>Status: On-going</p>
+              <p>Progress: 10%</p>
+            </div>
+          </div>
+          {/* Add more project boxes as needed */}
+        </div>
       </div>
     </div>
   );
