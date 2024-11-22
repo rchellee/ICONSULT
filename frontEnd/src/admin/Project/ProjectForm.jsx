@@ -1,10 +1,11 @@
-// ProjectForm.jsx
 import React from "react";
 import "./project.css";
 
 const ProjectForm = ({
   projectName,
   setProjectName,
+  clientId, // Ensure this is included
+  setClientId,
   clientName,
   setClientName,
   startDate,
@@ -16,12 +17,14 @@ const ProjectForm = ({
   clients,
   onCancel,
   onSave,
-  editingProjectId
+  editingProjectId,
 }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2 className="modal-title">{editingProjectId ? "Edit Project" : "Create Project"}</h2>
+        <h2 className="modal-title">
+          {editingProjectId ? "Edit Project" : "Create Project"}
+        </h2>
         <div className="modal-field">
           <label>Project Name:</label>
           <input
@@ -33,22 +36,45 @@ const ProjectForm = ({
         </div>
         <div className="modal-field">
           <label>Client Name:</label>
-          <select value={clientName} onChange={(e) => setClientName(e.target.value)}>
+          <select
+            value={clientId} // Use clientId instead of clientName
+            onChange={(e) => {
+              const selectedClientId = e.target.value;
+              setClientId(selectedClientId); // Set clientId state
+              const selectedClient = clients.find(
+                (client) => client.id === parseInt(selectedClientId)
+              );
+              if (selectedClient) {
+                setClientName(
+                  `${selectedClient.firstName} ${selectedClient.lastName}`
+                ); // Set clientName for display
+              }
+            }}
+          >
             <option value="">Select a client</option>
             {clients.map((client) => (
-              <option key={client.id} value={`${client.firstName} ${client.lastName}`}>
+              <option key={client.id} value={client.id}>
                 {client.firstName} {client.lastName}
               </option>
             ))}
           </select>
         </div>
+
         <div className="modal-field">
           <label>Start Date:</label>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
         </div>
         <div className="modal-field">
           <label>End Date:</label>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
         </div>
         <div className="modal-field">
           <label>Description:</label>
@@ -61,7 +87,9 @@ const ProjectForm = ({
         </div>
 
         <div className="modal-actions">
-          <button className="cancel-button" onClick={onCancel}>Cancel</button>
+          <button className="cancel-button" onClick={onCancel}>
+            Cancel
+          </button>
           <button className="create-button" onClick={onSave}>
             {editingProjectId ? "Update" : "Create"}
           </button>

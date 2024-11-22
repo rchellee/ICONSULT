@@ -21,6 +21,7 @@ const ProjectManagement = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState(null); // Store selected task
   const [projectName, setProjectName] = useState("");
+  const [clientId, setClientId] = useState("");
   const [clientName, setClientName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -41,7 +42,10 @@ const ProjectManagement = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the click is outside the task button
-      if (taskButtonRef.current && !taskButtonRef.current.contains(event.target)) {
+      if (
+        taskButtonRef.current &&
+        !taskButtonRef.current.contains(event.target)
+      ) {
         setSelectedProjectId(null); // Deselect project if clicked outside
       }
     };
@@ -112,6 +116,7 @@ const ProjectManagement = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setProjectName("");
+    setClientId("");
     setClientName("");
     setStartDate("");
     setEndDate("");
@@ -121,6 +126,7 @@ const ProjectManagement = () => {
 
   const saveProject = () => {
     const projectData = {
+      clientId,
       projectName,
       clientName,
       description,
@@ -223,7 +229,7 @@ const ProjectManagement = () => {
 
   const handleDelete = (projectId) => {
     fetch(`http://localhost:8081/projects/${projectId}`, {
-      method: "PATCH", // Use PATCH to update the `isDeleted` field
+      method: "PATCH", // Use PATCH to update the isDeleted field
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isDeleted: true }),
     })
@@ -259,6 +265,8 @@ const ProjectManagement = () => {
           <ProjectForm
             projectName={projectName}
             setProjectName={setProjectName}
+            clientId={clientId} // Pass this prop
+            setClientId={setClientId}
             clientName={clientName}
             setClientName={setClientName}
             startDate={startDate}
@@ -275,15 +283,15 @@ const ProjectManagement = () => {
         )}
         {/* naka display dapat sa rightside */}
         {selectedProjectId && (
-        <div className="add-task-button" ref={taskButtonRef}>
-          <button onClick={openTaskForm}>
-            <FaPlus className="icon" /> Task
-          </button>
-        </div>
-      )}
-      {isTaskFormOpen && (
-        <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
-      )}
+          <div className="add-task-button" ref={taskButtonRef}>
+            <button onClick={openTaskForm}>
+              <FaPlus className="icon" /> Task
+            </button>
+          </div>
+        )}
+        {isTaskFormOpen && (
+          <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
+        )}
 
         {selectedTask && (
           <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
@@ -333,7 +341,6 @@ const ProjectManagement = () => {
           />
         )}
       </div>
-      
     </div>
   );
 };
