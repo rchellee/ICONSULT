@@ -1,0 +1,257 @@
+/* tracking.css */
+
+/* Container for the whole page */
+.client-project-page {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.content {
+    margin-top: 100px; /* Adds space below the fixed tabs */
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Tabs section at the top */
+.tabs {
+    left: 0;
+    width: 80%;
+    max-width: 1000px;
+    min-width: 400px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 10px 20px;
+    z-index: 10;
+    height: 60px;
+    margin-left: 150px;
+    margin-top: 80px;
+    background-color: #f4f4f4;
+}
+
+
+/* Style for individual tab buttons */
+.tabs button {
+    padding: 10px 20px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #565656; /* Change tab font color */
+}
+
+.tabs button.active {
+    background-color: transparent; /* Remove the background color */
+    color: rgb(0, 0, 0); /* Maintain the text color */
+    border-bottom: 3px solid #0078d4; /* Add a blue line below the active button */
+    font-weight: bold; /* Optional: Make the active tab button text bold */
+}
+
+
+/* Optionally, if you want to center the tabs */
+.tabs.centered {
+    justify-content: center; /* Aligns tabs to the center */
+}
+
+/* Optionally, if you want the tabs to align to the right */
+.tabs.right-aligned {
+    justify-content: flex-end; /* Aligns tabs to the right */
+}
+
+/* Content area for Posts and Files */
+.content-area {
+    padding: 20px;
+}
+
+/* Posts and Files Section */
+.posts, .files {
+    display: flex;
+    flex-direction: column;
+}
+
+.posts h2, .files h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #926464; /* Change heading color */
+}
+
+.posts p, .files p {
+    font-size: 16px;
+    color: #000000; /* Change paragraph text color */
+}
+
+/*file action*/
+/* File action buttons container */
+.file-actions {
+    display: flex;
+    gap: 20px; /* Space between the buttons */
+    padding: 10px 20px; /* Padding for container */
+    background-color: #eceaea; /* Same background color as .tabs */
+    border-bottom: 1px solid #ddd; /* Border under the tab */
+  }
+  
+  /* Style for individual buttons */
+  /* File action buttons container */
+.file-actions {
+    display: flex;
+    gap: 20px; /* Space between the buttons */
+    padding: 10px 20px; /* Padding for container */
+    background-color: #f4f4f4; /* Same background color as .tabs */
+    border-bottom: 1px solid #ddd; /* Border under the tab */
+  }
+  
+  /* Style for individual buttons */
+  .file-actions button {
+    padding: 10px 15px; /* Add padding inside buttons */
+    font-size: 16px; /* Adjust font size */
+    font-weight: normal; /* Normal font weight */
+    background-color: transparent; /* Transparent background */
+    border: none; /* Remove the border */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+    color: #333; /* Default text color */
+    text-align: center; /* Center align text */
+  }
+  
+  /* Button hover effect */
+  .file-actions button:hover {
+    color: #007bff; /* Change text color on hover */
+  }
+  
+  /* Active button styles */
+  .file-actions button.active {
+    background-color: #ccc; /* Slightly darker background for active button */
+    color: #0056b3; /* Change text color for active button */
+  }
+
+
+/* Centering the form with larger size */
+.new-folder-input {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  z-index: 1000; /* Ensure it's on top of other elements */
+  animation: flash 1s ease-in-out; /* Flashing effect */
+  width: 60%; /* Increase the width */
+  max-width: 600px; /* Ensure the form doesn't get too wide */
+}
+
+/* Flashing effect */
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.new-folder-input h3 {
+  font-size: 24px; /* Increase heading size */
+  margin-bottom: 20px; /* Increase margin */
+  text-align: center;
+}
+
+.new-folder-input .input-group {
+  margin-bottom: 20px; /* Increase margin between elements */
+}
+
+.new-folder-input .input-group label {
+  display: block;
+  font-size: 16px; /* Increase font size */
+  margin-bottom: 10px; /* Increase margin */
+}
+
+.new-folder-input .input-group input {
+  width: 100%;
+  padding: 15px; /* Increase input padding */
+  font-size: 16px; /* Increase font size */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.new-folder-input .color-selection {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Add space between the color circles */
+  margin-bottom: 20px; /* Add margin between color selection and other inputs */
+}
+
+.new-folder-input .color-selection button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Make the buttons circular */
+  border: 2px solid #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.new-folder-input .color-selection button:hover {
+  transform: scale(1.1); /* Slightly enlarge the button on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.new-folder-input .color-selection button.pink {
+  background-color: pink;
+}
+
+.new-folder-input .color-selection button.blue {
+  background-color: lightblue;
+}
+
+.new-folder-input .color-selection button.yellow {
+  background-color: yellow;
+}
+
+.new-folder-input .color-selection button.orange {
+  background-color: orange;
+}
+
+.new-folder-input .color-selection button.violet {
+  background-color: violet;
+}
+
+.new-folder-input .color-selection button.green {
+  background-color: lightgreen;
+}
+
+.new-folder-input .button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Add gap between buttons */
+}
+
+.new-folder-input .button-group button {
+  padding: 15px 25px; /* Increase button padding */
+  font-size: 16px; /* Increase button font size */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 48%; /* Make buttons take up nearly half the form */
+}
+
+.new-folder-input .button-group button:first-child {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.new-folder-input .button-group button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+.new-folder-input .button-group button:hover {
+  opacity: 0.8;
+}

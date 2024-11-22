@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./project.css";
 
-const ProjectFolders = ({ projects, tasks, onProjectClick, onTaskClick }) => {
+const ProjectFolders = ({ projects, tasks }) => {
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <div className="project-names-section">
@@ -17,7 +19,7 @@ const ProjectFolders = ({ projects, tasks, onProjectClick, onTaskClick }) => {
           <p
             className="truncate"
             title={project.projectName}
-            onClick={() => onProjectClick(project.id)}
+            onClick={() => navigate(`/project/${project.id}`)} // Navigate to the details page
             style={{
               cursor: "pointer",
               fontWeight: hoveredProjectId === project.id ? "bold" : "normal",
@@ -33,7 +35,6 @@ const ProjectFolders = ({ projects, tasks, onProjectClick, onTaskClick }) => {
                   <p
                     key={task.id}
                     style={{ cursor: "pointer", margin: "5px 0" }}
-                    onClick={() => onTaskClick(task)}
                   >
                     &gt; {task.taskName}
                   </p>

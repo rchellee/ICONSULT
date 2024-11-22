@@ -9,6 +9,10 @@ import ProjectList from "./ProjectList";
 import ProjectForm from "./ProjectForm";
 import ProjectFolders from "./ProjectFolders";
 import Task from "./Task";
+import ProjectTask from "./ProjectTask"; // Updated to match the new file name
+
+
+
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // state to control sidebar
@@ -340,6 +344,14 @@ const ProjectManagement = () => {
             selectedProjectId={selectedProjectId}
           />
         )}
+        {selectedProjectId && (
+  <ProjectTask 
+    projectId={selectedProjectId} 
+    tasks={filteredTasks} 
+    onClose={() => setSelectedProjectId(null)} 
+  />
+)}
+
       </div>
     </div>
   );
