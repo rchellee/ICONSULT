@@ -334,10 +334,7 @@ const ProjectManagement = () => {
         {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
-            tasks={tasks}
             onProjectClick={handleProjectClick}
-            onTaskClick={(task) => setSelectedTask(task)}
-            selectedProjectId={selectedProjectId}
           />
         )}
       </div>
