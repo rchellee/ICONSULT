@@ -141,7 +141,6 @@ function Appointments() {
     setSelectedDate(moment(event.start).startOf("day").toDate());
     setSelectedDateAppointments([event]);
   };
-  
 
   if (loading) {
     return <div>Loading...</div>;
@@ -205,7 +204,6 @@ function Appointments() {
       </div>
     </div>
   );
-  
 }
 
 export default Appointments;
