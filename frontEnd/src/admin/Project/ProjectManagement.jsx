@@ -1,116 +1,48 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./project.css";
-import { FaPlus, FaBell, FaHome, FaSort } from "react-icons/fa";
+import { FaPlus, FaBell } from "react-icons/fa";
 import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
-import TaskForm from "./TaskForm";
-import ProjectList from "./ProjectList";
 import ProjectForm from "./ProjectForm";
+import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
-import Task from "./Task";
-import ProjectTask from "./ProjectTask"; // Updated to match the new file name
-
-
-
+import ProjectTask from "./ProjectTask";
 
 const ProjectManagement = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // state to control sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState(
-    JSON.parse(localStorage.getItem("tasks")) || []
-  );
-  const [selectedProjectId, setSelectedProjectId] = useState(null); // Store selected project
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [selectedTaskId, setSelectedTaskId] = useState(null); // Store selected task
   const [projectName, setProjectName] = useState("");
   const [clientId, setClientId] = useState("");
   const [clientName, setClientName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [projectCounter, setProjectCounter] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null); // To handle active dropdown
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [clients, setClients] = useState([]); // Add this line
+  const [clients, setClients] = useState([]);
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [description, setDescription] = useState("");
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
-  const taskButtonRef = useRef(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(null); // Track selected project
 
-  const openTaskForm = () => setIsTaskFormOpen(true);
-  const closeTaskForm = () => setIsTaskFormOpen(false);
 
+  // Fetch data on component mount
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Check if the click is outside the task button
-      if (
-        taskButtonRef.current &&
-        !taskButtonRef.current.contains(event.target)
-      ) {
-        setSelectedProjectId(null); // Deselect project if clicked outside
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const saveTaskToLocalStorage = (newTask) => {
-    const updatedTasks = [
-      ...tasks,
-      { ...newTask, projectId: selectedProjectId },
-    ];
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-  };
-
-  // useEffect for fetching projects from the server
-  useEffect(() => {
-    //fetch projects
     fetch("http://localhost:8081/projects")
       .then((response) => response.json())
-      .then((data) => {
-        setProjects(data); // Set the fetched data to state
-      })
+      .then((data) => setProjects(data))
       .catch((error) => console.error("Error fetching projects:", error));
 
-    // Fetch tasks for each project (assuming tasks are stored in the backend)
-    fetch("http://localhost:8081/tasks")
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error("Error fetching tasks:", error));
-
-    // Fetch clients
     fetch("http://localhost:8081/clients")
       .then((response) => response.json())
-      .then((data) => {
-        setClients(data); // Set fetched clients to state
-      })
+      .then((data) => setClients(data))
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
 
-  // Filter tasks by selected project
-  const filteredTasks = tasks.filter(
-    (task) => task.projectId === selectedProjectId
-  );
-
-  const handleProjectClick = (projectId) => {
-    setSelectedProjectId(projectId); // Set selected project
-    setIsTaskFormOpen(false); // Reset task form
-    setSelectedTaskId(null); // Reset selected task
-  };
-
-  const handleTaskClick = () => {
-    setIsTaskFormOpen(true); // Open the TaskForm
-  };
-
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen); // Toggle sidebar open/close
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const openModal = () => {
@@ -125,7 +57,7 @@ const ProjectManagement = () => {
     setStartDate("");
     setEndDate("");
     setDescription("");
-    setEditingProjectId(null); // Reset editing project ID
+    setEditingProjectId(null);
   };
 
   const saveProject = () => {
@@ -166,7 +98,6 @@ const ProjectManagement = () => {
         .then((response) => response.json())
         .then((newProject) => {
           setProjects([...projects, newProject]);
-          setProjectCounter(projectCounter + 1);
           closeModal();
         })
         .catch((error) => console.error("Error creating project:", error));
@@ -193,7 +124,7 @@ const ProjectManagement = () => {
     }
     setSortConfig({ key, direction });
     sortProjects(key, direction);
-    setIsSortDropdownOpen(false); // Close dropdown after selecting
+    setIsSortDropdownOpen(false);
   };
 
   const sortProjects = (key, direction) => {
@@ -209,10 +140,6 @@ const ProjectManagement = () => {
     setProjects(sortedProjects);
   };
 
-  const showProjectCount = () => {
-    alert(`Total number of projects: ${projects.length}`);
-  };
-
   const toggleDropdown = (projectId) => {
     setActiveDropdown(activeDropdown === projectId ? null : projectId);
   };
@@ -225,15 +152,15 @@ const ProjectManagement = () => {
       setStartDate(projectToEdit.startDate);
       setEndDate(projectToEdit.endDate);
       setDescription(projectToEdit.description);
-      setEditingProjectId(projectId); // Set editing project ID
-      openModal(); // Open modal to edit the project
+      setEditingProjectId(projectId);
+      openModal();
     }
-    toggleDropdown(null); // Close dropdown after selecting
+    toggleDropdown(null);
   };
 
   const handleDelete = (projectId) => {
     fetch(`http://localhost:8081/projects/${projectId}`, {
-      method: "PATCH", // Use PATCH to update the isDeleted field
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isDeleted: true }),
     })
@@ -244,13 +171,37 @@ const ProjectManagement = () => {
       .catch((error) => console.error("Error deleting project:", error));
   };
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-  };
-
   const filteredProjects = projects.filter((project) =>
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Render ProjectList or ProjectTask based on selectedProjectId
+  const renderProjectContent = () => {
+    if (selectedProjectId) {
+      return (
+      <ProjectTask 
+        projectId={selectedProjectId} 
+        onBack={() => setSelectedProjectId(null)} 
+        />
+      );
+    }
+    return (
+      <ProjectList
+        projects={projects}
+        searchTerm={searchTerm}
+        filteredProjects={filteredProjects}
+        formatDate={formatDate}
+        toggleSortDropdown={toggleSortDropdown}
+        isSortDropdownOpen={isSortDropdownOpen}
+        requestSort={requestSort}
+        activeDropdown={activeDropdown}
+        toggleDropdown={toggleDropdown}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        onProjectClick={(projectId) => setSelectedProjectId(projectId)} // Set project ID when a project is clicked
+      />
+    );
+  };
 
   return (
     <div className="project-management-page">
@@ -269,7 +220,7 @@ const ProjectManagement = () => {
           <ProjectForm
             projectName={projectName}
             setProjectName={setProjectName}
-            clientId={clientId} // Pass this prop
+            clientId={clientId}
             setClientId={setClientId}
             clientName={clientName}
             setClientName={setClientName}
@@ -285,23 +236,6 @@ const ProjectManagement = () => {
             editingProjectId={editingProjectId}
           />
         )}
-        {/* naka display dapat sa rightside */}
-        {selectedProjectId && (
-          <div className="add-task-button" ref={taskButtonRef}>
-            <button onClick={openTaskForm}>
-              <FaPlus className="icon" /> Task
-            </button>
-          </div>
-        )}
-        {isTaskFormOpen && (
-          <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
-        )}
-
-        {selectedTask && (
-          <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
-        )}
-
-        {/* Search and Sort */}
         <div className="search-box-container">
           <input
             type="text"
@@ -310,48 +244,20 @@ const ProjectManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
         {projects.length === 0 ? (
           <div style={{ textAlign: "center" }}>
             <img src={pic4} alt="No projects created" />
-            <p className="no-projects-message" style={{ marginLeft: "300px" }}>
-              {" "}
-              No projects created yet.{" "}
-            </p>
+            <p className="no-projects-message">No projects created yet.</p>
           </div>
         ) : (
-          <ProjectList
-            projects={projects}
-            searchTerm={searchTerm}
-            filteredProjects={filteredProjects}
-            formatDate={formatDate}
-            toggleSortDropdown={toggleSortDropdown}
-            showProjectCount={showProjectCount}
-            isSortDropdownOpen={isSortDropdownOpen}
-            requestSort={requestSort}
-            activeDropdown={activeDropdown}
-            toggleDropdown={toggleDropdown}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-          />
+          renderProjectContent()
         )}
         {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
-            tasks={tasks}
-            onProjectClick={handleProjectClick}
-            onTaskClick={(task) => setSelectedTask(task)}
-            selectedProjectId={selectedProjectId}
+            onProjectClick={(projectId) => setSelectedProjectId(projectId)}
           />
         )}
-        {selectedProjectId && (
-  <ProjectTask 
-    projectId={selectedProjectId} 
-    tasks={filteredTasks} 
-    onClose={() => setSelectedProjectId(null)} 
-  />
-)}
-
       </div>
     </div>
   );

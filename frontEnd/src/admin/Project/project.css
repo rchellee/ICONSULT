@@ -99,6 +99,7 @@ h1 {
     justify-content: center; 
     align-items: center; 
     z-index: 1000;
+    overflow: hidden;
 }
 
 .modal-content {
@@ -107,6 +108,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
     width: 400px; 
+    overflow: hidden;
 }
 
 .modal-title {
@@ -176,6 +178,7 @@ ct-list-header h3:nth-child(3) { /* Client */
     margin: -50px 0 0 0; /* Remove centering and move the table to the left */
     border-collapse: collapse; /* Ensures borders are collapsed */
     margin-left: 300px;
+    overflow: hidden;
     
 }
 
@@ -334,4 +337,5 @@ ct-list-header h3:nth-child(3) { /* Client */
     position: absolute; /* Keeps the sort button inline */  
 
 }
+
 

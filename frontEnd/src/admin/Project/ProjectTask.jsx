@@ -1,5 +1,6 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"
+import "./task.css";
 
 const ProjectTask = () => {
   const { projectId } = useParams(); // Get the project ID from the URL
@@ -7,11 +8,12 @@ const ProjectTask = () => {
 
   return (
     <div>
-      <h1>Project Details</h1>
-      <p>Details for Project ID: {projectId}</p>
-      <button onClick={() => navigate("/")}>Back to Projects</button>
+      <button className="back-button" onClick={() => navigate("/")}>
+        Back to Projects
+      </button>
     </div>
   );
 };
 
 export default ProjectTask;
+
