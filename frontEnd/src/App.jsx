@@ -8,7 +8,7 @@ import ClientManagement from './admin/Client/ClientManagement.jsx';
 import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
 import AppointmentForm from './client/appointment/AppointmentForm.jsx';
 import Project from './client/project/Project.jsx';
-import DateofAppointments from './admin/Calendar/Availability.jsx'
+import DateofAppointments from './admin/Calendar/fullcalendar.jsx';
 
 
 // for google icons

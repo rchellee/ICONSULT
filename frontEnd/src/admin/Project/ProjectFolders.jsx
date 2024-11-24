@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./project.css";
 
-const ProjectFolders = ({ projects, tasks, onProjectClick, onTaskClick }) => {
+const ProjectFolders = ({ projects, onProjectClick }) => {
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
 
   return (
@@ -25,21 +25,6 @@ const ProjectFolders = ({ projects, tasks, onProjectClick, onTaskClick }) => {
           >
             {project.projectName}
           </p>
-          {hoveredProjectId === project.id && (
-            <div style={{ marginLeft: "20px" }}>
-              {tasks
-                .filter((task) => task.projectId === project.id)
-                .map((task) => (
-                  <p
-                    key={task.id}
-                    style={{ cursor: "pointer", margin: "5px 0" }}
-                    onClick={() => onTaskClick(task)}
-                  >
-                    &gt; {task.taskName}
-                  </p>
-                ))}
-            </div>
-          )}
         </div>
       ))}
     </div>
