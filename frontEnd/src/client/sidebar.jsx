@@ -6,6 +6,8 @@ import client from "../assets/admin.jpg";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  
+  // Handle logout and clear local storage
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("firstName");
@@ -24,35 +26,30 @@ const Sidebar = () => {
         <h2>Welcome back! <br />
         {clientFirstName}</h2> 
       </div>
+      
       <ul className="sidebar-links">
-      <li>
-    <Link to="/clientdashboard">
-        <span className="material-symbols-outlined">dashboard</span>
-        <h4>Dashboard</h4>
-    </Link>
+        <li>
+          <Link to="/clientdashboard">
+            <span className="material-symbols-outlined">home</span>
+            <h4>Home</h4>
+          </Link>
         </li>
         <li>
           <Link to="/clientproject">
             <span className="material-symbols-outlined">folder</span>
-            <h4>Projects</h4>
+            <h4>My Projects</h4>
           </Link>
         </li>
         <li>
-          <Link to="/reports">
+          <Link to="/consultations">
             <span className="material-symbols-outlined">analytics</span>
-            <h4>Reports</h4>
+            <h4>Consultations</h4>
           </Link>
         </li>
         <li>
-          <Link to="/clients">
-            <span className="material-symbols-outlined">group</span>
-            <h4>Clients</h4>
-          </Link>
-        </li>
-        <li>
-          <Link to="/employee">
-            <span className="material-symbols-outlined">badge</span>
-            <h4>Employees</h4>
+          <Link to="/account-settings">
+            <span className="material-symbols-outlined">settings</span>
+            <h4>Account Settings</h4>
           </Link>
         </li>
         <li>

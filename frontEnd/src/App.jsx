@@ -9,6 +9,8 @@ import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
 import AppointmentForm from './client/appointment/AppointmentForm.jsx';
 import Project from './client/project/Project.jsx';
 import DateofAppointments from './admin/Calendar/fullcalendar.jsx';
+import Consultation from './client/Consultation/Consultation.jsx';
+import AccountSettings from "./client/AccountSettings/AccountSettings.jsx";
 
 
 // for google icons
@@ -40,6 +42,8 @@ function App() {
         <Route path="/appointments/new" element={<AppointmentForm />} />
         <Route path="/clientproject" element={<Project />} />
         <Route path="/calendar" element={<DateofAppointments />} />
+        <Route path="/consultations" element={<Consultation />} />
+        <Route path="/account-settings" element={<AccountSettings />} />  
       </Routes>
     </Router>
   );

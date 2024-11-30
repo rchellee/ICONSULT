@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import Sidebar from "../client/sidebar";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css"; // Make sure to import this for default styles
 import "./client.css";
 
 function ClientDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentAppointmentIndex, setCurrentAppointmentIndex] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        // Replace with the logged-in user's ID from session or context
         const clientId = localStorage.getItem("clientId");
 
         if (!clientId) {
@@ -28,21 +30,18 @@ function ClientDashboard() {
         }
 
         const data = await response.json();
-
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to 00:00:00 for comparison
+        today.setHours(0, 0, 0, 0);
 
-        // Filter out past appointments
         const upcomingAppointments = data.filter((appointment) => {
           const appointmentDate = new Date(appointment.date);
           return appointmentDate >= today;
         });
 
-        // Sort appointments by date
         const sortedAppointments = upcomingAppointments.sort((a, b) => {
           const dateA = new Date(a.date);
           const dateB = new Date(b.date);
-          return dateA - dateB; // Ascending order
+          return dateA - dateB;
         });
 
         setAppointments(sortedAppointments);
@@ -55,6 +54,18 @@ function ClientDashboard() {
 
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    const filtered = appointments.filter((appointment) => {
+      const appointmentDate = new Date(appointment.date);
+      return (
+        appointmentDate.getFullYear() === selectedDate.getFullYear() &&
+        appointmentDate.getMonth() === selectedDate.getMonth() &&
+        appointmentDate.getDate() === selectedDate.getDate()
+      );
+    });
+    setFilteredAppointments(filtered);
+  }, [selectedDate, appointments]);
 
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
@@ -83,55 +94,57 @@ function ClientDashboard() {
       <Sidebar />
       <div className="content">
         <h1>Dashboard</h1>
-        <div className="button-container">
-          <Link to="/appointments/new" className="new-appointment-button">
-            <button>+ Add New Appointment</button>
-          </Link>
-        </div>
 
         {loading ? (
           <p>Loading appointments...</p>
-        ) : appointments.length > 0 ? (
-          <div className="appointment-viewer">
-            <h2>Your Appointments</h2>
-            {currentAppointment && (
-              <div className="appointment-details">
-                <p>
-                  <strong>Date:</strong> {formatDate(currentAppointment.date)}
-                </p>
-                <p>
-                  <strong>Time:</strong> {currentAppointment.time}
-                </p>
-                <p>
-                  <strong>Consultation Type:</strong>{" "}
-                  {currentAppointment.consultationType}
-                </p>
-                <p>
-                  <strong>Platform:</strong> {currentAppointment.platform}
-                </p>
-              </div>
-            )}
-            <div className="navigation-buttons">
-              <button
-                onClick={handlePreviousAppointment}
-                disabled={currentAppointmentIndex === 0}
-              >
-                {"< Previous"}
-              </button>
-              <button
-                onClick={handleNextAppointment}
-                disabled={currentAppointmentIndex === appointments.length - 1}
-              >
-                {"Next >"}
-              </button>
-            </div>
-            <p>
-              Viewing appointment {currentAppointmentIndex + 1} of{" "}
-              {appointments.length}
-            </p>
-          </div>
         ) : (
-          <p>No appointments yet. Add one above!</p>
+          <>
+            {/* Calendar Section */}
+            <div className="calendar-section">
+              {/* <div className="calendar-container"> */}
+                <h2>Appointment Calendar</h2>
+                <Calendar
+                  onChange={setSelectedDate}
+                  value={selectedDate}
+                  tileClassName={({ date }) => {
+                    const appointmentDates = appointments.map((appointment) =>
+                      new Date(appointment.date).toDateString()
+                    );
+                    return appointmentDates.includes(date.toDateString())
+                      ? "highlight"
+                      : null;
+                  }}
+                />
+              </div>
+
+              {/* Filtered Appointments */}
+              <div className="appointment-list">
+                <h3>Appointments on {formatDate(selectedDate.toISOString())}</h3>
+                {filteredAppointments.length > 0 ? (
+                  <ul>
+                    {filteredAppointments.map((appointment, index) => (
+                      <li key={index}>
+                        <p>
+                          <strong>Time:</strong> {appointment.time}
+                        </p>
+                        <p>
+                          <strong>Consultation Type:</strong>{" "}
+                          {appointment.consultationType}
+                        </p>
+                        <p>
+                          <strong>Platform:</strong> {appointment.platform}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No appointments on this day.</p>
+                )}
+              </div>
+          
+
+         
+          </>
         )}
       </div>
     </div>

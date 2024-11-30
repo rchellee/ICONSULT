@@ -115,7 +115,6 @@ const Calendar = () => {
       <div className="content">
         <Box m="20px">
           <Header title="Calendar" subtitle="Manage your Schedule" />
-
           <Box display="flex" >
             {/* Sidebar */}
             <Box

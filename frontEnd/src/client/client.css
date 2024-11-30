@@ -248,3 +248,91 @@ body {
 .appointment-list li:last-child {
   border-bottom: none;
 }
+
+/* Calenderr */
+
+/* Calendar Container Styles */
+.calendar-section {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.react-calendar {
+  width: 5%;
+  height: 300%;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  font-size: 18px; /* Larger font size for better readability */
+}
+
+.react-calendar__tile {
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  font-size: 20px; /* Larger font size for better visibility */
+  padding: 12px; /* Increase padding */
+  color:#161a2d;
+}
+
+.react-calendar__tile:hover {
+  background-color: #4caf50;
+  
+}
+
+.react-calendar__tile:active {
+  background-color: #388e3c;
+ 
+}
+
+.react-calendar__navigation button {
+  background-color: #4caf50;
+  color: rgb(20, 20, 20);
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #388e3c;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  font-weight: bold;
+  color: #0f0e0e;
+  font-size: 20px; /* Make weekday labels larger */
+  
+}
+
+/* Appointment List Styles */
+.appointment-list {
+  margin-top: 20px;
+}
+
+.appointment-list h3 {
+  font-size: 22px;
+  color: #333;
+}
+
+.appointment-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.appointment-list li {
+  background-color: #f4f4f4;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-list li p {
+  margin: 0;
+}
+
+.appointment-list li p strong {
+  color: #333;
+}
+
