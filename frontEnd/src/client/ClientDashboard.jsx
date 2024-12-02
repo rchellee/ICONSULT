@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../client/sidebar";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // Make sure to import this for default styles
+import "react-calendar/dist/Calendar.css";
 import "./client.css";
 
 function ClientDashboard() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentAppointmentIndex, setCurrentAppointmentIndex] = useState(0);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [filteredAppointments, setFilteredAppointments] = useState([]);
 
+  // Fetch appointments from the API
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const clientId = localStorage.getItem("clientId");
-
         if (!clientId) {
           console.error("Client ID not found!");
           setLoading(false);
@@ -30,21 +29,7 @@ function ClientDashboard() {
         }
 
         const data = await response.json();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const upcomingAppointments = data.filter((appointment) => {
-          const appointmentDate = new Date(appointment.date);
-          return appointmentDate >= today;
-        });
-
-        const sortedAppointments = upcomingAppointments.sort((a, b) => {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-          return dateA - dateB;
-        });
-
-        setAppointments(sortedAppointments);
+        setAppointments(data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
       } finally {
@@ -55,6 +40,7 @@ function ClientDashboard() {
     fetchAppointments();
   }, []);
 
+  // Filter appointments for the selected date
   useEffect(() => {
     const filtered = appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.date);
@@ -67,27 +53,13 @@ function ClientDashboard() {
     setFilteredAppointments(filtered);
   }, [selectedDate, appointments]);
 
-  const formatDate = (isoDate) => {
+  const formatDayAndDate = (isoDate) => {
     const date = new Date(isoDate);
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(date.getDate()).padStart(2, "0")}`;
+    const day = date.toLocaleDateString(undefined, { weekday: "long" });
+    const options = { month: "long", day: "numeric" };
+    const formattedDate = date.toLocaleDateString(undefined, options);
+    return `${day}, ${formattedDate}`;
   };
-
-  const handlePreviousAppointment = () => {
-    if (currentAppointmentIndex > 0) {
-      setCurrentAppointmentIndex((prevIndex) => prevIndex - 1);
-    }
-  };
-
-  const handleNextAppointment = () => {
-    if (currentAppointmentIndex < appointments.length - 1) {
-      setCurrentAppointmentIndex((prevIndex) => prevIndex + 1);
-    }
-  };
-
-  const currentAppointment = appointments[currentAppointmentIndex];
 
   return (
     <div className="client-home-page">
@@ -101,29 +73,32 @@ function ClientDashboard() {
           <>
             {/* Calendar Section */}
             <div className="calendar-section">
-              {/* <div className="calendar-container"> */}
-                <h2>Appointment Calendar</h2>
-                <Calendar
-                  onChange={setSelectedDate}
-                  value={selectedDate}
-                  tileClassName={({ date }) => {
-                    const appointmentDates = appointments.map((appointment) =>
-                      new Date(appointment.date).toDateString()
-                    );
-                    return appointmentDates.includes(date.toDateString())
-                      ? "highlight"
-                      : null;
-                  }}
-                />
-              </div>
+              <h2>Appointment Calendar</h2>
+              <Calendar
+                onChange={setSelectedDate}
+                value={selectedDate}
+                tileClassName={({ date }) => {
+                  const appointmentDates = appointments.map((appointment) =>
+                    new Date(appointment.date).toDateString()
+                  );
+                  return appointmentDates.includes(date.toDateString())
+                    ? "highlight"
+                    : null;
+                }}
+              />
+            </div>
 
-              {/* Filtered Appointments */}
-              <div className="appointment-list">
-                <h3>Appointments on {formatDate(selectedDate.toISOString())}</h3>
-                {filteredAppointments.length > 0 ? (
-                  <ul>
-                    {filteredAppointments.map((appointment, index) => (
-                      <li key={index}>
+            {/* Today's Appointments */}
+            <div className="appointment-list">
+              <h3>Appointments for Today</h3>
+              {filteredAppointments.length > 0 ? (
+                <ul>
+                  {filteredAppointments.map((appointment, index) => (
+                    <li key={index} className="appointment-item">
+                      <div className="date-box">
+                        <strong>{formatDayAndDate(appointment.date)}</strong>
+                      </div>
+                      <div className="details-box">
                         <p>
                           <strong>Time:</strong> {appointment.time}
                         </p>
@@ -134,16 +109,44 @@ function ClientDashboard() {
                         <p>
                           <strong>Platform:</strong> {appointment.platform}
                         </p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No appointments on this day.</p>
-                )}
-              </div>
-          
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No appointments for today.</p>
+              )}
+            </div>
 
-         
+            {/* All Appointments */}
+            <div className="all-appointments">
+              <h3>All Appointments</h3>
+              {appointments.length > 0 ? (
+                <ul>
+                  {appointments.map((appointment, index) => (
+                    <li key={index} className="appointment-item">
+                      <div className="date-box">
+                        <strong>{formatDayAndDate(appointment.date)}</strong>
+                      </div>
+                      <div className="details-box">
+                        <p>
+                          <strong>Time:</strong> {appointment.time}
+                        </p>
+                        <p>
+                          <strong>Consultation Type:</strong>{" "}
+                          {appointment.consultationType}
+                        </p>
+                        <p>
+                          <strong>Platform:</strong> {appointment.platform}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No appointments available.</p>
+              )}
+            </div>
           </>
         )}
       </div>

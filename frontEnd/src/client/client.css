@@ -335,4 +335,34 @@ body {
 .appointment-list li p strong {
   color: #333;
 }
+.all-appointments ul {
+  list-style: none;
+  padding: 0;
+}
+
+.appointment-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.date-box {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-right: 20px;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  min-width: 150px;
+}
+
+.details-box {
+  flex-grow: 1;
+}
 
