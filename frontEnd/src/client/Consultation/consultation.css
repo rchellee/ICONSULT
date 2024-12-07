@@ -1,0 +1,233 @@
+/* General Page Styles */
+
+.consultation-page {
+    display: flex;
+    height: 100%;
+    font-family: "Poppins", sans-serif;
+  
+  }
+  
+  /* Content Section sa content*/
+  .content {
+    flex-grow: 1;
+    padding: 20px;
+    border-radius: 12px;
+    overflow-y: auto;
+ 
+  }
+  
+  h1 {
+    font-size: 30px;
+    color: #2d3436; /* Dark neutral text */
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  /* Button Container */
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 25px;
+  }
+  
+  .new-appointment-button button {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #4a69bd, #6a89cc); /* Gradient button */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+/* Calendar Section */
+.calendar-section {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.react-calendar {
+  width: 100%;
+  max-width: 600px;
+  border: none;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.react-calendar__tile {
+  font-size: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Highlight weekdays */
+.react-calendar__month-view__weekdays__weekday {
+  font-weight: bold;
+  color: #4a69bd; /* Blue color for weekdays */
+  font-size: 16px;
+}
+
+/* Highlight active tile (today's date or selected date) */
+.react-calendar__tile--active {
+  color: white !important;
+  font-weight: bold;
+  transform: scale(1.1);
+}
+
+/* Highlight appointment date */
+.react-calendar__tile.appointment-date {
+  background: #6a89cc; /* Blue-grey color for appointment dates */
+  color: rgb(8, 8, 8);
+  font-weight: bold;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.react-calendar__tile.appointment-date:hover {
+  background: #4a69bd; /* Darker blue-grey when hovered */
+}
+
+/* Hover effect for general date tiles */
+.react-calendar__tile:hover {
+  background: #f1f2f6; /* Light grey background on hover */
+  transform: scale(1.05);
+}
+
+/* Calendar navigation buttons */
+.react-calendar__navigation button {
+  color: rgb(20, 20, 20);
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+/* Weekdays larger font size */
+.react-calendar__month-view__weekdays__weekday {
+  font-weight: bold;
+  color: #0f0e0e;
+  font-size: 20px; /* Larger weekday font size */
+}
+
+  /* Appointment List */
+  .appointment-list {
+    margin-top: 30px;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  .appointment-list h3 {
+    font-size: 24px;
+    color: #2d3436;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+  }
+  
+  .appointment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ecf0f1;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f7f7f7, #ffffff);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+
+  .date-box {
+    background-color: #4a69bd;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .details-box {
+    margin-left: 15px;
+  }
+  
+  .details-box p {
+    margin: 5px 0;
+    color: #636e72;
+  }
+  
+  /* More Options */
+  .more-options {
+    position: relative;
+  }
+  
+  .more-options-button {
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+    color: #636e72;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .more-options-menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 8px;
+    background-color: white;
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .more-options-menu button {
+    padding: 8px 15px;
+    background-color: transparent;
+    border: none;
+    text-align: left;
+    color: #2d3436;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .more-options-menu button:hover {
+    background-color: #f1f2f6;
+  }
+  
+  /* No Appointments Message */
+  .appointment-list p {
+    text-align: center;
+    font-size: 16px;
+    color: #95a5a6;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .content {
+      margin-left: 0;
+      padding: 20px;
+    }
+  
+    .appointment-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .details-box {
+      margin-left: 0;
+      margin-top: 10px;
+    }
+  }
+  
