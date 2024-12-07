@@ -102,7 +102,8 @@ const ClientManagement = () => {
   return (
     <div className="admin-home-page">
       <Sidebar />
-      <div className="content">
+      <div className="clientlist-content">
+      <Sidebar />
         <h2>Clients</h2>
         {selectedClient ? (
           <ClientDetails

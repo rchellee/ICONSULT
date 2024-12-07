@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2024 at 07:37 AM
+-- Generation Time: Dec 07, 2024 at 05:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -111,7 +111,14 @@ INSERT INTO `client` (`id`, `firstName`, `lastName`, `middleInitial`, `birthday`
 (9, 'sbh', 'sdjas', 's', '2024-04-23', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', 'SDJAS12345', 'sdjas.sbh', 'active'),
 (10, 'fafdvd', 'dfafdf', 's', '2023-11-21', '09709573613', 'ritchellerueras@gmail.com', 'pasig city', 'DFAFDF12345', 'dfafdf.fafdvd', 'active'),
 (11, 'jsdnsa', 'kksdjsa', 'x', '2024-10-30', '09709573613', 'ritchellerueras@gmail.com', 'surigao city', 'KKSDJSA12345', 'kksdjsa.jsdnsa', 'active'),
-(12, 'claireza', 'asdas', 's', '2023-07-10', '09709573613', 'clarieza@gmail.com', 'Surigao Citylalala', 'ASDAS12345', 'asdas.dasd', 'active');
+(12, 'claireza', 'asdas', 's', '2023-07-10', '09709573613', 'clarieza@gmail.com', 'Surigao Citylalala', 'ASDAS12345', 'asdas.dasd', 'active'),
+(13, 'Rueras', 'Ritchelle', 'T', '2001-05-22', '09709573613', 'ritchellerueras@gmail.com', 'Sampaloc, Metro Manila', 'RITCHELLE12345', 'ritchelle.rueras', 'active'),
+(14, 'Julie', 'Rueras', 'T', '2006-07-30', '09876543212', 'ritchellerueras@gmail.com', 'Dasmarinas, Cavite', 'RUERAS12345', 'rueras.julie', 'active'),
+(15, 'Monique', 'Cabigting', 'T', '2023-06-08', '09709573613', 'ritchellerueras@gmail.com', 'santa mesa', 'CABIGTING12345', 'cabigting.monique', 'active'),
+(16, 'claireza', 'bautista', 's', '2023-09-13', '09876543212', 'ritchellerueras@gmail.com', 'pasig city', 'BAUTISTA12345', 'bautista.claireza', 'active'),
+(17, 'kmdlke', 'mema', 'm', '2022-04-11', '09709573613', 'ritchellerueras@gmail.com', 'Surigao Citylalala', 'MEMA12345', 'mema.kmdlke', 'active'),
+(18, 'Monique', 'rueras', 'h', '2000-05-21', '09709573613', 'ritchellerueras@gmail.com', 'surigao city', 'RUERAS12345', 'rueras.monique', 'active'),
+(19, 'Jen', 'Paclibar', 'j', '1980-05-22', '09876543212', 'ritchellerueras@gmail.com', 'bulacan', 'PACLIBAR12345', 'paclibar.jen', 'active');
 
 -- --------------------------------------------------------
 
@@ -176,7 +183,8 @@ INSERT INTO `project` (`id`, `clientName`, `projectName`, `description`, `startD
 (13, 'Ritchelle Rueras', 'Rrr', 'rrrrrrrr', '2024-11-19', '2024-12-07', 'ongoing', '2024-11-17 16:49:45', 0, 0),
 (14, 'Jane Smith', 'qqqqqq', 'please make it work', '2024-11-21', '2025-06-26', 'ongoing', '2024-11-17 17:12:09', 0, 2),
 (15, 'Jane Smith', 'jdkasd', 'hhahahaha', '2024-11-30', '2025-05-01', 'ongoing', '2024-11-21 02:28:43', 0, 2),
-(16, 'sbh sdjas', 'ndjas', 'lalalalala', '2024-11-28', '2025-05-01', 'ongoing', '2024-11-21 02:29:14', 0, 8);
+(16, 'sbh sdjas', 'ndjas', 'lalalalala', '2024-11-28', '2025-05-01', 'ongoing', '2024-11-21 02:29:14', 0, 8),
+(17, 'claireza bautista', 'trishia', 'lalalla', '2024-11-21', '2024-12-07', 'ongoing', '2024-11-21 06:52:07', 1, 5);
 
 -- --------------------------------------------------------
 
@@ -244,7 +252,7 @@ ALTER TABLE `appointments`
 -- AUTO_INCREMENT for table `client`
 --
 ALTER TABLE `client`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `employee`
@@ -256,7 +264,7 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `task`
