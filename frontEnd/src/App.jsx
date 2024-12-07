@@ -11,6 +11,7 @@ import Project from './client/project/Project.jsx';
 import DateofAppointments from './admin/Calendar/fullcalendar.jsx';
 import Consultation from './client/Consultation/Consultation.jsx';
 import AccountSettings from "./client/AccountSettings/AccountSettings.jsx";
+import Payment from "./client/project/payment.jsx";
 
 
 // for google icons
@@ -44,6 +45,7 @@ function App() {
         <Route path="/calendar" element={<DateofAppointments />} />
         <Route path="/consultations" element={<Consultation />} />
         <Route path="/account-settings" element={<AccountSettings />} />  
+        <Route path="/payment" element={<Payment />} /> 
       </Routes>
     </Router>
   );

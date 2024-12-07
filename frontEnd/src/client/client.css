@@ -90,6 +90,11 @@ body {
   background-color: #f5f6f7;
   height: 100vh;
 }
+.content {
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
 
 .dashboard-content {
   flex: 1;

@@ -112,11 +112,12 @@ function ClientDashboard() {
 
   return (
     <div className="client-home-page">
+    <div className="content">
 
       <div className="dashboard-content">
       <Sidebar />
         <h1>Client Dashboard</h1>
-        {loading ? (
+        {loading ? ( 
           <p>Loading...</p>
         ) : (
           <>
@@ -233,6 +234,7 @@ function ClientDashboard() {
             </div>
           </>
         )}
+      </div>
       </div>
     </div>
   );

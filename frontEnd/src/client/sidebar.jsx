@@ -47,6 +47,12 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/payment">
+            <span className="material-symbols-outlined">analytics</span>
+            <h4>Payment</h4>
+          </Link>
+        </li>
+        <li>
           <Link to="/account-settings">
             <span className="material-symbols-outlined">settings</span>
             <h4>Account Settings</h4>
