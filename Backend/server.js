@@ -1,11 +1,12 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
-const bodyParser = require('body-parser'); // Import bodyParser to parse JSON bodies
+const bodyParser = require('body-parser');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json()); // Add this to parse incoming request bodies
+app.use(bodyParser.json()); 
 
 // Create a MySQL connection pool
 const db = mysql.createConnection({
@@ -64,6 +65,27 @@ app.post('/Login', (req, res) => {
             });
         }
     });
+});
+
+// SendGrid email example
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
+
+app.post('/send-email', (req, res) => {
+    const { to, subject, text, html } = req.body;
+
+    const message = {
+        to,
+        from: "ritchelle.rueras@tup.edu.ph", // Use a verified sender email from SendGrid
+        subject,
+        text,
+        html,
+    };
+
+    sgMail
+        .send(message)
+        .then(() => res.status(200).json({ message: 'Email sent successfully' }))
+        .catch((error) => res.status(500).json({ error: error.message }));
 });
 
 
