@@ -1,10 +1,5 @@
 .content {
-  display: flex;
   margin-left: 85px;
   padding: 20px;
   transition: margin-left 0.4s ease;
-}
-
-.calendar {
-  width: 80%;
 }

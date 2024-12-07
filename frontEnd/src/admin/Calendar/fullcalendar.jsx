@@ -118,7 +118,7 @@ const Calendar = () => {
           <Box display="flex" >
             {/* Sidebar */}
             <Box
-              flex="1 1 60%"
+              flex="1 1 20%"
               backgroundColor={colors.primary[400]}
               p="15px"
               borderRadius="4px"
@@ -153,7 +153,7 @@ const Calendar = () => {
             </Box>
 
             {/* FullCalendar */}
-            <Box  flex="1 1 160%" ml="100px">
+            <Box  flex="1 1 70%" ml="10px">
               <FullCalendar
                 height="75vh"
                 plugins={[
