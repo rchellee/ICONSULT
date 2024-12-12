@@ -1,5 +1,7 @@
+//clientdashboard
+
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import Sidebar from "../client/sidebar";
 import "./client.css";
 
@@ -8,74 +10,105 @@ function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedDate] = useState(new Date());
   const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [selectedMenuToday, setSelectedMenuToday] = useState(null);
-  const [selectedMenuAll, setSelectedMenuAll] = useState(null);
-  const navigate = useNavigate();
+  const [projects, setProjects] = useState([]); // State for projects
+  const [tasks, setTasks] = useState([]); // State for tasks
+  const [selectedMenuToday, setSelectedMenuToday] = useState(null); // Track which menu is open for today's appointments
+  const [selectedMenuAll, setSelectedMenuAll] = useState(null); // Track which menu is open for all appointments
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
+  // Fetch appointments from the API
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const clientId = localStorage.getItem("clientId");
-        if (!clientId) return;
-
-        const response = await fetch(`http://localhost:8081/appointments/client/${clientId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setAppointments(data);
+        if (!clientId) {
+          console.error("Client ID not found!");
+          setLoading(false);
+          return;
         }
+
+        const response = await fetch(
+          `http://localhost:8081/appointments/client/${clientId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch appointments");
+        }
+
+        const data = await response.json();
+        setAppointments(data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchAppointments();
   }, []);
 
+  // Fetch projects from the API
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const clientId = localStorage.getItem("clientId");
-        if (!clientId) return;
-
-        const response = await fetch(`http://localhost:8081/projects/client/${clientId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setProjects(data);
+        if (!clientId) {
+          console.error("Client ID not found!");
+          return;
         }
+
+        const response = await fetch(
+          `http://localhost:8081/projects/client/${clientId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch projects");
+        }
+
+        const data = await response.json();
+        setProjects(data);
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
     };
+
     fetchProjects();
   }, []);
 
+  // Fetch tasks from the API
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const clientId = localStorage.getItem("clientId");
-        if (!clientId) return;
-
-        const response = await fetch(`http://localhost:8081/tasks/client/${clientId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setTasks(data);
+        if (!clientId) {
+          console.error("Client ID not found!");
+          return;
         }
+
+        const response = await fetch(
+          `http://localhost:8081/tasks/client/${clientId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+
+        const data = await response.json();
+        setTasks(data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
     };
+
     fetchTasks();
   }, []);
 
+  // Filter appointments for the selected date
   useEffect(() => {
     const filtered = appointments.filter((appointment) => {
       const appointmentDate = new Date(appointment.date);
-      return appointmentDate.getFullYear() === selectedDate.getFullYear() &&
-             appointmentDate.getMonth() === selectedDate.getMonth() &&
-             appointmentDate.getDate() === selectedDate.getDate();
+      return (
+        appointmentDate.getFullYear() === selectedDate.getFullYear() &&
+        appointmentDate.getMonth() === selectedDate.getMonth() &&
+        appointmentDate.getDate() === selectedDate.getDate()
+      );
     });
     setFilteredAppointments(filtered);
   }, [selectedDate, appointments]);
@@ -88,18 +121,35 @@ function ClientDashboard() {
     return `${day}, ${formattedDate}`;
   };
 
+  // Toggle menu for today's appointments
+  const handleMenuToggleToday = (index) => {
+    setSelectedMenuToday(selectedMenuToday === index ? null : index);
+  };
+
+  // Toggle menu for all appointments
+  const handleMenuToggleAll = (index) => {
+    setSelectedMenuAll(selectedMenuAll === index ? null : index);
+  };
+
+  // Handle rescheduling (navigate to reschedule form)
   const handleReschedule = (appointmentId) => {
     navigate(`/reschedule/${appointmentId}`);
   };
 
+  // Handle cancellation
   const handleCancel = async (appointmentId) => {
     if (window.confirm("Are you sure you want to cancel this appointment?")) {
       try {
-        const response = await fetch(`http://localhost:8081/appointments/${appointmentId}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `http://localhost:8081/appointments/${appointmentId}`,
+          {
+            method: "DELETE", // Assuming DELETE cancels the appointment
+          }
+        );
         if (response.ok) {
-          setAppointments((prev) => prev.filter((appointment) => appointment.id !== appointmentId));
+          setAppointments((prev) =>
+            prev.filter((appointment) => appointment.id !== appointmentId)
+          );
           alert("Appointment canceled successfully.");
         } else {
           throw new Error("Failed to cancel appointment.");
@@ -112,129 +162,160 @@ function ClientDashboard() {
 
   return (
     <div className="client-home-page">
-    <div className="content">
-
-      <div className="dashboard-content">
       <Sidebar />
-        <h1>Client Dashboard</h1>
-        {loading ? ( 
-          <p>Loading...</p>
+      <div className="content">
+        <h1>Dashboard</h1>
+
+        {loading ? (
+          <p>Loading appointments...</p>
         ) : (
           <>
-            <div className="dashboard-grid">
-              {/* Today's Appointments */}
-              <div className="card appointment-list">
-                <h3>Today's Appointments</h3>
-                {filteredAppointments.length > 0 ? (
-                  <ul>
-                    {filteredAppointments.map((appointment, index) => (
-                      <li key={index} className="appointment-item">
-                        <div className="date-box">
-                          <strong>{formatDayAndDate(appointment.date)}</strong>
-                        </div>
-                        <div className="details-box">
-                          <p><strong>Time:</strong> {appointment.time}</p>
-                          <p><strong>Consultation:</strong> {appointment.consultationType}</p>
-                          <p><strong>Platform:</strong> {appointment.platform}</p>
-                        </div>
-                        <div className="action-menu">
-                          <button className="menu-button" onClick={() => setSelectedMenuToday(index === selectedMenuToday ? null : index)}>
-                            &#x22EE;
-                          </button>
-                          {selectedMenuToday === index && (
-                            <div className="dropdown-menu">
-                              <button onClick={() => handleReschedule(appointment.id)}>Reschedule</button>
-                              <button onClick={() => handleCancel(appointment.id)}>Cancel</button>
-                            </div>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No appointments for today.</p>
-                )}
-              </div>
+            {/* Today's Appointments */}
+            <div className="appointment-list">
+              <h3>Appointments for Today</h3>
+              {filteredAppointments.length > 0 ? (
+                <ul>
+                  {filteredAppointments.map((appointment, index) => (
+                    <li key={index} className="appointment-item">
+                      <div className="date-box">
+                        <strong>{formatDayAndDate(appointment.date)}</strong>
+                      </div>
+                      <div className="details-box">
+                        <p>
+                          <strong>Time:</strong> {appointment.time}
+                        </p>
+                        <p>
+                          <strong>Consultation Type:</strong>{" "}
+                          {appointment.consultationType}
+                        </p>
+                        <p>
+                          <strong>Platform:</strong> {appointment.platform}
+                        </p>
+                      </div>
+                      {/* Action Menu */}
+                      <div className="action-menu">
+                        <button
+                          className="menu-button"
+                          onClick={() => handleMenuToggleToday(index)}
+                        >
+                          &#58;
+                        </button>
+                        {selectedMenuToday === index && (
+                          <div className="dropdown-menu">
+                            <button onClick={() => handleReschedule(appointment.id)}>
+                              Reschedule
+                            </button>
+                            <button onClick={() => handleCancel(appointment.id)}>
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No appointments for today.</p>
+              )}
+            </div>
 
-              {/* Ongoing Projects */}
-              <div className="card ongoing-projects">
-                <h3>Ongoing Projects</h3>
-                {projects.length > 0 ? (
-                  <ul>
-                    {projects.map((project, index) => (
-                      <li key={index} className="project-item">
-                        <div className="project-details">
-                          <h4>{project.name}</h4>
-                          <div className="progress-bar">
-                            <div className="progress" style={{ width: `${project.progress}%` }}>
-                              {project.progress}%
-                            </div>
+            {/* Ongoing Projects */}
+            <div className="ongoing-projects">
+              <h3>Ongoing Projects</h3>
+              {projects.length > 0 ? (
+                <ul>
+                  {projects.map((project, index) => (
+                    <li key={index} className="project-item">
+                      <div className="project-details">
+                        <h4>{project.name}</h4>
+                        <div className="progress-bar">
+                          <div
+                            className="progress"
+                            style={{ width: `${project.progress}%` }}
+                          >
+                            {project.progress}%
                           </div>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No ongoing projects.</p>
-                )}
-              </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No ongoing projects available.</p>
+              )}
+            </div>
 
-              {/* Task Overview */}
-              <div className="card task-overview">
-                <h3>Task Overview</h3>
-                {tasks.length > 0 ? (
-                  <ul>
-                    {tasks.map((task, index) => (
-                      <li key={index} className="task-item">
-                        <div className="task-details">
-                          <h4>{task.name}</h4>
-                          <p><strong>Deadline:</strong> {formatDayAndDate(task.deadline)}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No tasks available.</p>
-                )}
-              </div>
+            {/* Task Overview */}
+            <div className="task-overview">
+              <h3>Task Overview</h3>
+              {tasks.length > 0 ? (
+                <ul>
+                  {tasks.map((task, index) => (
+                    <li key={index} className="task-item">
+                      <div className="task-details">
+                        <h4>{task.name}</h4>
+                        <p>
+                          <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No tasks available.</p>
+              )}
+            </div>
 
-              {/* All Appointments */}
-              <div className="card all-appointments">
-                <h3>My Appointments</h3>
-                {appointments.length > 0 ? (
-                  <ul>
-                    {appointments.map((appointment, index) => (
-                      <li key={index} className="appointment-item">
-                        <div className="date-box">
-                          <strong>{formatDayAndDate(appointment.date)}</strong>
-                        </div>
-                        <div className="details-box">
-                          <p><strong>Time:</strong> {appointment.time}</p>
-                          <p><strong>Consultation:</strong> {appointment.consultationType}</p>
-                          <p><strong>Platform:</strong> {appointment.platform}</p>
-                        </div>
-                        <div className="action-menu">
-                          <button className="menu-button" onClick={() => setSelectedMenuAll(index === selectedMenuAll ? null : index)}>
-                            &#x22EE;
-                          </button>
-                          {selectedMenuAll === index && (
-                            <div className="dropdown-menu">
-                              <button onClick={() => handleReschedule(appointment.id)}>Reschedule</button>
-                              <button onClick={() => handleCancel(appointment.id)}>Cancel</button>
-                            </div>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No appointments available.</p>
-                )}
-              </div>
+            {/* All Appointments */}
+            <div className="all-appointments">
+              <h3>My Appointments</h3>
+              {appointments.length > 0 ? (
+                <ul>
+                  {appointments.map((appointment, index) => (
+                    <li key={index} className="appointment-item">
+                      <div className="date-box">
+                        <strong>{formatDayAndDate(appointment.date)}</strong>
+                      </div>
+                      <div className="details-box">
+                        <p>
+                          <strong>Time:</strong> {appointment.time}
+                        </p>
+                        <p>
+                          <strong>Consultation Type:</strong>{" "}
+                          {appointment.consultationType}
+                        </p>
+                        <p>
+                          <strong>Platform:</strong> {appointment.platform}
+                        </p>
+                      </div>
+                      {/* Action Menu */}
+                      <div className="action-menu">
+                        <button
+                          className="menu-button"
+                          onClick={() => handleMenuToggleAll(index)}
+                        >
+                          &#58;
+                        </button>
+                        {selectedMenuAll === index && (
+                          <div className="dropdown-menu">
+                            <button onClick={() => handleReschedule(appointment.id)}>
+                              Reschedule
+                            </button>
+                            <button onClick={() => handleCancel(appointment.id)}>
+                              Cancel
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No appointments available.</p>
+              )}
             </div>
           </>
         )}
-      </div>
       </div>
     </div>
   );
