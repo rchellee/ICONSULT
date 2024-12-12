@@ -1,320 +1,230 @@
-//clientdashboard
-
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import React, { useState } from "react";
 import Sidebar from "../client/sidebar";
 import "./client.css";
 
 function ClientDashboard() {
-  const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedDate] = useState(new Date());
-  const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [projects, setProjects] = useState([]); // State for projects
-  const [tasks, setTasks] = useState([]); // State for tasks
-  const [selectedMenuToday, setSelectedMenuToday] = useState(null); // Track which menu is open for today's appointments
-  const [selectedMenuAll, setSelectedMenuAll] = useState(null); // Track which menu is open for all appointments
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const [projects, setProjects] = useState([
+    { name: "Samgyup", progress: 75 },
+    { name: "Coco", progress: 40 },
+    { name: "Samgyupsal", progress: 90 },
+    { name: "E-commerce Platform", progress: 50 },
+    { name: "Marketing Campaign", progress: 20 },
+    { name: "Customer Support System", progress: 65 },
+    { name: "Cloud Migration", progress: 30 },
+    { name: "Product Launch", progress: 80 },
+    { name: "CRM Software", progress: 55 },
+    { name: "Data Analytics Dashboard", progress: 60 },
+  ]);
 
-  // Fetch appointments from the API
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const clientId = localStorage.getItem("clientId");
-        if (!clientId) {
-          console.error("Client ID not found!");
-          setLoading(false);
-          return;
-        }
+  const [tasks, setTasks] = useState([
+    { name: "Need to pay tax", deadline: "2024-12-15" },
+    { name: "Submit quarterly report", deadline: "2024-12-20" },
+    { name: "Update client documentation", deadline: "2024-12-18" },
+    { name: "Review marketing strategy", deadline: "2024-12-25" },
+  ]);
 
-        const response = await fetch(
-          `http://localhost:8081/appointments/client/${clientId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch appointments");
-        }
+  const [appointments, setAppointments] = useState([
+    { date: "2024-12-10", type: "Initial Consultation", platform: "Zoom" },
+  ]);
 
-        const data = await response.json();
-        setAppointments(data);
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [showProjectsModal, setShowProjectsModal] = useState(false);
+  const [showTasksModal, setShowTasksModal] = useState(false);
+  const [showAppointmentsModal, setShowAppointmentsModal] = useState(false);
+  const [showPendingTasksModal, setShowPendingTasksModal] = useState(false);
 
-    fetchAppointments();
-  }, []);
-
-  // Fetch projects from the API
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const clientId = localStorage.getItem("clientId");
-        if (!clientId) {
-          console.error("Client ID not found!");
-          return;
-        }
-
-        const response = await fetch(
-          `http://localhost:8081/projects/client/${clientId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch projects");
-        }
-
-        const data = await response.json();
-        setProjects(data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  // Fetch tasks from the API
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const clientId = localStorage.getItem("clientId");
-        if (!clientId) {
-          console.error("Client ID not found!");
-          return;
-        }
-
-        const response = await fetch(
-          `http://localhost:8081/tasks/client/${clientId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch tasks");
-        }
-
-        const data = await response.json();
-        setTasks(data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-
-    fetchTasks();
-  }, []);
-
-  // Filter appointments for the selected date
-  useEffect(() => {
-    const filtered = appointments.filter((appointment) => {
-      const appointmentDate = new Date(appointment.date);
-      return (
-        appointmentDate.getFullYear() === selectedDate.getFullYear() &&
-        appointmentDate.getMonth() === selectedDate.getMonth() &&
-        appointmentDate.getDate() === selectedDate.getDate()
-      );
-    });
-    setFilteredAppointments(filtered);
-  }, [selectedDate, appointments]);
+  const toggleProjectsModal = () => setShowProjectsModal(!showProjectsModal);
+  const toggleTasksModal = () => setShowTasksModal(!showTasksModal);
+  const toggleAppointmentsModal = () => setShowAppointmentsModal(!showAppointmentsModal);
+  const togglePendingTasksModal = () => setShowPendingTasksModal(!showPendingTasksModal);
 
   const formatDayAndDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = date.toLocaleDateString(undefined, { weekday: "long" });
     const options = { month: "long", day: "numeric" };
-    const formattedDate = date.toLocaleDateString(undefined, options);
-    return `${day}, ${formattedDate}`;
+    return `${day}, ${date.toLocaleDateString(undefined, options)}`;
   };
 
-  // Toggle menu for today's appointments
-  const handleMenuToggleToday = (index) => {
-    setSelectedMenuToday(selectedMenuToday === index ? null : index);
-  };
-
-  // Toggle menu for all appointments
-  const handleMenuToggleAll = (index) => {
-    setSelectedMenuAll(selectedMenuAll === index ? null : index);
-  };
-
-  // Handle rescheduling (navigate to reschedule form)
-  const handleReschedule = (appointmentId) => {
-    navigate(`/reschedule/${appointmentId}`);
-  };
-
-  // Handle cancellation
-  const handleCancel = async (appointmentId) => {
-    if (window.confirm("Are you sure you want to cancel this appointment?")) {
-      try {
-        const response = await fetch(
-          `http://localhost:8081/appointments/${appointmentId}`,
-          {
-            method: "DELETE", // Assuming DELETE cancels the appointment
-          }
-        );
-        if (response.ok) {
-          setAppointments((prev) =>
-            prev.filter((appointment) => appointment.id !== appointmentId)
-          );
-          alert("Appointment canceled successfully.");
-        } else {
-          throw new Error("Failed to cancel appointment.");
-        }
-      } catch (error) {
-        console.error("Error canceling appointment:", error);
-      }
-    }
-  };
+  const pendingTasks = tasks.filter(
+    (task) => new Date(task.deadline) > new Date()
+  );
 
   return (
     <div className="client-home-page">
       <Sidebar />
       <div className="content">
-        <h1>Dashboard</h1>
-
-        {loading ? (
-          <p>Loading appointments...</p>
-        ) : (
-          <>
-            {/* Today's Appointments */}
-            <div className="appointment-list">
-              <h3>Appointments for Today</h3>
-              {filteredAppointments.length > 0 ? (
-                <ul>
-                  {filteredAppointments.map((appointment, index) => (
-                    <li key={index} className="appointment-item">
-                      <div className="date-box">
-                        <strong>{formatDayAndDate(appointment.date)}</strong>
-                      </div>
-                      <div className="details-box">
-                        <p>
-                          <strong>Time:</strong> {appointment.time}
-                        </p>
-                        <p>
-                          <strong>Consultation Type:</strong>{" "}
-                          {appointment.consultationType}
-                        </p>
-                        <p>
-                          <strong>Platform:</strong> {appointment.platform}
-                        </p>
-                      </div>
-                      {/* Action Menu */}
-                      <div className="action-menu">
-                        <button
-                          className="menu-button"
-                          onClick={() => handleMenuToggleToday(index)}
-                        >
-                          &#58;
-                        </button>
-                        {selectedMenuToday === index && (
-                          <div className="dropdown-menu">
-                            <button onClick={() => handleReschedule(appointment.id)}>
-                              Reschedule
-                            </button>
-                            <button onClick={() => handleCancel(appointment.id)}>
-                              Cancel
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No appointments for today.</p>
-              )}
+        <div className="dashboard-content">
+          <h3>Dashboard</h3>
+          <div className="dashboard-summary">
+            <div className="card summary-card">
+              <h4>Total Projects</h4>
+              <p>{projects.length}</p>
             </div>
-
+            <div className="card summary-card">
+              <h4>Total Tasks</h4>
+              <p>{tasks.length}</p>
+            </div>
+            <div className="card summary-card">
+              <h4>Pending Tasks</h4>
+              <p>{pendingTasks.length}</p>
+            </div>
+            <div className="card summary-card">
+              <h4>Upcoming Appointments</h4>
+              <p>{appointments.length}</p>
+            </div>
+          </div>
+          <div className="dashboard-grid">
             {/* Ongoing Projects */}
-            <div className="ongoing-projects">
+            <div className="card ongoing-projects">
               <h3>Ongoing Projects</h3>
-              {projects.length > 0 ? (
-                <ul>
-                  {projects.map((project, index) => (
-                    <li key={index} className="project-item">
-                      <div className="project-details">
-                        <h4>{project.name}</h4>
-                        <div className="progress-bar">
-                          <div
-                            className="progress"
-                            style={{ width: `${project.progress}%` }}
-                          >
-                            {project.progress}%
-                          </div>
+              <div className="projects-list">
+                {projects.slice(0, 3).map((project, index) => (
+                  <div className="project-item" key={index}>
+                    <div className="project-details">
+                      <h4>{project.name}</h4>
+                      <div className="progress-bar">
+                        <div
+                          className="progress"
+                          style={{ width: `${project.progress}%` }}
+                        >
+                          {project.progress}%
                         </div>
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No ongoing projects available.</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {projects.length > 3 && (
+                <button onClick={toggleProjectsModal}>
+                  {showProjectsModal ? "Close" : "View More"}
+                </button>
               )}
             </div>
 
             {/* Task Overview */}
-            <div className="task-overview">
+            <div className="card task-overview">
               <h3>Task Overview</h3>
-              {tasks.length > 0 ? (
-                <ul>
-                  {tasks.map((task, index) => (
-                    <li key={index} className="task-item">
-                      <div className="task-details">
-                        <h4>{task.name}</h4>
-                        <p>
-                          <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No tasks available.</p>
+              <div className="tasks-list">
+                {tasks.slice(0, 3).map((task, index) => (
+                  <div className="task-item" key={index}>
+                    <h4>{task.name}</h4>
+                    <p>
+                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {tasks.length > 3 && (
+                <button onClick={toggleTasksModal}>
+                  {showTasksModal ? "Close" : "View More"}
+                </button>
               )}
             </div>
 
-            {/* All Appointments */}
-            <div className="all-appointments">
-              <h3>My Appointments</h3>
-              {appointments.length > 0 ? (
-                <ul>
-                  {appointments.map((appointment, index) => (
-                    <li key={index} className="appointment-item">
-                      <div className="date-box">
-                        <strong>{formatDayAndDate(appointment.date)}</strong>
-                      </div>
-                      <div className="details-box">
-                        <p>
-                          <strong>Time:</strong> {appointment.time}
-                        </p>
-                        <p>
-                          <strong>Consultation Type:</strong>{" "}
-                          {appointment.consultationType}
-                        </p>
-                        <p>
-                          <strong>Platform:</strong> {appointment.platform}
-                        </p>
-                      </div>
-                      {/* Action Menu */}
-                      <div className="action-menu">
-                        <button
-                          className="menu-button"
-                          onClick={() => handleMenuToggleAll(index)}
-                        >
-                          &#58;
-                        </button>
-                        {selectedMenuAll === index && (
-                          <div className="dropdown-menu">
-                            <button onClick={() => handleReschedule(appointment.id)}>
-                              Reschedule
-                            </button>
-                            <button onClick={() => handleCancel(appointment.id)}>
-                              Cancel
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No appointments available.</p>
+            {/* Pending Tasks */}
+            <div className="card pending-tasks">
+              <h3>Pending Tasks</h3>
+              <div className="pending-tasks-list">
+                {pendingTasks.slice(0, 3).map((task, index) => (
+                  <div className="task-item" key={index}>
+                    <h4>{task.name}</h4>
+                    <p>
+                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {pendingTasks.length > 3 && (
+                <button onClick={togglePendingTasksModal}>
+                  {showPendingTasksModal ? "Close" : "View More"}
+                </button>
               )}
             </div>
-          </>
+
+            {/* Upcoming Appointments */}
+            <div className="card upcoming-appointments">
+              <h3>Upcoming Appointments</h3>
+              <div className="appointments-list">
+                {appointments.slice(0, 3).map((appointment, index) => (
+                  <div className="dashboard-appointment-item" key={index}>
+                    <p>
+                      <strong>Date:</strong> {formatDayAndDate(appointment.date)}
+                    </p>
+                    <p>
+                      <strong>Type:</strong> {appointment.type}
+                    </p>
+                    <p>
+                      <strong>Platform:</strong> {appointment.platform}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {appointments.length > 3 && (
+                <button onClick={toggleAppointmentsModal}>
+                  {showAppointmentsModal ? "Close" : "View More"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Modals */}
+        {showProjectsModal && (
+          <div className="modal-overlay" onClick={toggleProjectsModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>All Projects</h3>
+              <ul>
+                {projects.map((project, index) => (
+                  <li key={index} className="project-item">
+                    <h4>{project.name}</h4>
+                    <div className="progress-bar">
+                      <div
+                        className="progress"
+                        style={{ width: `${project.progress}%` }}
+                      >
+                        {project.progress}%
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {showTasksModal && (
+          <div className="modal-overlay" onClick={toggleTasksModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>All Tasks</h3>
+              <ul>
+                {tasks.map((task, index) => (
+                  <li key={index} className="task-item">
+                    <h4>{task.name}</h4>
+                    <p>
+                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {showPendingTasksModal && (
+          <div className="modal-overlay" onClick={togglePendingTasksModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>All Pending Tasks</h3>
+              <ul>
+                {pendingTasks.map((task, index) => (
+                  <li key={index} className="task-item">
+                    <h4>{task.name}</h4>
+                    <p>
+                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
       </div>
     </div>
