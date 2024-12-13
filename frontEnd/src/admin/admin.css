@@ -32,7 +32,7 @@ body {
 
 /* Expand sidebar on hover */
 .sidebar:hover {
-  width: 260px;
+  width: 230px;
 }
 
 /* Sidebar header */
@@ -50,10 +50,10 @@ body {
 /* Admin text hidden initially */
 .sidebar .sidebar-header h2 {
   color: white;
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 500;
   white-space: nowrap;
-  margin-left: 23px;
+  margin-left: 10px;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -98,7 +98,7 @@ body {
 
 .logout-btn:hover {
   
-  border-radius: 4px;
+  border-radius: 2px;
   background: #fff;
   color: black;
   transition: background 0.2s ease;
@@ -124,8 +124,8 @@ body {
 /* Change link background on hover to match logout button */
 .sidebar-links li a:hover {
   color: #161a2d;
-  background: white;
-  border-radius: 4px;
+  background: rgb(255, 255, 255);
+  border-radius: 2px;
 }
 
 /* Sidebar links text */
@@ -137,12 +137,6 @@ body {
   position: relative;
 }
 
-/* User account section hidden initially */
-.user-account {
-  margin-top: auto;
-  padding: 12px 10px;
-  margin-left: -10px;
-}
 
 /* User profile image */
 .user-profile img {
@@ -165,14 +159,15 @@ body {
 }
 
 .user-detail {
-  margin-left: 23px;
+  margin-left: 20px;
   white-space: nowrap;
+  color:white;
 }
 
 /* Sidebar hover styles for user account */
 .sidebar:hover .user-account {
-  background: #fff;
   border-radius: 4px;
+  
 }
 
 .content {
@@ -183,5 +178,5 @@ body {
 
 /* Shift content when sidebar expands */
 .sidebar:hover ~ .content {
-  margin-left: 260px;
+  margin-left: 250px;
 }

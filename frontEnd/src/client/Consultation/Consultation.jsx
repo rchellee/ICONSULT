@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Sidebar from "../sidebar"; // Adjust the path as needed
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import "react-calendar/dist/Calendar.css"; // Import the calendar styles
 import "./consultation.css";
 
 const Consultation = () => {
@@ -41,31 +41,14 @@ const Consultation = () => {
     }
   ]);
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [filteredAppointments, setFilteredAppointments] = useState([]);
-  const [showOptions, setShowOptions] = useState(null); // Track open options menu
-  const [view, setView] = useState("upcoming"); // Default view is "upcoming"
   const [showUpcomingAppointments, setShowUpcomingAppointments] = useState(false); // To control visibility of upcoming appointments
   const [showCompletedAppointments, setShowCompletedAppointments] = useState(false); // To control visibility of completed appointments
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    const filtered = appointments.filter((appointment) => {
-      const appointmentDate = new Date(appointment.date);
-      return (
-        appointmentDate.getFullYear() === selectedDate.getFullYear() &&
-        appointmentDate.getMonth() === selectedDate.getMonth() &&
-        appointmentDate.getDate() === selectedDate.getDate()
-      );
-    });
-    setFilteredAppointments(filtered);
-  }, [selectedDate, appointments]);
-
+  // Function to format the date for display
   const formatDayAndDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = date.toLocaleDateString(undefined, { weekday: "long" });
@@ -74,15 +57,7 @@ const Consultation = () => {
     return `${day}, ${formattedDate}`;
   };
 
-  const handleOptionClick = (action, appointmentId) => {
-    if (action === "reschedule") {
-      console.log(`Rescheduling appointment ID: ${appointmentId}`);
-    } else if (action === "cancel") {
-      console.log(`Canceling appointment ID: ${appointmentId}`);
-    }
-    setShowOptions(null); // Close the options menu
-  };
-
+  // Get appointments by their status
   const getAppointmentsByView = (status) => {
     return appointments.filter((appointment) => appointment.status === status);
   };
@@ -90,9 +65,14 @@ const Consultation = () => {
   const toggleUpcomingAppointments = () => {
     setShowUpcomingAppointments(!showUpcomingAppointments);
   };
-  
+
   const toggleCompletedAppointments = () => {
     setShowCompletedAppointments(!showCompletedAppointments);
+  };
+
+  // Get an array of dates for the appointments
+  const getAppointmentDates = () => {
+    return appointments.map((appointment) => new Date(appointment.date).toISOString().split("T")[0]);
   };
 
   return (
@@ -102,7 +82,7 @@ const Consultation = () => {
         <div className="consultation-content">
           <h3>Consultation</h3>
 
-          <div className="button-container">
+          <div className="button-consult">
             <Link to="/appointments/new" className="new-appointment-button">
               <button>+</button>
             </Link>
@@ -111,31 +91,15 @@ const Consultation = () => {
           {loading ? (
             <p>Loading appointments...</p>
           ) : (
-            <div className="appointments-container">
-              <div className="calendar-section">
-                <Calendar
-                  onChange={setSelectedDate}
-                  value={selectedDate}
-                  tileClassName={({ date }) => {
-                    const appointmentDates = appointments.map((appointment) =>
-                      new Date(appointment.date).toDateString()
-                    );
-                    return appointmentDates.includes(date.toDateString())
-                      ? "appointment-date"
-                      : null;
-                  }}
-                />
-              </div>
-
+            <div className="appointments-and-calendar">
+              {/* Appointments Section */}
               <div className="appointments-details">
-                <h3>Appointment</h3>
+                <h3>Appointments</h3>
 
                 {/* Upcoming Appointments */}
                 <div className="upcoming-appointments">
-                  <button
-                    onClick={toggleUpcomingAppointments}
-                  >
-                    {showUpcomingAppointments ? ">" : "<"} Upcoming
+                  <button onClick={toggleUpcomingAppointments}>
+                    {showUpcomingAppointments ? "<" : ">"} Upcoming
                   </button>
 
                   {showUpcomingAppointments && (
@@ -152,26 +116,6 @@ const Consultation = () => {
                                 <p><strong>Consultation Type:</strong> {appointment.consultationType}</p>
                                 <p><strong>Platform:</strong> {appointment.platform}</p>
                               </div>
-                              <div className="more-options">
-                                <button
-                                  className="more-options-button"
-                                  onClick={() => setShowOptions(
-                                    showOptions === appointment.id ? null : appointment.id
-                                  )}
-                                >
-                                  :
-                                </button>
-                                {showOptions === appointment.id && (
-                                  <div className="more-options-menu">
-                                    <button onClick={() => handleOptionClick("reschedule", appointment.id)}>
-                                      Reschedule
-                                    </button>
-                                    <button onClick={() => handleOptionClick("cancel", appointment.id)}>
-                                      Cancel
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
                             </li>
                           ))}
                         </ul>
@@ -184,10 +128,8 @@ const Consultation = () => {
 
                 {/* Completed Appointments */}
                 <div className="completed-appointments">
-                  <button
-                    onClick={toggleCompletedAppointments}
-                  >
-                    {showCompletedAppointments ? ">" : "<"} Completed
+                  <button onClick={toggleCompletedAppointments}>
+                    {showCompletedAppointments ? "<" : ">"} Completed
                   </button>
 
                   {showCompletedAppointments && (
@@ -204,26 +146,6 @@ const Consultation = () => {
                                 <p><strong>Consultation Type:</strong> {appointment.consultationType}</p>
                                 <p><strong>Platform:</strong> {appointment.platform}</p>
                               </div>
-                              <div className="more-options">
-                                <button
-                                  className="more-options-button"
-                                  onClick={() => setShowOptions(
-                                    showOptions === appointment.id ? null : appointment.id
-                                  )}
-                                >
-                                  :
-                                </button>
-                                {showOptions === appointment.id && (
-                                  <div className="more-options-menu">
-                                    <button onClick={() => handleOptionClick("reschedule", appointment.id)}>
-                                      Reschedule
-                                    </button>
-                                    <button onClick={() => handleOptionClick("cancel", appointment.id)}>
-                                      Cancel
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
                             </li>
                           ))}
                         </ul>
@@ -233,6 +155,18 @@ const Consultation = () => {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Calendar Section */}
+              <div className="calendar-section">
+                <Calendar
+                  tileClassName={({ date, view }) => {
+                    if (view === "month" && getAppointmentDates().includes(date.toISOString().split("T")[0])) {
+                      return "highlighted-date"; // Add class if date has an appointment
+                    }
+                    return null;
+                  }}
+                />
               </div>
             </div>
           )}

@@ -55,7 +55,7 @@ const Sidebar = () => {
         <li>
           <Link to="/account-settings">
             <span className="material-symbols-outlined">settings</span>
-            <h4>Account Settings</h4>
+            <h4>Settings</h4>
           </Link>
         </li>
         <li>
@@ -66,15 +66,6 @@ const Sidebar = () => {
         </li>
       </ul>
 
-      <div className="user-account">
-        <div className="user-profile">
-          <img src={client} alt="User Profile" />
-          <div className="user-detail">
-            <h3>{clientFirstName} {clientLastName}</h3>
-            <span>USER</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

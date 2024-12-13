@@ -76,13 +76,12 @@ const Login = () => {
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            <div className="remember-forgot">
-              <label>
-                <input type="checkbox" />
-                Remember me
-              </label>
+            <div className="forgot">
+            
               <a href="#">Forgot password?</a>
             </div>
+
+            
 
             <button type="submit">Login</button>
           </form>

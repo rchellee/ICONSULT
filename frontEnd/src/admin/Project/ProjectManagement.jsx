@@ -257,9 +257,6 @@ const ProjectManagement = () => {
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> Create
           </button>
-          <div className="notification-icon" style={{ cursor: "pointer" }}>
-            <FaBell className="icon" />
-          </div>
         </div>
         {isModalOpen && (
           <ProjectForm

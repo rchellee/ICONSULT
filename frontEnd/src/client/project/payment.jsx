@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../sidebar";
 
 const Payment = () => {
   const navigate = useNavigate(); // Initialize navigate function
@@ -41,8 +42,10 @@ const Payment = () => {
   }, []);
 
   return (
+    
     <div>
-      <h1>iConsult Payment</h1>
+      <h3>Payment</h3>
+    
       <div id="paypal-button-container"></div>
       <button
         onClick={() => navigate(-1)} // Go back to the previous page

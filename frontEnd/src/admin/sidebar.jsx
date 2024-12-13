@@ -30,6 +30,12 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/notifications">
+            <span className="material-symbols-outlined">notifications</span>
+            <h4>Notification</h4>
+          </Link>
+        </li>
+        <li>
           <Link to="/project">
             <span className="material-symbols-outlined">folder</span>
             <h4>Projects</h4>
@@ -41,12 +47,6 @@ const Sidebar = () => {
             <h4>Reports</h4>
           </Link>
         </li>
-        {/* <li>
-          <Link to="/create">
-            <span className="material-symbols-outlined">add_circle</span>
-            <h4>Create</h4>
-          </Link>
-        </li> */}
         <li>
           <Link to="/clients">
             <span className="material-symbols-outlined">group</span>

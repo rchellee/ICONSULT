@@ -1,160 +1,169 @@
-consultation.css
-/* General Styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f9;
-  color: #333;
-}
-
-.consultation-page {
+.consultation-content {
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  flex-direction: column; /* Stack appointments and calendar vertically on smaller screens */
+  gap: 1px;
 }
 
-.content {
-  flex: 1;
-  padding: 20px;
-}
-
-h3 {
-  margin-bottom: 20px;
-  color: #34495e;
-}
-
-/* Button Styles */
-.button-container {
+.appointments-and-calendar {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.new-appointment-button button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.new-appointment-button button:hover {
-  background-color: #2980b9;
-}
-
-/* Appointments Section */
-.appointments-container {
-  display: flex;
-  gap: 20px;
   flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px;
 }
 
+.appointments-details,
 .calendar-section {
-  flex: 1;
-  max-width: 40%;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 1 48%; /* Each section takes up 48% of the space, with a gap */
+  border-radius: 2px;
   padding: 20px;
-  box-sizing: border-box;
 }
 
-.calendar-section .react-calendar {
-  width: 100%;
-  height: 350px; /* Fixed height for the calendar */
-  border: none;
-}
-
-.calendar-section .react-calendar__tile {
-  max-width: 100%; /* Prevent tiles from expanding */
-}
-
-.calendar-section .appointment-date {
-  background-color: #3498db !important;
-  color: white !important;
-  border-radius: 50%;
-}
-
-.appointments-details {
-  flex: 2;
-  max-width: 60%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.appointments-details ul {
+  list-style: none;
+  padding: 0;
 }
 
 .appointment-item {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.appointment-item:last-child {
-  border-bottom: none;
+  flex-direction: column;
+  margin-bottom: 15px;
+  padding: 15px;
+  border: 1px solid #ddd; /* Light border around each appointment */
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
 .date-box {
-  flex: 1;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #333;
 }
 
 .details-box {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.more-options {
-  flex: 0.5;
-  position: relative;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #555;
 }
 
 .more-options-button {
-  background: none;
+  background-color: transparent;
   border: none;
-  font-size: 20px;
+  font-size: 1.5rem;
+  color: #888;
   cursor: pointer;
+  padding: 5px;
+  transition: color 0.3s ease;
 }
 
-.more-options-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  overflow: hidden;
-}
 
-.more-options-menu button {
-  background: none;
+.upcoming-appointments button,
+.completed-appointments button {
+
+  color: rgb(9, 9, 9);
+  padding: 8px 15px;
   border: none;
-  padding: 10px;
-  text-align: left;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 10px;
+  background-color: #f6f6f6  ;
+ 
+}
+
+/* Calendar Styles */
+.react-calendar {
+  border: none;
+  font-family: 'Arial', sans-serif;
   width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2px;
+}
+
+.react-calendar__tile {
+  padding: 30px;
+  border-radius: 4px;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #333;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.react-calendar__tile--now {
+  font-weight: bold;
+  color: #333;
+}
+
+.react-calendar__tile--highlighted-date {
+  background-color: #008CBA;
+  color: white;
+  font-weight: bold;
+}
+
+.react-calendar__tile--highlighted-date:hover {
+  background-color: #006f88;
+  color: white;
+}
+
+.react-calendar__tile--active {
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.react-calendar__tile--active:hover {
+  background-color: #388E3C;
+}
+
+.react-calendar__month-view__weekdays {
+  font-weight: bold;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.react-calendar__month-view__days__day {
+  padding: 20px;
+}
+
+.react-calendar__month-view__days__day:hover {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.react-calendar__navigation button {
+  background-color: transparent;
+  border: none;
+  color: #333;
+  font-size: 1.5rem;
   cursor: pointer;
+  padding: 8px 12px;
 }
 
-.more-options-menu button:hover {
-  background-color: #f4f4f9;
+.react-calendar__navigation button:hover {
+  color: #008CBA;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .appointments-container {
-    flex-direction: column;
-  }
+.react-calendar__navigation button:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
 
-  .calendar-section,
-  .appointments-details {
-    max-width: 100%;
-  }
+.new-appointment-button button {
+  background-color: #8c8b93;
+  color: white;
+}
+
+.new-appointment-button button:hover {
+  background-color: #4C3E92;
+  transform: scale(1.1);
+}
+
+.new-appointment-button button:active {
+  transform: scale(1);
 }

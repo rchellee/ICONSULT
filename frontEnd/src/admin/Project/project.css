@@ -59,22 +59,6 @@ h1 {
 
 /* notification box styles *****************************************************************/
 
-.notification-icon {
-    margin-top: 10px; 
-    cursor: pointer;
-    font-size: 24px;
-    color: #3a9b9a; 
-    position: absolute; 
-    right: 0; 
-    top: 5px; 
-    margin-right: 70px;
-    margin-top: 50px;
-}
-.notification-icon:hover {
-    color: #51d1eb; 
-}
-
-
 
 
 /*eto sa no project created yet*/
