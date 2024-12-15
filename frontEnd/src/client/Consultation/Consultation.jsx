@@ -1,11 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import {
+  Box,
+  Typography,
+  useTheme,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
+import Sidebar from "../sidebar";
+import Header from "../../components/Header";
+import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
-import Sidebar from "../sidebar"; // Adjust the path as needed
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css"; // Import the calendar styles
 import "./consultation.css";
 
 const Consultation = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [appointments, setAppointments] = useState([
     {
       id: 1,
@@ -13,7 +28,7 @@ const Consultation = () => {
       time: "10:00 AM",
       consultationType: "Consultation Type A",
       platform: "Zoom",
-      status: "Upcoming"
+      status: "Upcoming",
     },
     {
       id: 2,
@@ -21,7 +36,7 @@ const Consultation = () => {
       time: "02:00 PM",
       consultationType: "Consultation Type B",
       platform: "Skype",
-      status: "Upcoming"
+      status: "Upcoming",
     },
     {
       id: 3,
@@ -29,7 +44,7 @@ const Consultation = () => {
       time: "09:00 AM",
       consultationType: "Consultation Type C",
       platform: "Google Meet",
-      status: "Completed"
+      status: "Completed",
     },
     {
       id: 4,
@@ -37,12 +52,14 @@ const Consultation = () => {
       time: "04:00 PM",
       consultationType: "Consultation Type D",
       platform: "Teams",
-      status: "Completed"
-    }
+      status: "Completed",
+    },
   ]);
   const [loading, setLoading] = useState(false);
-  const [showUpcomingAppointments, setShowUpcomingAppointments] = useState(false); // To control visibility of upcoming appointments
-  const [showCompletedAppointments, setShowCompletedAppointments] = useState(false); // To control visibility of completed appointments
+  const [showUpcomingAppointments, setShowUpcomingAppointments] =
+    useState(false); // To control visibility of upcoming appointments
+  const [showCompletedAppointments, setShowCompletedAppointments] =
+    useState(false); // To control visibility of completed appointments
 
   useEffect(() => {
     setLoading(false);
@@ -72,31 +89,33 @@ const Consultation = () => {
 
   // Get an array of dates for the appointments
   const getAppointmentDates = () => {
-    return appointments.map((appointment) => new Date(appointment.date).toISOString().split("T")[0]);
+    return appointments.map(
+      (appointment) => new Date(appointment.date).toISOString().split("T")[0]
+    );
   };
 
   return (
     <div className="consultation-page">
       <Sidebar />
       <div className="content">
-        <div className="consultation-content">
-          <h3>Consultation</h3>
+        <Box m="20px">
+          <Header title="Consultation" />
+          <Box display="flex">
+            {/* Sidebar */}
+            <div className="consultation-content">
+              <div className="button-consult">
+                <Link to="/appointments/new" className="new-appointment-button">
+                  <span>+ Add new appointment</span>
+                </Link>
+              </div>
 
-          <div className="button-consult">
-            <Link to="/appointments/new" className="new-appointment-button">
-            <span>+ Add new appointment</span>
-            </Link>
-          </div>
-
-          {loading ? (
-            <p>Loading appointments...</p>
-          ) : (
-            <div className="appointments-and-calendar">
-              {/* Appointments Section */}
-              <div className="appointments-details">
-                <h3>Appointments</h3>
-
-                {/* Upcoming Appointments */}
+              {loading ? (
+                <p>Loading appointments...</p>
+              ) : (
+                <div className="appointments-and-calendar">
+                  <div className="appointments-details">
+                    <h3>Appointments</h3>
+                    {/* Upcoming Appointments */}
                 <div className="upcoming-appointments">
                   <button onClick={toggleUpcomingAppointments}>
                     {showUpcomingAppointments ? "<" : ">"} Upcoming
@@ -155,22 +174,35 @@ const Consultation = () => {
                     </div>
                   )}
                 </div>
-              </div>
-
-              {/* Calendar Section */}
-              <div className="calendar-section">
-                <Calendar
-                  tileClassName={({ date, view }) => {
-                    if (view === "month" && getAppointmentDates().includes(date.toISOString().split("T")[0])) {
-                      return "highlighted-date"; // Add class if date has an appointment
-                    }
-                    return null;
-                  }}
-                />
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+
+            {/* FullCalendar */}
+            <Box flex="1 1 70%" ml="10px">
+              <FullCalendar
+                height="75vh"
+                plugins={[
+                  dayGridPlugin,
+                  timeGridPlugin,
+                  interactionPlugin,
+                  listPlugin,
+                ]}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+                }}
+                initialView="dayGridMonth"
+                editable={true}
+                selectable={true}
+                selectMirror={true}
+                dayMaxEvents={true}
+              />
+            </Box>
+          </Box>
+        </Box>
       </div>
     </div>
   );

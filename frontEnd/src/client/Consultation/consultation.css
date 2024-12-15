@@ -160,3 +160,7 @@
 .new-appointment-button button:active {
   transform: scale(1);
 }
+
+.fc-toolbar-title {
+  font-size: 1rem; /* Adjust the font size as needed */
+}
