@@ -23,6 +23,7 @@ const Calendar = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
   const [fetchedAppointments, setFetchedAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [popup, setPopup] = useState(null);
 
   // Fetch appointments from the backend
   useEffect(() => {
@@ -67,6 +68,13 @@ const Calendar = () => {
                 title: `${appointment.consultationType} with ${appointment.name}`,
                 start: startDate,
                 end: endDate,
+                extendedProps: {
+                  email: appointment.email,
+                  contact: appointment.contact,
+                  consultationType: appointment.consultationType,
+                  additionalInfo: appointment.additionalInfo,
+                  platform: appointment.platform,
+                },
               };
             } catch (error) {
               console.error("Error formatting appointment:", error);
@@ -89,13 +97,42 @@ const Calendar = () => {
   };
 
   const handleEventClick = (selected) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the event '${selected.event.title}'`
-      )
-    ) {
-      selected.event.remove();
-    }
+    const { title, start, end, extendedProps } = selected.event;
+    setPopup({
+      title,
+      start,
+      end,
+      email: extendedProps.email,
+      contact: extendedProps.contact,
+      consultationType: extendedProps.consultationType,
+      additionalInfo: extendedProps.additionalInfo,
+      platform: extendedProps.platform,
+      x: selected.jsEvent.clientX,
+      y: selected.jsEvent.clientY,
+    });
+  };
+
+  const handleMouseEnter = (selected) => {
+    const { title, start, end, extendedProps } = selected.event;
+    setPopup({
+      title,
+      start,
+      end,
+      email: extendedProps.email,
+      contact: extendedProps.contact,
+      consultationType: extendedProps.consultationType,
+      additionalInfo: extendedProps.additionalInfo,
+      platform: extendedProps.platform,
+      x: selected.jsEvent.clientX,
+      y: selected.jsEvent.clientY,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    // Delay hiding the popup slightly to allow for smooth transitions to the popup itself
+    setTimeout(() => {
+      setPopup(null);
+    }, 100000); // Adjust delay as needed
   };
 
   return (
@@ -103,11 +140,15 @@ const Calendar = () => {
       <Sidebar />
       <div className="content">
         <Box m="20px">
-          <Header title="Calendar" subtitle="Events" />
+          <Header title="Calendar" subtitle={selectedDate.toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })} />
           <Box display="flex">
             {/* Sidebar */}
             <Box
-              flex="1 1 20%"
+              flex="1 1 10%"
               sx={{
                 background: "#395176", // Set the background color here
                 p: "15px",
@@ -115,13 +156,6 @@ const Calendar = () => {
                 color: "white",
               }}
             >
-              <Typography variant="h7">
-                {selectedDate.toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })}
-              </Typography>
               <List>
                 {fetchedAppointments.filter((event) => {
                   // Convert selectedDate to a Date object
@@ -146,7 +180,7 @@ const Calendar = () => {
                         key={event.id}
                         sx={{
                           backgroundColor: colors.greenAccent[500],
-                          margin: "10px 0",
+                          margin: "15px 0",
                           borderRadius: "2px",
                         }}
                       >
@@ -186,9 +220,72 @@ const Calendar = () => {
                 dayMaxEvents={true}
                 dateClick={handleDateClick}
                 eventClick={handleEventClick}
+                eventMouseEnter={handleMouseEnter}
+                eventMouseLeave={handleMouseLeave}
                 events={fetchedAppointments} // Use fetched appointments
                 eventsSet={(events) => setCurrentEvents(events)}
               />
+              {popup && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: popup.y + 10,
+                    left: popup.x + 10,
+                    backgroundColor: "white",
+                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+                    borderRadius: "5px",
+                    padding: "10px",
+                    zIndex: 1000,
+                  }}
+                  onMouseEnter={() => clearTimeout()} // Prevent hiding when mouse enters popup
+                  onMouseLeave={() => setPopup(null)} // Hide popup when mouse leaves
+                >
+                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    {popup.title}
+                  </Typography>
+                  <Typography variant="body2">
+                    {new Date(popup.start).toLocaleString()} -{" "}
+                    {new Date(popup.end).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2">Email: {popup.email}</Typography>
+                  <Typography variant="body2">Contact: {popup.contact}</Typography>
+                  <Typography variant="body2">Type: {popup.consultationType}</Typography>
+                  <Typography>Info: {popup.additionalInfo}</Typography>
+                  <Typography>Platform: {popup.platform}</Typography>
+                  <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button
+                      style={{
+                        backgroundColor: "#4caf50",
+                        color: "white",
+                        border: "none",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        console.log("Edit clicked for event:", popup.title);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        border: "none",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        console.log("Delete clicked for event:", popup.title);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>
