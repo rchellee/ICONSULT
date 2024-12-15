@@ -1,5 +1,9 @@
-/* tracking.css */
-
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
 /* Container for the whole page */
 .client-project-page {
     display: flex;
@@ -8,28 +12,87 @@
 }
 
 .content {
-    margin-top: 100px; /* Adds space below the fixed tabs */
+    margin-top: 80px; /* Adds space below the fixed tabs */
     padding: 20px;
     overflow-y: auto;
 }
 
+/* all projects back */
+.back-icon {
+  position: absolute;
+  top: 110px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+  margin-top: 0;
+  margin-left: 15px;
+  color: #333; /* Adjust color */
+  padding: 10px 20px; /* Add padding to control the button size */
+  width: auto; /* Make the button width auto to avoid stretching */
+  max-width: 250px; /* Set a max-width to limit how wide the button can be */
+  border-radius: 5px; /* Optional: rounded corners */
+}
+
+.back-icon:hover {
+  color: #007bff; /* Add hover effect */
+}
+
+.back-icon svg {
+  margin-right: 5px;
+}
+
+
+/* Container for the search box */
+.search-box-container {
+  display: flex;
+  justify-content: flex-start; /* Align items to the left by default */
+  width: 100%; /* Ensure it spans full width */
+  margin: 20px 0; /* Add some margin at the top and bottom for spacing */
+  
+}
+
+/* Input field for the search box */
+.search-input {
+  position: absolute;
+  bottom: 40px;
+  left: 600px;
+  width: 250%; /* Make the input field take up more space */
+  max-width: 500px; /* Optional: increase max-width for larger screens */
+  height: 50px; /* Set the height of the search box */
+  padding: 15px; /* Padding inside the search box */
+  font-size: 15px; /* Larger text for better visibility */
+  border: 2px solid #3498db; /* Add a blue border to the search box */
+  border-radius: 10px; /* Optional: rounded corners */
+  outline: none; /* Remove the focus outline */
+  box-sizing: border-box; /* Ensures padding is part of the input box size */
+  background: #fff; /* White background for the search input */
+}
+
+.search-input:focus {
+  border-color: #7fbcf6; /* Change border color when focused */
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Optional: add a shadow when the input is focused */
+}
+
 /* Tabs section at the top */
 .tabs {
-    left: 0;
-    width: 80%;
-    max-width: 1000px;
-    min-width: 400px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    justify-content: flex-start;
-    gap: 20px;
-    padding: 10px 20px;
-    z-index: 10;
-    height: 60px;
-    margin-left: 150px;
-    margin-top: 80px;
-    background-color: #f4f4f4;
+  position: absolute;
+  left: 500px;
+  width: 80%;
+  max-width: 1000px;
+  min-width: 400px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 10px 20px;
+  z-index: 10;
+  height: 60px;
+  margin-left: 10px;
+  margin-top: 0; /* Reduce this value to move the tabs closer to the top */
 }
+
 
 
 /* Style for individual tab buttons */
@@ -68,6 +131,8 @@
 
 /* Posts and Files Section */
 .posts, .files {
+    position: absolute;
+    top: 500px;
     display: flex;
     flex-direction: column;
 }
@@ -75,7 +140,7 @@
 .posts h2, .files h2 {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #926464; /* Change heading color */
+    color: #3c2e2e; /* Change heading color */
 }
 
 .posts p, .files p {
@@ -83,25 +148,18 @@
     color: #000000; /* Change paragraph text color */
 }
 
-/*file action*/
 /* File action buttons container */
 .file-actions {
-    display: flex;
-    gap: 20px; /* Space between the buttons */
-    padding: 10px 20px; /* Padding for container */
-    background-color: #eceaea; /* Same background color as .tabs */
-    border-bottom: 1px solid #ddd; /* Border under the tab */
-  }
-  
-  /* Style for individual buttons */
-  /* File action buttons container */
-.file-actions {
-    display: flex;
-    gap: 20px; /* Space between the buttons */
-    padding: 10px 20px; /* Padding for container */
-    background-color: #f4f4f4; /* Same background color as .tabs */
-    border-bottom: 1px solid #ddd; /* Border under the tab */
-  }
+  display: flex;
+  gap: 20px; /* Space between the buttons */
+  padding: 10px 20px; /* Padding for container */
+  background-color: transparent; /* Same background color as .tabs */
+  margin-left: 0; /* Remove or adjust margin to align to the left */
+  justify-content: flex-start; /* Align items to the left */
+  margin-top: -100px; /* Move container upward */
+}
+
+
   
   /* Style for individual buttons */
   .file-actions button {
@@ -123,7 +181,7 @@
   
   /* Active button styles */
   .file-actions button.active {
-    background-color: #ccc; /* Slightly darker background for active button */
+    background-color: #f5f0f0; /* Slightly darker background for active button */
     color: #0056b3; /* Change text color for active button */
   }
 
@@ -255,3 +313,5 @@
 .new-folder-input .button-group button:hover {
   opacity: 0.8;
 }
+
+
