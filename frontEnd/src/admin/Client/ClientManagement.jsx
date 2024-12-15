@@ -102,8 +102,8 @@ const ClientManagement = () => {
   return (
     <div className="admin-home-page">
       <Sidebar />
-      <div className="clientlist-content">
-      <Sidebar />
+      <div className="content">
+
         <h2>Clients</h2>
         {selectedClient ? (
           <ClientDetails
@@ -126,7 +126,6 @@ const ClientManagement = () => {
             )}
             {!isFormVisible && (
               <>
-                <h3>Clients List</h3>
                 {clients.length === 0 ? (
                   <p>No clients added yet.</p>
                 ) : (
@@ -142,7 +141,7 @@ const ClientManagement = () => {
                         <tr key={index}>
                           <td
                             onClick={() => viewClientDetails(client)}
-                            style={{ cursor: "pointer", color: "blue" }}
+                            style={{ cursor: "pointer", color: "black" }}
                           >
                             {`${client.firstName} ${client.lastName}`.toUpperCase()}
                           </td>

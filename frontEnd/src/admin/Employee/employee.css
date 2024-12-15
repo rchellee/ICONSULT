@@ -1,47 +1,120 @@
-/* Inside employee.css */
+/* General layout */
+.admin-home-page {
+  display: flex;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f4f4f9;
+  height: 100vh;
+  overflow: hidden;
+}
 
+.content {
+  flex: 1;
+  padding: 20px;
+  margin: 10px;
+  overflow-y: auto;
+}
+
+.content h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Button styles */
+button {
+  background-color: #0f2d4d;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+/* Table styles */
+table {
+  width: 70%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  justify-content: center;
+  
+}
+
+table th, table td {
+  border: 1px solid #f4f4f4;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+table tr:hover {
+  background-color: #e3ebeb;
+}
+
+table td {
+  cursor:auto;
+ 
+}
+
+/* Toggle button styles */
 .toggle-btn {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-btn input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d6d6d6;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .slider {
+  background-color: #28a745;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  table th, table td {
+    font-size: 12px;
+    padding: 10px;
   }
-  
-  .toggle-btn input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+
+  button {
+    padding: 10px 16px;
+    font-size: 14px;
   }
-  
-  .toggle-btn .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 34px;
+
+  .content h2 {
+    font-size: 20px;
   }
-  
-  .toggle-btn .slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    border-radius: 50%;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: 0.4s;
-  }
-  
-  input:checked + .slider {
-    background-color: #4caf50;
-  }
-  
-  input:checked + .slider:before {
-    transform: translateX(26px);
-  }
-  
+}

@@ -84,7 +84,7 @@ const Consultation = () => {
 
           <div className="button-consult">
             <Link to="/appointments/new" className="new-appointment-button">
-              <button>+</button>
+            <span>+ Add new appointment</span>
             </Link>
           </div>
 

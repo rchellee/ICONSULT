@@ -72,11 +72,10 @@ const Notification = () => {
   };
 
   return (
-    
     <div className="notification-wrapper">
+      <Sidebar />
       <div className="content">
-        <Sidebar />
-        <h3>Notifications</h3>
+      <h3>Notifications</h3>
         {notifications.length === 0 ? (
           <p className="no-notifications">No notifications available.</p>
         ) : (

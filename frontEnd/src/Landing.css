@@ -128,22 +128,23 @@
 /* i-name styling */
 .i-name {
   display: flex;
-  flex-direction: column; 
+  flex-direction:row; 
   width: 100%;
 }
 
-.i-name span {
+.i-name  {
   white-space: nowrap; 
   display: block; 
   font-size: 2.5rem;
 }
 
-.i-name span:first-child {
+.i-name:first-child {
   font-weight: bold;
   font-size: 50px; 
 }
 
-.i-name span:last-child {
+.i-name :last-child {
+  font-weight: lighter;
   font-size: 30px; 
   margin-top: 10px;
 }

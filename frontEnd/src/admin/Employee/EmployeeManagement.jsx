@@ -90,7 +90,7 @@ const EmployeeManagement = () => {
   };
 
   return (
-    <div className="admin-home-page">
+    <div className="admin-home-page">     
       <Sidebar />
       <div className="content">
         <h2>Employees</h2>
@@ -114,7 +114,6 @@ const EmployeeManagement = () => {
             )}
             {!isFormVisible && (
               <>
-                <h3>Employees List</h3>
                 {employees.length === 0 ? (
                   <p>No employees added yet.</p>
                 ) : (
@@ -130,9 +129,9 @@ const EmployeeManagement = () => {
                         <tr key={index}>
                           <td
                             onClick={() => viewEmployeeDetails(employee)}
-                            style={{ cursor: "pointer", color: "blue" }}
+                            style={{ cursor: "pointer", color: "black" }}
                           >
-                            {employee.firstName}
+                            {employee.firstName} {employee.lastName}
                           </td>
                           {/* <td
                             onClick={() => viewEmployeeDetails(employee)}

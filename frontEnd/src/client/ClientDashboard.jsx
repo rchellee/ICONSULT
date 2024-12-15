@@ -31,11 +31,13 @@ function ClientDashboard() {
   const [showTasksModal, setShowTasksModal] = useState(false);
   const [showAppointmentsModal, setShowAppointmentsModal] = useState(false);
   const [showPendingTasksModal, setShowPendingTasksModal] = useState(false);
+  const [showPendingPaymentsModal, setShowPendingPaymentsModal] = useState(false);
 
   const toggleProjectsModal = () => setShowProjectsModal(!showProjectsModal);
   const toggleTasksModal = () => setShowTasksModal(!showTasksModal);
   const toggleAppointmentsModal = () => setShowAppointmentsModal(!showAppointmentsModal);
   const togglePendingTasksModal = () => setShowPendingTasksModal(!showPendingTasksModal);
+  const togglePendingPaymentsModal = () => setShowPendingPaymentsModal(!showPendingPaymentsModal);
 
   const formatDayAndDate = (isoDate) => {
     const date = new Date(isoDate);
@@ -44,8 +46,12 @@ function ClientDashboard() {
     return `${day}, ${date.toLocaleDateString(undefined, options)}`;
   };
 
-  const pendingTasks = tasks.filter(
-    (task) => new Date(task.deadline) > new Date()
+  const pendingFeedback = tasks.filter(
+    (task) => task.name.toLowerCase().includes("feedback")
+  );
+
+  const pendingPayments = tasks.filter(
+    (task) => task.name.toLowerCase().includes("pay") || task.name.toLowerCase().includes("payment")
   );
 
   return (
@@ -64,8 +70,12 @@ function ClientDashboard() {
               <p>{tasks.length}</p>
             </div>
             <div className="card summary-card">
-              <h4>Pending Tasks</h4>
-              <p>{pendingTasks.length}</p>
+              <h4>Pending Feedback</h4>
+              <p>{pendingFeedback.length}</p>
+            </div>
+            <div className="card summary-card">
+              <h4>Pending Payments</h4>
+              <p>{pendingPayments.length}</p>
             </div>
             <div className="card summary-card">
               <h4>Upcoming Appointments</h4>
@@ -94,9 +104,9 @@ function ClientDashboard() {
                 ))}
               </div>
               {projects.length > 3 && (
-                <button onClick={toggleProjectsModal}>
-                  {showProjectsModal ? "Close" : "View More"}
-                </button>
+                <span onClick={toggleProjectsModal}>
+                  {showProjectsModal ? "Close" : "See more"}
+                </span>
               )}
             </div>
 
@@ -114,17 +124,17 @@ function ClientDashboard() {
                 ))}
               </div>
               {tasks.length > 3 && (
-                <button onClick={toggleTasksModal}>
-                  {showTasksModal ? "Close" : "View More"}
-                </button>
+                <span onClick={toggleTasksModal}>
+                  {showTasksModal ? "Close" : "See More"}
+                </span>
               )}
             </div>
 
-            {/* Pending Tasks */}
-            <div className="card pending-tasks">
-              <h3>Pending Tasks</h3>
-              <div className="pending-tasks-list">
-                {pendingTasks.slice(0, 3).map((task, index) => (
+            {/* Pending Feedback */}
+            <div className="card pending-feedback">
+              <h3>Pending Feedback</h3>
+              <div className="pending-feedback-list">
+                {pendingFeedback.slice(0, 3).map((task, index) => (
                   <div className="task-item" key={index}>
                     <h4>{task.name}</h4>
                     <p>
@@ -133,10 +143,30 @@ function ClientDashboard() {
                   </div>
                 ))}
               </div>
-              {pendingTasks.length > 3 && (
-                <button onClick={togglePendingTasksModal}>
-                  {showPendingTasksModal ? "Close" : "View More"}
-                </button>
+              {pendingFeedback.length > 3 && (
+                <span onClick={togglePendingTasksModal}>
+                  {showPendingTasksModal ? "Close" : "See More"}
+                </span>
+              )}
+            </div>
+
+            {/* Pending Payments */}
+            <div className="card pending-payments">
+              <h3>Pending Payments</h3>
+              <div className="pending-payments-list">
+                {pendingPayments.slice(0, 3).map((task, index) => (
+                  <div className="task-item" key={index}>
+                    <h4>{task.name}</h4>
+                    <p>
+                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {pendingPayments.length > 3 && (
+                <span onClick={togglePendingPaymentsModal}>
+                  {showPendingPaymentsModal ? "Close" : "See More"}
+                </span>
               )}
             </div>
 
@@ -160,7 +190,7 @@ function ClientDashboard() {
               </div>
               {appointments.length > 3 && (
                 <button onClick={toggleAppointmentsModal}>
-                  {showAppointmentsModal ? "Close" : "View More"}
+                  {showAppointmentsModal ? "Close" : "See More"}
                 </button>
               )}
             </div>
@@ -212,9 +242,27 @@ function ClientDashboard() {
         {showPendingTasksModal && (
           <div className="modal-overlay" onClick={togglePendingTasksModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>All Pending Tasks</h3>
+              <h3>All Pending Feedback</h3>
               <ul>
-                {pendingTasks.map((task, index) => (
+                {pendingFeedback.map((task, index) => (
+                  <li key={index} className="task-item">
+                    <h4>{task.name}</h4>
+                    <p>
+                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {showPendingPaymentsModal && (
+          <div className="modal-overlay" onClick={togglePendingPaymentsModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <h3>All Pending Payments</h3>
+              <ul>
+                {pendingPayments.map((task, index) => (
                   <li key={index} className="task-item">
                     <h4>{task.name}</h4>
                     <p>

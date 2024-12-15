@@ -29,8 +29,8 @@ const LandingPage = () => {
         <div className="hero-content">
           <div className='i-left'>
             <div className='i-name'>
-              <span>Welcome to iConsult</span>
-              <span>Connect and start your productivity</span>
+              <div>Welcome to iConsult</div>
+              <div>Connect and start your productivity</div>
             </div>
             <button className="login-btn" onClick={() => navigate("/login")}>
               LOGIN NOW

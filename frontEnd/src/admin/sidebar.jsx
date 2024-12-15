@@ -19,49 +19,49 @@ const Sidebar = () => {
       <ul className="sidebar-links">
         <li>
           <Link to="/calendar">
-            <span className="material-symbols-outlined">calendar_month</span>
+            <div className="material-symbols-outlined">calendar_month</div>
             <h4>Calendar</h4>
           </Link>
         </li>
         <li>
           <Link to="/admin">
-            <span className="material-symbols-outlined">dashboard</span>
+            <div className="material-symbols-outlined">dashboard</div>
             <h4>Dashboard</h4>
           </Link>
         </li>
         <li>
           <Link to="/notifications">
-            <span className="material-symbols-outlined">notifications</span>
+            <div className="material-symbols-outlined">notifications</div>
             <h4>Notification</h4>
           </Link>
         </li>
         <li>
           <Link to="/project">
-            <span className="material-symbols-outlined">folder</span>
+            <div className="material-symbols-outlined">folder</div>
             <h4>Projects</h4>
           </Link>
         </li>
         <li>
           <Link to="/reports">
-            <span className="material-symbols-outlined">analytics</span>
+            <div className="material-symbols-outlined">analytics</div>
             <h4>Reports</h4>
           </Link>
         </li>
         <li>
           <Link to="/clients">
-            <span className="material-symbols-outlined">group</span>
+            <div className="material-symbols-outlined">group</div>
             <h4>Clients</h4>
           </Link>
         </li>
         <li>
           <Link to="/employee">
-            <span className="material-symbols-outlined">badge</span>
+            <div className="material-symbols-outlined">badge</div>
             <h4>Employees</h4>
           </Link>
         </li>
         <li>
           <button onClick={handleLogout} className="logout-btn">
-            <span className="material-symbols-outlined">logout</span>
+            <div className="material-symbols-outlined">logout</div>
             <h4>Logout</h4>
           </button>
         </li>
