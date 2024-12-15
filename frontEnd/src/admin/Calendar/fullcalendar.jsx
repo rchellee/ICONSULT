@@ -22,6 +22,7 @@ const Calendar = () => {
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
   const [fetchedAppointments, setFetchedAppointments] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Fetch appointments from the backend
   useEffect(() => {
@@ -84,19 +85,7 @@ const Calendar = () => {
   }, []);
 
   const handleDateClick = (selected) => {
-    const title = prompt("Add Schedule");
-    const calendarApi = selected.view.calendar;
-    calendarApi.unselect();
-
-    if (title) {
-      calendarApi.addEvent({
-        id: `${selected.dateStr}-${title}`,
-        title,
-        start: selected.startStr,
-        end: selected.endStr,
-        allDay: selected.allDay,
-      });
-    }
+    setSelectedDate(selected.date); // Store as Date object
   };
 
   const handleEventClick = (selected) => {
@@ -114,46 +103,69 @@ const Calendar = () => {
       <Sidebar />
       <div className="content">
         <Box m="20px">
-          <Header title="Calendar" subtitle="Manage your Schedule" />
-          <Box display="flex" >
+          <Header title="Calendar" subtitle="Events" />
+          <Box display="flex">
             {/* Sidebar */}
             <Box
               flex="1 1 20%"
-              backgroundColor={colors.primary[400]}
-              p="15px"
-              borderRadius="4px"
+              sx={{
+                background: "#395176", // Set the background color here
+                p: "15px",
+                borderRadius: "4px",
+                color: "white",
+              }}
             >
-              <Typography variant="h5">Todays' Events</Typography>
+              <Typography variant="h7">
+                {selectedDate.toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </Typography>
               <List>
-                {fetchedAppointments
-                  .filter((event) => {
-                    const today = new Date();
-                    return (
-                      event.start.getFullYear() === today.getFullYear() &&
-                      event.start.getMonth() === today.getMonth() &&
-                      event.start.getDate() === today.getDate()
-                    );
-                  })
-                  .map((event) => (
-                    <ListItem
-                      key={event.id}
-                      sx={{
-                        backgroundColor: colors.greenAccent[500],
-                        margin: "10px 0",
-                        borderRadius: "2px",
-                      }}
-                    >
-                      <ListItemText
-                        primary={event.title}
-                        secondary={new Date(event.start).toLocaleString()}
-                      />
-                    </ListItem>
-                  ))}
+                {fetchedAppointments.filter((event) => {
+                  // Convert selectedDate to a Date object
+                  const selected = new Date(selectedDate);
+                  return (
+                    event.start.getFullYear() === selected.getFullYear() &&
+                    event.start.getMonth() === selected.getMonth() &&
+                    event.start.getDate() === selected.getDate()
+                  );
+                }).length > 0 ? (
+                  fetchedAppointments
+                    .filter((event) => {
+                      const selected = new Date(selectedDate);
+                      return (
+                        event.start.getFullYear() === selected.getFullYear() &&
+                        event.start.getMonth() === selected.getMonth() &&
+                        event.start.getDate() === selected.getDate()
+                      );
+                    })
+                    .map((event) => (
+                      <ListItem
+                        key={event.id}
+                        sx={{
+                          backgroundColor: colors.greenAccent[500],
+                          margin: "10px 0",
+                          borderRadius: "2px",
+                        }}
+                      >
+                        <ListItemText
+                          primary={event.title}
+                          secondary={new Date(event.start).toLocaleString()}
+                        />
+                      </ListItem>
+                    ))
+                ) : (
+                  <Typography sx={{ mt: 2 }}>
+                    Nothing planned for the day. <br /> Enjoy!
+                  </Typography>
+                )}
               </List>
             </Box>
 
             {/* FullCalendar */}
-            <Box  flex="1 1 70%" ml="10px">
+            <Box flex="1 1 70%" ml="10px">
               <FullCalendar
                 height="75vh"
                 plugins={[
@@ -172,7 +184,7 @@ const Calendar = () => {
                 selectable={true}
                 selectMirror={true}
                 dayMaxEvents={true}
-                select={handleDateClick}
+                dateClick={handleDateClick}
                 eventClick={handleEventClick}
                 events={fetchedAppointments} // Use fetched appointments
                 eventsSet={(events) => setCurrentEvents(events)}
