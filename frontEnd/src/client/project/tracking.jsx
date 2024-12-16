@@ -1,24 +1,20 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FaChevronLeft, FaPlus, FaArrowUp } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaPlus, FaArrowUp, FaFolder, FaFile, FaHome } from "react-icons/fa";
 import Sidebar from "../sidebar";
 import "./tracking.css";
 
 function Tracking() {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("posts");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [folderName, setFolderName] = useState("");
-  const [folderColor, setFolderColor] = useState("#ffffff");
-  const [isCreating, setIsCreating] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [searchTerm, setSearchTerm] = useState("");
+  const [folders, setFolders] = useState([]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
 
   const handleNewFolderClick = () => {
-    setIsCreating(true);
     setShowNewFolderInput(true);
   };
 
@@ -26,46 +22,50 @@ function Tracking() {
     setFolderName(e.target.value);
   };
 
-  const handleFolderColorChange = (e) => {
-    setFolderColor(e.target.value);
-  };
-
   const handleCancelCreate = () => {
-    setIsCreating(false);
     setFolderName("");
-    setFolderColor("#ffffff");
     setShowNewFolderInput(false);
   };
 
   const handleCreateFolder = () => {
     if (folderName) {
-      console.log(`New folder created: ${folderName} with color ${folderColor}`);
-      setIsCreating(false);
-      setFolderName("");
-      setFolderColor("#ffffff");
-      setShowNewFolderInput(false);
+      const newFolder = {
+        name: folderName,
+        modifiedDate: new Date().toLocaleDateString(),
+        modifiedBy: "Client",
+        duedate: new Date().toLocaleDateString(), // Added a default due date for each folder
+      };
+      setFolders([...folders, newFolder]); // Add new folder to the list
+      handleCancelCreate();
     }
   };
 
-  const goBackToProjects = () => {
-    navigate("/projects");
-  };
-
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value); // Update search term
+    setSearchTerm(e.target.value);
   };
 
   return (
     <div className="client-project-page">
       <Sidebar />
       <div className="content">
-        <div className="back-icon" onClick={goBackToProjects}>
-          <FaChevronLeft /> All Projects
+        {/* Home Icon */}
+        <div className="home-icon-container">
+          <FaHome className="home-icon" />
+          <span className="tooltip">All Project</span>
         </div>
 
-        {/* Container for the search box */}
+        <div className="navigation-buttons">
+          <button className="nav-button">
+            <FaChevronLeft />
+            <span className="tooltip">Go back</span>
+          </button>
+          <button className="nav-button">
+            <FaChevronRight />
+          </button>
+        </div>
+
+        {/* Search Box */}
         <div className="search-box-container">
-          {/* Search Box */}
           <input
             type="text"
             placeholder="Search..."
@@ -75,6 +75,7 @@ function Tracking() {
           />
         </div>
 
+        {/* Tabs */}
         <div className="tabs">
           <button
             className={activeTab === "posts" ? "active" : ""}
@@ -90,6 +91,7 @@ function Tracking() {
           </button>
         </div>
 
+        {/* Content Area */}
         <div className="content-area">
           {activeTab === "posts" && (
             <div className="posts">
@@ -106,8 +108,7 @@ function Tracking() {
                 <button>
                   <FaArrowUp style={{ marginRight: "5px" }} /> Upload
                 </button>
-                <button>Sort</button>
-                <button>Details</button>
+                <button>Edit in Grid View</button>
               </div>
 
               {showNewFolderInput && (
@@ -122,20 +123,45 @@ function Tracking() {
                       placeholder="Enter your folder name"
                     />
                   </div>
-                  <div className="input-group">
-                    <label>Folder Color</label>
-                    <input
-                      type="color"
-                      value={folderColor}
-                      onChange={handleFolderColorChange}
-                    />
-                  </div>
                   <div className="button-group">
                     <button onClick={handleCreateFolder}>Create</button>
                     <button onClick={handleCancelCreate}>Cancel</button>
                   </div>
                 </div>
               )}
+
+              {/* Table of Folders */}
+              <div className="folder-list">
+                {folders.length > 0 ? (
+                  <table className="folder-table no-vertical-lines">
+                    <thead>
+                      <tr>
+                        <th>
+                          <FaFile style={{ marginRight: "20px" }} /> Name
+                        </th>
+                        <th>Modified</th>
+                        <th>Modified by</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {folders.map((folder, index) => (
+                        <tr key={index}>
+                          <td className="icon-name">
+                            <FaFolder className="icon" style={{ marginRight: "20px" }} />
+                            <span className="truncate" title={folder.name}>
+                              {folder.name}
+                            </span>
+                          </td>
+                          <td>{folder.modifiedDate}</td>
+                          <td>{folder.modifiedBy}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No files created yet.</p>
+                )}
+              </div>
             </div>
           )}
         </div>

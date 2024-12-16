@@ -17,32 +17,88 @@ html, body {
     overflow-y: auto;
 }
 
-/* all projects back */
-.back-icon {
-  position: absolute;
-  top: 110px;
+/* Navigation buttons */
+.navigation-buttons {
   display: flex;
   align-items: center;
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 20px; /* Space below the navigation */
+  font-size: 18px;
+  position: absolute;
+  top: 30px;
+}
+
+.navigation-buttons button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: rgb(53, 52, 52); /* Text color */
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
   cursor: pointer;
   font-size: 16px;
-  margin-bottom: 20px;
-  margin-top: 0;
-  margin-left: 15px;
-  color: #333; /* Adjust color */
-  padding: 10px 20px; /* Add padding to control the button size */
-  width: auto; /* Make the button width auto to avoid stretching */
-  max-width: 250px; /* Set a max-width to limit how wide the button can be */
-  border-radius: 5px; /* Optional: rounded corners */
+  transition: background-color 0.3s ease;
 }
 
-.back-icon:hover {
-  color: #007bff; /* Add hover effect */
+.navigation-buttons svg {
+  font-size: 25px; /* Icon size */
 }
 
-.back-icon svg {
-  margin-right: 5px;
+.nav-button {
+  position: relative;
 }
 
+.nav-button:hover {
+  transform: scale(1.2); /* Slightly enlarge the icon */
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  top: 100%; /* Position below the button */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.nav-button:hover .tooltip {
+  display: block;
+}
+
+.home-and-search-container {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between the home icon and search box */
+  padding: 10px;
+  transition: margin-left 0.3s ease; /* Smooth adjustment when sidebar opens/closes */
+}
+
+/* Home Icon Container */
+.home-icon-container {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  margin-left: 540px;
+  top: 45px;
+}
+
+.home-icon {
+  color: rgb(58, 58, 58); /* Icon color */
+  font-size: 30px; /* Icon size */
+  transition: color 0.3s ease; /* Smooth hover effect */
+}
+
+.home-icon:hover{
+  transform: scale(1.1); /* Slightly enlarge the icon */
+}
 
 /* Container for the search box */
 .search-box-container {
@@ -56,7 +112,7 @@ html, body {
 /* Input field for the search box */
 .search-input {
   position: absolute;
-  bottom: 40px;
+  bottom: 30px;
   left: 600px;
   width: 250%; /* Make the input field take up more space */
   max-width: 500px; /* Optional: increase max-width for larger screens */
@@ -77,51 +133,32 @@ html, body {
 
 /* Tabs section at the top */
 .tabs {
-  position: absolute;
-  left: 500px;
-  width: 80%;
-  max-width: 1000px;
-  min-width: 400px;
-  border-bottom: 1px solid #ddd;
   display: flex;
-  justify-content: flex-start;
-  gap: 20px;
+  justify-content: flex-start; /* Align tabs to the left */
   padding: 10px 20px;
-  z-index: 10;
-  height: 60px;
-  margin-left: 10px;
-  margin-top: 0; /* Reduce this value to move the tabs closer to the top */
+  gap: 20px; /* Space between tabs */
+  margin-top: -20px; /* Space from top */
+  width: 100%; /* Ensure the tabs container spans the full width */
+  border-bottom: 1px solid #ddd; /* Long bottom border for the entire tab area */
 }
-
-
 
 /* Style for individual tab buttons */
 .tabs button {
-    padding: 10px 20px;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    color: #565656; /* Change tab font color */
+  padding: 10px 20px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #565656; /* Change tab font color */
 }
 
+/* Active tab button style */
 .tabs button.active {
-    background-color: transparent; /* Remove the background color */
-    color: rgb(0, 0, 0); /* Maintain the text color */
-    border-bottom: 3px solid #0078d4; /* Add a blue line below the active button */
-    font-weight: bold; /* Optional: Make the active tab button text bold */
-}
-
-
-/* Optionally, if you want to center the tabs */
-.tabs.centered {
-    justify-content: center; /* Aligns tabs to the center */
-}
-
-/* Optionally, if you want the tabs to align to the right */
-.tabs.right-aligned {
-    justify-content: flex-end; /* Aligns tabs to the right */
+  background-color: transparent; /* Remove the background color */
+  color: rgb(0, 0, 0); /* Maintain the text color */
+  border-bottom: 3px solid #0078d4; /* Add a blue line below the active button */
+  font-weight: bold; /* Optional: Make the active tab button text bold */
 }
 
 /* Content area for Posts and Files */
@@ -132,7 +169,7 @@ html, body {
 /* Posts and Files Section */
 .posts, .files {
     position: absolute;
-    top: 500px;
+    top: 450px;
     display: flex;
     flex-direction: column;
 }
@@ -156,7 +193,8 @@ html, body {
   background-color: transparent; /* Same background color as .tabs */
   margin-left: 0; /* Remove or adjust margin to align to the left */
   justify-content: flex-start; /* Align items to the left */
-  margin-top: -100px; /* Move container upward */
+  margin-top: -300px; /* Move container upward */
+  margin-left: -20px;
 }
 
 
@@ -314,4 +352,71 @@ html, body {
   opacity: 0.8;
 }
 
+.document-header {
+  margin-top: 20px;
+}
 
+/* Table style */
+.folder-table {
+  width: 100%;
+  border-collapse: collapse; /* Ensures borders collapse into a single line */
+  border: none; /* Removes the outer border of the table */
+}
+
+.folder-table th, .folder-table td {
+  padding: 20px 100px; /* Increased padding for more space between columns */
+  text-align: left;
+  border-bottom: transparent; /* Keeps only the horizontal borders */
+  border-top: none;
+}
+
+.folder-table.no-vertical-lines th, .folder-table.no-vertical-lines td {
+  border-left: none;  /* Remove vertical left borders */
+  border-right: none; /* Remove vertical right borders */
+}
+
+/* Optional: Even rows have a different background color 
+.folder-table tr:nth-child(even) {
+  background-color: #c7d7ee;
+}
+*/
+
+/* Styling for truncate */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 450px; /* Adjust width as needed */
+  display: inline-block; /* Necessary for text-overflow to work */
+}
+
+.truncate:hover {
+  overflow: visible;
+  white-space: normal; /* Allow text to wrap */
+  z-index: 1; /* Bring tooltip above other elements */
+}
+
+.icon-name {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adds space between the icon and the text */
+}
+
+.icon-name .icon {
+  /* Optionally add padding or margin if needed */
+  margin-right: 50px; /* Adjust the distance as per your needs */
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 450px; /* Adjust width as needed */
+  display: inline-block; /* Necessary for text-overflow to work */
+}
+
+.truncate:hover {
+  overflow: visible;
+  white-space: normal; /* Allow text to wrap */
+  z-index: 1; /* Bring tooltip above other elements */
+}
