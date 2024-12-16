@@ -70,6 +70,7 @@ html, body {
 
 .nav-button:hover .tooltip {
   display: block;
+  cursor: pointer;
 }
 
 .home-and-search-container {
@@ -98,6 +99,7 @@ html, body {
 
 .home-icon:hover{
   transform: scale(1.1); /* Slightly enlarge the icon */
+  cursor: pointer;
 }
 
 /* Container for the search box */
@@ -134,12 +136,13 @@ html, body {
 /* Tabs section at the top */
 .tabs {
   display: flex;
-  justify-content: flex-start; /* Align tabs to the left */
+  justify-content: flex-start; 
   padding: 10px 20px;
-  gap: 20px; /* Space between tabs */
-  margin-top: -20px; /* Space from top */
-  width: 100%; /* Ensure the tabs container spans the full width */
-  border-bottom: 1px solid #ddd; /* Long bottom border for the entire tab area */
+  gap: 20px;
+  margin-top: -20px; 
+  width: 100%; 
+  border-bottom: 1px solid #ddd; 
+  cursor: pointer;
 }
 
 /* Style for individual tab buttons */
@@ -150,15 +153,15 @@ html, body {
   cursor: pointer;
   font-size: 16px;
   font-weight: bold;
-  color: #565656; /* Change tab font color */
+  color: #565656;
 }
 
 /* Active tab button style */
 .tabs button.active {
-  background-color: transparent; /* Remove the background color */
-  color: rgb(0, 0, 0); /* Maintain the text color */
-  border-bottom: 3px solid #0078d4; /* Add a blue line below the active button */
-  font-weight: bold; /* Optional: Make the active tab button text bold */
+  background-color: transparent; 
+  color: rgb(0, 0, 0); 
+  border-bottom: 3px solid #0078d4; 
+  font-weight: bold; 
 }
 
 /* Content area for Posts and Files */
@@ -177,23 +180,24 @@ html, body {
 .posts h2, .files h2 {
     font-size: 24px;
     margin-bottom: 10px;
-    color: #3c2e2e; /* Change heading color */
+    color: #3c2e2e;
 }
 
 .posts p, .files p {
     font-size: 16px;
-    color: #000000; /* Change paragraph text color */
+    color: #000000; 
 }
+
 
 /* File action buttons container */
 .file-actions {
   display: flex;
-  gap: 20px; /* Space between the buttons */
-  padding: 10px 20px; /* Padding for container */
-  background-color: transparent; /* Same background color as .tabs */
-  margin-left: 0; /* Remove or adjust margin to align to the left */
-  justify-content: flex-start; /* Align items to the left */
-  margin-top: -300px; /* Move container upward */
+  gap: 20px; 
+  padding: 10px 20px; 
+  background-color: transparent; 
+  margin-left: 0; 
+  justify-content: flex-start; 
+  margin-top: -300px; 
   margin-left: -20px;
 }
 
@@ -201,26 +205,26 @@ html, body {
   
   /* Style for individual buttons */
   .file-actions button {
-    padding: 10px 15px; /* Add padding inside buttons */
-    font-size: 16px; /* Adjust font size */
-    font-weight: normal; /* Normal font weight */
-    background-color: transparent; /* Transparent background */
-    border: none; /* Remove the border */
-    cursor: pointer; /* Pointer cursor on hover */
-    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
-    color: #333; /* Default text color */
-    text-align: center; /* Center align text */
+    padding: 10px 15px; 
+    font-size: 16px; 
+    font-weight: normal; 
+    background-color: transparent; 
+    border: none; 
+    cursor: pointer; 
+    transition: background-color 0.3s, color 0.3s; 
+    color: #333; 
+    text-align: center; 
   }
   
   /* Button hover effect */
   .file-actions button:hover {
-    color: #007bff; /* Change text color on hover */
+    color: #007bff; 
   }
   
   /* Active button styles */
   .file-actions button.active {
-    background-color: #f5f0f0; /* Slightly darker background for active button */
-    color: #0056b3; /* Change text color for active button */
+    background-color: #f5f0f0; 
+    color: #0056b3; /
   }
 
 

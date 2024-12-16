@@ -48,7 +48,6 @@ function Tracking() {
     <div className="client-project-page">
       <Sidebar />
       <div className="content">
-        {/* Home Icon */}
         <div className="home-icon-container">
           <FaHome className="home-icon" />
           <span className="tooltip">All Project</span>
