@@ -11,11 +11,16 @@ import {
   List,
   ListItem,
   ListItemText,
+  Menu,
+  MenuItem,
+  Button,
 } from "@mui/material";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Sidebar from "../sidebar";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import "./calendar.css";
+import "./calendar.css"; // Import the CSS file
+import AppointmentForm from './AppointmentForm'; // Import the AppointmentForm component
 
 const Calendar = () => {
   const theme = useTheme();
@@ -24,6 +29,9 @@ const Calendar = () => {
   const [fetchedAppointments, setFetchedAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [popup, setPopup] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate(); 
 
   // Fetch appointments from the backend
   useEffect(() => {
@@ -43,7 +51,6 @@ const Calendar = () => {
             try {
               const cleanedDate = appointment.date.trim();
               const cleanedTime = appointment.time.trim();
-
               const [year, month, day] = cleanedDate.split("-");
               const [hours, minutes] = cleanedTime.split(":");
 
@@ -111,7 +118,6 @@ const Calendar = () => {
       y: selected.jsEvent.clientY,
     });
   };
-
   const handleMouseEnter = (selected) => {
     const { title, start, end, extendedProps } = selected.event;
     setPopup({
@@ -135,73 +141,117 @@ const Calendar = () => {
     }, 100000); // Adjust delay as needed
   };
 
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+  };
+
+  const handleMenuClose = () => {
+    setMenuOpen(false);
+  };
+  const handleAppointmentClick = () => {
+    setMenuOpen(false); // Close the menu
+    navigate('/appointment'); // Navigate to /appointment
+  };
+  const handleAvailabilityClick = () => {
+    setMenuOpen(false); // Close the menu
+    navigate('/availability'); // Navigate to /availability
+  };
+
   return (
     <div>
       <Sidebar />
       <div className="content">
-        <Box m="20px">
-          <Header title="Calendar" subtitle={selectedDate.toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })} />
+        <Box m="0px">
+          <Button
+            onClick={handleMenuClick}
+            sx={{
+              position: "absolute",
+              bottom: "20px",
+              right: "20px",
+              backgroundColor: "#1976d2",
+              color: "white",
+              borderRadius: "50%",
+              width: "60px",
+              height: "60px",
+              fontSize: "24px",
+              "&:hover": { backgroundColor: "#1565c0" },
+            }}
+          >
+            +
+          </Button>
+          <div>
+      <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
+        <MenuItem onClick={handleAppointmentClick}>Appointment</MenuItem>
+        <MenuItem onClick={handleAvailabilityClick}>Availability</MenuItem> 
+      </Menu>
+    </div>
           <Box display="flex">
             {/* Sidebar */}
+            {/* malaking box sa gilig ng calendar */}
             <Box
               flex="1 1 10%"
               sx={{
-                background: "#395176", // Set the background color here
                 p: "15px",
-                borderRadius: "4px",
                 color: "white",
+                background: "lightGray",
+                boarderRadius:"6px",
               }}
             >
-              <List>
-                {fetchedAppointments.filter((event) => {
-                  // Convert selectedDate to a Date object
-                  const selected = new Date(selectedDate);
-                  return (
-                    event.start.getFullYear() === selected.getFullYear() &&
-                    event.start.getMonth() === selected.getMonth() &&
-                    event.start.getDate() === selected.getDate()
-                  );
-                }).length > 0 ? (
-                  fetchedAppointments
-                    .filter((event) => {
-                      const selected = new Date(selectedDate);
-                      return (
-                        event.start.getFullYear() === selected.getFullYear() &&
-                        event.start.getMonth() === selected.getMonth() &&
-                        event.start.getDate() === selected.getDate()
-                      );
-                    })
-                    .map((event) => (
-                      <ListItem
-                        key={event.id}
-                        sx={{
-                          backgroundColor: colors.greenAccent[500],
-                          margin: "15px 0",
-                          borderRadius: "2px",
-                        }}
-                      >
-                        <ListItemText
-                          primary={event.title}
-                          secondary={new Date(event.start).toLocaleString()}
-                        />
-                      </ListItem>
-                    ))
-                ) : (
-                  <Typography sx={{ mt: 2 }}>
-                    Nothing planned for the day. <br /> Enjoy!
-                  </Typography>
-                )}
-              </List>
+              <Header
+                subtitle={selectedDate.toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              />
+<List>
+  {fetchedAppointments.filter((event) => {
+    const selected = new Date(selectedDate);
+    return (
+      event.start.getFullYear() === selected.getFullYear() &&
+      event.start.getMonth() === selected.getMonth() &&
+      event.start.getDate() === selected.getDate()
+    );
+  }).length > 0 ? (
+    fetchedAppointments
+      .filter((event) => {
+        const selected = new Date(selectedDate);
+        return (
+          event.start.getFullYear() === selected.getFullYear() &&
+          event.start.getMonth() === selected.getMonth() &&
+          event.start.getDate() === selected.getDate()
+        );
+      })
+      .map((event) => (
+
+        <ListItem
+          key={event.id}
+        >
+          <ListItemText
+  primary={event.title}
+  secondary={new Date(event.start).toLocaleString()}
+  primaryTypographyProps={{
+    color: 'black',
+    fontSize: '0.9rem',
+  }}
+        
+          />
+        </ListItem>
+      ))
+  ) : (
+    <Typography sx={{ mt: 2, color: 'black',  }}> 
+      Nothing planned for the day. <br /> Enjoy!
+    </Typography>
+  )}
+</List>
+
             </Box>
 
             {/* FullCalendar */}
-            <Box flex="1 1 70%" ml="10px">
+            <Box flex="1 1 70%" ml="4px">
               <FullCalendar
-                height="75vh"
+                height="80vh"
                 plugins={[
                   dayGridPlugin,
                   timeGridPlugin,
@@ -222,9 +272,10 @@ const Calendar = () => {
                 eventClick={handleEventClick}
                 eventMouseEnter={handleMouseEnter}
                 eventMouseLeave={handleMouseLeave}
-                events={fetchedAppointments} // Use fetched appointments
+                events={fetchedAppointments} 
                 eventsSet={(events) => setCurrentEvents(events)}
               />
+              {/* nag appear kapag tignan appointment sa calendar */}
               {popup && (
                 <Box
                   sx={{

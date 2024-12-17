@@ -6,14 +6,15 @@ import LandingPage from '../src/Landingpage.jsx';
 import ProjectManagement from './admin/Project/ProjectManagement';
 import ClientManagement from './admin/Client/ClientManagement.jsx';
 import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
-import AppointmentForm from './client/appointment/AppointmentForm.jsx';
+import AppointmentForm from './client/Appointment/AppointmentForm.jsx';
 import Project from './client/project/Project.jsx';
 import DateofAppointments from './admin/Calendar/fullcalendar.jsx';
 import Consultation from './client/Consultation/Consultation.jsx';
 import AccountSettings from "./client/AccountSettings/AccountSettings.jsx";
 import Payment from "./client/project/payment.jsx";
 import Notification from "./admin/Notification/Notification.jsx";
-
+import Appointment from './admin/Calendar/AppointmentForm.jsx';
+import Availability from "./admin/Calendar/Availability";
 
 // for google icons
 const link = document.createElement('link');
@@ -48,7 +49,8 @@ function App() {
         <Route path="/account-settings" element={<AccountSettings />} />  
         <Route path="/payment" element={<Payment />} /> 
         <Route path="/notifications" element={<Notification />} /> 
-
+        <Route path="/appointment" element={<Appointment />} />
+        <Route path="/availability" element={<Availability />} />
       </Routes>
     </Router>
   );
