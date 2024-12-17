@@ -69,9 +69,9 @@ const ClientForm = ({
     };
 
     try {
+      let response;
       if (editingClient) {
-        // Update the existing client in the database
-        // Assuming you will add an endpoint for updating clients
+        //update
       } else {
         // Save new client data to the database
         const response = await fetch("http://localhost:8081/client", {
@@ -86,6 +86,20 @@ const ClientForm = ({
         if (response.ok) {
           setClients([...clients, result]); // Add the new client to the local state
           showToast(); // Show the toast notification
+
+          // Create a notification for the new client
+          await fetch("http://localhost:8081/notifications", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: "New Client Added",
+              description: `Client ${formData.firstName} ${formData.lastName} has been successfully created.`,
+              timestamp: new Date().toISOString(),
+              isRead: false,
+            }),
+          });
 
           // Send welcome email
           await sendEmail(

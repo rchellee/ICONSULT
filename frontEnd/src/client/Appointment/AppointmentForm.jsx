@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar"; // Import the Sidebar component
 import "./appointment.css";
 import DynamicCalendar from "./DynamicCalendar";
@@ -12,9 +12,13 @@ function AppointmentForm() {
     time: "",
     name: "",
     email: "",
+    contact: "",
+    companyName: "",
     consultationType: "",
+    otherDetails: "",
     additionalInfo: "",
-    reminder: "", // Add reminder field
+    platform: "",
+    reminder: "",
   });
 
   const generateRandomAvailability = () => {
@@ -80,47 +84,59 @@ function AppointmentForm() {
     const clientId = localStorage.getItem("clientId"); // Get clientId from local storage or context
 
     if (!clientId) {
-        alert("Client ID not found. Please log in.");
-        return;
+      alert("Client ID not found. Please log in.");
+      return;
     }
 
-    const formDataWithClientId = { ...formData, clientId, contact: formData.contact }; // Include clientId and contact
+    const consultationType =
+    formData.consultationType === "Others"
+      ? formData.otherDetails // Use specified value for "Others"
+      : formData.consultationType;
+
+    const formDataWithClientId = {
+      ...formData,
+      consultationType,
+      clientId,
+      contact: formData.contact,
+    }; // Include clientId and contact
 
     try {
-        const response = await fetch("http://localhost:8081/appointments", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formDataWithClientId),
-        });
+      const response = await fetch("http://localhost:8081/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formDataWithClientId),
+      });
 
-        if (!response.ok) {
-            throw new Error("Failed to save appointment");
-        }
+      if (!response.ok) {
+        throw new Error("Failed to save appointment");
+      }
 
-        const result = await response.json();
-        console.log("Appointment Submitted:", result);
-        alert("Appointment Confirmed!");
-        navigate("/clientdashboard");
+      const result = await response.json();
+      console.log("Appointment Submitted:", result);
+      alert("Appointment Confirmed!");
+      navigate("/clientdashboard");
 
-        // Reset the form
-        setCurrentStep(1);
-        setFormData({
-            date: "",
-            time: "",
-            name: "",
-            email: "",
-            contact: "",
-            consultationType: "",
-            additionalInfo: "",
-            reminder: "", // Reset reminder field
-        });
+      // Reset the form
+      setCurrentStep(1);
+      setFormData({
+        date: "",
+        time: "",
+        name: "",
+        email: "",
+        contact: "",
+        companyName: "",
+        consultationType: "",
+        otherDetails: "",
+        additionalInfo: "",
+        platform: "",
+        reminder: "",
+      });
     } catch (error) {
-        console.error("Error submitting appointment:", error);
-        alert("An error occurred. Please try again.");
+      alert("Error submitting appointment. Please try again.");
     }
-};
+  };
 
   return (
     <div className="appointment-form-container">
@@ -339,13 +355,13 @@ function AppointmentForm() {
                 <option value="In-Person">In-Person</option>
                 <option value="Video Call">Zoom</option>
                 <option value="Video Call">Google Meet</option>
-                <option value="Phone Call">Phone Call</option> 
-                <option value="Phone Call">Microsoft Teams</option> 
+                <option value="Phone Call">Phone Call</option>
+                <option value="Phone Call">Microsoft Teams</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="reminder">Reminder Me:</label>
+              <label htmlFor="reminder">Remind Me:</label>
               <select
                 id="reminder"
                 name="reminder"

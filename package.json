@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm run dev"
+  },
   "dependencies": {
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
@@ -15,7 +20,9 @@
     "@sendgrid/mail": "^8.1.4",
     "axios": "^1.7.7",
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "moment": "^2.30.1",
+    "mysql2": "^3.11.5",
     "react-big-calendar": "^1.15.0",
     "react-calendar": "^5.1.0",
     "react-icons": "^5.3.0",
@@ -27,6 +34,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.2",
+    "concurrently": "^9.1.0",
     "vite": "^5.4.11"
   }
 }

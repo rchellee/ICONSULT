@@ -146,7 +146,7 @@ const ClientManagement = () => {
                           >
                             {`${client.firstName} ${client.lastName}`.toUpperCase()} {/* Full Name */}
                           </td>
-                          <td>{client.companyName || "N/A"}</td> {/* Company Name */}
+                          <td>{client.companyName}</td>
                           <td>
                             <div
                               className={`toggle ${activeClients[client.id] ? "active" : ""}`}

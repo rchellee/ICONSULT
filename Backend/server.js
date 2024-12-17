@@ -88,15 +88,56 @@ app.post('/send-email', (req, res) => {
         .catch((error) => res.status(500).json({ error: error.message }));
 });
 
+// Endpoint to insert a new notification
+app.post('/notifications', (req, res) => {
+    const { title, description } = req.body;
+  
+    const query = 'INSERT INTO notifications (title, description, timestamp, isRead) VALUES (?, ?, NOW(), FALSE)';
+    db.query(query, [title, description], (err, result) => {
+      if (err) {
+        console.error('Error inserting notification:', err.stack);
+        res.status(500).send('Error inserting notification');
+      } else {
+        res.status(201).send('Notification created');
+      }
+    });
+  });
+
+  // Endpoint to get all notifications
+app.get('/notifications', (req, res) => {
+    const query = 'SELECT * FROM notifications ORDER BY timestamp DESC';
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error fetching notifications:', err.stack);
+        res.status(500).send('Error fetching notifications');
+      } else {
+        res.status(200).json(results);
+      }
+    });
+  });
+
+// Endpoint to mark a notification as read
+app.put('/notifications/:id', (req, res) => {
+    const notificationId = req.params.id;
+    const query = 'UPDATE notifications SET isRead = TRUE WHERE id = ?';
+    db.query(query, [notificationId], (err, result) => {
+      if (err) {
+        console.error('Error updating notification:', err.stack);
+        res.status(500).send('Error updating notification');
+      } else {
+        res.status(200).send('Notification marked as read');
+      }
+    });
+  });  
 
 // Add a new endpoint to save a client
 app.post('/client', (req, res) => {
-    const { firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status } = req.body;
+    const { firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName } = req.body;
 
-    const sql = "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    db.query(sql, [firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status], (err, result) => {
+    const sql = "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName], (err, result) => {
         if (err) return res.status(500).json(err);
-        return res.status(201).json({ id: result.insertId, firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, username, status });
+        return res.status(201).json({ id: result.insertId, firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, username, status, companyName });
     });
 });
 
@@ -284,6 +325,8 @@ app.post('/appointments', (req, res) => {
         additionalInfo,
         platform,
         clientId,
+        companyName, // Add companyName here
+        reminder, // Add reminder here
     } = req.body;
 
     if (!clientId || clientId === 0) {
@@ -291,11 +334,11 @@ app.post('/appointments', (req, res) => {
     }
 
     const sql = `
-        INSERT INTO appointments (date, time, name, email, contact, consultationType, additionalInfo, platform, client_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO appointments (date, time, name, email, contact, consultationType, additionalInfo, platform, client_id, companyName, reminder)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(sql, [date, time, name, email, contact, consultationType, additionalInfo, platform, clientId], (err, result) => {
+    db.query(sql, [date, time, name, email, contact, consultationType, additionalInfo, platform, clientId, companyName, reminder], (err, result) => {
         if (err) {
             console.error("Error inserting appointment:", err);
             return res.status(500).json({ message: "Failed to save appointment", error: err });
@@ -304,20 +347,19 @@ app.post('/appointments', (req, res) => {
     });
 });
 
+
 //Fetch appointments
 app.get('/appointments', (req, res) => {
-    console.log("Received GET request to /appointments");
+    
     const sql = `
         SELECT * FROM appointments
     `;
     
     db.query(sql, (err, data) => {
-        console.log("Query executed successfully");
         if (err) {
             console.error("Error fetching appointments:", err);
             return res.status(500).json({ message: "Failed to fetch appointments", error: err });
         }
-        console.log("Sending response");
         return res.json(data);
     });
 });

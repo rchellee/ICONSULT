@@ -14,6 +14,9 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
     birthday: "",
   });
 
+  const [showNotification, setShowNotification] = useState(false);
+
+
   useEffect(() => {
     if (editingEmployee) {
       setFormData(editingEmployee); // Pre-fill form for editing
@@ -69,6 +72,20 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
         const result = await response.json();
         if (response.ok) {
           setEmployees([...employees, result]);
+
+          // Create a notification for the new client
+          await fetch("http://localhost:8081/notifications", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: "New Employee Added",
+              description: `Employee ${formData.firstName} ${formData.lastName} has been successfully created.`,
+              timestamp: new Date().toISOString(),
+              isRead: false,
+            }),
+          });
         } else {
           console.error("Error saving employee:", result);
         }

@@ -1,64 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./notification.css"; // Import the CSS
 import Sidebar from "../sidebar";
 
 const Notification = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Payment Received",
-      description: "Your payment for Project Alpha has been successfully processed.",
-      timestamp: new Date().toISOString(),
-      isRead: false, 
-    },
-    {
-      id: 2,
-      title: "Payment Due",
-      description: "Your payment of $200 for 'Premium Subscription' is due in 3 days. Please ensure timely payment.",
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    },
-    {
-      id: 3,
-      title: "Payment Confirmation",
-      description: "Your recent payment of $120 for 'Web Hosting' has been confirme",
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    },
-    {
-      id: 4,
-      title: "Password Reset Requested",
-      description: "We received a password reset request for your account. If you didn't request this, please ignore this email.",
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    },
-    {
-      id: 5,
-      title: "Welcome to Our Service!",
-      description: "Thank you for signing up! We're excited to have you on board. Please check your email for your account details.",
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    },
-    {
-      id: 6,
-      title: "Payment Failed",
-      description: "Your payment attempt for 'SEO Optimization' could not be processed. Please try again.",
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    },
-    
-    
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [filter, setFilter] = useState("all");
 
-  const markAsRead = (id) => {
-    // Mark notification as read
-    const updatedNotifications = notifications.map((notification) =>
-      notification.id === id
-        ? { ...notification, isRead: true }
-        : notification
-    );
-    setNotifications(updatedNotifications);
+  useEffect(() => {
+    // Fetch notifications from the database
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/notifications");
+        const data = await response.json();
+        setNotifications(data);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const markAsRead = async (id) => {
+    try {
+      // Update notification on the server
+      const response = await fetch(`http://localhost:8081/notifications/${id}`, {
+        method: "PUT",
+      });
+  
+      if (response.ok) {
+        // Update the local state only after server update succeeds
+        const updatedNotifications = notifications.map((notification) =>
+          notification.id === id ? { ...notification, isRead: true } : notification
+        );
+        setNotifications(updatedNotifications);
+      } else {
+        console.error("Error marking notification as read");
+      }
+    } catch (error) {
+      console.error("Error updating notification:", error);
+    }
   };
+  
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -71,33 +54,87 @@ const Notification = () => {
     });
   };
 
-  return (
-    <div className="notification-wrapper">
-      <Sidebar />
-      <div className="content">
-      <h3>Notifications</h3>
-        {notifications.length === 0 ? (
-          <p className="no-notifications">No notifications available.</p>
-        ) : (
-          <ul className="notification-list">
-            {notifications.map((notification) => (
-              <li
-                key={notification.id}
-                className={`notification-item ${notification.isRead ? "read" : "unread"}`}
-                onClick={() => markAsRead(notification.id)} // Mark notification as read
-              >
-                <h4>{notification.title}</h4>
-                <p>{notification.description}</p>
-                <span className="notification-time">
-                  {formatDate(notification.timestamp)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-};
+  const filteredNotifications =
+    filter === "all"
+      ? notifications
+      : notifications.filter((notification) => !notification.isRead);
 
-export default Notification;
+      const now = new Date();
+      const newNotifications = filteredNotifications.filter(
+        (notification) => now - new Date(notification.timestamp) < 24 * 60 * 60 * 1000
+      );
+      const earlierNotifications = filteredNotifications.filter(
+        (notification) => now - new Date(notification.timestamp) >= 24 * 60 * 60 * 1000
+      );
+
+      return (
+        <div className="notification-wrapper">
+          <Sidebar />
+          <div className="content">
+            <h3>Notifications</h3>
+            <div className="filter-buttons">
+              <button
+                className={`filter-button ${filter === "all" ? "active" : ""}`}
+                onClick={() => setFilter("all")}
+              >
+                All
+              </button>
+              <button
+                className={`filter-button ${filter === "unread" ? "active" : ""}`}
+                onClick={() => setFilter("unread")}
+              >
+                Unread
+              </button>
+            </div>
+            {filteredNotifications.length === 0 ? (
+              <p className="no-notifications">No notifications available.</p>
+            ) : (
+              <div className="notification-groups">
+                {newNotifications.length > 0 && (
+                  <div className="new-notifications">
+                    <h4>New</h4>
+                    <ul className="notification-list">
+                      {newNotifications.map((notification) => (
+                        <li
+                          key={notification.id}
+                          className={`notification-item ${notification.isRead ? "read" : "unread"}`}
+                          onClick={() => markAsRead(notification.id)}
+                        >
+                          <h4>{notification.title}</h4>
+                          <p>{notification.description}</p>
+                          <span className="notification-time">
+                            {formatDate(notification.timestamp)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {earlierNotifications.length > 0 && (
+                  <div className="earlier-notifications">
+                    <h4>Earlier</h4>
+                    <ul className="notification-list">
+                      {earlierNotifications.map((notification) => (
+                        <li
+                          key={notification.id}
+                          className={`notification-item ${notification.isRead ? "read" : "unread"}`}
+                          onClick={() => markAsRead(notification.id)}
+                        >
+                          <h4>{notification.title}</h4>
+                          <p>{notification.description}</p>
+                          <span className="notification-time">
+                            {formatDate(notification.timestamp)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+    
+    export default Notification;

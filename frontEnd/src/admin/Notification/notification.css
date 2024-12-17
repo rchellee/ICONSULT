@@ -44,3 +44,27 @@ h3 {
   font-size: 24px;
   margin-bottom: 15px;
 }
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.filter-button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.filter-button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.filter-button:hover {
+  background-color: #e6e6e6;
+}
