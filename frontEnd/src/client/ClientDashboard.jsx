@@ -60,7 +60,6 @@ function ClientDashboard() {
       <Sidebar />
       <div className="content">
         <div className="dashboard-content">
-          <h3>Dashboard</h3>
           <div className="dashboard-summary">
             <div className="card summary-card">
               <p>Total Projects</p>

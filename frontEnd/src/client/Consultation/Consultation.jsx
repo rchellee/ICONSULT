@@ -128,8 +128,7 @@ const getAppointmentsByView = (status) => {
     <div className="consultation-page">
       <Sidebar />
       <div className="content">
-        <Box m="20px">
-          <Header title="Consultation" />
+        <Box m="2px">
           <Box display="flex">
             {/* Sidebar */}
             <div className="consultation-content">
@@ -144,8 +143,7 @@ const getAppointmentsByView = (status) => {
               ) : (
                 <div className="appointments-and-calendar">
                   <div className="appointments-details">
-                    <h4>Appointments</h4>
-
+        
                     {/* Upcoming Appointments */}
                     <div className="upcoming-appointments">
                       <button onClick={() => toggleSection("Upcoming")}>
@@ -219,10 +217,9 @@ const getAppointmentsByView = (status) => {
             </div>
 
             {/* FullCalendar */}
-
-            <Box flex="1 1 70%" ml="10px">
+            <Box flex="1 1 50%" ml="10px">
               <FullCalendar
-                height="75vh"
+                height="80vh"
                 plugins={[
                   dayGridPlugin,
                   timeGridPlugin,
