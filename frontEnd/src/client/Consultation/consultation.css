@@ -11,17 +11,28 @@
   justify-content: space-between;
 }
 
+.appointments-details {
+  display: flex;
+  flex-direction: column;
+  height: 75vh; /* Make it match the calendar height */
+  overflow: hidden; /* Prevent entire container from scrolling */
+}
+
 .appointments-details ul {
   list-style: none;
   padding: 0;
 }
 
 .appointment-item {
+  margin-bottom: 10px;
   justify-content: space-between; 
   align-items: center; 
-  padding: 5px 0;
-  border-bottom: 2px solid #eaeaea; 
+  border-bottom: 1px solid #eaeaea; 
   color: #090909; 
+}
+
+.appointment-item:last-child {
+  border-bottom: none; /* Remove border for the last item */
 }
 
 .appointment-item p {
@@ -31,7 +42,13 @@
 }
 
 /* upcoming and completed button */
-
+.upcoming-appointments,
+.completed-appointments {
+  margin: 10px 0; /* Spacing between sections */
+  border-radius: 5px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: calc(75vh - 60px); /* Adjust for header/margins if needed */
+}
 .upcoming-appointments button,
 .completed-appointments button {
   color: rgb(9, 9, 9);
@@ -60,3 +77,5 @@
 .new-appointment-button button:active {
   transform: scale(1);
 }
+
+

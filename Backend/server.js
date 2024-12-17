@@ -313,6 +313,7 @@ app.delete('/projects/:id', (req, res) => {
         }
     });
 });
+
 // Add a new appointment (POST request)
 app.post('/appointments', (req, res) => {
     const {
@@ -346,8 +347,6 @@ app.post('/appointments', (req, res) => {
         return res.status(201).json({ message: "Appointment saved successfully", appointmentId: result.insertId });
     });
 });
-
-
 //Fetch appointments
 app.get('/appointments', (req, res) => {
     
@@ -364,22 +363,7 @@ app.get('/appointments', (req, res) => {
     });
 });
 
-// Fetch appointments for a specific client
-app.get('/appointments/client/:clientId', (req, res) => {
-    const { clientId } = req.params;
 
-    const sql = `
-        SELECT * FROM appointments WHERE client_id = ?
-    `;
-
-    db.query(sql, [clientId], (err, data) => {
-        if (err) {
-            console.error("Error fetching appointments:", err);
-            return res.status(500).json({ message: "Failed to fetch appointments", error: err });
-        }
-        return res.status(200).json(data);
-    });
-});
 
 
 // Start the server
