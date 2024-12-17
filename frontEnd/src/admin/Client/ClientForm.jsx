@@ -21,6 +21,7 @@ const ClientForm = ({
     email_add: "", // Field for Email Address
     status: "active", // Default status is 'active'
     birthday: "", // Added field for Birthday
+    companyName: "", // Added field for Company Name
   });
 
   useEffect(() => {
@@ -109,6 +110,7 @@ const ClientForm = ({
         email_add: "", // Reset email field
         status: "active",
         birthday: "", // Reset birthday
+        companyName: "", // Reset companyName field
       });
     } catch (error) {
       console.error("An error occurred:", error);
@@ -204,6 +206,15 @@ const ClientForm = ({
             name="email_add" // Ensure this matches your client object
             placeholder="Email Address"
             value={formData.email_add} // Correctly bound to formData
+            onChange={handleChange}
+          />
+
+          {/* Company Name */}
+          <input
+            type="text"
+            name="companyName"
+            placeholder="Company Name"
+            value={formData.companyName}
             onChange={handleChange}
           />
 

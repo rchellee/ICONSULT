@@ -6,76 +6,67 @@ import admin from "../assets/admin.jpg";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  
   const handleLogout = () => {
     localStorage.removeItem("authToken");
-    navigate('/');
+    navigate("/");
   };
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <img src={admin} alt="Admin Logo" />
-        <h2>Admin</h2> {/* Appears when sidebar is expanded */}
       </div>
       <ul className="sidebar-links">
         <li>
-          <Link to="/calendar">
-            <div className="material-symbols-outlined">calendar_month</div>
-            <h4>Calendar</h4>
+          <Link to="/calendar" data-tooltip="Calendar">
+            <div className="material-symbols-outlined icon">calendar_month</div>
+            <span>Calendar</span>
           </Link>
         </li>
         <li>
-          <Link to="/admin">
-            <div className="material-symbols-outlined">dashboard</div>
-            <h4>Dashboard</h4>
+          <Link to="/admin" data-tooltip="Dashboard">
+            <div className="material-symbols-outlined icon">dashboard</div>
+            <span>Dashboard</span>
           </Link>
         </li>
         <li>
-          <Link to="/notifications">
-            <div className="material-symbols-outlined">notifications</div>
-            <h4>Notification</h4>
+          <Link to="/notifications" data-tooltip="Notifications">
+            <div className="material-symbols-outlined icon">notifications</div>
+            <span>Notifications</span>
           </Link>
         </li>
         <li>
-          <Link to="/project">
-            <div className="material-symbols-outlined">folder</div>
-            <h4>Projects</h4>
+          <Link to="/project" data-tooltip="Projects">
+            <div className="material-symbols-outlined icon">folder</div>
+            <span>Projects</span>
           </Link>
         </li>
         <li>
-          <Link to="/reports">
-            <div className="material-symbols-outlined">analytics</div>
-            <h4>Reports</h4>
+          <Link to="/reports" data-tooltip="Reports">
+            <div className="material-symbols-outlined icon">analytics</div>
+            <span>Reports</span>
           </Link>
         </li>
         <li>
-          <Link to="/clients">
-            <div className="material-symbols-outlined">group</div>
-            <h4>Clients</h4>
+          <Link to="/clients" data-tooltip="Clients">
+            <div className="material-symbols-outlined icon">group</div>
+            <span>Clients</span>
           </Link>
         </li>
         <li>
-          <Link to="/employee">
-            <div className="material-symbols-outlined">badge</div>
-            <h4>Employees</h4>
+          <Link to="/employee" data-tooltip="Employees">
+            <div className="material-symbols-outlined icon">badge</div>
+            <span>Employees</span>
           </Link>
         </li>
         <li>
-          <button onClick={handleLogout} className="logout-btn">
-            <div className="material-symbols-outlined">logout</div>
-            <h4>Logout</h4>
+          <button onClick={handleLogout} className="logout-btn" data-tooltip="Logout">
+            <div className="material-symbols-outlined icon">logout</div>
+            <span>Logout</span>
           </button>
         </li>
       </ul>
-
-      <div className="user-account">
-        <div className="user-profile">
-          <img src={admin} alt="User Profile" />
-          <div className="user-detail">
-            <h3>John Doe</h3>
-            <span>Admin</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

@@ -5,19 +5,20 @@ body {
   padding: 0;
   background-color: #f4f4f9;
   color: #333;
+  font-size: 0.90rem; 
 }
 
 .client-home-page {
   display: flex;
   height: 100%;
   font-family: "Poppins", sans-serif;
+  font-size: 0.90rem; 
 
 }
 
 /* Main content styles */
 .content {
   flex: 1;
-
 }
 
 h3 {
@@ -59,12 +60,7 @@ h3 {
 .project-item {
   border-radius: 2px;
   padding: 10px;
-}
-
-.project-details h4 {
-  margin: 0 0 10px;
-  font-size: 16px;
-  color: #2c3e50;
+  font-size: 0.90rem; 
 }
 
 .progress-bar {
@@ -79,7 +75,6 @@ h3 {
   height: 100%;
   color: #fff;
   text-align: center;
-  font-size: 15px;
   line-height: 13px;
 }
 
@@ -103,12 +98,9 @@ h3 {
 
 .task-item:last-child {
   border-bottom: none;
+  
 }
 
-.task-details h4 {
-  margin: 0 0 5px;
-  font-size: 16px;
-}
 
 /* Modal styles */
 .modal-overlay {

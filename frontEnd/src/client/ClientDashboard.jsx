@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Sidebar from "../client/sidebar";
 import "./client.css";
@@ -62,30 +63,30 @@ function ClientDashboard() {
           <h3>Dashboard</h3>
           <div className="dashboard-summary">
             <div className="card summary-card">
-              <h4>Total Projects</h4>
+              <p>Total Projects</p>
               <p>{projects.length}</p>
             </div>
             <div className="card summary-card">
-              <h4>Total Tasks</h4>
+              <p>Total Tasks</p>
               <p>{tasks.length}</p>
             </div>
             <div className="card summary-card">
-              <h4>Pending Feedback</h4>
+              <p>Pending Feedback</p>
               <p>{pendingFeedback.length}</p>
             </div>
             <div className="card summary-card">
-              <h4>Pending Payments</h4>
+              <p>Pending Payments</p>
               <p>{pendingPayments.length}</p>
             </div>
             <div className="card summary-card">
-              <h4>Upcoming Appointments</h4>
+              <p>Upcoming Appointments</p>
               <p>{appointments.length}</p>
             </div>
           </div>
           <div className="dashboard-grid">
             {/* Ongoing Projects */}
             <div className="card ongoing-projects">
-              <h3>Ongoing Projects</h3>
+              <p>Ongoing Projects</p>
               <div className="projects-list">
                 {projects.slice(0, 3).map((project, index) => (
                   <div className="project-item" key={index}>
@@ -112,13 +113,13 @@ function ClientDashboard() {
 
             {/* Task Overview */}
             <div className="card task-overview">
-              <h3>Task Overview</h3>
+              <p>Task Overview</p>
               <div className="tasks-list">
                 {tasks.slice(0, 3).map((task, index) => (
                   <div className="task-item" key={index}>
-                    <h4>{task.name}</h4>
+                    <p>{task.name}</p>
                     <p>
-                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                      Deadline: {formatDayAndDate(task.deadline)}
                     </p>
                   </div>
                 ))}
@@ -132,13 +133,13 @@ function ClientDashboard() {
 
             {/* Pending Feedback */}
             <div className="card pending-feedback">
-              <h3>Pending Feedback</h3>
+              <p>Pending Feedback</p>
               <div className="pending-feedback-list">
                 {pendingFeedback.slice(0, 3).map((task, index) => (
                   <div className="task-item" key={index}>
-                    <h4>{task.name}</h4>
+                    <p>{task.name}</p>
                     <p>
-                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                      Deadline: {formatDayAndDate(task.deadline)}
                     </p>
                   </div>
                 ))}
@@ -152,13 +153,13 @@ function ClientDashboard() {
 
             {/* Pending Payments */}
             <div className="card pending-payments">
-              <h3>Pending Payments</h3>
+              <p>Pending Payments</p>
               <div className="pending-payments-list">
                 {pendingPayments.slice(0, 3).map((task, index) => (
                   <div className="task-item" key={index}>
-                    <h4>{task.name}</h4>
+                    <p>{task.name}</p>
                     <p>
-                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                      Deadline: {formatDayAndDate(task.deadline)}
                     </p>
                   </div>
                 ))}
@@ -172,18 +173,18 @@ function ClientDashboard() {
 
             {/* Upcoming Appointments */}
             <div className="card upcoming-appointments">
-              <h3>Upcoming Appointments</h3>
+              <p>Upcoming Appointments</p>
               <div className="appointments-list">
                 {appointments.slice(0, 3).map((appointment, index) => (
                   <div className="dashboard-appointment-item" key={index}>
                     <p>
-                      <strong>Date:</strong> {formatDayAndDate(appointment.date)}
+                      Date: {formatDayAndDate(appointment.date)}
                     </p>
                     <p>
-                      <strong>Type:</strong> {appointment.type}
+                      Type: {appointment.type}
                     </p>
                     <p>
-                      <strong>Platform:</strong> {appointment.platform}
+                      Platform: {appointment.platform}
                     </p>
                   </div>
                 ))}
@@ -201,7 +202,7 @@ function ClientDashboard() {
         {showProjectsModal && (
           <div className="modal-overlay" onClick={toggleProjectsModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>All Projects</h3>
+              <p>All Projects</p>
               <ul>
                 {projects.map((project, index) => (
                   <li key={index} className="project-item">
@@ -224,13 +225,13 @@ function ClientDashboard() {
         {showTasksModal && (
           <div className="modal-overlay" onClick={toggleTasksModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>All Tasks</h3>
+              <p>All Tasks</p>
               <ul>
                 {tasks.map((task, index) => (
                   <li key={index} className="task-item">
-                    <h4>{task.name}</h4>
+                    <p>{task.name}</p>
                     <p>
-                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                      Deadline:{formatDayAndDate(task.deadline)}
                     </p>
                   </li>
                 ))}
@@ -242,13 +243,13 @@ function ClientDashboard() {
         {showPendingTasksModal && (
           <div className="modal-overlay" onClick={togglePendingTasksModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>All Pending Feedback</h3>
+              <p>All Pending Feedback</p>
               <ul>
                 {pendingFeedback.map((task, index) => (
                   <li key={index} className="task-item">
-                    <h4>{task.name}</h4>
+                    <p>{task.name}</p>
                     <p>
-                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                      Deadline: {formatDayAndDate(task.deadline)}
                     </p>
                   </li>
                 ))}
@@ -260,13 +261,13 @@ function ClientDashboard() {
         {showPendingPaymentsModal && (
           <div className="modal-overlay" onClick={togglePendingPaymentsModal}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>All Pending Payments</h3>
+              <p>All Pending Payments</p>
               <ul>
                 {pendingPayments.map((task, index) => (
                   <li key={index} className="task-item">
-                    <h4>{task.name}</h4>
+                    <p>{task.name}</p>
                     <p>
-                      <strong>Deadline:</strong> {formatDayAndDate(task.deadline)}
+                      Deadline: {formatDayAndDate(task.deadline)}
                     </p>
                   </li>
                 ))}

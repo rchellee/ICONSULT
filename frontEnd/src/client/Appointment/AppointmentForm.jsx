@@ -14,6 +14,7 @@ function AppointmentForm() {
     email: "",
     consultationType: "",
     additionalInfo: "",
+    reminder: "", // Add reminder field
   });
 
   const generateRandomAvailability = () => {
@@ -101,7 +102,7 @@ function AppointmentForm() {
         const result = await response.json();
         console.log("Appointment Submitted:", result);
         alert("Appointment Confirmed!");
-        navigate("/clientdashboard")
+        navigate("/clientdashboard");
 
         // Reset the form
         setCurrentStep(1);
@@ -113,13 +114,13 @@ function AppointmentForm() {
             contact: "",
             consultationType: "",
             additionalInfo: "",
+            reminder: "", // Reset reminder field
         });
     } catch (error) {
         console.error("Error submitting appointment:", error);
         alert("An error occurred. Please try again.");
     }
 };
-
 
   return (
     <div className="appointment-form-container">
@@ -195,6 +196,18 @@ function AppointmentForm() {
                 id="contact"
                 name="contact"
                 value={formData.contact}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            {/* New Company Name Field */}
+            <div className="form-group">
+              <label htmlFor="companyName">Company Name:</label>
+              <input
+                type="text"
+                id="companyName"
+                name="companyName"
+                value={formData.companyName}
                 onChange={handleChange}
                 required
               />
@@ -308,6 +321,7 @@ function AppointmentForm() {
                 onChange={handleChange}
               />
             </div>
+
             <div className="form-group">
               <label htmlFor="platform">
                 Preferred Communication Platform:
@@ -323,7 +337,35 @@ function AppointmentForm() {
                   -- Select Platform --
                 </option>
                 <option value="In-Person">In-Person</option>
-                <option value="Video Call">Video Call(via Zoom)</option>
+                <option value="Video Call">Zoom</option>
+                <option value="Video Call">Google Meet</option>
+                <option value="Phone Call">Phone Call</option> 
+                <option value="Phone Call">Microsoft Teams</option> 
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="reminder">Reminder Me:</label>
+              <select
+                id="reminder"
+                name="reminder"
+                value={formData.reminder || ""}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  -- Select Reminder Time --
+                </option>
+                <option value="At Time of Event">At Time of Event</option>
+                <option value="5 minutes before">5 minutes before</option>
+                <option value="10 minutes before">10 minutes before</option>
+                <option value="15 minutes before">15 minutes before</option>
+                <option value="30 minutes before">30 minutes before</option>
+                <option value="1 hour before">1 hour before</option>
+                <option value="2 hours before">2 hours before</option>
+                <option value="1 day before">1 day before</option>
+                <option value="2 days before">2 days before</option>
+                <option value="1 week before">1 week before</option>
               </select>
             </div>
 
@@ -368,6 +410,9 @@ function AppointmentForm() {
             </p>
             <p>
               <strong>Consultation Mode:</strong> {formData.platform}
+            </p>
+            <p>
+              <strong>Reminder:</strong> {formData.reminder}
             </p>
             <button onClick={prevStep}>Back</button>
             <button onClick={handleSubmit}>Submit</button>

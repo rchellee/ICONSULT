@@ -6,7 +6,7 @@ import client from "../assets/admin.jpg";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  
+
   // Handle logout and clear local storage
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -23,49 +23,46 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-header">
         <img src={client} alt="Client Logo" />
-        <h2>Welcome back! <br />
-        {clientFirstName}</h2> 
       </div>
-      
+
       <ul className="sidebar-links">
         <li>
-          <Link to="/clientdashboard">
-            <div className="material-symbols-outlined">home</div>
-            <h4>Home</h4>
+          <Link to="/clientdashboard" data-tooltip="Home">
+            <div className="material-symbols-outlined icon">home</div>
+            <span>Home</span>
           </Link>
         </li>
         <li>
-          <Link to="/clientproject">
-          <div className="material-symbols-outlined">folder</div>
-            <h4>My Projects</h4>
+          <Link to="/clientproject" data-tooltip="My Projects">
+            <div className="material-symbols-outlined icon">folder</div>
+            <span>Projects</span>
           </Link>
         </li>
         <li>
-          <Link to="/consultations">
-            <div className="material-symbols-outlined">analytics</div>
-            <h4>Consultations</h4>
+          <Link to="/consultations" data-tooltip="Consultations">
+            <div className="material-symbols-outlined icon">chat</div>
+            <span>Consultations</span>
           </Link>
         </li>
         <li>
-          <Link to="/payment">
-            <div className="material-symbols-outlined">analytics</div>
-            <h4>Payment</h4>
+          <Link to="/payment" data-tooltip="Payment">
+            <div className="material-symbols-outlined icon">payments</div>
+            <span>Payment</span>
           </Link>
         </li>
         <li>
-          <Link to="/account-settings">
-            <div className="material-symbols-outlined">settings</div>
-            <h4>Settings</h4>
+          <Link to="/account-settings" data-tooltip="Settings">
+            <div className="material-symbols-outlined icon">settings</div>
+            <span>Settings</span>
           </Link>
         </li>
         <li>
-          <button onClick={handleLogout} className="logout-btn">
-            <div className="material-symbols-outlined">logout</div>
-            <h4>Logout</h4>
+          <button onClick={handleLogout} className="logout-btn" data-tooltip="Logout">
+            <div className="material-symbols-outlined icon">logout</div>
+            <span>Logout</span>
           </button>
         </li>
       </ul>
-
     </div>
   );
 };

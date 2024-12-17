@@ -26,7 +26,6 @@ const Consultation = () => {
       id: 1,
       date: "2024-12-15T10:00:00Z", // Upcoming appointment
       time: "10:00 AM",
-      consultationType: "Consultation Type A",
       platform: "Zoom",
       status: "Upcoming",
     },
@@ -34,7 +33,6 @@ const Consultation = () => {
       id: 2,
       date: "2024-12-16T14:00:00Z", // Upcoming appointment
       time: "02:00 PM",
-      consultationType: "Consultation Type B",
       platform: "Skype",
       status: "Upcoming",
     },
@@ -42,7 +40,6 @@ const Consultation = () => {
       id: 3,
       date: "2024-12-10T09:00:00Z", // Completed appointment
       time: "09:00 AM",
-      consultationType: "Consultation Type C",
       platform: "Google Meet",
       status: "Completed",
     },
@@ -50,16 +47,13 @@ const Consultation = () => {
       id: 4,
       date: "2024-12-09T16:00:00Z", // Completed appointment
       time: "04:00 PM",
-      consultationType: "Consultation Type D",
       platform: "Teams",
       status: "Completed",
     },
   ]);
+
   const [loading, setLoading] = useState(false);
-  const [showUpcomingAppointments, setShowUpcomingAppointments] =
-    useState(false); // To control visibility of upcoming appointments
-  const [showCompletedAppointments, setShowCompletedAppointments] =
-    useState(false); // To control visibility of completed appointments
+  const [visibleSection, setVisibleSection] = useState(null); // Track which section is visible
 
   useEffect(() => {
     setLoading(false);
@@ -79,12 +73,9 @@ const Consultation = () => {
     return appointments.filter((appointment) => appointment.status === status);
   };
 
-  const toggleUpcomingAppointments = () => {
-    setShowUpcomingAppointments(!showUpcomingAppointments);
-  };
-
-  const toggleCompletedAppointments = () => {
-    setShowCompletedAppointments(!showCompletedAppointments);
+  // Toggle section visibility
+  const toggleSection = (section) => {
+    setVisibleSection(visibleSection === section ? null : section);
   };
 
   // Get an array of dates for the appointments
@@ -105,7 +96,7 @@ const Consultation = () => {
             <div className="consultation-content">
               <div className="button-consult">
                 <Link to="/appointments/new" className="new-appointment-button">
-                  <span>+ Add new appointment</span>
+                  <button>+ Schedule Consultation</button>
                 </Link>
               </div>
 
@@ -114,66 +105,65 @@ const Consultation = () => {
               ) : (
                 <div className="appointments-and-calendar">
                   <div className="appointments-details">
-                    <h3>Appointments</h3>
+                    <h4>Appointments</h4>
+
                     {/* Upcoming Appointments */}
-                <div className="upcoming-appointments">
-                  <button onClick={toggleUpcomingAppointments}>
-                    {showUpcomingAppointments ? "<" : ">"} Upcoming
-                  </button>
+                    <div className="upcoming-appointments">
+                      <button onClick={() => toggleSection("Upcoming")}>
+                        {visibleSection === "Upcoming" ? "<" : ">"} Upcoming
+                      </button>
 
-                  {showUpcomingAppointments && (
-                    <div className="appointments-list-container">
-                      {getAppointmentsByView("Upcoming").length > 0 ? (
-                        <ul>
-                          {getAppointmentsByView("Upcoming").map((appointment, index) => (
-                            <li key={index} className="appointment-item">
-                              <div className="date-box">
-                                <strong>{formatDayAndDate(appointment.date)}</strong>
-                              </div>
-                              <div className="details-box">
-                                <p><strong>Time:</strong> {appointment.time}</p>
-                                <p><strong>Consultation Type:</strong> {appointment.consultationType}</p>
-                                <p><strong>Platform:</strong> {appointment.platform}</p>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No upcoming appointments.</p>
+                      {visibleSection === "Upcoming" && (
+                        <div className="appointments-list-container">
+                          {getAppointmentsByView("Upcoming").length > 0 ? (
+                            <ul>
+                              {getAppointmentsByView("Upcoming").map((appointment, index) => (
+                                <li key={index} className="appointment-item">
+                                  <div className="date-box">
+                                    {formatDayAndDate(appointment.date)}
+                                  </div>
+                                  <div className="details-box">
+                                    <p>Time: {appointment.time}</p>
+                                    <p>Platform: {appointment.platform}</p>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p>No upcoming appointments.</p>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
 
-                {/* Completed Appointments */}
-                <div className="completed-appointments">
-                  <button onClick={toggleCompletedAppointments}>
-                    {showCompletedAppointments ? "<" : ">"} Completed
-                  </button>
+                    {/* Completed Appointments */}
+                    <div className="completed-appointments">
+                      <button onClick={() => toggleSection("Completed")}>
+                        {visibleSection === "Completed" ? "<" : ">"} Completed
+                      </button>
 
-                  {showCompletedAppointments && (
-                    <div className="appointments-list-container">
-                      {getAppointmentsByView("Completed").length > 0 ? (
-                        <ul>
-                          {getAppointmentsByView("Completed").map((appointment, index) => (
-                            <li key={index} className="appointment-item">
-                              <div className="date-box">
-                                <strong>{formatDayAndDate(appointment.date)}</strong>
-                              </div>
-                              <div className="details-box">
-                                <p><strong>Time:</strong> {appointment.time}</p>
-                                <p><strong>Consultation Type:</strong> {appointment.consultationType}</p>
-                                <p><strong>Platform:</strong> {appointment.platform}</p>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No completed appointments.</p>
+                      {visibleSection === "Completed" && (
+                        <div className="appointments-list-container">
+                          {getAppointmentsByView("Completed").length > 0 ? (
+                            <ul>
+                              {getAppointmentsByView("Completed").map((appointment, index) => (
+                                <li key={index} className="appointment-item">
+                                  <div className="date-box">
+                                    {formatDayAndDate(appointment.date)}
+                                  </div>
+                                  <div className="details-box">
+                                    <p>Time: {appointment.time}</p>
+                                    <p>Platform: {appointment.platform}</p>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p>No completed appointments.</p>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
                   </div>
                 </div>
               )}

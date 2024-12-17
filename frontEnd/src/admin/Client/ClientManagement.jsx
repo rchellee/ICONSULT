@@ -132,7 +132,8 @@ const ClientManagement = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Name</th>
+                        <th>Name</th> {/* New Column for Client's Full Name */}
+                        <th>Company</th> {/* New Column for Client's Company Name */}
                         <th>Status</th>
                       </tr>
                     </thead>
@@ -143,13 +144,12 @@ const ClientManagement = () => {
                             onClick={() => viewClientDetails(client)}
                             style={{ cursor: "pointer", color: "black" }}
                           >
-                            {`${client.firstName} ${client.lastName}`.toUpperCase()}
+                            {`${client.firstName} ${client.lastName}`.toUpperCase()} {/* Full Name */}
                           </td>
+                          <td>{client.companyName || "N/A"}</td> {/* Company Name */}
                           <td>
                             <div
-                              className={`toggle ${
-                                activeClients[client.id] ? "active" : ""
-                              }`}
+                              className={`toggle ${activeClients[client.id] ? "active" : ""}`}
                               onClick={() => handleToggle(client.id)}
                             ></div>
                           </td>
