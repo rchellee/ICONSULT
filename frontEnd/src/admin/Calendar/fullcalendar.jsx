@@ -20,7 +20,6 @@ import Sidebar from "../sidebar";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 import "./calendar.css"; // Import the CSS file
-import AppointmentForm from './AppointmentForm'; // Import the AppointmentForm component
 
 const Calendar = () => {
   const theme = useTheme();
