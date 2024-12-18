@@ -170,11 +170,18 @@ html, body {
 }
 
 /* Posts and Files Section */
-.posts, .files {
+.posts{
     position: absolute;
-    top: 450px;
+    top: 200px;
     display: flex;
     flex-direction: column;
+}
+
+.files {
+  position: absolute;
+  top: 450px;
+  display: flex;
+  flex-direction: column;
 }
 
 .posts h2, .files h2 {

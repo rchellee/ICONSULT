@@ -207,7 +207,7 @@ const ProjectManagement = () => {
     <div className="project-management-page">
       <Sidebar />
       <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
-        <h1>Project Management</h1>
+      {/* project management txt */}
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> Create

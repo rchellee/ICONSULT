@@ -274,21 +274,36 @@ ct-list-header h3:nth-child(3) { /* Client */
     background-color: #51d1eb;
 }
 
-/* Search box styling */
-.search-box-container {
-    flex-grow: 1; /* Allows the search box to take up remaining space */
-    max-width: 400px; /* Optional: Limit max width */
-    margin-left: 805px;
-}
 
-.search-box {
-    width: 200%;
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
+.search-box-container {
+    display: flex;
+    justify-content: flex-start; /* Align items to the left by default */
+    width: 100%; /* Ensure it spans full width */
+    margin: 20px 0; /* Add some margin at the top and bottom for spacing */
+    
+  }
+  
+  /* Input field for the search box */
+  .search-box {
+    position: absolute;
+    bottom: 30px;
+    left: 600px;
+    width: 250%; /* Make the input field take up more space */
+    max-width: 500px; /* Optional: increase max-width for larger screens */
+    height: 50px; /* Set the height of the search box */
+    padding: 15px; /* Padding inside the search box */
+    font-size: 15px; /* Larger text for better visibility */
+    border: 2px solid #3498db; /* Add a blue border to the search box */
+    border-radius: 10px; /* Optional: rounded corners */
+    outline: none; /* Remove the focus outline */
+    box-sizing: border-box; /* Ensures padding is part of the input box size */
+    background: #fff; /* White background for the search input */
+  }
+  
+  .search-box:focus {
+    border-color: #7fbcf6; /* Change border color when focused */
+    box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Optional: add a shadow when the input is focused */
+  }
 
 
 /* LEFT SIDE PROJECT NAMES */
@@ -302,12 +317,12 @@ ct-list-header h3:nth-child(3) { /* Client */
     /* You can add other positioning properties like `right`, `bottom` here if necessary */
 }
 
-.project-names-section {
+.project-names-section { /*nandito position ng folders*/
     margin-top: 30px;
     padding: 15px;
     position: absolute;
     margin-left: 10px;
-    margin-top: 230px;
+    margin-top: 150px;
 }
 
 .project-name-item {
