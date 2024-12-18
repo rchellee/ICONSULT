@@ -156,6 +156,20 @@ app.get("/payments", (req, res) => {
         res.status(200).json(results);
     });
 });
+// Fetch payments for a specific client
+app.get("/payments/:clientId", (req, res) => {
+    const { clientId } = req.params;
+
+    const query = "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
+    db.query(query, [clientId], (err, results) => {
+        if (err) {
+            console.error("Error fetching payments:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(results);
+    });
+});
+
 
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
