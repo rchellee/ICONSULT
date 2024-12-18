@@ -1,12 +1,16 @@
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const cron = require("node-cron");
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
+const scheduledTasks = {};
+
 const app = express();
 app.use(cors());
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
+
 
 // Create a MySQL connection pool
 const db = mysql.createConnection({
@@ -314,39 +318,124 @@ app.delete('/projects/:id', (req, res) => {
     });
 });
 
-// Add a new appointment (POST request)
 app.post('/appointments', (req, res) => {
     const {
         date,
         time,
         name,
         email,
-        contact, // Add contact here
+        contact,
         consultationType,
         additionalInfo,
         platform,
         clientId,
-        companyName, // Add companyName here
-        reminder, // Add reminder here
+        companyName,
+        reminder,
     } = req.body;
 
     if (!clientId || clientId === 0) {
         return res.status(400).json({ message: "Invalid client ID" });
     }
 
-    const sql = `
+    const appointmentSql = `
         INSERT INTO appointments (date, time, name, email, contact, consultationType, additionalInfo, platform, client_id, companyName, reminder)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(sql, [date, time, name, email, contact, consultationType, additionalInfo, platform, clientId, companyName, reminder], (err, result) => {
-        if (err) {
-            console.error("Error inserting appointment:", err);
-            return res.status(500).json({ message: "Failed to save appointment", error: err });
+    db.query(
+        appointmentSql,
+        [date, time, name, email, contact, consultationType, additionalInfo, platform, clientId, companyName, reminder],
+        (err, result) => {
+            if (err) {
+                console.error("Error inserting appointment:", err);
+                return res.status(500).json({ message: "Failed to save appointment", error: err });
+            }
+
+            const appointmentId = result.insertId;
+            const appointmentDateTime = new Date(`${date}T${time}`);
+            let reminderTime = new Date(appointmentDateTime);
+
+            // Adjust reminderTime based on the reminder value
+            if (reminder === "5 minutes before") reminderTime.setMinutes(reminderTime.getMinutes() - 5);
+            else if (reminder === "10 minutes before") reminderTime.setMinutes(reminderTime.getMinutes() - 10);
+            else if (reminder === "15 minutes before") reminderTime.setMinutes(reminderTime.getMinutes() - 15);
+            else if (reminder === "30 minutes before") reminderTime.setMinutes(reminderTime.getMinutes() - 30);
+            else if (reminder === "1 hour before") reminderTime.setHours(reminderTime.getHours() - 1);
+            else if (reminder === "1 day before") reminderTime.setDate(reminderTime.getDate() - 1);
+            else if (reminder === "2 days before") reminderTime.setDate(reminderTime.getDate() - 2);
+            else if (reminder === "1 week before") reminderTime.setDate(reminderTime.getDate() - 7);
+
+            // Log the reminder time and cron expression for debugging
+            console.log("Reminder Time:", reminderTime);
+            console.log("Cron Expression:", `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${reminderTime.getMonth() + 1} *`);
+
+            const notificationSql = `
+                INSERT INTO notifications (title, description, timestamp, isRead)
+                VALUES (?, ?, NOW(), 0)
+            `;
+
+            const notificationTitle = "Appointment";
+            const notificationDescription = `Appointment with ${name} (${email}) on ${date} at ${time}.`;
+
+            db.query(
+                notificationSql,
+                [notificationTitle, notificationDescription],
+                (notificationErr) => {
+                    if (notificationErr) {
+                        console.error("Error creating notification:", notificationErr);
+                        return res.status(500).json({ message: "Failed to create notification", error: notificationErr });
+                    }
+
+                    // Schedule email reminder
+                    const jobId = `${appointmentId}-reminder`;
+
+                    scheduledTasks[jobId] = cron.schedule(
+                        `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${reminderTime.getMonth() + 1} *`,
+                        () => {
+                            const message = {
+                                to: [email, "ritchelle.rueras@tup.edu.ph"], // Client and admin emails
+                                from: "ritchelle.rueras@tup.edu.ph",
+                                subject: `Reminder: Upcoming Appointment on ${date} at ${time}`,
+                                text: `Hello ${name},\n\nThis is a reminder for your upcoming appointment scheduled on ${date} at ${time}.\n\nConsultation Type: ${consultationType}\nPlatform: ${platform}\nAdditional Info: ${additionalInfo}\n\nThank you!`,
+                                html: `
+                                    <p>Hello ${name},</p>
+                                    <p>This is a reminder for your upcoming appointment:</p>
+                                    <ul>
+                                        <li><strong>Date:</strong> ${date}</li>
+                                        <li><strong>Time:</strong> ${time}</li>
+                                        <li><strong>Consultation Type:</strong> ${consultationType}</li>
+                                        <li><strong>Platform:</strong> ${platform}</li>
+                                        <li><strong>Additional Info:</strong> ${additionalInfo}</li>
+                                    </ul>
+                                    <p>Thank you!</p>
+                                `,
+                            };
+
+                            sgMail
+                                .send(message)
+                                .then(() => console.log(`Reminder email sent for appointment ID: ${appointmentId}`))
+                                .catch((error) => console.error("Error sending reminder email:", error));
+                        },
+                        {
+                            scheduled: true,
+                            timezone: "Asia/Manila", // Adjust to your timezone
+                        }
+                    );
+
+                    // Log the cron job ID for debugging
+                    console.log(`Scheduled cron job for appointment ID: ${appointmentId}, Job ID: ${jobId}`);
+
+                    // Send the final response after both operations (appointment and notification) are complete
+                    return res.status(201).json({
+                        message: "Appointment saved successfully, notification created, and reminder scheduled",
+                        appointmentId: appointmentId,
+                    });
+                }
+            );
         }
-        return res.status(201).json({ message: "Appointment saved successfully", appointmentId: result.insertId });
-    });
+    );
 });
+
 //Fetch appointments
 app.get('/appointments', (req, res) => {
     
@@ -363,7 +452,25 @@ app.get('/appointments', (req, res) => {
     });
 });
 
+app.delete('/appointments/:id', (req, res) => {
+    const appointmentId = req.params.id;
+    const deleteSql = `DELETE FROM appointments WHERE id = ?`;
 
+    db.query(deleteSql, [appointmentId], (err, result) => {
+        if (err) {
+            console.error("Error deleting appointment:", err);
+            return res.status(500).json({ message: "Failed to delete appointment", error: err });
+        }
+
+        const jobId = `${appointmentId}-reminder`;
+        if (scheduledTasks[jobId]) {
+            scheduledTasks[jobId].stop();
+            delete scheduledTasks[jobId];
+        }
+
+        return res.status(200).json({ message: "Appointment and reminder deleted successfully" });
+    });
+});
 
 
 // Start the server
