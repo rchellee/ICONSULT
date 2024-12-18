@@ -6,7 +6,7 @@ import admin from "../assets/admin.jpg";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     navigate("/");
@@ -43,6 +43,13 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/transactions" data-tooltip="Transactions">
+            <div className="material-symbols-outlined icon">payments</div>
+            <span>Transactions</span>
+          </Link>
+        </li>
+
+        <li>
           <Link to="/reports" data-tooltip="Reports">
             <div className="material-symbols-outlined icon">analytics</div>
             <span>Reports</span>
@@ -61,7 +68,11 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
-          <button onClick={handleLogout} className="logout-btn" data-tooltip="Logout">
+          <button
+            onClick={handleLogout}
+            className="logout-btn"
+            data-tooltip="Logout"
+          >
             <div className="material-symbols-outlined icon">logout</div>
             <span>Logout</span>
           </button>

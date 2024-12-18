@@ -145,6 +145,17 @@ app.post("/payments", (req, res) => {
       }
     );
   });  
+// Fetch all payments
+app.get("/payments", (req, res) => {
+    const query = "SELECT * FROM payments ORDER BY created_at DESC";
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error("Error fetching payments:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(200).json(results);
+    });
+});
 
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
