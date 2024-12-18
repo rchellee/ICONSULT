@@ -1,0 +1,140 @@
+/* FormStyle.css */
+
+/* Center the form and make it float */
+.task-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Take full viewport height */
+    position: fixed; /* Fix it to the screen */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(206, 204, 204, 0.5); /* Semi-transparent background */
+  }
+  
+  .task-form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 800px; /* Adjust width as necessary */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a shadow to make it float */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-input-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .task-input {
+    width: 50%; /* Adjust width for each input */
+    margin-right: 10px;
+  }
+  
+  .task-input label {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+  
+  .task-input input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  .employee {
+    width: 100%;
+  }
+  
+  .taskFee {
+    width: 20%;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  
+  .additionalFee {
+    width: 100%;
+    margin-left: 10px;
+  }
+
+/* Styles for Additional Fee section */
+.additional-fee-container {
+    display: flex;
+    gap: 10px; /* Space between inputs */
+  }
+  
+  .additionalFee input {
+    width: 48%; /* Split inputs evenly within the container */
+  }
+  
+  .fee-name {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .fee-amount {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+
+
+
+  
+  /* Button Styles */
+.task-form button {
+    padding: 8px 20px; /* Adjust padding for smaller buttons */
+    font-size: 15px;    /* Adjust font size */
+    background-color: transparent; /* Button color */
+    color: rgb(21, 130, 150);
+    font-weight: 600;
+    border: none;
+    border-radius: 4px; /* Rounded corners for both buttons */
+    cursor: pointer;
+    margin-top: 10px;
+    width: auto; /* Ensure buttons don't take full width of form */ /* Align buttons to the left */
+  }
+  
+  .task-form button:hover {
+    background-color: #f5f5f5;  /* Button hover color */
+  }
+  
+  .Task-form .create-button {
+    background-color: transparent;
+    padding: 8px 20px;
+    font-size: 14px;
+    width: auto; /* Prevent full width */
+    border-radius: 4px; /* Same border radius for consistency */
+    cursor: pointer;
+    margin-left: 10px; /* Adjust this value to move the button to the right */
+  }
+   
+  
+  .task-form .cancel-button {
+    background-color: transparent;
+    margin-left: 500px;
+    padding: 8px 20px; /* Same padding for cancel button */
+    font-size: 14px;    /* Same font size */
+    width: auto; /* Prevent full width */
+    align-self: flex-start; /* Align cancel button to the left */
+  }
+  
+  .task-form .cancel-button:hover {
+    background-color: #f5f5f5; /* Hover color for cancel button */
+  }
+  
+  /* Container for buttons */
+  .button-container {
+    display: flex;
+    justify-content: space-between; /* Space the buttons apart */
+    margin-top: 15px; /* Add space above the buttons */
+  }
+  

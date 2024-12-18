@@ -157,12 +157,14 @@ html, body {
 }
 
 /* Active tab button style */
-.tabs button.active {
-  background-color: transparent; 
-  color: rgb(0, 0, 0); 
-  border-bottom: 3px solid #0078d4; 
-  font-weight: bold; 
+.project-task-tabs button.active {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border-bottom: 3px solid #0078d4; /* Active tab border */
+  font-weight: bold;
+  padding-bottom: 8px; /* Increase padding to ensure space for the border */
 }
+
 
 /* Content area for Posts and Files */
 .content-area {
@@ -172,7 +174,7 @@ html, body {
 /* Posts and Files Section */
 .posts{
     position: absolute;
-    top: 200px;
+    top: 450px; 
     display: flex;
     flex-direction: column;
 }

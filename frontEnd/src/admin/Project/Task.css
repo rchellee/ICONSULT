@@ -38,6 +38,7 @@
 }
 
 /* pwesto ng post and files tab */
+/* Tabs section at the top */
 .project-task-tabs {
   display: flex;
   justify-content: flex-start; 
@@ -47,7 +48,7 @@
   margin-left: 400px;
   width: 100%; 
   border-bottom: 1px solid #ddd; 
-  cursor: pointer;
+  cursor: pointer; 
 }
 
 /* Style for individual tab buttons */
@@ -59,16 +60,22 @@
   font-size: 16px;
   font-weight: bold;
   color: #565656;
+  transition: none;
+  
 }
 
-/* Active tab button style */
+.project-task-tabs button:hover {
+  background-color: transparent; /* Ensure no hover background color */
+  color: #565656; /* Same color as normal */
+}
+
 .project-task-tabs button.active {
-  background-color: transparent; 
-  color: rgb(0, 0, 0); 
-  border-bottom: 3px solid #0078d4; 
-  font-weight: bold; 
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border-bottom: 3px solid #0078d4; /* Active tab border */
+  font-weight: bold;
+  padding-bottom: 8px; /* Increase padding to ensure space for the border */
 }
-
 
 /* Content area for Posts and Files */
 .content-area {
@@ -76,17 +83,19 @@
 }
 
 /* Posts and Files Section */
-.project-posts{
-  position: absolute;
-  top: 500px;
-  left: 550px;
+.project-posts {
   display: flex;
   flex-direction: column;
+  padding: 20px;
+  margin-top: 80px; 
+  margin-left: 300px;
 }
 
 .files {
-position: absolute;
-top: 450px;
-display: flex;
-flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-top: 80px; 
+  margin-left: 300px;
 }
+
