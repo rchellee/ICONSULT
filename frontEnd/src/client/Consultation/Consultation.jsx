@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -21,43 +22,37 @@ import "./consultation.css";
 const Consultation = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      date: "2024-12-15T10:00:00Z", // Upcoming appointment
-      time: "10:00 AM",
-      platform: "Zoom",
-      status: "Upcoming",
-    },
-    {
-      id: 2,
-      date: "2024-12-16T14:00:00Z", // Upcoming appointment
-      time: "02:00 PM",
-      platform: "Skype",
-      status: "Upcoming",
-    },
-    {
-      id: 3,
-      date: "2024-12-10T09:00:00Z", // Completed appointment
-      time: "09:00 AM",
-      platform: "Google Meet",
-      status: "Completed",
-    },
-    {
-      id: 4,
-      date: "2024-12-09T16:00:00Z", // Completed appointment
-      time: "04:00 PM",
-      platform: "Teams",
-      status: "Completed",
-    },
-  ]);
-
+  const [appointments, setAppointments] = useState([]);
+  const [clientId, setClientId] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [visibleSection, setVisibleSection] = useState(null); // Track which section is visible
+  const [popup, setPopup] = useState(null);
 
   useEffect(() => {
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    // Fetch clientId from localStorage
+    const storedClientId = localStorage.getItem('clientId');
+    if (storedClientId) {
+      setClientId(storedClientId);
+      fetchAppointments(storedClientId);
+    }
+  }, []);
+
+  const fetchAppointments = async (clientId) => {
+    try {
+      const response = await axios.get('http://localhost:8081/appointments');
+      const filteredAppointments = response.data.filter(
+        (appointment) => appointment.client_id === parseInt(clientId)
+      );
+      setAppointments(filteredAppointments);
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
 
   // Function to format the date for display
   const formatDayAndDate = (isoDate) => {
@@ -68,21 +63,65 @@ const Consultation = () => {
     return `${day}, ${formattedDate}`;
   };
 
-  // Get appointments by their status
-  const getAppointmentsByView = (status) => {
-    return appointments.filter((appointment) => appointment.status === status);
-  };
+// Function to get appointments dynamically categorized by status
+const getAppointmentsByView = (status) => {
+  const today = new Date();
+
+  // Filter and sort the appointments
+  const sortedAppointments = appointments
+    .filter((appointment) => {
+      const appointmentDate = new Date(appointment.date);
+      if (status === "Upcoming") {
+        return appointmentDate >= today; // Future appointments
+      } else if (status === "Completed") {
+        return appointmentDate < today; // Past appointments
+      }
+      return false;
+    })
+    .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date (ascending)
+
+  return sortedAppointments;
+};
 
   // Toggle section visibility
   const toggleSection = (section) => {
     setVisibleSection(visibleSection === section ? null : section);
   };
 
-  // Get an array of dates for the appointments
-  const getAppointmentDates = () => {
-    return appointments.map(
-      (appointment) => new Date(appointment.date).toISOString().split("T")[0]
-    );
+  // Map appointments into FullCalendar events
+  const mapAppointmentsToEvents = () => {
+    return appointments.map((appointment) => ({
+      title: `Consultation - ${appointment.consultationType}`,
+      start: appointment.date, // ISO string format
+      allDay: true,
+      extendedProps: {
+        time: appointment.time,
+        platform: appointment.platform,
+        name: appointment.name,
+        email: appointment.email,
+        contact: appointment.contact,
+        companyName: appointment.companyName,
+        reminder: appointment.reminder,
+      },
+    }));
+  };
+
+
+  const handleMouseEnter = (selected) => {
+    const { title, extendedProps } = selected.event;
+    setPopup({
+      title,
+      time: extendedProps.time,
+      x: selected.jsEvent.clientX,
+      y: selected.jsEvent.clientY,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    // Delay hiding the popup slightly to allow for smooth transitions to the popup itself
+    setTimeout(() => {
+      setPopup(null);
+    }, 100000); // Adjust delay as needed
   };
 
   return (
@@ -118,11 +157,16 @@ const Consultation = () => {
                               {getAppointmentsByView("Upcoming").map((appointment, index) => (
                                 <li key={index} className="appointment-item">
                                   <div className="date-box">
-                                    {formatDayAndDate(appointment.date)}
+                                    {formatDayAndDate(appointment.date)} at {appointment.time}
                                   </div>
                                   <div className="details-box">
-                                    <p>Time: {appointment.time}</p>
-                                    <p>Platform: {appointment.platform}</p>
+                                    <p><strong>Name:</strong> {appointment.name}</p>
+                                    <p><strong>Email:</strong> {appointment.email}</p>
+                                    <p><strong>Contact:</strong> {appointment.contact}</p>
+                                    <p><strong>Type:</strong> {appointment.consultationType}</p>
+                                    <p><strong>Platform:</strong> {appointment.platform}</p>
+                                    <p><strong>Company:</strong> {appointment.companyName}</p>
+                                    <p><strong>Reminder:</strong> {appointment.reminder}</p>
                                   </div>
                                 </li>
                               ))}
@@ -147,11 +191,16 @@ const Consultation = () => {
                               {getAppointmentsByView("Completed").map((appointment, index) => (
                                 <li key={index} className="appointment-item">
                                   <div className="date-box">
-                                    {formatDayAndDate(appointment.date)}
+                                    {formatDayAndDate(appointment.date)} at {appointment.time}
                                   </div>
                                   <div className="details-box">
-                                    <p>Time: {appointment.time}</p>
-                                    <p>Platform: {appointment.platform}</p>
+                                    <p><strong>Name:</strong> {appointment.name}</p>
+                                    <p><strong>Email:</strong> {appointment.email}</p>
+                                    <p><strong>Contact:</strong> {appointment.contact}</p>
+                                    <p><strong>Type:</strong> {appointment.consultationType}</p>
+                                    <p><strong>Platform:</strong> {appointment.platform}</p>
+                                    <p><strong>Company:</strong> {appointment.companyName}</p>
+                                    <p><strong>Reminder:</strong> {appointment.reminder}</p>
                                   </div>
                                 </li>
                               ))}
@@ -183,11 +232,70 @@ const Consultation = () => {
                   right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
                 }}
                 initialView="dayGridMonth"
-                editable={true}
-                selectable={true}
-                selectMirror={true}
-                dayMaxEvents={true}
+                editable={false}
+                selectable={false}
+                events={mapAppointmentsToEvents()} // Pass appointments as events here
+                eventMouseEnter={handleMouseEnter}
+                eventMouseLeave={handleMouseLeave}
+                eventContent={(eventInfo) => (
+                  <div>
+                    <b>{eventInfo.event.title}</b>
+                  </div>
+                )}
               />
+              {popup && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: popup.y + 10,
+                    left: popup.x + 10,
+                    backgroundColor: "white",
+                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+                    borderRadius: "5px",
+                    padding: "10px",
+                    zIndex: 1000,
+                  }}
+                  onMouseEnter={() => clearTimeout()} // Prevent hiding when mouse enters popup
+                  onMouseLeave={() => setPopup(null)} // Hide popup when mouse leaves
+                >
+                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    {popup.title}
+                  </Typography>
+                  <Typography variant="body2">Time: {popup.time}</Typography>
+                  <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button
+                      style={{
+                        backgroundColor: "#4caf50",
+                        color: "white",
+                        border: "none",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        console.log("Edit clicked for event:", popup.title);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={{
+                        backgroundColor: "#f44336",
+                        color: "white",
+                        border: "none",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        console.log("Delete clicked for event:", popup.title);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Box>
         </Box>
