@@ -124,6 +124,28 @@ app.post("/send-email", (req, res) => {
     .catch((error) => res.status(500).json({ error: error.message }));
 });
 
+// Save payment details to the database
+app.post("/payments", (req, res) => {
+    const { transactionId, payerName, payerEmail, amount, currency, payedToEmail, clientId } = req.body;
+  
+    const query = `
+      INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+  
+    db.query(
+      query,
+      [transactionId, payerName, payerEmail, amount, currency, payedToEmail, clientId],
+      (err, result) => {
+        if (err) {
+          console.error("Error saving payment:", err);
+          return res.status(500).send("Error saving payment.");
+        }
+        res.status(200).send("Payment saved successfully.");
+      }
+    );
+  });  
+
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
   const { title, description } = req.body;
