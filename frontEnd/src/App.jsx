@@ -15,7 +15,7 @@ import Payment from "./client/project/payment.jsx";
 import Notification from "./admin/Notification/Notification.jsx";
 import Appointment from './admin/Calendar/AdminAppointment.jsx';
 import Availability from "./admin/Calendar/Availability";
-
+import ChangePassword from "./Login/ChangePassword.jsx";
 // for google icons
 const link = document.createElement('link');
 link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
@@ -25,13 +25,6 @@ document.head.appendChild(link);
 
 
 function App() {
-  // const[data, setData] = useState([])
-  // useEffect(() =>{
-  //   fetch('http://localhost:8081/admin')
-  //   .then(res => res.json())
-  //   .then(data => setData(data))
-  //   .catch(err => console.log(err));
-  // }, [])
   return (
     <Router>
       <Routes>
@@ -51,6 +44,8 @@ function App() {
         <Route path="/notifications" element={<Notification />} /> 
         <Route path="/appointment" element={<Appointment />} />
         <Route path="/availability" element={<Availability />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+
       </Routes>
     </Router>
   );

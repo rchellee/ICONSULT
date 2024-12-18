@@ -19,6 +19,12 @@ const Login = () => {
         username,
         password
       });
+
+      // Check if the client needs to change their password
+      if (data.changePassword) {
+        navigate('/change-password', { state: { clientId: data.clientId } });
+        return;
+    }
   
       // Navigate based on the role
       if (data.role === 'admin') {
