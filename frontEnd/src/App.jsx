@@ -13,7 +13,7 @@ import Consultation from './client/Consultation/Consultation.jsx';
 import AccountSettings from "./client/AccountSettings/AccountSettings.jsx";
 import Payment from "./client/project/payment.jsx";
 import Notification from "./admin/Notification/Notification.jsx";
-import Appointment from './admin/Calendar/AppointmentForm.jsx';
+import Appointment from './admin/Calendar/AdminAppointment.jsx';
 import Availability from "./admin/Calendar/Availability";
 
 // for google icons

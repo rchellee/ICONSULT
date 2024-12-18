@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import "./appointment.css";
+import "./calendar.css";
 
 const DynamicCalendar = ({ availableDates, onDateSelect }) => {
   const [currDate, setCurrDate] = useState(new Date());
   const [days, setDays] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null); // Track the selected date
 
   const months = [
     "January", "February", "March", "April", "May", "June", "July",
@@ -55,6 +56,7 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
       const newDate = new Date(prev.getFullYear(), prev.getMonth() + direction, 1);
       return newDate;
     });
+    setSelectedDate(null); // Reset selected date when month changes
   };
 
   const isPrevDisabled =
@@ -105,15 +107,20 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
               className={`${
                 day.currentMonth
                   ? day.available
-                    ? "available"
+                    ? selectedDate === day.dateStr
+                      ? "selected" // Apply the "selected" class for the clicked date
+                      : "available"
                     : day.fullyBooked
                     ? "fully-booked"
                     : "unavailable"
                   : "inactive"
               }`}
-              onClick={() =>
-                day.currentMonth && day.available && onDateSelect(day.dateStr)
-              }
+              onClick={() => {
+                if (day.currentMonth && day.available) {
+                  setSelectedDate(day.dateStr); // Set the clicked date as selected
+                  onDateSelect(day.dateStr); // Trigger the callback
+                }
+              }}
             >
               {day.date}
             </li>

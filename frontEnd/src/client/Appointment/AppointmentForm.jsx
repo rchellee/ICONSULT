@@ -142,8 +142,6 @@ function AppointmentForm() {
     <div className="appointment-form-container">
       <Sidebar />
       <div className="content">
-        <h2>Set an Appointment</h2>
-
         {/** Step 1: Date and Time **/}
         {currentStep === 1 && (
           <div>

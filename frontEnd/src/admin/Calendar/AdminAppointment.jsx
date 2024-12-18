@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import Sidebar from "../sidebar"; // Import the Sidebar component
-import "./appointment.css";
+import "./calendar.css";
 import Calendar from "./DynamicCalendar";
 
-function AppointmentForm() {
+function AdminAppointment() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1); // Track the current step
   const [formData, setFormData] = useState({
     date: "",
     time: "",
-    name: "",
-    email: "",
     consultationType: "",
     additionalInfo: "",
-    reminder: "", // Add reminder field
+    reminder: "",
   });
 
   const generateRandomAvailability = () => {
@@ -109,12 +107,10 @@ function AppointmentForm() {
         setFormData({
             date: "",
             time: "",
-            name: "",
-            email: "",
-            contact: "",
             consultationType: "",
             additionalInfo: "",
-            reminder: "", // Reset reminder field
+            reminder: "", 
+            client: "", 
         });
     } catch (error) {
         console.error("Error submitting appointment:", error);
@@ -126,12 +122,9 @@ function AppointmentForm() {
     <div className="appointment-form-container">
       <Sidebar />
       <div className="content">
-        <h2>Set an Appointment</h2>
-
         {/** Step 1: Date and Time **/}
         {currentStep === 1 && (
           <div>
-            <h3>Step 1: Date and Time</h3>
             <div className="calendar-time-container">
               <Calendar
                 availableDates={availableDates}
@@ -163,64 +156,29 @@ function AppointmentForm() {
           </div>
         )}
 
-        {/** Step 2: Personal Information **/}
+        {/** Step 2: Consultation Details **/}
         {currentStep === 2 && (
           <div>
-            <h3>Step 2: Personal Information</h3>
             <div className="form-group">
-              <label htmlFor="name">Name:</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+              <label htmlFor="client">Select Client:</label>
+              <select
+                id="client"
+                name="client"
+                value={formData.client}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="" disabled>
+                  -- Select Client --
+                </option>
+                {/* Add your client options here */}
+                <option value="Client 1">Client 1</option>
+                <option value="Client 2">Client 2</option>
+                <option value="Client 3">Client 3</option>
+                {/* Example, you can dynamically populate this list from an API or local data */}
+              </select>
             </div>
-            <div className="form-group">
-              <label htmlFor="email">Email:</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="contact">Phone Number:</label>
-              <input
-                type="contact"
-                id="contact"
-                name="contact"
-                value={formData.contact}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            {/* New Company Name Field */}
-            <div className="form-group">
-              <label htmlFor="companyName">Company Name:</label>
-              <input
-                type="text"
-                id="companyName"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <button onClick={prevStep}>Back</button>
-            <button onClick={nextStep}>Next</button>
-          </div>
-        )}
 
-        {/** Step 3: Consultation Details **/}
-        {currentStep === 3 && (
-          <div>
-            <h3>Step 3: Consultation Details</h3>
             <div className="form-group">
               <label htmlFor="consultationType">Consultation Type:</label>
               <select
@@ -337,10 +295,10 @@ function AppointmentForm() {
                   -- Select Platform --
                 </option>
                 <option value="In-Person">In-Person</option>
-                <option value="Video Call">Zoom</option>
-                <option value="Video Call">Google Meet</option>
+                <option value="Zoom">Zoom</option>
+                <option value="Google Meet">Google Meet</option>
                 <option value="Phone Call">Phone Call</option> 
-                <option value="Phone Call">Microsoft Teams</option> 
+                <option value="Microsoft Teams">Microsoft Teams</option> 
               </select>
             </div>
 
@@ -383,24 +341,17 @@ function AppointmentForm() {
           </div>
         )}
 
-        {/** Step 4: Confirmation **/}
-        {currentStep === 4 && (
+        {/** Step 3: Confirmation **/}
+        {currentStep === 3 && (
           <div>
-            <h3>Step 4: Confirmation</h3>
+            <p>
+            <strong>Client:</strong> {formData.client}
+          </p>
             <p>
               <strong>Date:</strong> {formData.date}
             </p>
             <p>
               <strong>Time:</strong> {formData.time}
-            </p>
-            <p>
-              <strong>Name:</strong> {formData.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {formData.email}
-            </p>
-            <p>
-              <strong>Phone Number:</strong> {formData.contact}
             </p>
             <p>
               <strong>Consultation Type:</strong> {formData.consultationType}
@@ -423,4 +374,4 @@ function AppointmentForm() {
   );
 }
 
-export default AppointmentForm;
+export default AdminAppointment;
