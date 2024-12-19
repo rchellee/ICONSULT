@@ -1,12 +1,22 @@
 import React, { useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import TaskForm from "./TaskForm";
 
 const PostsTab = ({ tasks, setShowTaskForm, showTaskForm, handleCreateTask, handleCancelForm }) => {
-  const [isTableVisible, setIsTableVisible] = useState(true); // State for table visibility
+  const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
 
-  const toggleTableVisibility = () => {
-    setIsTableVisible((prevVisibility) => !prevVisibility);
+  const handleRowClick = (task) => {
+    setSelectedTaskName(task.taskName); // Set the selected task name when a row is clicked
+    setSelectedTaskDetails(task); // Set the selected task details
+  };
+
+  // Function to calculate the total amount for the task
+  const calculateTotal = (task) => {
+    const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
+    const miscellaneousFee = parseFloat(task.miscellaneousFee) || 0; // Ensure it's a valid number
+    return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
   };
 
   return (
@@ -15,20 +25,52 @@ const PostsTab = ({ tasks, setShowTaskForm, showTaskForm, handleCreateTask, hand
         {/* Task Header with IoIosArrowDown Icon */}
         <div className="task-header">
           <h2>Task</h2>
-          <IoIosArrowDown
-            className={`toggle-icon ${isTableVisible ? "down" : "up"}`}
-            onClick={toggleTableVisibility}  // Click event only on the icon
-          />
+          <IoIosArrowDown className="toggle-icon down" /> {/* Icon without click functionality */}
         </div>
 
-        {isTableVisible && tasks.length === 0 ? (
-          // When the table is visible but no tasks are available
-          <div className="no-task-container">
-            <h2>No Task Created</h2>
+        {/* Top Navigation Buttons */}
+        <div className="top-button">
+          <button className="nav-button">
+            <FaChevronLeft />
+            <span className="tooltip">Go back</span>
+          </button>
+          <button className="nav-button">
+            <FaChevronRight />
+          </button>
+        </div>
+
+        {/* If a task is selected, show details in the desired format */}
+        {selectedTaskName ? (
+          <div className="task-details">
+            <div className="task-detail-row">
+              <div><strong>Task Name</strong></div>
+              <div><strong>Amount</strong></div>
+            </div>
+            <div className="task-detail-row">
+              <div>{selectedTaskDetails.taskName}</div>
+              <div>{selectedTaskDetails.taskFee}</div> {/* Amount */}
+            </div>
+            <div className="task-detail-row">
+              <div><strong>Miscellaneous</strong></div>
+            </div>
+            <div className="task-detail-row">
+              <div>{selectedTaskDetails.miscellaneousName}</div> {/* Miscellaneous name */}
+              <div>{selectedTaskDetails.miscellaneousFee}</div> {/* Miscellaneous fee */}
+            </div>
+
+            {/* Total Row */}
+            <div className="task-detail-row">
+              <div><strong>Total</strong></div>
+              <div>{calculateTotal(selectedTaskDetails)}</div> {/* Display the total amount */}
+            </div>
           </div>
         ) : (
-          // Task Table
-          isTableVisible && (
+          // Task Table is displayed when no task is selected
+          tasks.length === 0 ? (
+            <div className="no-task-container">
+              <h2>No Task Created</h2>
+            </div>
+          ) : (
             <div className="table-container">
               <table className="task-table">
                 <thead>
@@ -42,12 +84,12 @@ const PostsTab = ({ tasks, setShowTaskForm, showTaskForm, handleCreateTask, hand
                 </thead>
                 <tbody>
                   {tasks.map((task, index) => (
-                    <tr key={index}>
+                    <tr key={index} onClick={() => handleRowClick(task)}> {/* Row click handler */}
                       <td>{task.taskName}</td>
                       <td>{task.employee || "Unassigned"}</td>
                       <td>{task.status}</td>
                       <td>{task.dueDate}</td>
-                      <td>{task.taskFee}</td>
+                      <td>{task.taskFee}</td> {/* Display the task fee */}
                     </tr>
                   ))}
                 </tbody>

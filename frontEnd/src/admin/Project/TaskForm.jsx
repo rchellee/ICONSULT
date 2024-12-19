@@ -3,11 +3,11 @@ import formStyles from "./FormStyle.module.css";
 
 const TaskForm = ({ onCreate, onCancel }) => {
   const [taskName, setTaskName] = useState("");
-  const [taskFee, setTaskFee] = useState("");
+  const [taskFee, setTaskFee] = useState(""); // State for task fee
   const [dueDate, setDueDate] = useState("");
   const [employee, setEmployee] = useState("");
-  const [additionalFee, setAdditionalFee] = useState("");
-  const [additionalFeeName, setAdditionalFeeName] = useState("");
+  const [miscellaneousName, setMiscellaneousName] = useState(""); // State for miscellaneous name
+  const [miscellaneousFee, setMiscellaneousFee] = useState(""); // State for miscellaneous fee
 
   // Custom change handler for task fee input to validate number only
   const handleTaskFeeChange = (e) => {
@@ -20,24 +20,34 @@ const TaskForm = ({ onCreate, onCancel }) => {
     }
   };
 
+  const handleMiscellaneousFeeChange = (e) => {
+    const value = e.target.value;
+    // Validate fee as a number
+    if (/[^0-9.]/.test(value)) {
+      alert("Please enter a valid number for the Miscellaneous Fee.");
+    } else {
+      setMiscellaneousFee(value); // Set the value only if it's valid
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pass the created task back to the parent
+    // Pass the created task back to the parent, including task fee and miscellaneous info
     onCreate({
       taskName,
       taskFee,
       dueDate,
       employee,
-      additionalFeeName,
-      additionalFee,
+      miscellaneousName,
+      miscellaneousFee,
     });
     // Reset form fields after submission
     setTaskName("");
     setTaskFee("");
     setDueDate("");
     setEmployee("");
-    setAdditionalFee("");
-    setAdditionalFeeName("");
+    setMiscellaneousName("");
+    setMiscellaneousFee("");
   };
 
   return (
@@ -90,6 +100,32 @@ const TaskForm = ({ onCreate, onCancel }) => {
               value={employee}
               onChange={(e) => setEmployee(e.target.value)}
               placeholder="Choose Employee"
+            />
+          </div>
+        </div>
+
+        {/* Miscellaneous Name and Fee Inputs */}
+        <div className={formStyles.taskInputGroup}>
+          <div className={formStyles.miscellaneous}>
+            <label htmlFor="miscellaneousName">Miscellaneous Name</label>
+            <input
+              type="text"
+              id="miscellaneousName"
+              value={miscellaneousName}
+              onChange={(e) => setMiscellaneousName(e.target.value)}
+              placeholder="Enter Miscellaneous Name"
+            />
+          </div>
+
+          <div className={formStyles.miscellaneousFee}>
+            <label htmlFor="miscellaneousFee">Miscellaneous Fee</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              id="miscellaneousFee"
+              value={miscellaneousFee}
+              onChange={handleMiscellaneousFeeChange} // Use custom change handler
+              placeholder="Enter Fee"
             />
           </div>
         </div>

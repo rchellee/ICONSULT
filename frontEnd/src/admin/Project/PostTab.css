@@ -1,4 +1,44 @@
 /* posts-tab.css */
+/* Navigation buttons */
+.top-button {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 20px; /* Space below the navigation */
+  font-size: 18px;
+  position: absolute;
+  top: 30px;
+  margin-left: -450px;
+}
+
+.top-button button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: rgb(53, 52, 52); /* Text color */
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.top-button svg {
+  font-size: 25px; /* Icon size */
+}
+
+.nav-button {
+  position: relative;
+}
+
+.nav-button:hover {
+  transform: scale(1.2); /* Slightly enlarge the icon */
+}
+
+
+
 .posts-tab-content {
   margin: 20px;
 }
@@ -98,4 +138,30 @@
 
 .toggle-icon.up {
   transform: rotate(180deg);
+}
+
+
+
+/* Style the task details section */
+.task-details {
+  padding: 20px;
+  border: 1px solid #ccc;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  max-width: 800px;
+}
+
+.task-detail-row {
+  display: flex;
+  justify-content: space-between; /* Space between label and value */
+  margin-bottom: 20px;
+}
+
+.task-detail-row div {
+  width: 50%; /* Each item takes up 50% of the row */
+}
+
+/* Target the row containing Amount and move it slightly to the right */
+.task-detail-row.amount-row {
+  margin-left: 20px; /* Adjust this value to move the Amount row */
 }
