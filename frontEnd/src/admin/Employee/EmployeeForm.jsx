@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./employeeForm.css"; // Assuming you have CSS for styling
+import "./employee.css"; // Assuming you have CSS for styling
 import Sidebar from "../sidebar";
 
 const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) => {
