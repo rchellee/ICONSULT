@@ -1,9 +1,11 @@
+// ProjectTask.jsx
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import "./task.css";
-import TaskForm from "./Taskform";
+import "./PostTab.css";
+import PostsTab from "./PostsTab"; // Import the PostsTab component
 
 const ProjectTask = () => {
   const { projectId } = useParams();
@@ -11,29 +13,30 @@ const ProjectTask = () => {
 
   const [activeTab, setActiveTab] = useState("posts");
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [tasks, setTasks] = useState([]); // State for storing tasks
+  const [tasks, setTasks] = useState([]);
 
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+  // Handle tab switching
+  const handleTabClick = (tab) => setActiveTab(tab);
 
+  // Add new task
   const handleCreateTask = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
-    setShowTaskForm(false); // Close the form after creating a task
+    setShowTaskForm(false);
   };
 
-  const handleCancelForm = () => {
-    setShowTaskForm(false); // Close the form without creating a task
-  };
+  // Cancel task form
+  const handleCancelForm = () => setShowTaskForm(false);
 
   return (
     <div className="project-task-container">
+      {/* Home Button */}
       <div className="home-button-container">
         <button className="home-button" onClick={() => navigate("/")}>
           <FontAwesomeIcon icon={faHome} size="lg" />
         </button>
       </div>
 
+      {/* Tab Navigation */}
       <div className="project-task-tabs">
         <button
           className={activeTab === "posts" ? "active" : ""}
@@ -49,43 +52,20 @@ const ProjectTask = () => {
         </button>
       </div>
 
+      {/* Tab Content */}
       <div className="project-task-content">
+        {/* Posts Tab */}
         {activeTab === "posts" && (
-          <div className="posts-tab-content">
-            <div className="project-posts">
-              {tasks.length === 0 ? (
-                <div className="no-task-container">
-                  <h2>No Task Created</h2>
-                  <button onClick={() => setShowTaskForm(true)}>Create</button>
-                </div>
-              ) : (
-                <ul className="task-list">
-                  {tasks.map((task, index) => (
-                    <li key={index} className="task-item">
-                      <h3>{task.taskName}</h3>
-                      <p>Fee: {task.taskFee}</p>
-                      <p>Due: {task.dueDate}</p>
-                      <p>Employee: {task.employee || "Unassigned"}</p>
-                      {task.additionalFeeName && (
-                        <p>
-                          Additional Fee ({task.additionalFeeName}):{" "}
-                          {task.additionalFee}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {showTaskForm && (
-                <TaskForm
-                  onCreate={handleCreateTask}
-                  onCancel={handleCancelForm}
-                />
-              )}
-            </div>
-          </div>
+          <PostsTab
+            tasks={tasks}
+            setShowTaskForm={setShowTaskForm}
+            showTaskForm={showTaskForm}
+            handleCreateTask={handleCreateTask}
+            handleCancelForm={handleCancelForm}
+          />
         )}
 
+        {/* Files Tab */}
         {activeTab === "files" && (
           <div className="files-tab-content">
             <div className="files-posts">

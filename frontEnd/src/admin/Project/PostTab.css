@@ -1,0 +1,15 @@
+.project-posts {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-left: 400px;
+}
+
+.no-task-container {
+  margin-top: 100px; /* Controls the position of the "No Task Created" text */
+}
+
+.button-container {
+  margin-top: 20px; /* Ensures the button has its own independent position */
+  align-self: flex-start; /* Aligns the button to the start of the container */
+}

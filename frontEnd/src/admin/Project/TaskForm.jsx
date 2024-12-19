@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./FormStyle.css";
+import formStyles from "./FormStyle.module.css";
 
 const TaskForm = ({ onCreate, onCancel }) => {
   const [taskName, setTaskName] = useState("");
@@ -30,10 +30,10 @@ const TaskForm = ({ onCreate, onCancel }) => {
   };
 
   return (
-    <div className="task-form-container">
-      <form className="task-form" onSubmit={handleSubmit}>
-        <div className="task-input-group">
-          <div className="task-input">
+    <div className={formStyles.taskFormContainer}>
+      <form className={formStyles.taskForm} onSubmit={handleSubmit}>
+        <div className={formStyles.taskInputGroup}>
+          <div className={formStyles.taskInput}>
             <label htmlFor="taskName">Task Name</label>
             <input
               type="text"
@@ -45,7 +45,7 @@ const TaskForm = ({ onCreate, onCancel }) => {
             />
           </div>
 
-          <div className="taskFee">
+          <div className={formStyles.taskFee}>
             <label htmlFor="taskFee">Task Fee</label>
             <input
               type="text"
@@ -58,7 +58,7 @@ const TaskForm = ({ onCreate, onCancel }) => {
             />
           </div>
 
-          <div className="dueDate">
+          <div className={formStyles.dueDate}>
             <label htmlFor="dueDate">Due Date</label>
             <input
               type="date"
@@ -70,8 +70,8 @@ const TaskForm = ({ onCreate, onCancel }) => {
           </div>
         </div>
 
-        <div className="task-input-group">
-          <div className="employee">
+        <div className={formStyles.taskInputGroup}>
+          <div className={formStyles.employee}>
             <label htmlFor="employee">Assign Employee</label>
             <input
               type="text"
@@ -81,32 +81,13 @@ const TaskForm = ({ onCreate, onCancel }) => {
               placeholder="Choose Employee"
             />
           </div>
-
-          <div className="additionalFee">
-            <label htmlFor="additionalFee">Additional Fee</label>
-            <div className="additional-fee-container">
-              <input
-                type="text"
-                value={additionalFeeName}
-                onChange={(e) => setAdditionalFeeName(e.target.value)}
-                placeholder="Fee Name"
-              />
-              <input
-                type="text"
-                inputMode="numeric"
-                value={additionalFee}
-                onChange={(e) => setAdditionalFee(e.target.value)}
-                placeholder="Amount"
-              />
-            </div>
-          </div>
         </div>
 
-        <div className="button-container">
-          <button type="submit" className="create-button">
+        <div className={formStyles.buttonContainer}>
+          <button type="submit" className={formStyles.createButton}>
             Create
           </button>
-          <button type="button" className="cancel-button" onClick={onCancel}>
+          <button type="button" className={formStyles.cancelButton} onClick={onCancel}>
             Cancel
           </button>
         </div>
