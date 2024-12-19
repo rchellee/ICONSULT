@@ -8,6 +8,8 @@ import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
+import pickerForm from "./pickerForm";
+ 
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -174,7 +176,7 @@ const ProjectManagement = () => {
   const filteredProjects = projects.filter((project) =>
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  
   // Render ProjectList or ProjectTask based on selectedProjectId
   const renderProjectContent = () => {
     if (selectedProjectId) {
@@ -210,7 +212,7 @@ const ProjectManagement = () => {
       {/* project management txt */}
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
-            <FaPlus className="icon" /> Create
+            <FaPlus className="icon" /> New
           </button>
           <div className="notification-icon" style={{ cursor: "pointer" }}>
             <FaBell className="icon" />

@@ -49,7 +49,7 @@ body {
 
 /* Admin text hidden initially */
 .sidebar .sidebar-header h2 {
-  color: white;
+  color: rgb(216, 230, 236);
   font-size: 1.25rem;
   font-weight: 600;
   white-space: nowrap;

@@ -307,24 +307,56 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 
 /* LEFT SIDE PROJECT NAMES */
+
+/* LEFT SIDE PROJECT NAMES */
+
+/* Folder Title */
 .folder-title {
     font-size: 20px; /* Make Folder title slightly larger */
     font-weight: bold;
-    margin-bottom: -20px; /* Adjust space after the title */
-    position: relative; /* Allows control of its position */
-    top: -40px; /* Adjust this to move the title down or up */
-    left: 0; /* Adjust this to move the title horizontally if needed */
-    /* You can add other positioning properties like `right`, `bottom` here if necessary */
+    margin-bottom: 10px; /* Adjust space after the title */
+    position: relative;
+    top: 5px; /* Keep the folder title at the top */
 }
 
-.project-names-section { /*nandito position ng folders*/
+/* Project Folders Section */
+.project-names-section {
     margin-top: 30px;
     padding: 15px;
     position: absolute;
     margin-left: 10px;
-    margin-top: 150px;
+    margin-top: 100px;
+    width: 250px; /* Adjust the width as needed */
 }
 
+/* Scroll Container for Folders */
+.folders-scroll-container {
+    max-height: 550px; /* Set the max height of the scrollable area */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
+    position: relative;
+}
+
+/* Shift the scrollbar to the right */
+.folders-scroll-container::-webkit-scrollbar {
+    width: 12px; /* Adjust scrollbar width */
+}
+
+.folders-scroll-container::-webkit-scrollbar-track {
+    background: #b4bad5;/* Optional: Make track transparent */
+}
+
+.folders-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #547099; /* Color of the scrollbar */
+    border-radius: 10px; /* Rounded edges for the scrollbar */
+}
+
+/* Move the scrollbar to the right by adding margin */
+.folders-scroll-container::-webkit-scrollbar {
+    margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
+}
+
+/* Individual Folder Item */
 .project-name-item {
     padding: 12px;
     transition: background-color 0.3s;
@@ -333,24 +365,18 @@ ct-list-header h3:nth-child(3) { /* Client */
     position: relative;
 }
 
+/* Hover Effect */
 .project-name-item:hover {
-    background-color: #b0f0f8;
+    background-color: #d2cfcfc7; ;
 }
 
+/* No Border for Last Folder */
 .project-name-item:last-child {
     border-bottom: none;
 }
 
-.project-name-item::before {
-    content: '> ';
-    color: #333;
-    font-weight: bold;
-    margin-right: 5px;
-}
-
+/* Additional Styling for Folder Search Box (if needed) */
 .search-box-container {
-    position: absolute; /* Keeps the sort button inline */  
-
+    position: absolute;
+    /* Keeps the sort button inline */
 }
-
-

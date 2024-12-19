@@ -9,6 +9,17 @@ const TaskForm = ({ onCreate, onCancel }) => {
   const [additionalFee, setAdditionalFee] = useState("");
   const [additionalFeeName, setAdditionalFeeName] = useState("");
 
+  // Custom change handler for task fee input to validate number only
+  const handleTaskFeeChange = (e) => {
+    const value = e.target.value;
+    // Regular expression to check if the value contains any alphabetic characters
+    if (/[^0-9.]/.test(value)) {
+      alert("Please enter a valid number for the Task Fee.");
+    } else {
+      setTaskFee(value); // Set the value only if it's valid
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Pass the created task back to the parent
@@ -52,7 +63,7 @@ const TaskForm = ({ onCreate, onCancel }) => {
               inputMode="numeric"
               id="taskFee"
               value={taskFee}
-              onChange={(e) => setTaskFee(e.target.value)}
+              onChange={handleTaskFeeChange} // Use custom change handler
               placeholder="Enter Amount"
               required
             />

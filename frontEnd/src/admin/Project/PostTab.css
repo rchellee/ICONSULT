@@ -1,3 +1,8 @@
+/* posts-tab.css */
+.posts-tab-content {
+  margin: 20px;
+}
+
 .project-posts {
   display: flex;
   flex-direction: column;
@@ -5,11 +10,92 @@
   margin-left: 400px;
 }
 
-.no-task-container {
-  margin-top: 100px; /* Controls the position of the "No Task Created" text */
+.create-button-container {
+  margin-top: 20px;
 }
 
-.button-container {
-  margin-top: 20px; /* Ensures the button has its own independent position */
-  align-self: flex-start; /* Aligns the button to the start of the container */
+.create-task-button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-task-button:hover {
+  background-color: #45a049;
+}
+
+/* Table Styles */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-left: 2px solid #dadada;  /* Outer left border */
+  border-right: 2px solid #dadada; /* Outer right border */
+  border-radius: 10px;  /* Rounded corners */
+  overflow: hidden;  /* Ensures inner content doesn't break the rounded corners */
+  background-color: #f0f8ff; /* Solid light blue background for the entire table */
+}
+
+.task-table th,
+.task-table td {
+  padding: 10px;
+  text-align: left;
+  border-top: 2px solid #dadada;  /* Top border */
+  border-bottom: 2px solid #dadada; /* Bottom border */
+  border-left: none; /* Removes inner vertical left border */
+  border-right: none; /* Removes inner vertical right border */
+}
+
+.task-table th {
+  background-color: #f0f8ff; ;  /* Light blue background for headers */
+  color: #333;  /* Dark text for headers */
+}
+
+.task-table td {
+  background-color: #f0f8ff;  /* Same background color for table cells */
+  color: #333;  /* Dark text for cells */
+  transition: background-color 0.3s ease;  /* Smooth transition for color change */
+}
+
+/* Change Color on Hover */
+.task-table tr:hover td {
+  background-color:#dadada;  /* Slightly different color when hovering over a row */
+}
+
+.no-task-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Task Header with Toggle Icon */
+.task-header {
+  display: flex;
+  align-items: center;
+}
+
+.task-header h2 {
+  margin: 0;
+  padding-right: 10px;
+}
+
+.toggle-icon {
+  font-size: 20px;
+  margin-left: 5px;
+  transition: transform 0.3s ease;
+}
+
+.toggle-icon.down {
+  transform: rotate(0deg);
+}
+
+.toggle-icon.up {
+  transform: rotate(180deg);
 }
