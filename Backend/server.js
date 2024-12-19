@@ -74,11 +74,9 @@ app.post("/Login", (req, res) => {
     const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
     db.query(sqlAdmin, [username, password], (err, adminResults) => {
       if (err) {
-        return res
-          .status(500)
-          .json({
-            message: "An error occurred while checking the admin table",
-          });
+        return res.status(500).json({
+          message: "An error occurred while checking the admin table",
+        });
       }
 
       if (adminResults.length > 0) {
@@ -163,6 +161,7 @@ app.post("/payments", (req, res) => {
         console.error("Error saving payment:", err);
         return res.status(500).send("Error saving payment.");
       }
+
       // Save notification for the admin
       const notificationQuery = `
       INSERT INTO notifications (title, description, timestamp, isRead) 
@@ -182,12 +181,37 @@ app.post("/payments", (req, res) => {
             return res.status(500).send("Error saving notification.");
           }
 
-          res.status(200).send("Payment and notification saved successfully.");
+          // Save client notification
+          const clientNotificationQuery = `
+            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
+            VALUES (?, ?, ?, NOW(), FALSE)
+          `;
+
+          const clientNotificationTitle = "Payment Received";
+          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
+
+          db.query(
+            clientNotificationQuery,
+            [clientId, clientNotificationTitle, clientNotificationDescription],
+            (err) => {
+              if (err) {
+                console.error("Error saving client notification:", err);
+                return res
+                  .status(500)
+                  .send("Error saving client notification.");
+              }
+
+              res
+                .status(200)
+                .send("Payment and client notification saved successfully.");
+            }
+          );
         }
       );
     }
   );
 });
+
 // Fetch all payments
 app.get("/payments", (req, res) => {
   const query = "SELECT * FROM payments ORDER BY created_at DESC";
@@ -251,6 +275,43 @@ app.put("/notifications/:id", (req, res) => {
       res.status(500).send("Error updating notification");
     } else {
       res.status(200).send("Notification marked as read");
+    }
+  });
+});
+// Endpoint to get notifications for a specific client
+app.get("/notifications/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query = `
+    SELECT * FROM notifications 
+    WHERE client_id = ? 
+    ORDER BY timestamp DESC
+  `;
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching notifications for client:", err.stack);
+      res.status(500).send("Error fetching notifications");
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+// Endpoint to get client notifications
+app.get("/client-notifications/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query = `
+    SELECT * FROM client_notifications 
+    WHERE client_id = ? 
+    ORDER BY timestamp DESC
+  `;
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching client notifications:", err.stack);
+      res.status(500).send("Error fetching client notifications");
+    } else {
+      res.status(200).json(results);
     }
   });
 });
@@ -725,7 +786,26 @@ app.post("/appointments", (req, res) => {
             });
           }
 
-          // Schedule email reminder
+          // Save notification for the client
+          const clientNotificationQuery = `
+      INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
+      VALUES (?, ?, ?, NOW(), 0)
+      `;
+
+          const clientNotificationTitle = "Appointment Scheduled";
+          const clientNotificationDescription = `Your appointment on ${date} at ${time} has been confirmed.`;
+
+          db.query(
+            clientNotificationQuery,
+            [clientId, clientNotificationTitle, clientNotificationDescription],
+            (err, clientNotificationResult) => {
+              if (err) {
+                console.error("Error saving client notification:", err);
+                return res
+                  .status(500)
+                  .json({ message: "Failed to save client notification" });
+              }
+              // Schedule email reminder
           const jobId = `${appointmentId}-reminder`;
 
           scheduledTasks[jobId] = cron.schedule(
@@ -780,6 +860,8 @@ app.post("/appointments", (req, res) => {
               "Appointment saved successfully, notification created, and reminder scheduled",
             appointmentId: appointmentId,
           });
+            }
+          );
         }
       );
     }

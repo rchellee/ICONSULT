@@ -18,6 +18,8 @@ import Availability from "./admin/Calendar/Availability";
 import ChangePassword from "./Login/ChangePassword.jsx";
 import Transactions from './admin/Transaction/transactions.jsx';
 import Transaction from './client/Transactions/transaction.jsx'
+import ClientNotification from './client/Notification/ClientNotification.jsx'
+
 // for google icons
 const link = document.createElement('link');
 link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200';
@@ -49,6 +51,7 @@ function App() {
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/transact" element={<Transaction />} />
+        <Route path="/client-notif" element={<ClientNotification />} />
 
       </Routes>
     </Router>
