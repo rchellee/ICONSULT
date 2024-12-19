@@ -249,3 +249,57 @@ header .current-date{
     color: #ccc;
     cursor: not-allowed;
   }
+
+
+  /* Availability */
+  .selected-dates {
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  .selected-date-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .selected-date-item p {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .time-selectors {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .time-selectors select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  span {
+    font-weight: bold;
+  }
+  
+  .submit-button {
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .submit-button:hover {
+    background-color: #45a049;
+  }
+  
+  

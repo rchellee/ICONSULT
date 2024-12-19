@@ -52,7 +52,7 @@ const ClientDetails = ({ client, goBack }) => {
 
   return (
     <div className="client-details">
-      <h3>{isEditing ? 'Edit Client Details' : 'Client Details'}</h3>
+      <h3>{isEditing ? 'Edit Client Details' : ''}</h3>
 
       {showToast && (
         <div className="toast">
