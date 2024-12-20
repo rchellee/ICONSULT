@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import ClientForm from "./ClientForm";
 import ClientDetails from "./ClientDetails";
-import "./client.css";
 import Sidebar from "../sidebar";
+import "./client.css";
 
 const ClientManagement = () => {
   const [clients, setClients] = useState([]);
@@ -11,7 +11,6 @@ const ClientManagement = () => {
   const [activeClients, setActiveClients] = useState({});
   const [toastVisible, setToastVisible] = useState(false);
 
-  // Fetch clients from the database when the component mounts
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -19,7 +18,6 @@ const ClientManagement = () => {
         const data = await response.json();
         setClients(data);
 
-        // Initialize activeClients based on database status values
         const initialActiveStates = data.reduce((acc, client) => {
           acc[client.id] = client.status === "active";
           return acc;
@@ -90,10 +88,9 @@ const ClientManagement = () => {
 
   const showToast = () => {
     setToastVisible(true);
-    setTimeout(() => setToastVisible(false), 5000); // Hide the toast after 5 seconds
+    setTimeout(() => setToastVisible(false), 5000);
   };
 
-  // Hash function to generate consistent colors based on client ID or name
   const generateColor = (str) => {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -101,13 +98,21 @@ const ClientManagement = () => {
     }
     const color = `#${((hash >> 24) & 0xff).toString(16)}${((hash >> 16) & 0xff)
       .toString(16)}${((hash >> 8) & 0xff).toString(16)}`.slice(0, 7);
-    return color.length === 7 ? color : "#007bff"; // Default color if hash fails
+    return color.length === 7 ? color : "#007bff";
+  };
+
+  const formatName = (name) => {
+    return name
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   return (
-    <div className="admin-home-page">
+    <div className="client-home-page">
       <Sidebar />
-      <div className="content">
+      <div className="client-content">
         {selectedClient ? (
           <ClientDetails
             client={selectedClient}
@@ -132,56 +137,55 @@ const ClientManagement = () => {
                 {clients.length === 0 ? (
                   <p>No clients added yet.</p>
                 ) : (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th></th> {/* Column for Client's Initials */}
-                        <th>Name</th> {/* Client's Full Name */}
-                        <th>Company</th> {/* Client's Company */}
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {clients.map((client, index) => {
-                        const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase(); // Generate initials
-                        const color = generateColor(client.id + client.firstName + client.lastName); // Generate consistent color
+                  <div className="scrollable-table">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Company</th>
+                          <th>Email</th>
+                          <th>Contact Number</th>
+                          <th>Status</th>
+                          <th>City</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {clients.map((client, index) => {
+                          const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
+                          const color = generateColor(client.id + client.firstName + client.lastName);
 
-                        return (
-                          <tr key={index}>
-                            <td className="initials-cell">
-                              <div
-                                className="initials-circle"
-                                style={{ backgroundColor: color }}
-                              >
-                                {initials}
-                              </div>
-                            </td>
-                            <td
-                              onClick={() => viewClientDetails(client)}
-                              style={{ cursor: "pointer", color: "black" }}
-                            >
-                              {`${client.firstName} ${client.lastName}`.toUpperCase()}
-                            </td>
-                            <td>{client.companyName}</td>
-                            <td>
-                              <div
-                                className={`toggle ${
-                                  activeClients[client.id] ? "active" : ""
-                                }`}
-                                onClick={() => handleToggle(client.id)}
-                              ></div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                          return (
+                            <tr key={index}>
+                              <td onClick={() => viewClientDetails(client)}>
+                                <div
+                                  className="initials-circle"
+                                  style={{ backgroundColor: color }}
+                                >
+                                  {initials}
+                                </div>
+                                {formatName(`${client.firstName} ${client.lastName}`)}
+                              </td>
+                              <td>{client.companyName}</td>
+                              <td>{client.email}</td>
+                              <td>{client.contactNumber}</td>
+                              <td>
+                                <div
+                                  className={`toggle ${activeClients[client.id] ? "active" : ""}`}
+                                  onClick={() => handleToggle(client.id)}
+                                ></div>
+                              </td>
+                              <td>{client.city}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </>
             )}
           </>
         )}
-
         {toastVisible && (
           <div className="toast active">
             <div className="toast-content">

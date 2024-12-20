@@ -23,6 +23,8 @@ const ClientForm = ({
     status: "active",
     birthday: "",
     companyName: "",
+    city: "", // Added city
+    postalCode: "", // Added postal code
   });
 
   useEffect(() => {
@@ -121,6 +123,8 @@ const ClientForm = ({
         status: "active",
         birthday: "",
         companyName: "",
+        city: "", // Reset city
+        postalCode: "", // Reset postal code
       });
     } catch (error) {
       console.error("An error occurred:", error);
@@ -128,12 +132,11 @@ const ClientForm = ({
   };
 
   return (
-    <div className="admin-home-page">
+    <div className="client-home-page">
       <Sidebar />
-      <div className="content">
+      <div className="client-content">
         <form onSubmit={handleSubmit}>
-          <h3>{editingClient ? "Edit Client" : ""}</h3>
-
+          {editingClient ? "Edit Client" : ""}
           {/* Prefix */}
           <select name="prefix" value={formData.prefix} onChange={handleChange}>
             <option value="Mr.">Mr.</option>
@@ -226,6 +229,24 @@ const ClientForm = ({
             name="companyName"
             placeholder="Company Name"
             value={formData.companyName}
+            onChange={handleChange}
+          />
+
+          {/* City */}
+          <input
+            type="text"
+            name="city"
+            placeholder="City"
+            value={formData.city}
+            onChange={handleChange}
+          />
+
+          {/* Postal Code */}
+          <input
+            type="text"
+            name="postalCode"
+            placeholder="Postal Code"
+            value={formData.postalCode}
             onChange={handleChange}
           />
 

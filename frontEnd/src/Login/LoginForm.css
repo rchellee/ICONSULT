@@ -1,5 +1,5 @@
 /* Adjust the container to center its content */
-.container {
+.login-container {
     display: flex;
     height: calc(100vh - 60px);
     justify-content: center; /* Center content horizontally */
@@ -54,7 +54,6 @@
 
 .wrapper {
     width: 550px;
-    background: white;
     color: BLACK;
     border-radius: 12px;
     padding: 50px 60px;
@@ -113,7 +112,6 @@
     border: none;
     outline: none;
     border-radius: 50px;
-    box-shadow: 0 0 12px rgba(95, 89, 89, 0.3);
     cursor: pointer;
     font-size: 22px;
     color: rgb(255, 255, 255);

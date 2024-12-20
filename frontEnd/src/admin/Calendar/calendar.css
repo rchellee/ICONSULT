@@ -48,7 +48,6 @@ textarea {
 
 button {
   padding: 10px 20px;
-  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
@@ -235,7 +234,7 @@ header .current-date{
 }
 
 .selected {
-  background-color: #101f6a; /* Color for selected dates */
+  background-color: #101f6a; /* kapag sinelect ang availability ng admin */
   color: white;
 }
 

@@ -18,7 +18,8 @@
     margin: 0 20px; 
 }
 
-.content {
+/* button din for add client */
+.content { 
     margin-left: 200px; /* eto yung distance sa sidebar */
     padding: 40px 20px 20px;
     display: flex;

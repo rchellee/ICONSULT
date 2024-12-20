@@ -12,10 +12,10 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
     email_add: "",
     status: "active",
     birthday: "",
+    role: "role", // Default role
   });
 
   const [showNotification, setShowNotification] = useState(false);
-
 
   useEffect(() => {
     if (editingEmployee) {
@@ -103,6 +103,7 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
         email_add: "",
         status: "active",
         birthday: "",
+        role: "role1",
       });
     } catch (error) {
       console.error("An error occurred:", error);
@@ -110,11 +111,11 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
   };
 
   return (
-    <div className="admin-home-page">
+    <div className="employee-home-page">
       <Sidebar />
-      <div className="content">
+      <div className="employee-content">
         <form onSubmit={handleSubmit}>
-          <h3>{editingEmployee ? "Edit Employee" : "Add a New Employee"}</h3>
+          <h3>{editingEmployee ? "Edit Employee" : ""}</h3>
 
           <input
             type="text"
@@ -178,6 +179,12 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
           <select name="status" value={formData.status} onChange={handleChange}>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
+          </select>
+
+          <label>Role:</label>
+          <select name="role" value={formData.role} onChange={handleChange}>
+            <option value="role1">Role 1</option>
+            <option value="role2">Role 2</option>
           </select>
 
           <button type="submit">

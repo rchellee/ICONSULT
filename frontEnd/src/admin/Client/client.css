@@ -1,32 +1,24 @@
-  /* Google Font Import - Poppins */
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-/* General page styling */
-.admin-home-page {
+/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.client-home-page {
   display: flex;
   height: 100vh;
-  font-family: Arial, sans-serif;
+  /* overflow: hidden; */
 }
 
-.content {
-  flex-grow: 1;
-  padding: 40px;
-  background-color: #f4f6f9;
+.client-content {
+  flex-grow: 2;
+  padding-left: 100px;
 }
 
-/*Client Form container  */
+/* ClientForm.jsx */
 form {
   background-color: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
+  max-width:700px;
   margin: 0 auto;
-}
-
-form h3 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #34495e;
 }
 
 /* Form input fields styling */
@@ -53,131 +45,50 @@ form input:disabled {
   color: #999;
 }
 
-/* Submit button styling */
-form button {
-  width: 100%;
-  padding: 10px;
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background-color 0.3s;
-}
-
-form button:hover {
-  background-color: #27ae60;
-}
-
-/* Prefix dropdown styling */
 form select {
   appearance: none;
   background-color: white;
   cursor: pointer;
 }
 
-/* Add some space between fields */
 form input,
 form select {
   margin-bottom: 15px;
 }
-  
-.client-management {
-    padding: 20px;
-}
 
-.add-client-form {
-    margin-bottom: 10px;
-}
-
-.add-client-form input, .add-client-form select {
-    display: block;
-    margin: 10px 0;
-    padding: 8px;
-    width: 100%;
-    max-width: 300px;
-}
-
-.add-client-form button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-table {
-    width: 100%;
-}
-
-table, th, td {
-    border: 1px solid rgb(217, 211, 211);
-    table th, table td {
-      border: 1px solid #f4f4f4;
-      padding: 4px;
-    }
-}
-
-th, td {
-    padding: 8px;
-    text-align: left;
-}
 
 /* Style for the Toggle Button */
 .toggle {
-  width: 40px;
-  height: 20px;
-    border-radius: 25px;
-    background-color: #ddd;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .toggle.active {
-    background-color: #0a1944;
-  }
-  
-  .toggle::after {
-    content: "";
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: white;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s ease;
-  }
-  
-  .toggle.active::after {
-    transform: translateX(23px);
-  }
+  width: 50px;
+  height: 24px;
+  border-radius: 25px;
+  background-color: #ddd;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-  /* client initials */
+.toggle.active {
+  background-color: #0a1944;
+}
 
-  .initials-circle {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 30px;
-    height: 30px;
-    color: white; /* White text */
-    border-radius: 50%; /* Circular shape */
-    font-size: 14px;
-    text-transform: uppercase;
-  }
-  
-  .initials-cell {
-    text-align: center;
-  }
-  
-  /* CLient Details */
+.toggle::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: white;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s ease;
+}
 
-  /* General styles for the component */
+.toggle.active::after {
+  transform: translateX(23px);
+}
+
+/* Client Details */
 .client-details {
   padding: 20px;
   background-color: #f4f6f9;
@@ -189,7 +100,6 @@ th, td {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Title styling */
 .client-details h3 {
   text-align: center;
   margin-bottom: 20px;
@@ -222,58 +132,6 @@ th, td {
   width: 100%;
   background-color: #27ae60;
   animation: progressBar 3s linear;
-}
-
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; display: none; }
-}
-
-@keyframes progressBar {
-  from { width: 100%; }
-  to { width: 0%; }
-}
-
-/* Form styling */
-form {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-}
-
-form label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-form input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #dcdcdc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-form .btn-save {
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-}
-
-form .btn-save:hover {
-  background-color: #27ae60;
 }
 
 /* Client info display */
@@ -324,34 +182,74 @@ form .btn-save:hover {
   text-decoration: underline;
 }
 
-/* Buttons styling */
-.btn-edit,
-.btn-back {
+/* Table */
+.initials-circle {
   display: inline-block;
-  background-color: #3498db;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   color: white;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
   text-align: center;
-  margin-top: 20px;
-  cursor: pointer;
-  border: none;
-  width: 150px;
+  line-height: 30px;
+  margin-right: 8px;
 }
 
-.btn-back {
-  background-color: #e74c3c;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.btn-edit:hover {
-  background-color: #2980b9;
+th, td {
+  padding: 20px; /* Reduced padding for a tighter spacing */
+  text-align: left;
 }
 
-.btn-back:hover {
-  background-color: #c0392b;
+th {
+  background-color: #f2f2f2;
 }
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+/* Search bar */
+.search-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  padding: 8px;
+  width: 300px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Scroll tables */
+.scrollable-table {
+  max-height: 680px; /* Adjust height as needed */
+  overflow-y: auto; /* Vertical scrolling */
+}
+
+.scrollable-table table {
+  width: 100%; /* Ensure the table spans the container */
+  border-collapse: collapse;
+}
+
+.scrollable-table th,
+.scrollable-table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.scrollable-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 
 /* Responsive design */
 @media (max-width: 768px) {

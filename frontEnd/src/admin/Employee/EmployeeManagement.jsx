@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeDetails from "./EmployeeDetails";
-import "./employee.css";  // Import the CSS file for the toggle button
+import "./employee.css"; // Import the CSS file for the toggle button and initials
 import Sidebar from "../sidebar";
 
 const EmployeeManagement = () => {
@@ -22,7 +22,7 @@ const EmployeeManagement = () => {
     };
 
     fetchEmployees();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   const toggleForm = () => {
     setIsFormVisible(!isFormVisible);
@@ -36,75 +36,56 @@ const EmployeeManagement = () => {
     setSelectedEmployee(null);
   };
 
-  const updateEmployee = async (updatedEmployee) => {
-    try {
-      // Send a PUT request to update employee information in the database
-      const response = await fetch(`http://localhost:8081/employee/${updatedEmployee.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedEmployee),
-      });
-  
-      // Check if the response is successful
-      if (response.ok) {
-        const result = await response.json();
-        // Update the employee in the local state only if the database update was successful
-        setEmployees(
-          employees.map((employee) =>
-            employee.id === updatedEmployee.id ? updatedEmployee : employee
-          )
-        );
-        setSelectedEmployee(updatedEmployee); // Update the selected employee
-        console.log("Employee updated successfully:", result.message);
-      } else {
-        console.error("Failed to update employee:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error updating employee:", error);
-    }
-  };
- 
-
   const toggleStatus = async (employeeId, currentStatus) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
       const response = await fetch(`http://localhost:8081/employees/${employeeId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
       const result = await response.json();
       if (response.ok) {
-        // Update the status of the employee in the state
         setEmployees(
           employees.map((employee) =>
             employee.id === employeeId ? { ...employee, status: newStatus } : employee
           )
         );
       } else {
-        console.error('Failed to update status:', result.message);
+        console.error("Failed to update status:", result.message);
       }
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     }
   };
 
+  // Function to generate initials
+  const getInitials = (firstName, lastName) => {
+    return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
+  };
+
+  // Function to generate random background color
+  const generateRandomColor = () => {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#FFC300", "#A833FF"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
   return (
-    <div className="admin-home-page">     
+    <div className="employee-home-page">
       <Sidebar />
-      <div className="content">
-        <h2>Employees</h2>
+      <div className="employee-content">
         {selectedEmployee ? (
           <EmployeeDetails
             employee={selectedEmployee}
             goBack={goBackToList}
-            updateEmployee={updateEmployee}
           />
         ) : (
           <>
-            <button onClick={toggleForm}>
+            {/* Button to toggle employee form */}
+            <button onClick={toggleForm} className="add-employee-btn">
               {isFormVisible ? "Cancel" : "Add Employee"}
             </button>
+
             {isFormVisible && (
               <EmployeeForm
                 employees={employees}
@@ -112,6 +93,7 @@ const EmployeeManagement = () => {
                 toggleForm={toggleForm}
               />
             )}
+
             {!isFormVisible && (
               <>
                 {employees.length === 0 ? (
@@ -122,23 +104,26 @@ const EmployeeManagement = () => {
                       <tr>
                         <th>Name</th>
                         <th>Status</th>
+                        <th>Role</th> {/* Added Role column */}
                       </tr>
                     </thead>
                     <tbody>
                       {employees.map((employee, index) => (
                         <tr key={index}>
+                          {/* Initials displayed in Name column */}
                           <td
                             onClick={() => viewEmployeeDetails(employee)}
-                            style={{ cursor: "pointer", color: "black" }}
                           >
+                            <div
+                              className="initials-circle"
+                              style={{ backgroundColor: generateRandomColor() }}
+                            >
+                              {getInitials(employee.firstName, employee.lastName)}
+                            </div>
                             {employee.firstName} {employee.lastName}
                           </td>
-                          {/* <td
-                            onClick={() => viewEmployeeDetails(employee)}
-                            style={{ cursor: "pointer", color: "blue" }}
-                          >
-                            {employee.status}
-                          </td> */}
+                          
+                          {/* Status Toggle Column */}
                           <td>
                             <label className="toggle-btn">
                               <input
@@ -149,6 +134,9 @@ const EmployeeManagement = () => {
                               <span className="slider"></span>
                             </label>
                           </td>
+
+                          {/* Role Column */}
+                          <td>{employee.role || "role 1"}</td> {/* Default to "role 1" */}
                         </tr>
                       ))}
                     </tbody>
