@@ -141,27 +141,51 @@
 }
 
 
-
-/* Style the task details section */
+/* Style the task details section, eto yung sa loob ng specific task */
 .task-details {
   padding: 20px;
   border: 1px solid #ccc;
   margin-top: 20px;
   background-color: #f9f9f9;
-  max-width: 800px;
+  max-width: 600px;
+  margin-left: 100px; 
 }
 
 .task-detail-row {
   display: flex;
   justify-content: space-between; /* Space between label and value */
   margin-bottom: 20px;
+  padding-bottom: 10px; /* Add spacing inside the row */
+  border-bottom: 1px dashed #ccc; /* Dashed line between rows */
 }
 
-.task-detail-row div {
-  width: 50%; /* Each item takes up 50% of the row */
+/* Align text to the right for amount fields */
+.align-right {
+  text-align: right;
 }
 
-/* Target the row containing Amount and move it slightly to the right */
-.task-detail-row.amount-row {
-  margin-left: 20px; /* Adjust this value to move the Amount row */
+/* Slightly move the Amount label to the right */
+.amount-label {
+  margin-left: 10px; /* Adjust as needed */
+}
+
+/* Remove dashed line for Task Name row */
+.task-detail-row:first-child {
+  border-bottom: none; /* No dashed line below Task Name */
+  padding-bottom: 0; /* Remove extra padding */
+}
+
+/* Remove dashed line for Miscellaneous row */
+.task-detail-row:nth-child(3) {
+  border-bottom: none; /* No dashed line below Miscellaneous */
+  padding-bottom: 0; /* Remove extra padding */
+}
+
+/* Add bold styling and remove dashed line for the total row */
+.total-row {
+  border-bottom: none; /* No dashed line below Total row */
+  padding-bottom: 0; /* Remove padding for cleaner layout */
+}
+.total-row .align-right {
+  font-weight: bold;
 }

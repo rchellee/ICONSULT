@@ -1,53 +1,65 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import formStyles from "./FormStyle.module.css";
 
-const TaskForm = ({ onCreate, onCancel }) => {
-  const [taskName, setTaskName] = useState("");
-  const [taskFee, setTaskFee] = useState(""); // State for task fee
-  const [dueDate, setDueDate] = useState("");
-  const [employee, setEmployee] = useState("");
+const TaskForm = ({ onCreate, onCancel, existingTask }) => {
+  const [taskName, setTaskName] = useState(existingTask ? existingTask.taskName : ""); // Initialize with existing task values
+  const [taskFee, setTaskFee] = useState(existingTask ? existingTask.taskFee : ""); // Initialize with existing task fee
+  const [dueDate, setDueDate] = useState(existingTask ? existingTask.dueDate : ""); // Initialize with existing due date
+  const [employee, setEmployee] = useState(existingTask ? existingTask.employee : ""); // Initialize with existing employee
   const [miscellaneousName, setMiscellaneousName] = useState(""); // State for miscellaneous name
   const [miscellaneousFee, setMiscellaneousFee] = useState(""); // State for miscellaneous fee
+  const [miscellaneousList, setMiscellaneousList] = useState(existingTask ? existingTask.miscellaneous : []); // Maintain list of miscellaneous items
 
-  // Custom change handler for task fee input to validate number only
+  // Handle changes to Task Fee input (numeric validation)
   const handleTaskFeeChange = (e) => {
     const value = e.target.value;
-    // Regular expression to check if the value contains any alphabetic characters
     if (/[^0-9.]/.test(value)) {
       alert("Please enter a valid number for the Task Fee.");
     } else {
-      setTaskFee(value); // Set the value only if it's valid
+      setTaskFee(value);
     }
   };
 
+  // Handle changes to Miscellaneous Fee input (numeric validation)
   const handleMiscellaneousFeeChange = (e) => {
     const value = e.target.value;
-    // Validate fee as a number
     if (/[^0-9.]/.test(value)) {
       alert("Please enter a valid number for the Miscellaneous Fee.");
     } else {
-      setMiscellaneousFee(value); // Set the value only if it's valid
+      setMiscellaneousFee(value);
+    }
+  };
+
+  // Handle adding a new miscellaneous item to the list
+  const handleAddMiscellaneous = () => {
+    if (miscellaneousName && miscellaneousFee) {
+      setMiscellaneousList([
+        ...miscellaneousList,
+        { name: miscellaneousName, fee: miscellaneousFee },
+      ]);
+      setMiscellaneousName(""); // Clear name input after adding
+      setMiscellaneousFee(""); // Clear fee input after adding
+    } else {
+      alert("Please provide both a name and a fee for the miscellaneous item.");
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pass the created task back to the parent, including task fee and miscellaneous info
-    onCreate({
+    const newTask = {
       taskName,
       taskFee,
       dueDate,
       employee,
-      miscellaneousName,
-      miscellaneousFee,
-    });
+      miscellaneous: miscellaneousList, // Send the complete list of miscellaneous items
+    };
+    onCreate(newTask); // Pass new task data to the parent component
     // Reset form fields after submission
     setTaskName("");
     setTaskFee("");
     setDueDate("");
     setEmployee("");
-    setMiscellaneousName("");
-    setMiscellaneousFee("");
+    setMiscellaneousList([]); // Clear miscellaneous list after submission
   };
 
   return (
@@ -73,7 +85,7 @@ const TaskForm = ({ onCreate, onCancel }) => {
               inputMode="numeric"
               id="taskFee"
               value={taskFee}
-              onChange={handleTaskFeeChange} // Use custom change handler
+              onChange={handleTaskFeeChange}
               placeholder="Enter Amount"
               required
             />
@@ -104,7 +116,6 @@ const TaskForm = ({ onCreate, onCancel }) => {
           </div>
         </div>
 
-        {/* Miscellaneous Name and Fee Inputs */}
         <div className={formStyles.taskInputGroup}>
           <div className={formStyles.miscellaneous}>
             <label htmlFor="miscellaneousName">Miscellaneous Name</label>
@@ -124,15 +135,31 @@ const TaskForm = ({ onCreate, onCancel }) => {
               inputMode="numeric"
               id="miscellaneousFee"
               value={miscellaneousFee}
-              onChange={handleMiscellaneousFeeChange} // Use custom change handler
+              onChange={handleMiscellaneousFeeChange}
               placeholder="Enter Fee"
             />
           </div>
+
+          <button type="button" onClick={handleAddMiscellaneous} className={formStyles.addMiscellaneousButton}>
+            Add Miscellaneous
+          </button>
         </div>
+
+        {/* Display the list of added miscellaneous items */}
+        {miscellaneousList.length > 0 && (
+          <div className={formStyles.miscellaneousList}>
+            <h4>Added Miscellaneous Items</h4>
+            <ul>
+              {miscellaneousList.map((item, index) => (
+                <li key={index}>{item.name}: {item.fee}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className={formStyles.buttonContainer}>
           <button type="submit" className={formStyles.createButton}>
-            Create
+            {existingTask ? "Update Task" : "Create Task"}
           </button>
           <button type="button" className={formStyles.cancelButton} onClick={onCancel}>
             Cancel
