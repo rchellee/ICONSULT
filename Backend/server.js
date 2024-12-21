@@ -34,74 +34,78 @@ app.get("/admin", (req, res) => {
 
 // Login route to check user credentials
 app.post("/Login", (req, res) => {
-    const { username, password } = req.body;
-  
-    // Check the client table
-    const sqlClient = `
+  const { username, password } = req.body;
+
+  // Check the client table
+  const sqlClient = `
           SELECT id, firstName, lastName, passwordChanged 
           FROM client 
           WHERE username = ? AND password = ?
       `;
-  
-    db.query(sqlClient, [username, password], (err, clientResults) => {
+
+  db.query(sqlClient, [username, password], (err, clientResults) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while checking the client table" });
+    }
+
+    if (clientResults.length > 0) {
+      const client = clientResults[0];
+      if (!client.passwordChanged) {
+        return res.status(200).json({
+          message: "Password change required",
+          role: "client",
+          changePassword: true,
+          clientId: client.id,
+        });
+      } else {
+        return res.status(200).json({
+          message: "Login successful",
+          role: "client",
+          firstName: client.firstName,
+          lastName: client.lastName,
+          clientId: client.id,
+        });
+      }
+    }
+
+    // If no match in client table, check admin table
+    const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
+    db.query(sqlAdmin, [username, password], (err, adminResults) => {
       if (err) {
-        return res.status(500).json({ message: "An error occurred while checking the client table" });
+        return res.status(500).json({
+          message: "An error occurred while checking the admin table",
+        });
       }
-  
-      if (clientResults.length > 0) {
-        const client = clientResults[0];
-        if (!client.passwordChanged) {
-          return res.status(200).json({
-            message: "Password change required",
-            role: "client",
-            changePassword: true,
-            clientId: client.id,
-          });
-        } else {
-          return res.status(200).json({
-            message: "Login successful",
-            role: "client",
-            firstName: client.firstName,
-            lastName: client.lastName,
-            clientId: client.id,
-          });
-        }
+
+      if (adminResults.length > 0) {
+        return res
+          .status(200)
+          .json({ message: "Login successful", role: "admin" });
       }
-  
-      // If no match in client table, check admin table
-      const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
-      db.query(sqlAdmin, [username, password], (err, adminResults) => {
-        if (err) {
-          return res.status(500).json({ message: "An error occurred while checking the admin table" });
-        }
-  
-        if (adminResults.length > 0) {
-          return res.status(200).json({ message: "Login successful", role: "admin" });
-        }
-  
-        // If no match in both tables
-        return res.status(401).json({ message: "Invalid username or password" });
-      });
+
+      // If no match in both tables
+      return res.status(401).json({ message: "Invalid username or password" });
     });
   });
-  
+});
 
-app.post('/updatePassword', (req, res) => {
-    const { clientId, newPassword } = req.body;
+app.post("/updatePassword", (req, res) => {
+  const { clientId, newPassword } = req.body;
 
-    const sqlUpdate = `
+  const sqlUpdate = `
         UPDATE client 
         SET password = ?, passwordChanged = TRUE 
         WHERE id = ?
     `;
-    db.query(sqlUpdate, [newPassword, clientId], (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Error updating password' });
-        }
-        return res.status(200).json({ message: 'Password updated successfully' });
-    });
+  db.query(sqlUpdate, [newPassword, clientId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Error updating password" });
+    }
+    return res.status(200).json({ message: "Password updated successfully" });
+  });
 });
-
 
 // SendGrid email example
 const sgMail = require("@sendgrid/mail");
@@ -126,25 +130,113 @@ app.post("/send-email", (req, res) => {
 
 // Save payment details to the database
 app.post("/payments", (req, res) => {
-    const { transactionId, payerName, payerEmail, amount, currency, payedToEmail, clientId } = req.body;
-  
-    const query = `
+  const {
+    transactionId,
+    payerName,
+    payerEmail,
+    amount,
+    currency,
+    payedToEmail,
+    clientId,
+  } = req.body;
+
+  const query = `
       INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id) 
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
-  
-    db.query(
-      query,
-      [transactionId, payerName, payerEmail, amount, currency, payedToEmail, clientId],
-      (err, result) => {
-        if (err) {
-          console.error("Error saving payment:", err);
-          return res.status(500).send("Error saving payment.");
-        }
-        res.status(200).send("Payment saved successfully.");
+
+  db.query(
+    query,
+    [
+      transactionId,
+      payerName,
+      payerEmail,
+      amount,
+      currency,
+      payedToEmail,
+      clientId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error saving payment:", err);
+        return res.status(500).send("Error saving payment.");
       }
-    );
-  });  
+
+      // Save notification for the admin
+      const notificationQuery = `
+      INSERT INTO notifications (title, description, timestamp, isRead) 
+      VALUES (?, ?, ?, ?)
+    `;
+
+      const notificationTitle = "New Payment Received";
+      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
+      const timestamp = new Date();
+
+      db.query(
+        notificationQuery,
+        [notificationTitle, notificationDescription, timestamp, false],
+        (err, notificationResult) => {
+          if (err) {
+            console.error("Error creating notification:", err);
+            return res.status(500).send("Error saving notification.");
+          }
+
+          // Save client notification
+          const clientNotificationQuery = `
+            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
+            VALUES (?, ?, ?, NOW(), FALSE)
+          `;
+
+          const clientNotificationTitle = "Payment Received";
+          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
+
+          db.query(
+            clientNotificationQuery,
+            [clientId, clientNotificationTitle, clientNotificationDescription],
+            (err) => {
+              if (err) {
+                console.error("Error saving client notification:", err);
+                return res
+                  .status(500)
+                  .send("Error saving client notification.");
+              }
+
+              res
+                .status(200)
+                .send("Payment and client notification saved successfully.");
+            }
+          );
+        }
+      );
+    }
+  );
+});
+
+// Fetch all payments
+app.get("/payments", (req, res) => {
+  const query = "SELECT * FROM payments ORDER BY created_at DESC";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+// Fetch payments for a specific client
+app.get("/payments/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query =
+    "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
 
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
@@ -186,6 +278,43 @@ app.put("/notifications/:id", (req, res) => {
     }
   });
 });
+// Endpoint to get notifications for a specific client
+app.get("/notifications/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query = `
+    SELECT * FROM notifications 
+    WHERE client_id = ? 
+    ORDER BY timestamp DESC
+  `;
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching notifications for client:", err.stack);
+      res.status(500).send("Error fetching notifications");
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+// Endpoint to get client notifications
+app.get("/client-notifications/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query = `
+    SELECT * FROM client_notifications 
+    WHERE client_id = ? 
+    ORDER BY timestamp DESC
+  `;
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching client notifications:", err.stack);
+      res.status(500).send("Error fetching client notifications");
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
 
 // Add a new endpoint to save a client
 app.post("/client", (req, res) => {
@@ -222,21 +351,19 @@ app.post("/client", (req, res) => {
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
-      return res
-        .status(201)
-        .json({
-          id: result.insertId,
-          firstName,
-          lastName,
-          middleInitial,
-          birthday,
-          mobile_number,
-          email_add,
-          address,
-          username,
-          status,
-          companyName,
-        });
+      return res.status(201).json({
+        id: result.insertId,
+        firstName,
+        lastName,
+        middleInitial,
+        birthday,
+        mobile_number,
+        email_add,
+        address,
+        username,
+        status,
+        companyName,
+      });
     }
   );
 });
@@ -347,19 +474,17 @@ app.post("/employee", (req, res) => {
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
-      return res
-        .status(201)
-        .json({
-          id: result.insertId,
-          firstName,
-          lastName,
-          middleName,
-          address,
-          mobile_number,
-          email_add,
-          status,
-          birthday,
-        });
+      return res.status(201).json({
+        id: result.insertId,
+        firstName,
+        lastName,
+        middleName,
+        address,
+        mobile_number,
+        email_add,
+        status,
+        birthday,
+      });
     }
   );
 });
@@ -489,18 +614,16 @@ app.post("/projects", (req, res) => {
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
-      return res
-        .status(201)
-        .json({
-          id: result.insertId,
-          clientId,
-          clientName,
-          projectName,
-          description,
-          startDate,
-          endDate,
-          status,
-        });
+      return res.status(201).json({
+        id: result.insertId,
+        clientId,
+        clientName,
+        projectName,
+        description,
+        startDate,
+        endDate,
+        status,
+      });
     }
   );
 });
@@ -657,15 +780,32 @@ app.post("/appointments", (req, res) => {
         (notificationErr) => {
           if (notificationErr) {
             console.error("Error creating notification:", notificationErr);
-            return res
-              .status(500)
-              .json({
-                message: "Failed to create notification",
-                error: notificationErr,
-              });
+            return res.status(500).json({
+              message: "Failed to create notification",
+              error: notificationErr,
+            });
           }
 
-          // Schedule email reminder
+          // Save notification for the client
+          const clientNotificationQuery = `
+      INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
+      VALUES (?, ?, ?, NOW(), 0)
+      `;
+
+          const clientNotificationTitle = "Appointment Scheduled";
+          const clientNotificationDescription = `Your appointment on ${date} at ${time} has been confirmed.`;
+
+          db.query(
+            clientNotificationQuery,
+            [clientId, clientNotificationTitle, clientNotificationDescription],
+            (err, clientNotificationResult) => {
+              if (err) {
+                console.error("Error saving client notification:", err);
+                return res
+                  .status(500)
+                  .json({ message: "Failed to save client notification" });
+              }
+              // Schedule email reminder
           const jobId = `${appointmentId}-reminder`;
 
           scheduledTasks[jobId] = cron.schedule(
@@ -720,6 +860,8 @@ app.post("/appointments", (req, res) => {
               "Appointment saved successfully, notification created, and reminder scheduled",
             appointmentId: appointmentId,
           });
+            }
+          );
         }
       );
     }
