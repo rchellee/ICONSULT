@@ -11,6 +11,7 @@ const PostsTab = ({
   showTaskForm,
   handleCreateTask,
   handleCancelForm,
+  setTasks, // Assuming this is passed as a prop to update tasks
 }) => {
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
@@ -35,6 +36,11 @@ const PostsTab = ({
   const updateTaskWithMiscellaneous = (updatedTask) => {
     setSelectedTaskDetails(updatedTask); // Update the task details in the state
     setShowMiscellaneousForm(false); // Hide the form after updating
+    // Update tasks array to reflect the changes
+    const updatedTasks = tasks.map((task) =>
+      task.taskName === updatedTask.taskName ? updatedTask : task
+    );
+    setTasks(updatedTasks); // Assuming you have a setTasks function to update the tasks list
   };
 
   return (
@@ -61,7 +67,7 @@ const PostsTab = ({
         {selectedTaskName ? (
           <div className="task-details">
             <div className="task-detail-row">
-              <div><strong>Professional Fee</strong></div>
+              <div><strong>Task Name</strong></div>
               <div className="align-right amount-label"><strong>Amount</strong></div>
             </div>
             <div className="task-detail-row">
@@ -92,7 +98,7 @@ const PostsTab = ({
 
             {/* Total Row */}
             <div className="task-detail-row total-row">
-              <div><strong>Total Due</strong></div>
+              <div><strong>Total</strong></div>
               <div className="align-right">{calculateTotal(selectedTaskDetails)}</div>
             </div>
           </div>
@@ -111,7 +117,7 @@ const PostsTab = ({
                     <th>Employee</th>
                     <th>Status</th>
                     <th>Due Date</th>
-                    <th className="align-right">Amount</th> {/* Added column for total */}
+                    <th className="align-right">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -121,7 +127,7 @@ const PostsTab = ({
                       <td>{task.employee || "Unassigned"}</td>
                       <td>{task.status}</td>
                       <td>{task.dueDate}</td>
-                      <td className="align-right">{calculateTotal(task)}</td> {/* Display the total */}
+                      <td className="align-right">{calculateTotal(task)}</td>
                     </tr>
                   ))}
                 </tbody>

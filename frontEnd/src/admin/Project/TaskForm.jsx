@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
+import { TbXboxXFilled } from "react-icons/tb"; // Import the remove icon
+import { IoMdArrowDropdown } from "react-icons/io";
+import React, { useState } from "react";
+import { MdAddCircle } from "react-icons/md";
 import formStyles from "./FormStyle.module.css";
 
 const TaskForm = ({ onCreate, onCancel, existingTask }) => {
-  const [taskName, setTaskName] = useState(existingTask ? existingTask.taskName : ""); // Initialize with existing task values
-  const [taskFee, setTaskFee] = useState(existingTask ? existingTask.taskFee : ""); // Initialize with existing task fee
-  const [dueDate, setDueDate] = useState(existingTask ? existingTask.dueDate : ""); // Initialize with existing due date
-  const [employee, setEmployee] = useState(existingTask ? existingTask.employee : ""); // Initialize with existing employee
-  const [miscellaneousName, setMiscellaneousName] = useState(""); // State for miscellaneous name
-  const [miscellaneousFee, setMiscellaneousFee] = useState(""); // State for miscellaneous fee
-  const [miscellaneousList, setMiscellaneousList] = useState(existingTask ? existingTask.miscellaneous : []); // Maintain list of miscellaneous items
+  const [taskName, setTaskName] = useState(existingTask ? existingTask.taskName : "");
+  const [taskFee, setTaskFee] = useState(existingTask ? existingTask.taskFee : "");
+  const [dueDate, setDueDate] = useState(existingTask ? existingTask.dueDate : "");
+  const [employee, setEmployee] = useState(existingTask ? existingTask.employee : "");
+  const [miscellaneousName, setMiscellaneousName] = useState("");
+  const [miscellaneousFee, setMiscellaneousFee] = useState("");
+  const [miscellaneousList, setMiscellaneousList] = useState(existingTask ? existingTask.miscellaneous : []);
 
-  // Handle changes to Task Fee input (numeric validation)
   const handleTaskFeeChange = (e) => {
     const value = e.target.value;
     if (/[^0-9.]/.test(value)) {
@@ -20,7 +22,6 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
     }
   };
 
-  // Handle changes to Miscellaneous Fee input (numeric validation)
   const handleMiscellaneousFeeChange = (e) => {
     const value = e.target.value;
     if (/[^0-9.]/.test(value)) {
@@ -30,18 +31,22 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
     }
   };
 
-  // Handle adding a new miscellaneous item to the list
   const handleAddMiscellaneous = () => {
     if (miscellaneousName && miscellaneousFee) {
       setMiscellaneousList([
         ...miscellaneousList,
         { name: miscellaneousName, fee: miscellaneousFee },
       ]);
-      setMiscellaneousName(""); // Clear name input after adding
-      setMiscellaneousFee(""); // Clear fee input after adding
+      setMiscellaneousName("");
+      setMiscellaneousFee("");
     } else {
       alert("Please provide both a name and a fee for the miscellaneous item.");
     }
+  };
+
+  const handleRemoveMiscellaneous = (index) => {
+    const updatedList = miscellaneousList.filter((_, i) => i !== index);
+    setMiscellaneousList(updatedList);
   };
 
   const handleSubmit = (e) => {
@@ -51,20 +56,20 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
       taskFee,
       dueDate,
       employee,
-      miscellaneous: miscellaneousList, // Send the complete list of miscellaneous items
+      miscellaneous: miscellaneousList,
     };
-    onCreate(newTask); // Pass new task data to the parent component
-    // Reset form fields after submission
+    onCreate(newTask);
     setTaskName("");
     setTaskFee("");
     setDueDate("");
     setEmployee("");
-    setMiscellaneousList([]); // Clear miscellaneous list after submission
+    setMiscellaneousList([]);
   };
 
   return (
     <div className={formStyles.taskFormContainer}>
       <form className={formStyles.taskForm} onSubmit={handleSubmit}>
+        {/* Task Form Inputs */}
         <div className={formStyles.taskInputGroup}>
           <div className={formStyles.taskInput}>
             <label htmlFor="taskName">Task Name</label>
@@ -73,11 +78,10 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
               id="taskName"
               value={taskName}
               onChange={(e) => setTaskName(e.target.value)}
-              placeholder="Enter name"
+              placeholder="Untitled"
               required
             />
           </div>
-
           <div className={formStyles.taskFee}>
             <label htmlFor="taskFee">Task Fee</label>
             <input
@@ -86,11 +90,10 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
               id="taskFee"
               value={taskFee}
               onChange={handleTaskFeeChange}
-              placeholder="Enter Amount"
+              placeholder="₱"
               required
             />
           </div>
-
           <div className={formStyles.dueDate}>
             <label htmlFor="dueDate">Due Date</label>
             <input
@@ -103,19 +106,24 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
           </div>
         </div>
 
+        {/* Employee Dropdown */}
         <div className={formStyles.taskInputGroup}>
           <div className={formStyles.employee}>
             <label htmlFor="employee">Assign Employee</label>
-            <input
-              type="text"
-              id="employee"
-              value={employee}
-              onChange={(e) => setEmployee(e.target.value)}
-              placeholder="Choose Employee"
-            />
+            <div className={formStyles.employeeInputWrapper}>
+              <input
+                type="text"
+                id="employee"
+                value={employee}
+                onChange={(e) => setEmployee(e.target.value)}
+                placeholder="Choose"
+              />
+              <IoMdArrowDropdown className={formStyles.dropdownIcon} />
+            </div>
           </div>
         </div>
 
+        {/* Miscellaneous Items */}
         <div className={formStyles.taskInputGroup}>
           <div className={formStyles.miscellaneous}>
             <label htmlFor="miscellaneousName">Miscellaneous Name</label>
@@ -124,10 +132,9 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
               id="miscellaneousName"
               value={miscellaneousName}
               onChange={(e) => setMiscellaneousName(e.target.value)}
-              placeholder="Enter Miscellaneous Name"
+              placeholder="Untitled"
             />
           </div>
-
           <div className={formStyles.miscellaneousFee}>
             <label htmlFor="miscellaneousFee">Miscellaneous Fee</label>
             <input
@@ -136,27 +143,35 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
               id="miscellaneousFee"
               value={miscellaneousFee}
               onChange={handleMiscellaneousFeeChange}
-              placeholder="Enter Fee"
+              placeholder="₱"
             />
           </div>
-
           <button type="button" onClick={handleAddMiscellaneous} className={formStyles.addMiscellaneousButton}>
-            Add Miscellaneous
+            <MdAddCircle size={24} />
           </button>
         </div>
 
-        {/* Display the list of added miscellaneous items */}
+        {/* Display Miscellaneous Items List with Remove Icon */}
         {miscellaneousList.length > 0 && (
-          <div className={formStyles.miscellaneousList}>
-            <h4>Added Miscellaneous Items</h4>
-            <ul>
-              {miscellaneousList.map((item, index) => (
-                <li key={index}>{item.name}: {item.fee}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+  <div className={formStyles.scrollableMiscellaneousList}>
+    <h4>Miscellaneous Items</h4>
+    <ul>
+      {miscellaneousList.map((item, index) => (
+        <li key={index} className={formStyles.miscellaneousItem}>
+          {item.name}: ₱{item.fee}
+          <TbXboxXFilled
+            size={20}
+            className={formStyles.removeIcon}
+            onClick={() => handleRemoveMiscellaneous(index)}
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
 
+
+        {/* Submit & Cancel Buttons */}
         <div className={formStyles.buttonContainer}>
           <button type="submit" className={formStyles.createButton}>
             {existingTask ? "Update Task" : "Create Task"}

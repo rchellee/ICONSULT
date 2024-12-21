@@ -132,3 +132,105 @@
   justify-content: space-between; /* Space the buttons apart */
   margin-top: 15px; /* Add space above the buttons */
 }
+
+/* Wrapper to align the input and icon */
+.employeeInputWrapper {
+  position: relative;
+  width: 50%; /* Set the width of the input to 50% */
+}
+
+/* Style the input box to ensure there's space for the icon */
+.employeeInputWrapper input {
+  width: 100%; /* Make the input take up the full width of the wrapper */
+  padding-right: 30px; /* Add space on the right for the icon */
+  padding-left: 10px; /* Optional: space on the left for padding */
+}
+
+/* Style the dropdown icon to position it inside the input box */
+.dropdownIcon {
+  position: absolute;
+  right: 10px; /* Position the icon inside the input box */
+  top: 50%; /* Center the icon vertically */
+  transform: translateY(-50%); /* Adjust for perfect vertical alignment */
+  font-size: 1.2rem; /* Size of the dropdown icon */
+  color: #888; /* Icon color */
+  cursor: pointer; /* Make the icon clickable */
+}
+
+
+
+/* Container for the miscellaneous items list */
+.miscellaneousList {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: transparent/* Light background for the whole list */
+}
+
+.miscellaneousList h4 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.miscellaneousItem {
+  background-color: #eaf0f8; /* Light cyan background for each item */
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px; /* Rounded corners for the items */
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Hover effect for each item */
+.miscellaneousItem:hover {
+  background-color: #e7e8e9; /* Slightly darker background on hover */
+  cursor: pointer;
+}
+
+.removeIcon {
+  cursor: pointer;
+  color: red;
+  transition: color 0.3s;
+}
+
+.removeIcon:hover {
+  color: darkred;
+}
+
+/* Container for the miscellaneous items list, making it scrollable */
+
+
+.scrollableMiscellaneousList {
+  max-height: 200px; /* Adjust based on how much space you want to allocate */
+  overflow-y: auto; /* Enables vertical scrolling */
+  margin-top: 10px; /* Adds a bit of spacing above */
+  padding-right: 10px; /* Prevents content from hiding behind the scrollbar */
+}
+
+/* Style for the scrollbar track */
+.scrollableMiscellaneousList::-webkit-scrollbar {
+  width: 11px; /* Width of the vertical scrollbar */
+}
+
+/* Style for the scrollbar itself */
+.scrollableMiscellaneousList::-webkit-scrollbar-thumb {
+  background-color: #97c1f7; /* Scrollbar color */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+  border: 2px solid #fff; /* Optional: adds a border around the thumb */
+}
+
+/* Style for the scrollbar when hovered */
+.scrollableMiscellaneousList::-webkit-scrollbar-thumb:hover {
+  background-color: #aecffa; /* Darker shade when hovered */
+}
+
+/* Optional: Style for the scrollbar track (the empty area) */
+.scrollableMiscellaneousList::-webkit-scrollbar-track {
+  background-color: #f8f8f8; /* Light gray track */
+  border-radius: 10px;
+}
