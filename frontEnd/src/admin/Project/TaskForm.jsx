@@ -1,10 +1,10 @@
 import { TbXboxXFilled } from "react-icons/tb"; // Import the remove icon
 import { IoMdArrowDropdown } from "react-icons/io";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdAddCircle } from "react-icons/md";
 import formStyles from "./FormStyle.module.css";
 
-const TaskForm = ({ onCreate, onCancel, existingTask }) => {
+const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
   const [taskName, setTaskName] = useState(
     existingTask ? existingTask.taskName : ""
   );
@@ -17,11 +17,32 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
   const [employee, setEmployee] = useState(
     existingTask ? existingTask.employee : ""
   );
+  const [employeeList, setEmployeeList] = useState([]);
   const [miscellaneousName, setMiscellaneousName] = useState("");
   const [miscellaneousFee, setMiscellaneousFee] = useState("");
   const [miscellaneousList, setMiscellaneousList] = useState(
     existingTask ? existingTask.miscellaneous : []
   );
+
+  useEffect(() => {
+    console.log("Received projectId in TaskForm:", projectId);
+  }, [projectId]);
+  
+
+  useEffect(() => {
+    // Fetch employees when the component mounts
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/employees");
+        const data = await response.json();
+        setEmployeeList(data);
+      } catch (error) {
+        console.error("Error fetching employee list:", error);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
 
   const handleTaskFeeChange = (e) => {
     const value = e.target.value;
@@ -59,21 +80,49 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
     setMiscellaneousList(updatedList);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    console.log("Sending projectId:", projectId);
+
+    // Create a task object from the form values
     const newTask = {
       taskName,
       taskFee,
       dueDate,
       employee,
       miscellaneous: miscellaneousList,
+      projectId,
     };
-    onCreate(newTask);
-    setTaskName("");
-    setTaskFee("");
-    setDueDate("");
-    setEmployee("");
-    setMiscellaneousList([]);
+
+    try {
+      // Send a POST request to create the task
+      const response = await fetch("http://localhost:8081/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newTask),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Task created successfully", data);
+        // Optionally, call onCreate to update the UI or perform other actions
+        onCreate(newTask);
+
+        // Reset the form fields
+        setTaskName("");
+        setTaskFee("");
+        setDueDate("");
+        setEmployee("");
+        setMiscellaneousList([]);
+      } else {
+        console.error("Failed to create task");
+      }
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
   };
 
   return (
@@ -122,13 +171,21 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
             <div className={formStyles.employee}>
               <label htmlFor="employee">Assign Employee</label>
               <div className={formStyles.employeeInputWrapper}>
-                <input
-                  type="text"
+                <select
                   id="employee"
                   value={employee}
                   onChange={(e) => setEmployee(e.target.value)}
-                  placeholder="Choose"
-                />
+                  required
+                >
+                  <option value="" disabled>
+                    Choose an Employee
+                  </option>
+                  {employeeList.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.firstName} {emp.lastName}
+                    </option>
+                  ))}
+                </select>
                 <IoMdArrowDropdown className={formStyles.dropdownIcon} />
               </div>
             </div>

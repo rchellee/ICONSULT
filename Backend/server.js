@@ -163,7 +163,10 @@ app.post("/availability", (req, res) => {
         }
         res
           .status(200)
-          .json({ message: "Availability saved/updated successfully", data: result });
+          .json({
+            message: "Availability saved/updated successfully",
+            data: result,
+          });
       });
     })
     .catch((error) => {
@@ -197,8 +200,6 @@ app.delete("/availability/:date", (req, res) => {
     res.status(200).json({ message: "Availability deleted successfully" });
   });
 });
-
-
 
 // Save payment details to the database
 app.post("/payments", (req, res) => {
@@ -757,6 +758,58 @@ app.delete("/projects/:id", (req, res) => {
     } else {
       return res.status(404).json({ message: "Project not found" });
     }
+  });
+});
+
+// POST endpoint to create a new task
+app.post("/tasks", (req, res) => {
+  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+    req.body;
+
+    console.log("Received project_id:", projectId);
+
+  // SQL query to insert the task into the database
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, status, project_id)
+             VALUES (?, ?, ?, ?, ?, 'pending', ?)`;
+
+  db.query(
+    tasksSql,
+    [
+      taskName,
+      taskFee,
+      dueDate,
+      employee,
+      JSON.stringify(miscellaneous),
+      projectId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting task: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error creating task", error: err.message }); // Provide more detailed error message
+      }
+      res
+        .status(201)
+        .json({
+          message: "Task created successfully",
+          taskId: result.insertId,
+        });
+    }
+  );
+});
+// GET endpoint to retrieve all tasks
+app.get("/tasks", (req, res) => {
+  const sql = "SELECT * FROM tasks";
+
+  db.execute(sql, (err, tasks) => {
+    if (err) {
+      console.error("Error fetching tasks: ", err);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving tasks", error: err });
+    }
+    res.status(200).json({ tasks });
   });
 });
 

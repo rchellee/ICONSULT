@@ -10,7 +10,6 @@ import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
 import FormSelector from "./FormSelector"; // Add this import
 
-
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,12 +28,14 @@ const ProjectManagement = () => {
   const [description, setDescription] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState(null); // Track selected project
 
-
   // Fetch data on component mount
   useEffect(() => {
     fetch("http://localhost:8081/projects")
       .then((response) => response.json())
-      .then((data) => setProjects(data))
+      .then((data) => {
+        console.log(data); // Inspect the data structure
+        setProjects(data);
+      })
       .catch((error) => console.error("Error fetching projects:", error));
 
     fetch("http://localhost:8081/clients")
@@ -176,14 +177,14 @@ const ProjectManagement = () => {
   const filteredProjects = projects.filter((project) =>
     project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+
   // Render ProjectList or ProjectTask based on selectedProjectId
   const renderProjectContent = () => {
     if (selectedProjectId) {
       return (
-      <ProjectTask 
-        projectId={selectedProjectId} 
-        onBack={() => setSelectedProjectId(null)} 
+        <ProjectTask
+          projectId={selectedProjectId}
+          onBack={() => setSelectedProjectId(null)}
         />
       );
     }
@@ -200,7 +201,11 @@ const ProjectManagement = () => {
         toggleDropdown={toggleDropdown}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
-        onProjectClick={(projectId) => setSelectedProjectId(projectId)} // Set project ID when a project is clicked
+        onProjectClick={(projectId) => {
+          console.log("Clicked Project ID:", projectId);
+          setSelectedProjectId(projectId);
+        }}
+        // Set project ID when a project is clicked
       />
     );
   };
@@ -209,7 +214,7 @@ const ProjectManagement = () => {
     <div className="project-management-page">
       <Sidebar />
       <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
-      {/* project management txt */}
+        {/* project management txt */}
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> New
