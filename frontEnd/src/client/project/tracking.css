@@ -1,0 +1,435 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+/* Container for the whole page */
+.client-project-page {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.content {
+    margin-top: 80px; /* Adds space below the fixed tabs */
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Navigation buttons */
+.navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 20px; /* Space below the navigation */
+  font-size: 18px;
+  position: absolute;
+  top: 30px;
+}
+
+.navigation-buttons button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: rgb(53, 52, 52); /* Text color */
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.navigation-buttons svg {
+  font-size: 25px; /* Icon size */
+}
+
+.nav-button {
+  position: relative;
+}
+
+.nav-button:hover {
+  transform: scale(1.2); /* Slightly enlarge the icon */
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  top: 100%; /* Position below the button */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  font-size: 15px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.nav-button:hover .tooltip {
+  display: block;
+  cursor: pointer;
+}
+
+.home-and-search-container {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between the home icon and search box */
+  padding: 10px;
+  transition: margin-left 0.3s ease; /* Smooth adjustment when sidebar opens/closes */
+}
+
+/* Home Icon Container */
+.home-icon-container {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  margin-left: 540px;
+  top: 45px;
+}
+
+.home-icon {
+  color: rgb(58, 58, 58); /* Icon color */
+  font-size: 30px; /* Icon size */
+  transition: color 0.3s ease; /* Smooth hover effect */
+}
+
+.home-icon:hover{
+  transform: scale(1.1); /* Slightly enlarge the icon */
+  cursor: pointer;
+}
+
+/* Container for the search box */
+.search-box-container {
+  display: flex;
+  justify-content: flex-start; /* Align items to the left by default */
+  width: 100%; /* Ensure it spans full width */
+  margin: 20px 0; /* Add some margin at the top and bottom for spacing */
+  
+}
+
+/* Input field for the search box */
+.search-input {
+  position: absolute;
+  bottom: 30px;
+  left: 600px;
+  width: 250%; /* Make the input field take up more space */
+  max-width: 500px; /* Optional: increase max-width for larger screens */
+  height: 50px; /* Set the height of the search box */
+  padding: 15px; /* Padding inside the search box */
+  font-size: 15px; /* Larger text for better visibility */
+  border: 2px solid #3498db; /* Add a blue border to the search box */
+  border-radius: 10px; /* Optional: rounded corners */
+  outline: none; /* Remove the focus outline */
+  box-sizing: border-box; /* Ensures padding is part of the input box size */
+  background: #fff; /* White background for the search input */
+}
+
+.search-input:focus {
+  border-color: #7fbcf6; /* Change border color when focused */
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Optional: add a shadow when the input is focused */
+}
+
+/* Tabs section at the top */
+.tabs {
+  display: flex;
+  justify-content: flex-start; 
+  padding: 10px 20px;
+  gap: 20px;
+  margin-top: -20px; 
+  width: 100%; 
+  border-bottom: 1px solid #ddd; 
+  cursor: pointer;
+}
+
+/* Style for individual tab buttons */
+.tabs button {
+  padding: 10px 20px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #565656;
+}
+
+/* Active tab button style */
+.project-task-tabs button.active {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border-bottom: 3px solid #0078d4; /* Active tab border */
+  font-weight: bold;
+  padding-bottom: 8px; /* Increase padding to ensure space for the border */
+}
+
+
+/* Content area for Posts and Files */
+.content-area {
+    padding: 20px;
+}
+
+/* Posts and Files Section */
+.posts{
+    position: absolute;
+    top: 450px; 
+    display: flex;
+    flex-direction: column;
+}
+
+.files {
+  position: absolute;
+  top: 450px;
+  display: flex;
+  flex-direction: column;
+}
+
+.posts h2, .files h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #3c2e2e;
+}
+
+.posts p, .files p {
+    font-size: 16px;
+    color: #000000; 
+}
+
+
+/* File action buttons container */
+.file-actions {
+  display: flex;
+  gap: 20px; 
+  padding: 10px 20px; 
+  background-color: transparent; 
+  margin-left: 0; 
+  justify-content: flex-start; 
+  margin-top: -300px; 
+  margin-left: -20px;
+}
+
+
+  
+  /* Style for individual buttons */
+  .file-actions button {
+    padding: 10px 15px; 
+    font-size: 16px; 
+    font-weight: normal; 
+    background-color: transparent; 
+    border: none; 
+    cursor: pointer; 
+    transition: background-color 0.3s, color 0.3s; 
+    color: #333; 
+    text-align: center; 
+  }
+  
+  /* Button hover effect */
+  .file-actions button:hover {
+    color: #007bff; 
+  }
+  
+  /* Active button styles */
+  .file-actions button.active {
+    background-color: #f5f0f0; 
+    color: #0056b3; /
+  }
+
+
+/* Centering the form with larger size */
+.new-folder-input {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  z-index: 1000; /* Ensure it's on top of other elements */
+  animation: flash 1s ease-in-out; /* Flashing effect */
+  width: 60%; /* Increase the width */
+  max-width: 600px; /* Ensure the form doesn't get too wide */
+}
+
+/* Flashing effect */
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.new-folder-input h3 {
+  font-size: 24px; /* Increase heading size */
+  margin-bottom: 20px; /* Increase margin */
+  text-align: center;
+}
+
+.new-folder-input .input-group {
+  margin-bottom: 20px; /* Increase margin between elements */
+}
+
+.new-folder-input .input-group label {
+  display: block;
+  font-size: 16px; /* Increase font size */
+  margin-bottom: 10px; /* Increase margin */
+}
+
+.new-folder-input .input-group input {
+  width: 100%;
+  padding: 15px; /* Increase input padding */
+  font-size: 16px; /* Increase font size */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.new-folder-input .color-selection {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Add space between the color circles */
+  margin-bottom: 20px; /* Add margin between color selection and other inputs */
+}
+
+.new-folder-input .color-selection button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Make the buttons circular */
+  border: 2px solid #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.new-folder-input .color-selection button:hover {
+  transform: scale(1.1); /* Slightly enlarge the button on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.new-folder-input .color-selection button.pink {
+  background-color: pink;
+}
+
+.new-folder-input .color-selection button.blue {
+  background-color: lightblue;
+}
+
+.new-folder-input .color-selection button.yellow {
+  background-color: yellow;
+}
+
+.new-folder-input .color-selection button.orange {
+  background-color: orange;
+}
+
+.new-folder-input .color-selection button.violet {
+  background-color: violet;
+}
+
+.new-folder-input .color-selection button.green {
+  background-color: lightgreen;
+}
+
+.new-folder-input .button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Add gap between buttons */
+}
+
+.new-folder-input .button-group button {
+  padding: 15px 25px; /* Increase button padding */
+  font-size: 16px; /* Increase button font size */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 48%; /* Make buttons take up nearly half the form */
+}
+
+.new-folder-input .button-group button:first-child {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.new-folder-input .button-group button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+.new-folder-input .button-group button:hover {
+  opacity: 0.8;
+}
+
+.document-header {
+  margin-top: 20px;
+}
+
+/* Table style */
+.folder-table {
+  width: 100%;
+  border-collapse: collapse; /* Ensures borders collapse into a single line */
+  border: none; /* Removes the outer border of the table */
+}
+
+.folder-table th, .folder-table td {
+  padding: 20px 100px; /* Increased padding for more space between columns */
+  text-align: left;
+  border-bottom: transparent; /* Keeps only the horizontal borders */
+  border-top: none;
+}
+
+.folder-table.no-vertical-lines th, .folder-table.no-vertical-lines td {
+  border-left: none;  /* Remove vertical left borders */
+  border-right: none; /* Remove vertical right borders */
+}
+
+/* Optional: Even rows have a different background color 
+.folder-table tr:nth-child(even) {
+  background-color: #c7d7ee;
+}
+*/
+
+/* Styling for truncate */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 450px; /* Adjust width as needed */
+  display: inline-block; /* Necessary for text-overflow to work */
+}
+
+.truncate:hover {
+  overflow: visible;
+  white-space: normal; /* Allow text to wrap */
+  z-index: 1; /* Bring tooltip above other elements */
+}
+
+.icon-name {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adds space between the icon and the text */
+}
+
+.icon-name .icon {
+  /* Optionally add padding or margin if needed */
+  margin-right: 50px; /* Adjust the distance as per your needs */
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 450px; /* Adjust width as needed */
+  display: inline-block; /* Necessary for text-overflow to work */
+}
+
+.truncate:hover {
+  overflow: visible;
+  white-space: normal; /* Allow text to wrap */
+  z-index: 1; /* Bring tooltip above other elements */
+}

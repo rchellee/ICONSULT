@@ -54,7 +54,7 @@ const ProjectList = ({
             {formatDate(project.startDate)} - {formatDate(project.endDate)}
           </p>
           <p>{project.status}</p>
-          <div className="action-menu">
+          <div className="action-project">
             <button
               className="action-menu-button"
               onClick={() => toggleDropdown(project.id)}
