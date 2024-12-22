@@ -7,26 +7,28 @@ const ProjectFolders = ({ projects, onProjectClick }) => {
   return (
     <div className="project-names-section">
       <h3 className="folder-title">Folders</h3>
-      {projects.map((project) => (
-        <div
-          key={project.id}
-          className="project-name-item"
-          onMouseEnter={() => setHoveredProjectId(project.id)}
-          onMouseLeave={() => setHoveredProjectId(null)}
-        >
-          <p
-            className="truncate"
-            title={project.projectName}
-            onClick={() => onProjectClick(project.id)}
-            style={{
-              cursor: "pointer",
-              fontWeight: hoveredProjectId === project.id ? "bold" : "normal",
-            }}
+      <div className="folders-scroll-container">
+        {projects.map((project) => (
+          <div
+            key={project.id}
+            className="project-name-item"
+            onMouseEnter={() => setHoveredProjectId(project.id)}
+            onMouseLeave={() => setHoveredProjectId(null)}
           >
-            {project.projectName}
-          </p>
-        </div>
-      ))}
+            <p
+              className="truncate"
+              title={project.projectName}
+              onClick={() => onProjectClick(project.id)}
+              style={{
+                cursor: "pointer",
+                fontWeight: hoveredProjectId === project.id ? "bold" : "normal",
+              }}
+            >
+              {project.projectName}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

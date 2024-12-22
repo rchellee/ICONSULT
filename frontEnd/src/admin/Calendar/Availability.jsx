@@ -191,6 +191,7 @@ const Availability = () => {
           <AvailableCalendar
             availableDates={{ ...existingDates }}
             onDateSelect={handleDateSelect}
+            selectedDates={formData.dates}
           />
           {/* Display Selected Dates */}
           <Box

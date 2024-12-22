@@ -82,6 +82,7 @@ h1 {
     justify-content: center; 
     align-items: center; 
     z-index: 1000;
+    overflow: hidden;
 }
 
 .modal-content {
@@ -90,6 +91,7 @@ h1 {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
     width: 400px; 
+    overflow: hidden;
 }
 
 .modal-title {
@@ -159,6 +161,7 @@ ct-list-header h3:nth-child(3) { /* Client */
     margin: -50px 0 0 0; /* Remove centering and move the table to the left */
     border-collapse: collapse; /* Ensures borders are collapsed */
     margin-left: 300px;
+    overflow: hidden;
     
 }
 
@@ -171,12 +174,12 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 .project-list-header h3,
 .project-item p {
-    display: table-cell; /* Ensures they behave like table cells */
-    padding: 15px; /* Adds padding inside cells */
-    border: 1px solid #ccc; /* Adds border for better visibility */
-    overflow: hidden; /* Ensures text doesn't overflow */
-    text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
-    white-space: nowrap; /* Prevents wrapping of text */
+    display: table-cell; 
+    padding: 15px; 
+    border: 1px solid #ccc; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
 }
 
 /* Customize widths for columns with truncation */
@@ -218,11 +221,11 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 /* Container for Sort, Details, and Search */
 .sort-button-container {
-    display: flex; /* Use flex layout to align items side by side */
-    align-items: center; /* Center items vertically */
-    gap: 10px; /* Add space between elements */
-    margin-bottom: 50px; /* Adds space below the container */
-    justify-content: flex-start; /* Aligns buttons to the left */
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 50px; 
+    justify-content: flex-start; 
     margin-left: 1px;
 }
 
@@ -254,42 +257,86 @@ ct-list-header h3:nth-child(3) { /* Client */
     background-color: #51d1eb;
 }
 
-/* Search box styling */
+
 .search-box-container {
-    flex-grow: 1; /* Allows the search box to take up remaining space */
-    max-width: 400px; /* Optional: Limit max width */
-    margin-left: 805px;
-}
-
-.search-box {
-    width: 200%;
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
-
+    display: flex;
+    justify-content: flex-start; 
+    width: 100%; 
+    margin: 20px 0; 
+    
+  }
+  
+  /* Input field for the search box */
+  .search-box {
+    position: absolute;
+    bottom: 30px;
+    left: 600px;
+    width: 250%;
+    max-width: 500px; 
+    height: 50px;
+    padding: 15px; 
+    font-size: 15px; 
+    border: 2px solid #3498db;
+    border-radius: 10px; 
+    outline: none;
+    box-sizing: border-box; 
+    background: #fff; 
+  }
+  
+  .search-box:focus {
+    border-color: #7fbcf6; 
+    box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); 
+  }
 
 /* LEFT SIDE PROJECT NAMES */
+
+/* Folder Title */
 .folder-title {
     font-size: 20px; /* Make Folder title slightly larger */
     font-weight: bold;
-    margin-bottom: -20px; /* Adjust space after the title */
-    position: relative; /* Allows control of its position */
-    top: -40px; /* Adjust this to move the title down or up */
-    left: 0; /* Adjust this to move the title horizontally if needed */
-    /* You can add other positioning properties like `right`, `bottom` here if necessary */
+    margin-bottom: 10px; /* Adjust space after the title */
+    position: relative;
+    top: 5px; /* Keep the folder title at the top */
 }
 
+/* Project Folders Section */
 .project-names-section {
     margin-top: 30px;
     padding: 15px;
     position: absolute;
     margin-left: 10px;
-    margin-top: 230px;
+    margin-top: 100px;
+    width: 250px; /* Adjust the width as needed */
 }
 
+/* Scroll Container for Folders */
+.folders-scroll-container {
+    max-height: 550px; /* Set the max height of the scrollable area */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
+    position: relative;
+}
+
+/* Shift the scrollbar to the right */
+.folders-scroll-container::-webkit-scrollbar {
+    width: 12px; /* Adjust scrollbar width */
+}
+
+.folders-scroll-container::-webkit-scrollbar-track {
+    background: #b4bad5;/* Optional: Make track transparent */
+}
+
+.folders-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #547099; /* Color of the scrollbar */
+    border-radius: 10px; /* Rounded edges for the scrollbar */
+}
+
+/* Move the scrollbar to the right by adding margin */
+.folders-scroll-container::-webkit-scrollbar {
+    margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
+}
+
+/* Individual Folder Item */
 .project-name-item {
     padding: 12px;
     transition: background-color 0.3s;
@@ -298,23 +345,18 @@ ct-list-header h3:nth-child(3) { /* Client */
     position: relative;
 }
 
+/* Hover Effect */
 .project-name-item:hover {
-    background-color: #b0f0f8;
+    background-color: #d2cfcfc7; ;
 }
 
+/* No Border for Last Folder */
 .project-name-item:last-child {
     border-bottom: none;
 }
 
-.project-name-item::before {
-    content: '> ';
-    color: #333;
-    font-weight: bold;
-    margin-right: 5px;
-}
-
+/* Additional Styling for Folder Search Box (if needed) */
 .search-box-container {
-    position: absolute; /* Keeps the sort button inline */  
-
+    position: absolute;
+    /* Keeps the sort button inline */
 }
-

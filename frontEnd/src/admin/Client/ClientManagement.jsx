@@ -9,9 +9,8 @@ const ClientManagement = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
   const [activeClients, setActiveClients] = useState({});
-  const [toastVisible, setToastVisible] = useState(false); // State to manage toast visibility
-  
-  
+  const [toastVisible, setToastVisible] = useState(false);
+
   // Fetch clients from the database when the component mounts
   useEffect(() => {
     const fetchClients = async () => {
@@ -54,7 +53,6 @@ const ClientManagement = () => {
     );
   };
 
-  // Function to update client status in the database
   const updateStatusInDatabase = async (clientId, newStatus) => {
     try {
       const response = await fetch(
@@ -78,7 +76,6 @@ const ClientManagement = () => {
     }
   };
 
-  // Handle toggle click for each client
   const handleToggle = async (clientId) => {
     const newActiveState = !activeClients[clientId];
     setActiveClients({
@@ -86,11 +83,8 @@ const ClientManagement = () => {
       [clientId]: newActiveState,
     });
 
-    // Update client status in the state
     const newStatus = newActiveState ? "active" : "inactive";
     updateClientStatus(clientId, newStatus);
-
-    // Update client status in the database
     await updateStatusInDatabase(clientId, newStatus);
   };
 
@@ -99,12 +93,21 @@ const ClientManagement = () => {
     setTimeout(() => setToastVisible(false), 5000); // Hide the toast after 5 seconds
   };
 
+  // Hash function to generate consistent colors based on client ID or name
+  const generateColor = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `#${((hash >> 24) & 0xff).toString(16)}${((hash >> 16) & 0xff)
+      .toString(16)}${((hash >> 8) & 0xff).toString(16)}`.slice(0, 7);
+    return color.length === 7 ? color : "#007bff"; // Default color if hash fails
+  };
+
   return (
     <div className="admin-home-page">
       <Sidebar />
       <div className="content">
-
-        <h2>Clients</h2>
         {selectedClient ? (
           <ClientDetails
             client={selectedClient}
@@ -121,7 +124,7 @@ const ClientManagement = () => {
                 clients={clients}
                 setClients={setClients}
                 toggleForm={toggleForm}
-                showToast={showToast} // Pass showToast function to ClientForm
+                showToast={showToast}
               />
             )}
             {!isFormVisible && (
@@ -132,29 +135,45 @@ const ClientManagement = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Name</th> {/* New Column for Client's Full Name */}
-                        <th>Company</th> {/* New Column for Client's Company Name */}
+                        <th></th> {/* Column for Client's Initials */}
+                        <th>Name</th> {/* Client's Full Name */}
+                        <th>Company</th> {/* Client's Company */}
                         <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {clients.map((client, index) => (
-                        <tr key={index}>
-                          <td
-                            onClick={() => viewClientDetails(client)}
-                            style={{ cursor: "pointer", color: "black" }}
-                          >
-                            {`${client.firstName} ${client.lastName}`.toUpperCase()} {/* Full Name */}
-                          </td>
-                          <td>{client.companyName}</td>
-                          <td>
-                            <div
-                              className={`toggle ${activeClients[client.id] ? "active" : ""}`}
-                              onClick={() => handleToggle(client.id)}
-                            ></div>
-                          </td>
-                        </tr>
-                      ))}
+                      {clients.map((client, index) => {
+                        const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase(); // Generate initials
+                        const color = generateColor(client.id + client.firstName + client.lastName); // Generate consistent color
+
+                        return (
+                          <tr key={index}>
+                            <td className="initials-cell">
+                              <div
+                                className="initials-circle"
+                                style={{ backgroundColor: color }}
+                              >
+                                {initials}
+                              </div>
+                            </td>
+                            <td
+                              onClick={() => viewClientDetails(client)}
+                              style={{ cursor: "pointer", color: "black" }}
+                            >
+                              {`${client.firstName} ${client.lastName}`.toUpperCase()}
+                            </td>
+                            <td>{client.companyName}</td>
+                            <td>
+                              <div
+                                className={`toggle ${
+                                  activeClients[client.id] ? "active" : ""
+                                }`}
+                                onClick={() => handleToggle(client.id)}
+                              ></div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 )}
@@ -163,7 +182,6 @@ const ClientManagement = () => {
           </>
         )}
 
-        {/* Toast Notification */}
         {toastVisible && (
           <div className="toast active">
             <div className="toast-content">
@@ -173,7 +191,10 @@ const ClientManagement = () => {
                 <span className="text text-2">Your client has been added.</span>
               </div>
             </div>
-            <i className="fa-solid fa-xmark close" onClick={() => setToastVisible(false)}></i>
+            <i
+              className="fa-solid fa-xmark close"
+              onClick={() => setToastVisible(false)}
+            ></i>
             <div className="progress active"></div>
           </div>
         )}

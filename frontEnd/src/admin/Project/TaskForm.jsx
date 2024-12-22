@@ -1,55 +1,186 @@
-// TaskForm.jsx
-import { useState } from "react";
+import { TbXboxXFilled } from "react-icons/tb"; // Import the remove icon
+import { IoMdArrowDropdown } from "react-icons/io";
+import React, { useState } from "react";
+import { MdAddCircle } from "react-icons/md";
+import formStyles from "./FormStyle.module.css";
 
-const TaskForm = ({ onClose, onSave }) => {
-  const [taskName, setTaskName] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
+const TaskForm = ({ onCreate, onCancel, existingTask }) => {
+  const [taskName, setTaskName] = useState(existingTask ? existingTask.taskName : "");
+  const [taskFee, setTaskFee] = useState(existingTask ? existingTask.taskFee : "");
+  const [dueDate, setDueDate] = useState(existingTask ? existingTask.dueDate : "");
+  const [employee, setEmployee] = useState(existingTask ? existingTask.employee : "");
+  const [miscellaneousName, setMiscellaneousName] = useState("");
+  const [miscellaneousFee, setMiscellaneousFee] = useState("");
+  const [miscellaneousList, setMiscellaneousList] = useState(existingTask ? existingTask.miscellaneous : []);
 
-  const handleSave = () => {
-    const newTask = { taskName, description, dueDate };
-    onSave(newTask);
-    onClose(); // Close modal after saving
+  const handleTaskFeeChange = (e) => {
+    const value = e.target.value;
+    if (/[^0-9.]/.test(value)) {
+      alert("Please enter a valid number for the Task Fee.");
+    } else {
+      setTaskFee(value);
+    }
+  };
+
+  const handleMiscellaneousFeeChange = (e) => {
+    const value = e.target.value;
+    if (/[^0-9.]/.test(value)) {
+      alert("Please enter a valid number for the Miscellaneous Fee.");
+    } else {
+      setMiscellaneousFee(value);
+    }
+  };
+
+  const handleAddMiscellaneous = () => {
+    if (miscellaneousName && miscellaneousFee) {
+      setMiscellaneousList([
+        ...miscellaneousList,
+        { name: miscellaneousName, fee: miscellaneousFee },
+      ]);
+      setMiscellaneousName("");
+      setMiscellaneousFee("");
+    } else {
+      alert("Please provide both a name and a fee for the miscellaneous item.");
+    }
+  };
+
+  const handleRemoveMiscellaneous = (index) => {
+    const updatedList = miscellaneousList.filter((_, i) => i !== index);
+    setMiscellaneousList(updatedList);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newTask = {
+      taskName,
+      taskFee,
+      dueDate,
+      employee,
+      miscellaneous: miscellaneousList,
+    };
+    onCreate(newTask);
+    setTaskName("");
+    setTaskFee("");
+    setDueDate("");
+    setEmployee("");
+    setMiscellaneousList([]);
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Create New Task</h2>
-        <div className="modal-field">
-          <label>Task Name:</label>
-          <input
-            type="text"
-            placeholder="Enter task name"
-            value={taskName}
-            onChange={(e) => setTaskName(e.target.value)}
-          />
+    <div className={formStyles.taskFormContainer}>
+      <form className={formStyles.taskForm} onSubmit={handleSubmit}>
+        {/* Task Form Inputs */}
+        <div className={formStyles.taskInputGroup}>
+          <div className={formStyles.taskInput}>
+            <label htmlFor="taskName">Task Name</label>
+            <input
+              type="text"
+              id="taskName"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+              placeholder="Untitled"
+              required
+            />
+          </div>
+          <div className={formStyles.taskFee}>
+            <label htmlFor="taskFee">Task Fee</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              id="taskFee"
+              value={taskFee}
+              onChange={handleTaskFeeChange}
+              placeholder="₱"
+              required
+            />
+          </div>
+          <div className={formStyles.dueDate}>
+            <label htmlFor="dueDate">Due Date</label>
+            <input
+              type="date"
+              id="dueDate"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              required
+            />
+          </div>
         </div>
-        <div className="modal-field">
-          <label>Description:</label>
-          <textarea
-            placeholder="Enter task description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+
+        {/* Employee Dropdown */}
+        <div className={formStyles.taskInputGroup}>
+          <div className={formStyles.employee}>
+            <label htmlFor="employee">Assign Employee</label>
+            <div className={formStyles.employeeInputWrapper}>
+              <input
+                type="text"
+                id="employee"
+                value={employee}
+                onChange={(e) => setEmployee(e.target.value)}
+                placeholder="Choose"
+              />
+              <IoMdArrowDropdown className={formStyles.dropdownIcon} />
+            </div>
+          </div>
         </div>
-        <div className="modal-field">
-          <label>Due Date:</label>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
+
+        {/* Miscellaneous Items */}
+        <div className={formStyles.taskInputGroup}>
+          <div className={formStyles.miscellaneous}>
+            <label htmlFor="miscellaneousName">Miscellaneous Name</label>
+            <input
+              type="text"
+              id="miscellaneousName"
+              value={miscellaneousName}
+              onChange={(e) => setMiscellaneousName(e.target.value)}
+              placeholder="Untitled"
+            />
+          </div>
+          <div className={formStyles.miscellaneousFee}>
+            <label htmlFor="miscellaneousFee">Miscellaneous Fee</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              id="miscellaneousFee"
+              value={miscellaneousFee}
+              onChange={handleMiscellaneousFeeChange}
+              placeholder="₱"
+            />
+          </div>
+          <button type="button" onClick={handleAddMiscellaneous} className={formStyles.addMiscellaneousButton}>
+            <MdAddCircle size={24} />
+          </button>
         </div>
-        <div className="modal-actions">
-          <button className="cancel-button" onClick={onClose}>
+
+        {/* Display Miscellaneous Items List with Remove Icon */}
+        {miscellaneousList.length > 0 && (
+  <div className={formStyles.scrollableMiscellaneousList}>
+    <h4>Miscellaneous Items</h4>
+    <ul>
+      {miscellaneousList.map((item, index) => (
+        <li key={index} className={formStyles.miscellaneousItem}>
+          {item.name}: ₱{item.fee}
+          <TbXboxXFilled
+            size={20}
+            className={formStyles.removeIcon}
+            onClick={() => handleRemoveMiscellaneous(index)}
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
+
+        {/* Submit & Cancel Buttons */}
+        <div className={formStyles.buttonContainer}>
+          <button type="submit" className={formStyles.createButton}>
+            {existingTask ? "Update Task" : "Create Task"}
+          </button>
+          <button type="button" className={formStyles.cancelButton} onClick={onCancel}>
             Cancel
           </button>
-          <button className="save-button" onClick={handleSave}>
-            Save Task
-          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };
