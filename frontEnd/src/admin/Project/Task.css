@@ -6,6 +6,10 @@
   margin-left: 50px;
 }
 
+.project-task-container {
+  height: 100vh;
+}
+
 
 /* Scope styles specifically for the Create button */
 .create-button-container {

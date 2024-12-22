@@ -8,7 +8,6 @@ import ClientManagement from './admin/Client/ClientManagement.jsx';
 import EmployeeManagement from './admin/Employee/EmployeeManagement.jsx';
 import AppointmentForm from './client/Appointment/AppointmentForm.jsx';
 import Project from './client/project/Project.jsx';
-<<<<<<< HEAD
 import DateofAppointments from './admin/Calendar/fullcalendar.jsx';
 import Consultation from './client/Consultation/Consultation.jsx';
 import AccountSettings from "./client/AccountSettings/AccountSettings.jsx";
@@ -20,12 +19,10 @@ import ChangePassword from "./Login/ChangePassword.jsx";
 import Transactions from './admin/Transaction/transactions.jsx';
 import Transaction from './client/Transactions/transaction.jsx'
 import ClientNotification from './client/Notification/ClientNotification.jsx'
-=======
 import Tracking from './client/project/tracking.jsx';
 import ProjectTask from './admin/Project/ProjectTask.jsx';
 
 
->>>>>>> bautista
 
 // for google icons
 const link = document.createElement('link');
@@ -48,7 +45,6 @@ function App() {
         <Route path="/employee" element={<EmployeeManagement />} />
         <Route path="/appointments/new" element={<AppointmentForm />} />
         <Route path="/clientproject" element={<Project />} />
-<<<<<<< HEAD
         <Route path="/calendar" element={<DateofAppointments />} />
         <Route path="/consultations" element={<Consultation />} />
         <Route path="/account-settings" element={<AccountSettings />} />  
@@ -61,10 +57,8 @@ function App() {
         <Route path="/transact" element={<Transaction />} />
         <Route path="/client-notif" element={<ClientNotification />} />
 
-=======
         <Route path="/tracking" element={<Tracking />} />
         <Route path="/projecttask" element={<ProjectTask />} />
->>>>>>> bautista
       </Routes>
     </Router>
   );

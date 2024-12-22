@@ -5,13 +5,23 @@ import { MdAddCircle } from "react-icons/md";
 import formStyles from "./FormStyle.module.css";
 
 const TaskForm = ({ onCreate, onCancel, existingTask }) => {
-  const [taskName, setTaskName] = useState(existingTask ? existingTask.taskName : "");
-  const [taskFee, setTaskFee] = useState(existingTask ? existingTask.taskFee : "");
-  const [dueDate, setDueDate] = useState(existingTask ? existingTask.dueDate : "");
-  const [employee, setEmployee] = useState(existingTask ? existingTask.employee : "");
+  const [taskName, setTaskName] = useState(
+    existingTask ? existingTask.taskName : ""
+  );
+  const [taskFee, setTaskFee] = useState(
+    existingTask ? existingTask.taskFee : ""
+  );
+  const [dueDate, setDueDate] = useState(
+    existingTask ? existingTask.dueDate : ""
+  );
+  const [employee, setEmployee] = useState(
+    existingTask ? existingTask.employee : ""
+  );
   const [miscellaneousName, setMiscellaneousName] = useState("");
   const [miscellaneousFee, setMiscellaneousFee] = useState("");
-  const [miscellaneousList, setMiscellaneousList] = useState(existingTask ? existingTask.miscellaneous : []);
+  const [miscellaneousList, setMiscellaneousList] = useState(
+    existingTask ? existingTask.miscellaneous : []
+  );
 
   const handleTaskFeeChange = (e) => {
     const value = e.target.value;
@@ -67,120 +77,129 @@ const TaskForm = ({ onCreate, onCancel, existingTask }) => {
   };
 
   return (
-    <div className={formStyles.taskFormContainer}>
-      <form className={formStyles.taskForm} onSubmit={handleSubmit}>
-        {/* Task Form Inputs */}
-        <div className={formStyles.taskInputGroup}>
-          <div className={formStyles.taskInput}>
-            <label htmlFor="taskName">Task Name</label>
-            <input
-              type="text"
-              id="taskName"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              placeholder="Untitled"
-              required
-            />
-          </div>
-          <div className={formStyles.taskFee}>
-            <label htmlFor="taskFee">Task Fee</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              id="taskFee"
-              value={taskFee}
-              onChange={handleTaskFeeChange}
-              placeholder="₱"
-              required
-            />
-          </div>
-          <div className={formStyles.dueDate}>
-            <label htmlFor="dueDate">Due Date</label>
-            <input
-              type="date"
-              id="dueDate"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              required
-            />
-          </div>
-        </div>
-
-        {/* Employee Dropdown */}
-        <div className={formStyles.taskInputGroup}>
-          <div className={formStyles.employee}>
-            <label htmlFor="employee">Assign Employee</label>
-            <div className={formStyles.employeeInputWrapper}>
+    <div className="project-form">
+      <div className={formStyles.taskFormContainer}>
+        <form className={formStyles.taskForm} onSubmit={handleSubmit}>
+          {/* Task Form Inputs */}
+          <div className={formStyles.taskInputGroup}>
+            <div className={formStyles.taskInput}>
+              <label htmlFor="taskName">Task Name</label>
               <input
                 type="text"
-                id="employee"
-                value={employee}
-                onChange={(e) => setEmployee(e.target.value)}
-                placeholder="Choose"
+                id="taskName"
+                value={taskName}
+                onChange={(e) => setTaskName(e.target.value)}
+                placeholder="Untitled"
+                required
               />
-              <IoMdArrowDropdown className={formStyles.dropdownIcon} />
+            </div>
+            <div className={formStyles.taskFee}>
+              <label htmlFor="taskFee">Task Fee</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                id="taskFee"
+                value={taskFee}
+                onChange={handleTaskFeeChange}
+                placeholder="₱"
+                required
+              />
+            </div>
+            <div className={formStyles.dueDate}>
+              <label htmlFor="dueDate">Due Date</label>
+              <input
+                type="date"
+                id="dueDate"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
             </div>
           </div>
-        </div>
 
-        {/* Miscellaneous Items */}
-        <div className={formStyles.taskInputGroup}>
-          <div className={formStyles.miscellaneous}>
-            <label htmlFor="miscellaneousName">Miscellaneous Name</label>
-            <input
-              type="text"
-              id="miscellaneousName"
-              value={miscellaneousName}
-              onChange={(e) => setMiscellaneousName(e.target.value)}
-              placeholder="Untitled"
-            />
+          {/* Employee Dropdown */}
+          <div className={formStyles.taskInputGroup}>
+            <div className={formStyles.employee}>
+              <label htmlFor="employee">Assign Employee</label>
+              <div className={formStyles.employeeInputWrapper}>
+                <input
+                  type="text"
+                  id="employee"
+                  value={employee}
+                  onChange={(e) => setEmployee(e.target.value)}
+                  placeholder="Choose"
+                />
+                <IoMdArrowDropdown className={formStyles.dropdownIcon} />
+              </div>
+            </div>
           </div>
-          <div className={formStyles.miscellaneousFee}>
-            <label htmlFor="miscellaneousFee">Miscellaneous Fee</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              id="miscellaneousFee"
-              value={miscellaneousFee}
-              onChange={handleMiscellaneousFeeChange}
-              placeholder="₱"
-            />
+
+          {/* Miscellaneous Items */}
+          <div className={formStyles.taskInputGroup}>
+            <div className={formStyles.miscellaneous}>
+              <label htmlFor="miscellaneousName">Miscellaneous Name</label>
+              <input
+                type="text"
+                id="miscellaneousName"
+                value={miscellaneousName}
+                onChange={(e) => setMiscellaneousName(e.target.value)}
+                placeholder="Untitled"
+              />
+            </div>
+            <div className={formStyles.miscellaneousFee}>
+              <label htmlFor="miscellaneousFee">Miscellaneous Fee</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                id="miscellaneousFee"
+                value={miscellaneousFee}
+                onChange={handleMiscellaneousFeeChange}
+                placeholder="₱"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleAddMiscellaneous}
+              className={formStyles.addMiscellaneousButton}
+            >
+              <MdAddCircle size={24} />
+            </button>
           </div>
-          <button type="button" onClick={handleAddMiscellaneous} className={formStyles.addMiscellaneousButton}>
-            <MdAddCircle size={24} />
-          </button>
-        </div>
 
-        {/* Display Miscellaneous Items List with Remove Icon */}
-        {miscellaneousList.length > 0 && (
-  <div className={formStyles.scrollableMiscellaneousList}>
-    <h4>Miscellaneous Items</h4>
-    <ul>
-      {miscellaneousList.map((item, index) => (
-        <li key={index} className={formStyles.miscellaneousItem}>
-          {item.name}: ₱{item.fee}
-          <TbXboxXFilled
-            size={20}
-            className={formStyles.removeIcon}
-            onClick={() => handleRemoveMiscellaneous(index)}
-          />
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+          {/* Display Miscellaneous Items List with Remove Icon */}
+          {miscellaneousList.length > 0 && (
+            <div className={formStyles.scrollableMiscellaneousList}>
+              <h4>Miscellaneous Items</h4>
+              <ul>
+                {miscellaneousList.map((item, index) => (
+                  <li key={index} className={formStyles.miscellaneousItem}>
+                    {item.name}: ₱{item.fee}
+                    <TbXboxXFilled
+                      size={20}
+                      className={formStyles.removeIcon}
+                      onClick={() => handleRemoveMiscellaneous(index)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-
-        {/* Submit & Cancel Buttons */}
-        <div className={formStyles.buttonContainer}>
-          <button type="submit" className={formStyles.createButton}>
-            {existingTask ? "Update Task" : "Create Task"}
-          </button>
-          <button type="button" className={formStyles.cancelButton} onClick={onCancel}>
-            Cancel
-          </button>
-        </div>
-      </form>
+          {/* Submit & Cancel Buttons */}
+          <div className={formStyles.buttonContainer}>
+            <button type="submit" className={formStyles.createButton}>
+              {existingTask ? "Update Task" : "Create Task"}
+            </button>
+            <button
+              type="button"
+              className={formStyles.cancelButton}
+              onClick={onCancel}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

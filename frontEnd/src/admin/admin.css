@@ -25,7 +25,6 @@ body {
   border-radius: 50%;
 }
 
-<<<<<<< HEAD
 /* Sidebar Container */
 .sidebar {
   position: fixed;
@@ -39,17 +38,6 @@ body {
   padding: 15px 10px;
   border-right: 1px solid #d1d1d1;
   transition: width 0.3s ease;
-=======
-/* Admin text hidden initially */
-.sidebar .sidebar-header h2 {
-  color: rgb(216, 230, 236);
-  font-size: 1.25rem;
-  font-weight: 600;
-  white-space: nowrap;
-  margin-left: 23px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
->>>>>>> bautista
 }
 
 

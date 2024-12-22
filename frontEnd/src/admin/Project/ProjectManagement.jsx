@@ -32,37 +32,6 @@ const ProjectManagement = () => {
 
   // Fetch data on component mount
   useEffect(() => {
-<<<<<<< HEAD
-    const handleClickOutside = (event) => {
-      // Check if the click is outside the task button
-      if (
-        taskButtonRef.current &&
-        !taskButtonRef.current.contains(event.target)
-      ) {
-        setSelectedProjectId(null); // Deselect project if clicked outside
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const saveTaskToLocalStorage = (newTask) => {
-    const updatedTasks = [
-      ...tasks,
-      { ...newTask, projectId: selectedProjectId },
-    ];
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-  };
-
-  // useEffect for fetching projects from the server
-  useEffect(() => {
-    //fetch projects
-=======
->>>>>>> bautista
     fetch("http://localhost:8081/projects")
       .then((response) => response.json())
       .then((data) => setProjects(data))
@@ -250,11 +219,7 @@ const ProjectManagement = () => {
           <ProjectForm
             projectName={projectName}
             setProjectName={setProjectName}
-<<<<<<< HEAD
-            clientId={clientId} // Pass this prop
-=======
             clientId={clientId}
->>>>>>> bautista
             setClientId={setClientId}
             clientName={clientName}
             setClientName={setClientName}
@@ -270,26 +235,6 @@ const ProjectManagement = () => {
             editingProjectId={editingProjectId}
           />
         )}
-<<<<<<< HEAD
-        {/* naka display dapat sa rightside */}
-        {selectedProjectId && (
-          <div className="add-task-button" ref={taskButtonRef}>
-            <button onClick={openTaskForm}>
-              <FaPlus className="icon" /> Task
-            </button>
-          </div>
-        )}
-        {isTaskFormOpen && (
-          <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
-        )}
-
-        {selectedTask && (
-          <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
-        )}
-
-        {/* Search and Sort */}
-=======
->>>>>>> bautista
         <div className="search-box-container">
           <input
             type="text"
@@ -309,11 +254,7 @@ const ProjectManagement = () => {
         {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
-<<<<<<< HEAD
-            onProjectClick={handleProjectClick}
-=======
             onProjectClick={(projectId) => setSelectedProjectId(projectId)}
->>>>>>> bautista
           />
         )}
       </div>
