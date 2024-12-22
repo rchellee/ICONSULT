@@ -15,11 +15,11 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import Sidebar from "../sidebar";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
-import "./calendar.css"; // Import the CSS file
+import "./calendar.css";
 
 const Calendar = () => {
   const theme = useTheme();
