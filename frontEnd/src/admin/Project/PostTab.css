@@ -1,10 +1,9 @@
-/* posts-tab.css */
 /* Navigation buttons */
 .top-button {
   display: flex;
   align-items: center;
-  gap: 10px; /* Space between buttons */
-  margin-bottom: 20px; /* Space below the navigation */
+  gap: 10px; 
+  margin-bottom: 20px; 
   font-size: 18px;
   position: absolute;
   top: 30px;
@@ -16,7 +15,7 @@
   align-items: center;
   justify-content: center;
   background-color: transparent;
-  color: rgb(53, 52, 52); /* Text color */
+  color: rgb(53, 52, 52);
   border: none;
   border-radius: 4px;
   padding: 8px 12px;
@@ -26,7 +25,7 @@
 }
 
 .top-button svg {
-  font-size: 25px; /* Icon size */
+  font-size: 25px; 
 }
 
 .nav-button {
@@ -34,7 +33,7 @@
 }
 
 .nav-button:hover {
-  transform: scale(1.2); /* Slightly enlarge the icon */
+  transform: scale(1.2); 
 }
 
 
@@ -77,37 +76,37 @@
 .task-table {
   width: 100%;
   border-collapse: collapse;
-  border-left: 2px solid #dadada;  /* Outer left border */
-  border-right: 2px solid #dadada; /* Outer right border */
-  border-radius: 10px;  /* Rounded corners */
-  overflow: hidden;  /* Ensures inner content doesn't break the rounded corners */
-  background-color: #f0f8ff; /* Solid light blue background for the entire table */
+  border-left: 2px solid #dadada;  
+  border-right: 2px solid #dadada; 
+  border-radius: 10px; 
+  overflow: hidden; 
+  background-color: #f0f8ff; 
 }
 
 .task-table th,
 .task-table td {
   padding: 10px;
   text-align: left;
-  border-top: 2px solid #dadada;  /* Top border */
-  border-bottom: 2px solid #dadada; /* Bottom border */
-  border-left: none; /* Removes inner vertical left border */
-  border-right: none; /* Removes inner vertical right border */
+  border-top: 2px solid #dadada; 
+  border-bottom: 2px solid #dadada; 
+  border-left: none; 
+  border-right: none;
 }
 
 .task-table th {
-  background-color: #f0f8ff; ;  /* Light blue background for headers */
-  color: #333;  /* Dark text for headers */
+  background-color: #f0f8ff; ;  
+  color: #333;  
 }
 
 .task-table td {
-  background-color: #f0f8ff;  /* Same background color for table cells */
-  color: #333;  /* Dark text for cells */
-  transition: background-color 0.3s ease;  /* Smooth transition for color change */
+  background-color: #f0f8ff; 
+  color: #333;  
+  transition: background-color 0.3s ease;  
 }
 
 /* Change Color on Hover */
 .task-table tr:hover td {
-  background-color:#dadada;  /* Slightly different color when hovering over a row */
+  background-color:#dadada;  
 }
 
 .no-task-container {
@@ -153,10 +152,10 @@
 
 .task-detail-row {
   display: flex;
-  justify-content: space-between; /* Space between label and value */
+  justify-content: space-between; 
   margin-bottom: 20px;
-  padding-bottom: 10px; /* Add spacing inside the row */
-  border-bottom: 1px dashed #ccc; /* Dashed line between rows */
+  padding-bottom: 10px; 
+  border-bottom: 1px dashed #ccc; 
 }
 
 /* Align text to the right for amount fields */
@@ -166,25 +165,25 @@
 
 /* Slightly move the Amount label to the right */
 .amount-label {
-  margin-left: 10px; /* Adjust as needed */
+  margin-left: 10px;
 }
 
 /* Remove dashed line for Task Name row */
 .task-detail-row:first-child {
-  border-bottom: none; /* No dashed line below Task Name */
-  padding-bottom: 0; /* Remove extra padding */
+  border-bottom: none; 
+  padding-bottom: 0; 
 }
 
 /* Remove dashed line for Miscellaneous row */
 .task-detail-row:nth-child(3) {
-  border-bottom: none; /* No dashed line below Miscellaneous */
-  padding-bottom: 0; /* Remove extra padding */
+  border-bottom: none; 
+  padding-bottom: 0; 
 }
 
 /* Add bold styling and remove dashed line for the total row */
 .total-row {
-  border-bottom: none; /* No dashed line below Total row */
-  padding-bottom: 0; /* Remove padding for cleaner layout */
+  border-bottom: none; 
+  padding-bottom: 0; 
 }
 .total-row .align-right {
   font-weight: bold;

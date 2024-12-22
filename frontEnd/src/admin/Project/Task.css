@@ -78,16 +78,16 @@
 }
 
 .project-task-tabs button:hover {
-  background-color: transparent; /* Ensure no hover background color */
-  color: #565656; /* Same color as normal */
+  background-color: transparent; 
+  color: #565656;
 }
 
 .project-task-tabs button.active {
   background-color: transparent;
   color: rgb(0, 0, 0);
-  border-bottom: 3px solid #0078d4; /* Active tab border */
+  border-bottom: 3px solid #0078d4; 
   font-weight: bold;
-  padding-bottom: 8px; /* Increase padding to ensure space for the border */
+  padding-bottom: 8px; 
 }
 
 .content-area {

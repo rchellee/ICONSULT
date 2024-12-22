@@ -56,8 +56,8 @@
 }
 
 .miscellaneous-form button:first-child:hover {
-    background-color: #e0e0e0;  /* Light pink background on hover */
-    color: #3982b8;/* Dark pink text on hover */
+    background-color: #e0e0e0;  
+    color: #3982b8;
 }
 
 /* Cancel button style */
@@ -68,5 +68,5 @@
 
 .miscellaneous-form button:hover {
     opacity: 0.9;
-    background-color: #e0e0e0; /* Added hover color for cancel button */
+    background-color: #e0e0e0; 
 }

@@ -191,12 +191,12 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 .project-list-header h3,
 .project-item p {
-    display: table-cell; /* Ensures they behave like table cells */
-    padding: 15px; /* Adds padding inside cells */
-    border: 1px solid #ccc; /* Adds border for better visibility */
-    overflow: hidden; /* Ensures text doesn't overflow */
-    text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
-    white-space: nowrap; /* Prevents wrapping of text */
+    display: table-cell; 
+    padding: 15px; 
+    border: 1px solid #ccc; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
 }
 
 /* Customize widths for columns with truncation */
@@ -238,11 +238,11 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 /* Container for Sort, Details, and Search */
 .sort-button-container {
-    display: flex; /* Use flex layout to align items side by side */
-    align-items: center; /* Center items vertically */
-    gap: 10px; /* Add space between elements */
-    margin-bottom: 50px; /* Adds space below the container */
-    justify-content: flex-start; /* Aligns buttons to the left */
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 50px; 
+    justify-content: flex-start; 
     margin-left: 1px;
 }
 
@@ -277,9 +277,9 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 .search-box-container {
     display: flex;
-    justify-content: flex-start; /* Align items to the left by default */
-    width: 100%; /* Ensure it spans full width */
-    margin: 20px 0; /* Add some margin at the top and bottom for spacing */
+    justify-content: flex-start; 
+    width: 100%; 
+    margin: 20px 0; 
     
   }
   
@@ -288,25 +288,22 @@ ct-list-header h3:nth-child(3) { /* Client */
     position: absolute;
     bottom: 30px;
     left: 600px;
-    width: 250%; /* Make the input field take up more space */
-    max-width: 500px; /* Optional: increase max-width for larger screens */
-    height: 50px; /* Set the height of the search box */
-    padding: 15px; /* Padding inside the search box */
-    font-size: 15px; /* Larger text for better visibility */
-    border: 2px solid #3498db; /* Add a blue border to the search box */
-    border-radius: 10px; /* Optional: rounded corners */
-    outline: none; /* Remove the focus outline */
-    box-sizing: border-box; /* Ensures padding is part of the input box size */
-    background: #fff; /* White background for the search input */
+    width: 250%;
+    max-width: 500px; 
+    height: 50px;
+    padding: 15px; 
+    font-size: 15px; 
+    border: 2px solid #3498db;
+    border-radius: 10px; 
+    outline: none;
+    box-sizing: border-box; 
+    background: #fff; 
   }
   
   .search-box:focus {
-    border-color: #7fbcf6; /* Change border color when focused */
-    box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Optional: add a shadow when the input is focused */
+    border-color: #7fbcf6; 
+    box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); 
   }
-
-
-/* LEFT SIDE PROJECT NAMES */
 
 /* LEFT SIDE PROJECT NAMES */
 
