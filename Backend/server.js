@@ -32,7 +32,6 @@ app.get("/admin", (req, res) => {
   });
 });
 
-// Login route to check user credentials
 app.post("/Login", (req, res) => {
   const { username, password } = req.body;
 
@@ -126,6 +125,80 @@ app.post("/send-email", (req, res) => {
     .send(message)
     .then(() => res.status(200).json({ message: "Email sent successfully" }))
     .catch((error) => res.status(500).json({ error: error.message }));
+});
+
+// Save availability data to the database
+app.post("/availability", (req, res) => {
+  const availabilityData = req.body;
+
+  const deleteSql = "DELETE FROM availability WHERE dates = ?";
+  const insertSql =
+    "INSERT INTO availability (start_time, end_time, dates) VALUES ?";
+
+  // First, delete existing availability for the given dates
+  const deletePromises = availabilityData.map((entry) => {
+    return new Promise((resolve, reject) => {
+      db.query(deleteSql, [entry.dates], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  });
+
+  // Once deletions are complete, insert new data
+  Promise.all(deletePromises)
+    .then(() => {
+      const values = availabilityData.map((entry) => [
+        entry.start_time,
+        entry.end_time,
+        entry.dates,
+      ]);
+      db.query(insertSql, [values], (err, result) => {
+        if (err) {
+          console.error("Error saving data to the database:", err);
+          return res.status(500).json({ message: "Error saving data" });
+        }
+        res
+          .status(200)
+          .json({
+            message: "Availability saved/updated successfully",
+            data: result,
+          });
+      });
+    })
+    .catch((error) => {
+      console.error("Error during update:", error);
+      res.status(500).json({ message: "Error updating availability" });
+    });
+});
+app.get("/availability", (req, res) => {
+  const sql = "SELECT * FROM availability";
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching availability data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    res.status(200).json(data);
+  });
+});
+// Delete availability for a specific date
+app.delete("/availability/:date", (req, res) => {
+  const { date } = req.params;
+
+  const sql = "DELETE FROM availability WHERE dates = ?";
+  db.query(sql, [date], (err, result) => {
+    if (err) {
+      console.error("Error deleting availability:", err);
+      return res.status(500).json({ message: "Error deleting data" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Date not found" });
+    }
+    res.status(200).json({ message: "Availability deleted successfully" });
+  });
 });
 
 // Save payment details to the database
@@ -588,7 +661,6 @@ app.patch("/projects/:id", (req, res) => {
 });
 
 // Add a new project (POST request)
-<<<<<<< HEAD
 app.post("/projects", (req, res) => {
   const {
     clientId,
@@ -627,16 +699,6 @@ app.post("/projects", (req, res) => {
       });
     }
   );
-=======
-app.post('/projects', (req, res) => {
-    const { clientId, clientName, projectName, description, startDate, endDate, status } = req.body;
-
-    const sql = "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    db.query(sql, [clientId, clientName, projectName, description, startDate, endDate, status], (err, result) => {
-        if (err) return res.status(500).json(err);
-        return res.status(201).json({ id: result.insertId, clientId, clientName, projectName, description, startDate, endDate, status });
-    });
->>>>>>> bautista
 });
 
 // Get all active (not deleted) projects (GET request)
@@ -696,6 +758,58 @@ app.delete("/projects/:id", (req, res) => {
     } else {
       return res.status(404).json({ message: "Project not found" });
     }
+  });
+});
+
+// POST endpoint to create a new task
+app.post("/tasks", (req, res) => {
+  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+    req.body;
+
+    console.log("Received project_id:", projectId);
+
+  // SQL query to insert the task into the database
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, status, project_id)
+             VALUES (?, ?, ?, ?, ?, 'pending', ?)`;
+
+  db.query(
+    tasksSql,
+    [
+      taskName,
+      taskFee,
+      dueDate,
+      employee,
+      JSON.stringify(miscellaneous),
+      projectId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting task: ", err);
+        return res
+          .status(500)
+          .json({ message: "Error creating task", error: err.message }); // Provide more detailed error message
+      }
+      res
+        .status(201)
+        .json({
+          message: "Task created successfully",
+          taskId: result.insertId,
+        });
+    }
+  );
+});
+// GET endpoint to retrieve all tasks
+app.get("/tasks", (req, res) => {
+  const sql = "SELECT * FROM tasks";
+
+  db.execute(sql, (err, tasks) => {
+    if (err) {
+      console.error("Error fetching tasks: ", err);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving tasks", error: err });
+    }
+    res.status(200).json({ tasks });
   });
 });
 
@@ -817,19 +931,19 @@ app.post("/appointments", (req, res) => {
                   .json({ message: "Failed to save client notification" });
               }
               // Schedule email reminder
-          const jobId = `${appointmentId}-reminder`;
+              const jobId = `${appointmentId}-reminder`;
 
-          scheduledTasks[jobId] = cron.schedule(
-            `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${
-              reminderTime.getMonth() + 1
-            } *`,
-            () => {
-              const message = {
-                to: [email, "ritchelle.rueras@tup.edu.ph"], // Client and admin emails
-                from: "ritchelle.rueras@tup.edu.ph",
-                subject: `Reminder: Upcoming Appointment on ${date} at ${time}`,
-                text: `Hello ${name},\n\nThis is a reminder for your upcoming appointment scheduled on ${date} at ${time}.\n\nConsultation Type: ${consultationType}\nPlatform: ${platform}\nAdditional Info: ${additionalInfo}\n\nThank you!`,
-                html: `
+              scheduledTasks[jobId] = cron.schedule(
+                `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${
+                  reminderTime.getMonth() + 1
+                } *`,
+                () => {
+                  const message = {
+                    to: [email, "ritchelle.rueras@tup.edu.ph"], // Client and admin emails
+                    from: "ritchelle.rueras@tup.edu.ph",
+                    subject: `Reminder: Upcoming Appointment on ${date} at ${time}`,
+                    text: `Hello ${name},\n\nThis is a reminder for your upcoming appointment scheduled on ${date} at ${time}.\n\nConsultation Type: ${consultationType}\nPlatform: ${platform}\nAdditional Info: ${additionalInfo}\n\nThank you!`,
+                    html: `
                                     <p>Hello ${name},</p>
                                     <p>This is a reminder for your upcoming appointment:</p>
                                     <ul>
@@ -841,36 +955,36 @@ app.post("/appointments", (req, res) => {
                                     </ul>
                                     <p>Thank you!</p>
                                 `,
-              };
+                  };
 
-              sgMail
-                .send(message)
-                .then(() =>
-                  console.log(
-                    `Reminder email sent for appointment ID: ${appointmentId}`
-                  )
-                )
-                .catch((error) =>
-                  console.error("Error sending reminder email:", error)
-                );
-            },
-            {
-              scheduled: true,
-              timezone: "Asia/Manila", // Adjust to your timezone
-            }
-          );
+                  sgMail
+                    .send(message)
+                    .then(() =>
+                      console.log(
+                        `Reminder email sent for appointment ID: ${appointmentId}`
+                      )
+                    )
+                    .catch((error) =>
+                      console.error("Error sending reminder email:", error)
+                    );
+                },
+                {
+                  scheduled: true,
+                  timezone: "Asia/Manila", // Adjust to your timezone
+                }
+              );
 
-          // Log the cron job ID for debugging
-          console.log(
-            `Scheduled cron job for appointment ID: ${appointmentId}, Job ID: ${jobId}`
-          );
+              // Log the cron job ID for debugging
+              console.log(
+                `Scheduled cron job for appointment ID: ${appointmentId}, Job ID: ${jobId}`
+              );
 
-          // Send the final response after both operations (appointment and notification) are complete
-          return res.status(201).json({
-            message:
-              "Appointment saved successfully, notification created, and reminder scheduled",
-            appointmentId: appointmentId,
-          });
+              // Send the final response after both operations (appointment and notification) are complete
+              return res.status(201).json({
+                message:
+                  "Appointment saved successfully, notification created, and reminder scheduled",
+                appointmentId: appointmentId,
+              });
             }
           );
         }
@@ -919,45 +1033,6 @@ app.delete("/appointments/:id", (req, res) => {
       .json({ message: "Appointment and reminder deleted successfully" });
   });
 });
-<<<<<<< HEAD
-=======
-
-//Fetch appointments
-app.get('/appointments', (req, res) => {
-    console.log("Received GET request to /appointments");
-    const sql = `
-        SELECT * FROM appointments
-    `;
-    
-    db.query(sql, (err, data) => {
-        console.log("Query executed successfully");
-        if (err) {
-            console.error("Error fetching appointments:", err);
-            return res.status(500).json({ message: "Failed to fetch appointments", error: err });
-        }
-        console.log("Sending response");
-        return res.json(data);
-    });
-});
-
-// Fetch appointments for a specific client
-app.get('/appointments/client/:clientId', (req, res) => {
-    const { clientId } = req.params;
-
-    const sql = `
-        SELECT * FROM appointments WHERE client_id = ?
-    `;
-
-    db.query(sql, [clientId], (err, data) => {
-        if (err) {
-            console.error("Error fetching appointments:", err);
-            return res.status(500).json({ message: "Failed to fetch appointments", error: err });
-        }
-        return res.status(200).json(data);
-    });
-});
-
->>>>>>> bautista
 
 // Start the server
 app.listen(8081, () => {

@@ -18,7 +18,13 @@ const ProjectFolders = ({ projects, onProjectClick }) => {
             <p
               className="truncate"
               title={project.projectName}
-              onClick={() => onProjectClick(project.id)}
+              onClick={() => {
+                if (project.id) {
+                  onProjectClick(project.id);
+                } else {
+                  console.error("Project ID is undefined");
+                }
+              }}
               style={{
                 cursor: "pointer",
                 fontWeight: hoveredProjectId === project.id ? "bold" : "normal",

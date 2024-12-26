@@ -7,8 +7,18 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
   const [selectedDates, setSelectedDates] = useState([]); // Track multiple selected dates
 
   const months = [
-    "January", "February", "March", "April", "May", "June", "July",
-    "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const renderCalendar = () => {
@@ -21,6 +31,7 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
     const lastDateOfPrevMonth = new Date(year, month, 0).getDate();
 
     const calendarDays = [];
+    const today = new Date();
 
     // Previous month's dates (fill-in for the first week)
     for (let i = firstDayOfMonth; i > 0; i--) {
@@ -32,12 +43,16 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
 
     // Current month's dates
     for (let i = 1; i <= lastDateOfMonth; i++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+        i
+      ).padStart(2, "0")}`;
       const status = availableDates[dateStr] || null; // Get status if defined
+      const isPastDate = new Date(year, month, i) < today; // Check if the date is in the past
+
       calendarDays.push({
         date: i,
         currentMonth: true,
-        available: status === "available",
+        available: !isPastDate, // Dates in the past are not available
         fullyBooked: status === "fullyBooked",
         dateStr,
       });
@@ -53,7 +68,11 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
 
   const changeMonth = (direction) => {
     setCurrDate((prev) => {
-      const newDate = new Date(prev.getFullYear(), prev.getMonth() + direction, 1);
+      const newDate = new Date(
+        prev.getFullYear(),
+        prev.getMonth() + direction,
+        1
+      );
       return newDate;
     });
   };
@@ -68,7 +87,7 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
 
   const handleDateClick = (dateStr) => {
     setSelectedDates((prevSelectedDates) => {
-      // If date is already selected, remove it, else add it to the selected dates
+      // If the date is already selected, remove it; otherwise, add it
       if (prevSelectedDates.includes(dateStr)) {
         return prevSelectedDates.filter((date) => date !== dateStr);
       } else {
@@ -84,7 +103,7 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
   }, [currDate, availableDates]);
 
   return (
-    <div className="wrapper">
+    <div className="wrapper-admin">
       <header>
         <p className="current-date">
           {months[currDate.getMonth()]} {currDate.getFullYear()}
@@ -120,17 +139,23 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
                 day.currentMonth
                   ? day.available
                     ? selectedDates.includes(day.dateStr)
-                      ? "selected" // Apply the "selected" class for the clicked date
+                      ? "selected"
                       : "available"
                     : day.fullyBooked
                     ? "fully-booked"
-                    : "unavailable"
-                  : "inactive"
+                    : "inactive" // For past or unavailable dates
+                  : "inactive" // For out-of-month dates
               }`}
               onClick={() => {
                 if (day.currentMonth && day.available) {
-                  handleDateClick(day.dateStr); // Handle multi-date selection
+                  handleDateClick(day.dateStr);
                 }
+              }}
+              style={{
+                backgroundColor: selectedDates.includes(day.dateStr)
+                  ? "#85a8ee" // Selected date background color
+                  : "#fbfbfb", // Original background color for available dates
+                color: day.currentMonth && !day.available ? "#aaa" : "inherit", // Gray for inactive dates
               }}
             >
               {day.date}
