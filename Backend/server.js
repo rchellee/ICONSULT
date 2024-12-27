@@ -3,6 +3,8 @@ const mysql = require("mysql");
 const cors = require("cors");
 const cron = require("node-cron");
 const bodyParser = require("body-parser");
+const multer = require("multer");
+const path = require("path");
 require("dotenv").config();
 
 const scheduledTasks = {};
@@ -22,6 +24,18 @@ const db = mysql.createConnection({
 app.get("/", (req, res) => {
   return res.json("From Backend Side");
 });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage });
 
 // Get admin data (existing route)
 app.get("/admin", (req, res) => {
@@ -161,12 +175,10 @@ app.post("/availability", (req, res) => {
           console.error("Error saving data to the database:", err);
           return res.status(500).json({ message: "Error saving data" });
         }
-        res
-          .status(200)
-          .json({
-            message: "Availability saved/updated successfully",
-            data: result,
-          });
+        res.status(200).json({
+          message: "Availability saved/updated successfully",
+          data: result,
+        });
       });
     })
     .catch((error) => {
@@ -712,7 +724,7 @@ app.post("/project", (req, res) => {
 });
 // Get all active (not deleted) projects (GET request)
 app.get("/project", (req, res) => {
-  const sql = "SELECT * FROM project WHERE isDeleted = 0"; 
+  const sql = "SELECT * FROM project WHERE isDeleted = 0";
   db.query(sql, (err, data) => {
     if (err) return res.json(err);
     return res.json(data);
@@ -803,10 +815,15 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
       console.error("Error recalculating totalPayment: ", err);
       return res
         .status(500)
-        .json({ message: "Error recalculating totalPayment", error: err.message });
+        .json({
+          message: "Error recalculating totalPayment",
+          error: err.message,
+        });
     }
 
-    res.status(200).json({ message: "Total payment recalculated successfully" });
+    res
+      .status(200)
+      .json({ message: "Total payment recalculated successfully" });
   });
 });
 // const backfillTotalPayment = () => {
@@ -836,7 +853,8 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 
 // POST endpoint to create a new task
 app.post("/tasks", (req, res) => {
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } = req.body;
+  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+    req.body;
 
   console.log("Received project_id:", projectId);
 
@@ -888,7 +906,10 @@ app.post("/tasks", (req, res) => {
           console.error("Error updating totalPayment: ", updateErr);
           return res
             .status(500)
-            .json({ message: "Error updating totalPayment", error: updateErr.message });
+            .json({
+              message: "Error updating totalPayment",
+              error: updateErr.message,
+            });
         }
 
         res.status(201).json({
@@ -901,7 +922,8 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } = req.body;
+  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+    req.body;
 
   // Calculate the total miscellaneous fee
   let miscellaneousTotal = 0;
@@ -953,17 +975,24 @@ app.put("/tasks/:id", (req, res) => {
           console.error("Error updating totalPayment: ", updateErr);
           return res
             .status(500)
-            .json({ message: "Error updating totalPayment", error: updateErr.message });
+            .json({
+              message: "Error updating totalPayment",
+              error: updateErr.message,
+            });
         }
 
-        res.status(200).json({ message: "Task updated successfully and totalPayment updated" });
+        res
+          .status(200)
+          .json({
+            message: "Task updated successfully and totalPayment updated",
+          });
       });
     }
   );
 });
 // GET endpoint to retrieve all tasks
 app.get("/tasks", (req, res) => {
-  const { projectId } = req.query; 
+  const { projectId } = req.query;
   const sql = "SELECT * FROM tasks WHERE project_id = ?";
 
   db.query(sql, [projectId], (err, tasks) => {
@@ -1197,6 +1226,54 @@ app.delete("/appointments/:id", (req, res) => {
       .json({ message: "Appointment and reminder deleted successfully" });
   });
 });
+
+// Endpoint to upload a file
+app.post("/upload", (req, res) => {
+  upload.single("file")(req, res, (err) => {
+    if (err) {
+      return res.status(500).json({ message: "File upload error" });
+    }
+
+    const { project_id } = req.body;
+    const originalName = req.file.originalname; // Correctly defined variable
+    const fileName = req.file.filename;
+    const file_type = req.file.mimetype;
+
+    const sql = `INSERT INTO uploads (project_id, original_name, file_name, file_type) VALUES (?, ?, ?, ?)`;
+    db.query(
+      sql,
+      [project_id, originalName, fileName, file_type], // Use originalName here
+      (err, result) => {
+        if (err) {
+          console.error("Error inserting file info:", err);
+          return res.status(500).json({ message: "Error uploading file" });
+        }
+        res.status(201).json({
+          id: result.insertId,
+          project_id,
+          original_name: originalName, // Use originalName here
+          file_name: fileName,
+          file_type,
+        });
+      }
+    );
+  });
+});
+// Endpoint to fetch files by project ID
+app.get("/upload", (req, res) => {
+  const { project_id } = req.query;
+  const sql = `SELECT * FROM uploads WHERE project_id = ?`;
+  db.query(sql, [project_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching files:", err);
+      return res.status(500).json({ message: "Error fetching files" });
+    }
+    res.json(results);
+  });
+});
+
+// Serve uploaded files
+app.use("/uploads", express.static("uploads"));
 
 // Start the server
 app.listen(8081, () => {
