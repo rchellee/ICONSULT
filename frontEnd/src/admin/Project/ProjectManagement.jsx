@@ -26,11 +26,14 @@ const ProjectManagement = () => {
   const [clients, setClients] = useState([]);
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [description, setDescription] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(null); // Track selected project
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [contractPrice, setContractPrice] = useState("");
+  const [downpayment, setDownpayment] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("Not Paid");
 
   // Fetch data on component mount
   useEffect(() => {
-    fetch("http://localhost:8081/projects")
+    fetch("http://localhost:8081/project")
       .then((response) => response.json())
       .then((data) => {
         console.log(data); // Inspect the data structure
@@ -72,11 +75,16 @@ const ProjectManagement = () => {
       startDate,
       endDate,
       status: "Ongoing",
+      contractPrice,
+      downpayment,
+      totalPayment:
+        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
+      paymentStatus,
     };
 
     if (editingProjectId) {
       // Update existing project
-      fetch(`http://localhost:8081/projects/${editingProjectId}`, {
+      fetch(`http://localhost:8081/project/${editingProjectId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
@@ -92,8 +100,7 @@ const ProjectManagement = () => {
         })
         .catch((error) => console.error("Error updating project:", error));
     } else {
-      // Create new project
-      fetch("http://localhost:8081/projects", {
+      fetch("http://localhost:8081/project", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
@@ -162,7 +169,7 @@ const ProjectManagement = () => {
   };
 
   const handleDelete = (projectId) => {
-    fetch(`http://localhost:8081/projects/${projectId}`, {
+    fetch(`http://localhost:8081/project/${projectId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isDeleted: true }),
@@ -175,7 +182,7 @@ const ProjectManagement = () => {
   };
 
   const filteredProjects = projects.filter((project) =>
-    project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+    (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Render ProjectList or ProjectTask based on selectedProjectId
@@ -205,7 +212,6 @@ const ProjectManagement = () => {
           console.log("Clicked Project ID:", projectId);
           setSelectedProjectId(projectId);
         }}
-        // Set project ID when a project is clicked
       />
     );
   };
@@ -214,7 +220,6 @@ const ProjectManagement = () => {
     <div className="project-management-page">
       <Sidebar />
       <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
-        {/* project management txt */}
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> New
@@ -234,6 +239,9 @@ const ProjectManagement = () => {
             setEndDate={setEndDate}
             description={description}
             setDescription={setDescription}
+            contractPrice={contractPrice}
+            setContractPrice={setContractPrice}
+            setDownpayment={setDownpayment}
             clients={clients}
             onCancel={closeModal}
             onSave={saveProject}

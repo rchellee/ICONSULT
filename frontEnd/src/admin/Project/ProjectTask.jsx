@@ -65,6 +65,7 @@ const ProjectTask = ({ projectId, onBack }) => {
           <PostsTab
             projectId={projectId}
             tasks={tasks}
+            setTasks={setTasks}
             setShowTaskForm={setShowTaskForm}
             showTaskForm={showTaskForm}
             handleCreateTask={handleCreateTask}
