@@ -3,7 +3,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
 import TaskForm from "./TaskForm";
-import MiscellaneousForm from "./MiscellaneousForm "; // Import MiscellaneousForm
+import MiscellaneousForm from "./MiscellaneousForm ";
 
 const PostsTab = ({
   projectId,
@@ -15,9 +15,24 @@ const PostsTab = ({
   setTasks, // Assuming this is passed as a prop to update tasks
 }) => {
   useEffect(() => {
-    console.log("Project ID in PostsTab:", projectId);
-    // Fetch posts or tasks based on projectId
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(`http://localhost:8081/tasks?projectId=${projectId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        const data = await response.json();
+        setTasks(data.tasks);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+  
+    if (projectId) {
+      fetchTasks();
+    }
   }, [projectId]);
+  
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false); // State for showing miscellaneous form
@@ -28,17 +43,17 @@ const PostsTab = ({
   };
 
   // Function to calculate the total amount for the task
-  const calculateTotal = (task) => {
-    const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
-    const miscellaneousFee =
-      task.miscellaneous && Array.isArray(task.miscellaneous)
-        ? task.miscellaneous.reduce(
-            (total, item) => total + (parseFloat(item.fee) || 0),
-            0
-          )
-        : 0; // Sum of all miscellaneous fees
-    return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
-  };
+  // const calculateTotal = (task) => {
+  //   const taskFee = parseFloat(task.task_fee) || 0; // Ensure it's a valid number
+  //   const miscellaneousFee =
+  //     task.miscellaneous && Array.isArray(task.miscellaneous)
+  //       ? task.miscellaneous.reduce(
+  //           (total, item) => total + (parseFloat(item.fee) || 0),
+  //           0
+  //         )
+  //       : 0; // Sum of all miscellaneous fees
+  //   return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
+  // };
 
   // Function to update task with new miscellaneous
   const updateTaskWithMiscellaneous = (updatedTask) => {
@@ -140,11 +155,11 @@ const PostsTab = ({
               <tbody>
                 {tasks.map((task, index) => (
                   <tr key={index} onClick={() => handleRowClick(task)}>
-                    <td>{task.taskName}</td>
+                    <td>{task.task_name}</td>
                     <td>{task.employee || "Unassigned"}</td>
                     <td>{task.status}</td>
-                    <td>{task.dueDate}</td>
-                    <td className="align-right">{calculateTotal(task)}</td>
+                    <td>{task.due_date}</td>
+                    <td className="align-right">{task.amount}</td>
                   </tr>
                 ))}
               </tbody>

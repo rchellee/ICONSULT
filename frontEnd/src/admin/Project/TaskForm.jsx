@@ -23,11 +23,19 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
   const [miscellaneousList, setMiscellaneousList] = useState(
     existingTask ? existingTask.miscellaneous : []
   );
+  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     console.log("Received projectId in TaskForm:", projectId);
   }, [projectId]);
-  
+
+  useEffect(() => {
+    const taskFeeValue = parseFloat(taskFee) || 0;
+    const miscellaneousTotal = miscellaneousList.reduce((sum, item) => {
+      return sum + (parseFloat(item.fee) || 0);
+    }, 0);
+    setTotalAmount(taskFeeValue + miscellaneousTotal);
+  }, [taskFee, miscellaneousList]);
 
   useEffect(() => {
     // Fetch employees when the component mounts
@@ -241,6 +249,11 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
               </ul>
             </div>
           )}
+
+          <div className={formStyles.totalAmount}>
+            <label>Total Amount:</label>
+            <span>₱{totalAmount.toFixed(2)}</span>
+          </div>
 
           {/* Submit & Cancel Buttons */}
           <div className={formStyles.buttonContainer}>

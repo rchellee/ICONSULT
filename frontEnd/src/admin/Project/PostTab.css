@@ -36,8 +36,6 @@
   transform: scale(1.2); 
 }
 
-
-
 .posts-tab-content {
   margin: 20px;
 }
@@ -187,4 +185,14 @@
 }
 .total-row .align-right {
   font-weight: bold;
+}
+
+
+/*files tab*/
+.files-tab-content {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-left: 400px;
 }

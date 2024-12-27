@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import "./task.css";
 import "./PostTab.css";
-import PostsTab from "./PostsTab"; // Import the PostsTab component
+import PostsTab from "./PostsTab";
+import FilesTab from "./FilesTab";
 
 const ProjectTask = ({ projectId, onBack }) => {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -65,21 +66,14 @@ const ProjectTask = ({ projectId, onBack }) => {
           <PostsTab
             projectId={projectId}
             tasks={tasks}
+            setTasks={setTasks}
             setShowTaskForm={setShowTaskForm}
             showTaskForm={showTaskForm}
             handleCreateTask={handleCreateTask}
             handleCancelForm={handleCancelForm}
           />
         )}
-
-        {/* Files Tab */}
-        {activeTab === "files" && (
-          <div className="files-tab-content">
-            <div className="files-posts">
-              <h2>Manage project files</h2>
-            </div>
-          </div>
-        )}
+        {activeTab === "files" && <FilesTab projectId={projectId} />}
       </div>
     </div>
   );
