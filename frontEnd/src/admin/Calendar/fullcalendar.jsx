@@ -7,7 +7,6 @@ import listPlugin from "@fullcalendar/list";
 import {
   Box,
   Typography,
-  useTheme,
   List,
   ListItem,
   ListItemText,
@@ -27,6 +26,7 @@ import "./calendar.css";
 const Calendar = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
   const [fetchedAppointments, setFetchedAppointments] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [popup, setPopup] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -106,20 +106,12 @@ const Calendar = () => {
   };
 
   const handleEventClick = (selected) => {
-    const { title, start, id, extendedProps } = selected.event;
-    setPopup({
-      id,
-      title,
-      start,
-      email: extendedProps.email,
-      contact: extendedProps.contact,
-      consultationType: extendedProps.consultationType,
-      additionalInfo: extendedProps.additionalInfo,
-      platform: extendedProps.platform,
-      x: selected.jsEvent.clientX,
-      y: selected.jsEvent.clientY,
-    });
+    const { id, start, title } = selected.event;
+    setSelectedEventId(id);
+
+    setSelectedDate(new Date(start));
   };
+
   const handleMouseEnter = (selected) => {
     const { title, start, id, extendedProps } = selected.event;
     setPopup({
@@ -149,7 +141,6 @@ const Calendar = () => {
   };
 
   const handleDeleteClick = (appointmentId) => {
-    console.log("Selected Appointment ID:", appointmentId);
     setSelectedAppointmentId(appointmentId);
     setDeleteDialogOpen(true);
   };
@@ -231,7 +222,7 @@ const Calendar = () => {
           </div>
           <Box display="flex">
             {/* Sidebar */}
-            {/* malaking box sa gilig ng calendar */}
+            {/* for current event */}
             <Box
               flex="1 1 10%"
               sx={{
@@ -249,38 +240,79 @@ const Calendar = () => {
                 })}
               />
               <List>
-                {fetchedAppointments.filter((event) => {
-                  const selected = new Date(selectedDate);
-                  return (
-                    event.start.getFullYear() === selected.getFullYear() &&
-                    event.start.getMonth() === selected.getMonth() &&
-                    event.start.getDate() === selected.getDate()
-                  );
-                }).length > 0 ? (
+                {selectedEventId && fetchedAppointments.length > 0 ? (
                   fetchedAppointments
-                    .filter((event) => {
-                      const selected = new Date(selectedDate);
-                      return (
-                        event.start.getFullYear() === selected.getFullYear() &&
-                        event.start.getMonth() === selected.getMonth() &&
-                        event.start.getDate() === selected.getDate()
-                      );
-                    })
+                    .filter(
+                      (event) => String(event.id) === String(selectedEventId)
+                    )
                     .map((event) => (
-                      <ListItem key={event.id}>
+                      <ListItem key={event.id} sx={{ mb: 2 }}>
                         <ListItemText
                           primary={event.title}
-                          secondary={new Date(event.start).toLocaleString()}
+                          secondary={
+                            <>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Date:</strong>{" "}
+                                {new Date(event.start).toLocaleDateString()}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Time:</strong>{" "}
+                                {new Date(event.start).toLocaleTimeString()}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Email:</strong>{" "}
+                                {event.extendedProps.email}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Contact:</strong>{" "}
+                                {event.extendedProps.contact}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Type:</strong>{" "}
+                                {event.extendedProps.consultationType}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Info:</strong>{" "}
+                                {event.extendedProps.additionalInfo}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{ color: "black", fontSize: "0.9rem" }}
+                              >
+                                <strong>Platform:</strong>{" "}
+                                {event.extendedProps.platform}
+                              </Typography>
+                            </>
+                          }
                           primaryTypographyProps={{
                             color: "black",
-                            fontSize: "0.9rem",
+                            fontSize: "1.1rem",
+                            fontWeight: "bold",
                           }}
                         />
                       </ListItem>
                     ))
                 ) : (
                   <Typography sx={{ mt: 2, color: "black" }}>
-                    Nothing planned for the day. <br /> Enjoy!
+                    No event selected.
                   </Typography>
                 )}
               </List>
