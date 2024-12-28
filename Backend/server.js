@@ -1185,7 +1185,6 @@ app.post("/appointments", (req, res) => {
     }
   );
 });
-
 //Fetch appointments
 app.get("/appointments", (req, res) => {
   const sql = `
@@ -1202,7 +1201,47 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/appointments/count", (req, res) => {
+  const sql = `
+    SELECT date, COUNT(*) as appointmentCount
+    FROM appointments
+    GROUP BY date
+  `;
 
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching appointment counts:", err);
+      return res.status(500).json({ message: "Failed to fetch data", error: err });
+    }
+
+    const formattedData = results.reduce((acc, { date, appointmentCount }) => {
+      acc[date] = appointmentCount;
+      return acc;
+    }, {});
+
+    res.json(formattedData);
+  });
+});
+app.get("/appointments/times", (req, res) => {
+  const { date } = req.query;
+
+  const sql = `
+    SELECT time
+    FROM appointments
+    WHERE date = ?
+  `;
+
+  db.query(sql, [date], (err, results) => {
+    if (err) {
+      console.error("Error fetching times for date:", err);
+      return res.status(500).json({ message: "Failed to fetch data", error: err });
+    }
+
+    const bookedTimes = results.map((row) => row.time);
+    console.log(bookedTimes);
+    res.json({ bookedTimes });
+  });
+});
 app.delete("/appointments/:id", (req, res) => {
   const { id } = req.params;
 
@@ -1227,6 +1266,29 @@ app.delete("/appointments/:id", (req, res) => {
     return res.status(200).json({ message: "Appointment deleted successfully" });
   });
 });
+
+// const backfillTimeFormat = () => {
+//   const updateTimeFormatSql = `
+//     UPDATE appointments
+//     SET time = DATE_FORMAT(STR_TO_DATE(time, '%H:%i:%s'), '%h:%i %p');
+//   `;
+
+//   db.query(updateTimeFormatSql, (err, result) => {
+//     if (err) {
+//       console.error("Error updating time format:", err);
+//       db.end();
+//       return;
+//     }
+
+//     console.log(
+//       `Time format updated successfully for ${result.affectedRows} rows`
+//     );
+//     db.end();
+//   });
+// };
+
+// backfillTimeFormat();
+
 
 // Endpoint to upload a file
 app.post("/upload", (req, res) => {
