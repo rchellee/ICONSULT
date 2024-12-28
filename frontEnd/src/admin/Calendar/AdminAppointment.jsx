@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import Sidebar from "../sidebar"; // Import the Sidebar component
 import "./calendar.css";
-import Calendar from "./DynamicCalendar";
+import Calendar from "./AdminDynamicCalendar";
 
 function AdminAppointment() {
   const navigate = useNavigate();

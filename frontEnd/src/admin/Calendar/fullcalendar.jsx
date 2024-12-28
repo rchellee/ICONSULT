@@ -14,23 +14,26 @@ import {
   Menu,
   MenuItem,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import Header from "../../components/Header";
-import { tokens } from "../../theme";
 import "./calendar.css";
 
 const Calendar = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
   const [fetchedAppointments, setFetchedAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [popup, setPopup] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate(); 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch appointments from the backend
   useEffect(() => {
@@ -103,11 +106,11 @@ const Calendar = () => {
   };
 
   const handleEventClick = (selected) => {
-    const { title, start, end, extendedProps } = selected.event;
+    const { title, start, id, extendedProps } = selected.event;
     setPopup({
+      id,
       title,
       start,
-      end,
       email: extendedProps.email,
       contact: extendedProps.contact,
       consultationType: extendedProps.consultationType,
@@ -118,11 +121,11 @@ const Calendar = () => {
     });
   };
   const handleMouseEnter = (selected) => {
-    const { title, start, end, extendedProps } = selected.event;
+    const { title, start, id, extendedProps } = selected.event;
     setPopup({
+      id,
       title,
       start,
-      end,
       email: extendedProps.email,
       contact: extendedProps.contact,
       consultationType: extendedProps.consultationType,
@@ -145,16 +148,55 @@ const Calendar = () => {
     setMenuOpen(true);
   };
 
+  const handleDeleteClick = (appointmentId) => {
+    console.log("Selected Appointment ID:", appointmentId);
+    setSelectedAppointmentId(appointmentId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8081/appointments/${selectedAppointmentId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data.message);
+
+      // Update the frontend by removing the deleted appointment
+      setFetchedAppointments((prev) =>
+        prev.filter((appointment) => appointment.id !== selectedAppointmentId)
+      );
+
+      setDeleteDialogOpen(false);
+      setSelectedAppointmentId(null);
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSelectedAppointmentId(null);
+  };
+
   const handleMenuClose = () => {
     setMenuOpen(false);
   };
   const handleAppointmentClick = () => {
     setMenuOpen(false); // Close the menu
-    navigate('/appointment'); // Navigate to /appointment
+    navigate("/appointment"); // Navigate to /appointment
   };
   const handleAvailabilityClick = () => {
     setMenuOpen(false); // Close the menu
-    navigate('/availability'); // Navigate to /availability
+    navigate("/availability"); // Navigate to /availability
   };
 
   return (
@@ -180,11 +222,13 @@ const Calendar = () => {
             +
           </Button>
           <div>
-      <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
-        <MenuItem onClick={handleAppointmentClick}>Appointment</MenuItem>
-        <MenuItem onClick={handleAvailabilityClick}>Availability</MenuItem> 
-      </Menu>
-    </div>
+            <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
+              <MenuItem onClick={handleAppointmentClick}>Appointment</MenuItem>
+              <MenuItem onClick={handleAvailabilityClick}>
+                Availability
+              </MenuItem>
+            </Menu>
+          </div>
           <Box display="flex">
             {/* Sidebar */}
             {/* malaking box sa gilig ng calendar */}
@@ -194,7 +238,7 @@ const Calendar = () => {
                 p: "15px",
                 color: "white",
                 background: "lightGray",
-                boarderRadius:"6px",
+                boarderRadius: "6px",
               }}
             >
               <Header
@@ -204,47 +248,42 @@ const Calendar = () => {
                   day: "numeric",
                 })}
               />
-<List>
-  {fetchedAppointments.filter((event) => {
-    const selected = new Date(selectedDate);
-    return (
-      event.start.getFullYear() === selected.getFullYear() &&
-      event.start.getMonth() === selected.getMonth() &&
-      event.start.getDate() === selected.getDate()
-    );
-  }).length > 0 ? (
-    fetchedAppointments
-      .filter((event) => {
-        const selected = new Date(selectedDate);
-        return (
-          event.start.getFullYear() === selected.getFullYear() &&
-          event.start.getMonth() === selected.getMonth() &&
-          event.start.getDate() === selected.getDate()
-        );
-      })
-      .map((event) => (
-
-        <ListItem
-          key={event.id}
-        >
-          <ListItemText
-  primary={event.title}
-  secondary={new Date(event.start).toLocaleString()}
-  primaryTypographyProps={{
-    color: 'black',
-    fontSize: '0.9rem',
-  }}
-        
-          />
-        </ListItem>
-      ))
-  ) : (
-    <Typography sx={{ mt: 2, color: 'black',  }}> 
-      Nothing planned for the day. <br /> Enjoy!
-    </Typography>
-  )}
-</List>
-
+              <List>
+                {fetchedAppointments.filter((event) => {
+                  const selected = new Date(selectedDate);
+                  return (
+                    event.start.getFullYear() === selected.getFullYear() &&
+                    event.start.getMonth() === selected.getMonth() &&
+                    event.start.getDate() === selected.getDate()
+                  );
+                }).length > 0 ? (
+                  fetchedAppointments
+                    .filter((event) => {
+                      const selected = new Date(selectedDate);
+                      return (
+                        event.start.getFullYear() === selected.getFullYear() &&
+                        event.start.getMonth() === selected.getMonth() &&
+                        event.start.getDate() === selected.getDate()
+                      );
+                    })
+                    .map((event) => (
+                      <ListItem key={event.id}>
+                        <ListItemText
+                          primary={event.title}
+                          secondary={new Date(event.start).toLocaleString()}
+                          primaryTypographyProps={{
+                            color: "black",
+                            fontSize: "0.9rem",
+                          }}
+                        />
+                      </ListItem>
+                    ))
+                ) : (
+                  <Typography sx={{ mt: 2, color: "black" }}>
+                    Nothing planned for the day. <br /> Enjoy!
+                  </Typography>
+                )}
+              </List>
             </Box>
 
             {/* FullCalendar */}
@@ -271,7 +310,7 @@ const Calendar = () => {
                 eventClick={handleEventClick}
                 eventMouseEnter={handleMouseEnter}
                 eventMouseLeave={handleMouseLeave}
-                events={fetchedAppointments} 
+                events={fetchedAppointments}
                 eventsSet={(events) => setCurrentEvents(events)}
               />
               {/* nag appear kapag tignan appointment sa calendar */}
@@ -282,8 +321,8 @@ const Calendar = () => {
                     top: popup.y + 10,
                     left: popup.x + 10,
                     backgroundColor: "white",
-                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                    borderRadius: "5px",
+                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                    borderRadius: "8px",
                     padding: "10px",
                     zIndex: 1000,
                   }}
@@ -294,12 +333,15 @@ const Calendar = () => {
                     {popup.title}
                   </Typography>
                   <Typography variant="body2">
-                    {new Date(popup.start).toLocaleString()} -{" "}
-                    {new Date(popup.end).toLocaleString()}
+                    {new Date(popup.start).toLocaleString()}
                   </Typography>
                   <Typography variant="body2">Email: {popup.email}</Typography>
-                  <Typography variant="body2">Contact: {popup.contact}</Typography>
-                  <Typography variant="body2">Type: {popup.consultationType}</Typography>
+                  <Typography variant="body2">
+                    Contact: {popup.contact}
+                  </Typography>
+                  <Typography variant="body2">
+                    Type: {popup.consultationType}
+                  </Typography>
                   <Typography>Info: {popup.additionalInfo}</Typography>
                   <Typography>Platform: {popup.platform}</Typography>
                   <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
@@ -313,31 +355,37 @@ const Calendar = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        console.log("Edit clicked for event:", popup.title);
+                        //handleEdit
                       }}
                     >
                       Edit
                     </button>
-                    <button
-                      style={{
-                        backgroundColor: "#f44336",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        console.log("Delete clicked for event:", popup.title);
-                      }}
+                    <Button
+                      onClick={() => handleDeleteClick(popup.id)}
+                      color="error"
+                      variant="contained"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </Box>
                 </Box>
               )}
             </Box>
           </Box>
+
+          <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+              Are you sure you want to delete this appointment? This action
+              cannot be undone.
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={cancelDelete}>Cancel</Button>
+              <Button onClick={confirmDelete} color="error">
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </div>
     </div>

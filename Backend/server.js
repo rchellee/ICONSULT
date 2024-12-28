@@ -1204,26 +1204,27 @@ app.get("/appointments", (req, res) => {
 });
 
 app.delete("/appointments/:id", (req, res) => {
-  const appointmentId = req.params.id;
-  const deleteSql = `DELETE FROM appointments WHERE id = ?`;
+  const { id } = req.params;
 
-  db.query(deleteSql, [appointmentId], (err, result) => {
+  if (!id) {
+    return res.status(400).json({ message: "Invalid appointment ID" });
+  }
+
+  const deleteSql = `
+        DELETE FROM appointments WHERE id = ?
+    `;
+
+  db.query(deleteSql, [id], (err, result) => {
     if (err) {
       console.error("Error deleting appointment:", err);
-      return res
-        .status(500)
-        .json({ message: "Failed to delete appointment", error: err });
+      return res.status(500).json({ message: "Failed to delete appointment" });
     }
 
-    const jobId = `${appointmentId}-reminder`;
-    if (scheduledTasks[jobId]) {
-      scheduledTasks[jobId].stop();
-      delete scheduledTasks[jobId];
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Appointment not found" });
     }
 
-    return res
-      .status(200)
-      .json({ message: "Appointment and reminder deleted successfully" });
+    return res.status(200).json({ message: "Appointment deleted successfully" });
   });
 });
 
