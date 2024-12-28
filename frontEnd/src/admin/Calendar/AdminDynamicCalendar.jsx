@@ -43,6 +43,7 @@ const AdminDynamicCalendar = ({ availableDates, onDateSelect }) => {
 
     // Current month's dates
     for (let i = 1; i <= lastDateOfMonth; i++) {
+      const dateObj = new Date(year, month, i);
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
         i
       ).padStart(2, "0")}`;
@@ -50,7 +51,8 @@ const AdminDynamicCalendar = ({ availableDates, onDateSelect }) => {
       calendarDays.push({
         date: i,
         currentMonth: true,
-        available: status !== "fullyBooked",
+        available:
+          dateObj > today && status !== "fullyBooked",
         fullyBooked: status === "fullyBooked",
         dateStr,
       });
