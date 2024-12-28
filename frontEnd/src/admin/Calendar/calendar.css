@@ -11,7 +11,7 @@
 }
 
 .admin-appointment-form-container {
-  margin: 40px auto; /* Center horizontally */
+  margin: 40px auto; 
   padding: 20px;
 }
 
@@ -227,21 +227,6 @@ header .current-date{
 }
 .days li:not(.active):hover::before{
   background: #f2f2f2;
-}
-.available {
-  background-color: #85a8ee;
-  color: white;
-  cursor: pointer;
-}
-
-.available:hover {
-  background-color: #062459;
-  color: #f0f0f0;
-}
-
-.selected {
-  background-color: #101f6a; /* Color for selected dates */
-  color: white;
 }
 
   .fully-booked {
