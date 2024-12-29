@@ -14,7 +14,6 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
   const renderCalendar = () => {
     const year = currDate.getFullYear();
     const month = currDate.getMonth();
-
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
     const lastDayOfMonth = new Date(year, month, lastDateOfMonth).getDay();

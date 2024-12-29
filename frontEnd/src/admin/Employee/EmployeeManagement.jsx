@@ -6,8 +6,10 @@ import Sidebar from "../sidebar";
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
-  const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [toastVisible, setToastVisible] = useState(false); // State for toast visibility
 
   // Fetch employees from the database when the component mounts
   useEffect(() => {
@@ -24,16 +26,13 @@ const EmployeeManagement = () => {
     fetchEmployees();
   }, []);
 
-  const toggleForm = () => {
-    setIsFormVisible(!isFormVisible);
-  };
-
   const viewEmployeeDetails = (employee) => {
     setSelectedEmployee(employee);
   };
 
   const goBackToList = () => {
     setSelectedEmployee(null);
+    setShowForm(false);
   };
 
   const toggleStatus = async (employeeId, currentStatus) => {
@@ -70,81 +69,100 @@ const EmployeeManagement = () => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  // Filter employees based on search term
+  const filteredEmployees = employees.filter((employee) =>
+    `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleEmployeeAdded = () => {
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 3000); // Auto-hide after 3 seconds
+  };
+
   return (
     <div className="employee-home-page">
       <Sidebar />
       <div className="employee-content">
-        {selectedEmployee ? (
+        {showForm ? (
+          <EmployeeForm
+            employees={employees}
+            setEmployees={setEmployees}
+            toggleForm={() => setShowForm(false)}
+            onEmployeeAdded={handleEmployeeAdded} // Callback for adding employee
+          />
+        ) : selectedEmployee ? (
           <EmployeeDetails
             employee={selectedEmployee}
             goBack={goBackToList}
           />
         ) : (
           <>
-            {/* Button to toggle employee form */}
-            <button onClick={toggleForm} className="add-employee-btn">
-              {isFormVisible ? "Cancel" : "Add Employee"}
+            <button onClick={() => setShowForm(true)} className="add-employee-btn">
+              Add Employee
             </button>
-
-            {isFormVisible && (
-              <EmployeeForm
-                employees={employees}
-                setEmployees={setEmployees}
-                toggleForm={toggleForm}
-              />
-            )}
-
-            {!isFormVisible && (
-              <>
-                {employees.length === 0 ? (
-                  <p>No employees added yet.</p>
-                ) : (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Role</th> {/* Added Role column */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {employees.map((employee, index) => (
-                        <tr key={index}>
-                          {/* Initials displayed in Name column */}
-                          <td
-                            onClick={() => viewEmployeeDetails(employee)}
-                          >
-                            <div
-                              className="initials-circle"
-                              style={{ backgroundColor: generateRandomColor() }}
-                            >
-                              {getInitials(employee.firstName, employee.lastName)}
-                            </div>
-                            {employee.firstName} {employee.lastName}
-                          </td>
-                          
-                          {/* Status Toggle Column */}
-                          <td>
-                            <label className="toggle-btn">
-                              <input
-                                type="checkbox"
-                                checked={employee.status === "active"}
-                                onChange={() => toggleStatus(employee.id, employee.status)}
-                              />
-                              <span className="slider"></span>
-                            </label>
-                          </td>
-
-                          {/* Role Column */}
-                          <td>{employee.role || "role 1"}</td> {/* Default to "role 1" */}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </>
+            <input
+              type="text"
+              placeholder="Search employee"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-bar"
+            />
+            {filteredEmployees.length === 0 ? (
+              <p>No matching employees found.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredEmployees.map((employee, index) => (
+                    <tr key={index}>
+                      <td onClick={() => viewEmployeeDetails(employee)}>
+                        <div
+                          className="initials-circle"
+                          style={{ backgroundColor: generateRandomColor() }}
+                        >
+                          {getInitials(employee.firstName, employee.lastName)}
+                        </div>
+                        {employee.firstName} {employee.lastName}
+                      </td>
+                      <td>
+                        <label className="toggle-btn">
+                          <input
+                            type="checkbox"
+                            checked={employee.status === "active"}
+                            onChange={() => toggleStatus(employee.id, employee.status)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </td>
+                      <td>{employee.role || "role 1"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </>
+        )}
+        {/* Toast Notification */}
+        {toastVisible && (
+          <div className="toast active">
+            <div className="toast-content">
+              <i className="fas fa-solid fa-check check"></i>
+              <div className="message">
+                <div className="text text-2">Success, your employee has been added.</div>
+              </div>
+            </div>
+            <i
+              className="fa-solid fa-xmark close"
+              onClick={() => setToastVisible(false)}
+            ></i>
+            <div className="progress active"></div>
+          </div>
         )}
       </div>
     </div>

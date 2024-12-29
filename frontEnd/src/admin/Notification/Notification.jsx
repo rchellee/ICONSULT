@@ -115,9 +115,9 @@ const Notification = () => {
                     >
                       <h4>{notification.title}</h4>
                       <p>{notification.description}</p>
-                      <span className="notification-time">
+                      <div className="notification-time">
                         {formatDate(notification.timestamp)}
-                      </span>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -137,9 +137,9 @@ const Notification = () => {
                     >
                       <h4>{notification.title}</h4>
                       <p>{notification.description}</p>
-                      <span className="notification-time">
+                      <div className="notification-time">
                         {formatDate(notification.timestamp)}
-                      </span>
+                      </div>
                     </li>
                   ))}
                 </ul>

@@ -1,6 +1,6 @@
 /* General styles */
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f4f4f9;
@@ -9,7 +9,7 @@ body {
 }
 
 .client-home-page {
-  display: flex;
+  /* display: flex; */
   height: 100%;
   font-family: "Poppins", sans-serif;
   font-size: 0.90rem; 

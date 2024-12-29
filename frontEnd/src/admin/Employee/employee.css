@@ -10,6 +10,22 @@
   padding-left: 100px;
 }
 
+/* Top bar and search bar */
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start; 
+
+}
+
+.search-bar {
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid #ccc;
+  margin-left: 900px;
+
+}
+
 /* Button styles */
 button {
   background-color: #0f2d4d;
@@ -25,7 +41,42 @@ button {
 button:hover {
   opacity: 0.9;
 }
+/* Toast notif  */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #28a745;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  display: none;
+}
 
+.toast.active {
+  display: block;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  margin-left: 10px;
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background-color: #ddd;
+  margin-top: 10px;
+}
+
+.progress.active {
+  width: 100%;
+  animation: progress 5s linear;
+}
 /* EmployeeForm.jsx */
 form {
   background-color: white;

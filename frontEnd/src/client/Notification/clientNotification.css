@@ -56,18 +56,14 @@
   .filter-button {
     padding: 5px 10px;
     border: 1px solid #ccc;
-    background-color: #f9f9f9;
     cursor: pointer;
     border-radius: 5px;
   }
   
   .filter-button.active {
-    background-color: #007bff;
+    background-color: #042749;
     color: #fff;
-    border-color: #007bff;
   }
   
-  .filter-button:hover {
-    background-color: #e6e6e6;
-  }
+
   
