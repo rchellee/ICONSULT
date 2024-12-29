@@ -26,12 +26,8 @@ h1 {
 
 .project-grid {
   display: grid;
-<<<<<<< HEAD
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Wider boxes */
-=======
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Flexibility for responsive design */
   gap: 20px;
->>>>>>> bautista
   justify-content: flex-start;
   align-items: flex-start;
   margin-left: 50px; /* Adds margin between the grid and the content */
