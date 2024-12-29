@@ -1,21 +1,21 @@
 .truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 122px; /* Adjust width as needed */
-    display: inline-block; /* Necessary for text-overflow to work */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 122px; /* Adjust width as needed */
+  display: inline-block; /* Necessary for text-overflow to work */
 }
 
 .truncate:hover {
-    overflow: visible;
-    white-space: normal; /* Allow text to wrap */
-    z-index: 1; /* Bring tooltip above other elements */
+  overflow: visible;
+  white-space: normal; /* Allow text to wrap */
+  z-index: 1; /* Bring tooltip above other elements */
 }
 
 .project-management-page {
-    /* display: flex; 
+  /* display: flex; 
     height: 100vh;  */
-    margin: 0 20px; 
+  margin: 0 20px;
 }
 
 /* button din for add client */
@@ -27,295 +27,335 @@
     justify-content: flex-start;
 }
 
-
 h1 {
-    margin-top: 20px; 
-    margin-bottom: 10px;
-    padding: 0;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding: 0;
 }
 
-
 .create-button {
-    background-color: #3a9b9a; 
-    color: white; 
-    border: none;
-    padding: 10px 20px; 
-    text-align: center; 
-    text-decoration: none; 
-    display: inline-flex; 
-    align-items: center; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    font-size: 16px; 
-    margin-top: 10px; 
+  background-color: #3a9b9a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 .create-button:hover {
-    background-color: #51d1eb; 
+  background-color: #51d1eb;
 }
 
 .create-button .icon {
-    margin-right: 8px; 
-} 
+  margin-right: 8px;
+}
 
 /* notification box styles *****************************************************************/
 
-
-
 /*eto sa no project created yet*/
 .no-projects-message {
-    font-size: 30px; 
-    text-align: center; 
-    color: #333; 
-    margin-top: 20px; 
+  font-size: 30px;
+  text-align: center;
+  color: #333;
+  margin-top: 20px;
 }
 
 /* eto yung pag mag create ng project**************************************************/
 
 .modal-overlay {
-    position: fixed; 
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden;
 }
 
 .modal-content {
-    background-color: white; 
-    padding: 20px; 
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-    width: 400px; 
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  overflow: hidden;
 }
 
 .modal-title {
-    text-align: center; 
-    margin: 0; 
-    margin-bottom: 20px; 
-    font-size: 24px; 
+  text-align: center;
+  margin: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
 
 .modal-field {
-    margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .modal-field label {
-    display: block; 
-    margin-bottom: 10px; 
-    font-size: 18px; 
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 
 .modal-field input {
-    width: 100%; 
-    padding: 15px; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
-    font-size: 18px; 
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 18px;
 }
 
 .modal-actions {
-    display: flex; 
-    justify-content: space-between; 
+  display: flex;
+  justify-content: space-between;
 }
 
 .cancel-button,
 .create-button {
-    background-color: #7eb3de; 
-    color: rgb(255, 255, 255); 
-    border: none; 
-    padding: 15px 30px; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    font-size: 18px; 
-    height: 50px; 
+  background-color: #7eb3de;
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  height: 50px;
 }
 
 .cancel-button {
-    background-color: red; 
+  background-color: red;
 }
 
 .cancel-button:hover,
 .create-button:hover {
-    background-color: #51d1eb; 
+  background-color: #51d1eb;
 }
 
 .cancel-button {
-    background-color: red; 
-    margin-top: 10px; 
+  background-color: red;
+  margin-top: 10px;
 }
 
-ct-list-header h3:nth-child(3) { /* Client */
-    width: 25%;
+ct-list-header h3:nth-child(3) {
+  /* Client */
+  width: 25%;
 }
 
 /*PROJECT CSS-------------------------------------------*/
 .project-list {
-    /* width: 100%; Full width of the container */
-    max-width: 1500px; /* Set a maximum width for the table */
-    margin: -50px 0 0 0; /* Remove centering and move the table to the left */
-    border-collapse: collapse; /* Ensures borders are collapsed */
-    margin-left: 300px;
-    
+  margin: -50px 0 0 0; /* Remove centering and move the table to the left */
+  border-collapse: collapse; /* Ensures borders are collapsed */
+  margin-left: 300px;
+  overflow: hidden;
 }
-
 
 .project-list-header,
 .project-item {
-    display: table-row; /* Ensures they behave like table rows */
+  display: table-row; /* Ensures they behave like table rows */
 }
-
 
 .project-list-header h3,
 .project-item p {
-    display: table-cell; /* Ensures they behave like table cells */
-    padding: 15px; /* Adds padding inside cells */
-    border: 1px solid #ccc; /* Adds border for better visibility */
-    overflow: hidden; /* Ensures text doesn't overflow */
-    text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
-    white-space: nowrap; /* Prevents wrapping of text */
+  display: table-cell;
+  padding: 15px;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
 .project-item p:nth-child(2) {
-    width: 200px; /* Fixed width for Project Name */
+  width: 200px; /* Fixed width for Project Name */
 }
 
 .project-list-header h3:nth-child(3), /* Client */
 .project-item p:nth-child(3) {
-    width: 200px; /* Fixed width for Client */
+  width: 200px; /* Fixed width for Client */
 }
 
 /* Other column widths */
 .project-list-header h3:nth-child(1), /* ID */
 .project-item p:nth-child(1) {
-    width: 100px; /* Fixed width for ID */
+  width: 100px; /* Fixed width for ID */
 }
 
 .project-list-header h3:nth-child(4), /* Progress */
 .project-item p:nth-child(4) {
-    width: 150px; /* Fixed width for Progress */
+  width: 150px; /* Fixed width for Progress */
 }
 
 .project-list-header h3:nth-child(5), /* Date Start */
 .project-item p:nth-child(5) {
-    width: 200px; /* Fixed width for Date Start */
+  width: 200px; /* Fixed width for Date Start */
 }
 
 .project-list-header h3:nth-child(6), /* Status */
 .project-item p:nth-child(6) {
-    width: 150px; /* Fixed width for Status */
+  width: 150px; /* Fixed width for Status */
 }
 
 .project-list-header h3:nth-child(7), /* Action */
 .project-item p:nth-child(7) {
-    width: 150px; /* Fixed width for Action */
+  width: 150px; /* Fixed width for Action */
 }
 
-/* Container for Sort, Details, and Search */
+.project-list-scrollable {
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.project-list-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
 .sort-button-container {
-    display: flex; /* Use flex layout to align items side by side */
-    align-items: center; /* Center items vertically */
-    gap: 10px; /* Add space between elements */
-    margin-bottom: 50px; /* Adds space below the container */
-    justify-content: flex-start; /* Aligns buttons to the left */
-    margin-left: 1px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 50px;
+  justify-content: flex-start;
+  margin-left: 1px;
 }
 
-.sort-button, .detail-button {
-    padding: 12px 16px; /* Uniform padding for buttons */
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+.sort-button,
+.detail-button {
+  padding: 12px 16px; /* Uniform padding for buttons */
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .sort-button {
-    background-color: #8cbdf2;
-    transition: background-color 0.3s;
-    width: 100px;
+  background-color: #8cbdf2;
+  transition: background-color 0.3s;
+  width: 100px;
 }
 
 .detail-button {
-    background-color: #b1d1d1;
-    color: white;
-    width: 100px;
+  background-color: #b1d1d1;
+  color: white;
+  width: 100px;
 }
 
 .sort-button:hover {
-    background-color: #7aa8d8;
+  background-color: #7aa8d8;
 }
 
 .detail-button:hover {
-    background-color: #51d1eb;
+  background-color: #51d1eb;
 }
 
-/* Search box styling */
 .search-box-container {
-    flex-grow: 1; /* Allows the search box to take up remaining space */
-    max-width: 400px; /* Optional: Limit max width */
-    margin-left: 805px;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 20px 0;
 }
 
+/* Input field for the search box */
 .search-box {
-    width: 200%;
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+  position: absolute;
+  bottom: 30px;
+  left: 600px;
+  width: 250%;
+  max-width: 500px;
+  height: 50px;
+  padding: 15px;
+  font-size: 15px;
+  border: 2px solid #3498db;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
 }
 
+.search-box:focus {
+  border-color: #7fbcf6;
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
+}
 
 /* LEFT SIDE PROJECT NAMES */
+
+/* Folder Title */
 .folder-title {
-    font-size: 20px; /* Make Folder title slightly larger */
-    font-weight: bold;
-    margin-bottom: -20px; /* Adjust space after the title */
-    position: relative; /* Allows control of its position */
-    top: -40px; /* Adjust this to move the title down or up */
-    left: 0; /* Adjust this to move the title horizontally if needed */
-    /* You can add other positioning properties like `right`, `bottom` here if necessary */
+  font-size: 20px; /* Make Folder title slightly larger */
+  font-weight: bold;
+  margin-bottom: 10px; /* Adjust space after the title */
+  position: relative;
+  top: 5px; /* Keep the folder title at the top */
 }
 
+/* Project Folders Section */
 .project-names-section {
-    margin-top: 30px;
-    padding: 15px;
-    position: absolute;
-    margin-left: 10px;
-    margin-top: 230px;
+  margin-top: 30px;
+  padding: 15px;
+  position: absolute;
+  margin-left: 10px;
+  margin-top: 100px;
+  width: 250px; /* Adjust the width as needed */
 }
 
+/* Scroll Container for Folders */
+.folders-scroll-container {
+  max-height: 550px; /* Set the max height of the scrollable area */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
+  position: relative;
+}
+
+/* Shift the scrollbar to the right */
+.folders-scroll-container::-webkit-scrollbar {
+  width: 12px; /* Adjust scrollbar width */
+}
+
+.folders-scroll-container::-webkit-scrollbar-track {
+  background: #b4bad5; /* Optional: Make track transparent */
+}
+
+.folders-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #547099; /* Color of the scrollbar */
+  border-radius: 10px; /* Rounded edges for the scrollbar */
+}
+
+/* Move the scrollbar to the right by adding margin */
+.folders-scroll-container::-webkit-scrollbar {
+  margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
+}
+
+/* Individual Folder Item */
 .project-name-item {
-    padding: 12px;
-    transition: background-color 0.3s;
-    cursor: pointer;
-    margin-bottom: 1px;
-    position: relative;
+  padding: 12px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  margin-bottom: 1px;
+  position: relative;
 }
 
+/* Hover Effect */
 .project-name-item:hover {
-    background-color: #b0f0f8;
+  background-color: #d2cfcfc7;
 }
 
+/* No Border for Last Folder */
 .project-name-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
-.project-name-item::before {
-    content: '> ';
-    color: #333;
-    font-weight: bold;
-    margin-right: 5px;
-}
-
+/* Additional Styling for Folder Search Box (if needed) */
 .search-box-container {
-    position: absolute; /* Keeps the sort button inline */  
-
+  position: absolute;
+  /* Keeps the sort button inline */
 }
-

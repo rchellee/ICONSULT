@@ -1,0 +1,238 @@
+/* Center the form and make it float */
+.project-form {
+  margin-left: 10px;
+}
+.taskFormContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: fixed; 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(206, 204, 204, 0.5);
+}
+
+.taskForm {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 800px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  margin-left: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.taskInputGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.taskInput {
+  width: 50%; 
+  margin-right: 10px;
+}
+
+.taskInput label {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.taskInput input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.employee {
+  width: 100%;
+}
+
+.taskFee {
+  width: 20%;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.additionalFee {
+  width: 100%;
+  margin-left: 10px;
+}
+
+/* Styles for Additional Fee section */
+.additionalFeeContainer {
+  display: flex;
+  gap: 10px; 
+}
+
+.additionalFee input {
+  width: 48%; 
+}
+
+.feeName {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.feeAmount {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button Styles */
+.taskForm button {
+  padding: 8px 20px;
+  font-size: 15px;    
+  background-color: transparent; 
+  color: rgb(21, 130, 150);
+  font-weight: 600;
+  border: none;
+  border-radius: 4px; 
+  cursor: pointer;
+  margin-top: 10px;
+  width: auto;
+}
+
+.taskForm button:hover {
+  background-color: #f5f5f5;  
+}
+
+.createButton {
+  background-color: transparent;
+  padding: 8px 20px;
+  font-size: 14px;
+  width: auto; 
+  border-radius: 4px; 
+  cursor: pointer;
+  margin-left: 10px; 
+}
+
+.taskForm .cancelButton {
+  background-color: transparent;
+  margin-left: 500px;
+  padding: 8px 20px;
+  font-size: 14px;    
+  width: auto; 
+  align-self: flex-start; 
+}
+
+.taskForm .cancelButton:hover {
+  background-color: #f5f5f5; 
+}
+
+/* Container for buttons */
+.buttonContainer {
+  display: flex;
+  justify-content: space-between; 
+  margin-top: 15px; 
+}
+
+/* Wrapper to align the input and icon */
+.employeeInputWrapper {
+  position: relative;
+  width: 50%; 
+}
+
+/* Style the input box to ensure there's space for the icon */
+.employeeInputWrapper input {
+  width: 100%; 
+  padding-right: 30px; 
+  padding-left: 10px; 
+}
+
+/* Style the dropdown icon to position it inside the input box */
+.dropdownIcon {
+  position: absolute;
+  right: 10px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  font-size: 1.2rem; 
+  color: #888; 
+  cursor: pointer; 
+}
+
+
+
+/* Container for the miscellaneous items list */
+.miscellaneousList {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: transparent;
+}
+
+.miscellaneousList h4 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.miscellaneousItem {
+  background-color: #eaf0f8; 
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+/* Hover effect for each item */
+.miscellaneousItem:hover {
+  background-color: #e7e8e9; 
+  cursor: pointer;
+}
+
+.removeIcon {
+  cursor: pointer;
+  color: red;
+  transition: color 0.3s;
+}
+
+.removeIcon:hover {
+  color: darkred;
+}
+
+/* Container for the miscellaneous items list, making it scrollable */
+
+
+.scrollableMiscellaneousList {
+  max-height: 200px;
+  overflow-y: auto; 
+  margin-top: 10px; 
+  padding-right: 10px; 
+}
+
+/* Style for the scrollbar track */
+.scrollableMiscellaneousList::-webkit-scrollbar {
+  width: 11px; 
+}
+
+/* Style for the scrollbar itself */
+.scrollableMiscellaneousList::-webkit-scrollbar-thumb {
+  background-color: #97c1f7; 
+  border-radius: 10px; 
+  border: 2px solid #fff; 
+}
+
+/* Style for the scrollbar when hovered */
+.scrollableMiscellaneousList::-webkit-scrollbar-thumb:hover {
+  background-color: #aecffa; 
+}
+
+/* Optional: Style for the scrollbar track (the empty area) */
+.scrollableMiscellaneousList::-webkit-scrollbar-track {
+  background-color: #f8f8f8; 
+  border-radius: 10px;
+}

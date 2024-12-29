@@ -1,25 +1,85 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaChevronDown, FaChevronRight } from "react-icons/fa"; // Import icons
 import Sidebar from "../sidebar";
 import "./project.css";
 
 function Project() {
+  const navigate = useNavigate();
+  const [isProjectsVisible, setIsProjectsVisible] = useState(true); // State for Projects toggle
+  const [isCompletedVisible, setIsCompletedVisible] = useState(false); // State for Completed toggle
+
+  const handleTrackingClick = () => {
+    navigate("/tracking");
+  };
+
+  const toggleProjectsVisibility = () => {
+    setIsProjectsVisible(!isProjectsVisible); // Toggle Projects section
+  };
+
+  const toggleCompletedVisibility = () => {
+    setIsCompletedVisible(!isCompletedVisible); // Toggle Completed section
+  };
+
   return (
     <div className="client-project-page">
       <Sidebar />
       <div className="content">
-        <div className="project-grid">
-          <div className="project-box">
-            <div className="project-header">
-              <div className="logo-box">P1</div>
-              <h2 className="project-title">Project 1</h2>
-            </div>
-            <div className="project-info">
-              <p>Status: On-going</p>
-              <p>Progress: 10%</p>
-            </div>
-          </div>
-          {/* Add more project boxes as needed */}
+        {/* Projects Toggle Section with a separate class */}
+        <div className="toggle-button-projects" onClick={toggleProjectsVisibility}>
+          {isProjectsVisible ? <FaChevronDown /> : <FaChevronRight />} Projects
         </div>
+
+        {isProjectsVisible && (
+          <div className="project-grid-container">
+            <div className="project-grid">
+              <div className="project-box" onClick={handleTrackingClick}>
+                <div className="project-header">
+                  <div className="logo-box">P1</div>
+                  <h2 className="project-title">Project 1</h2>
+                </div>
+                <div className="project-info">
+                  <p>Status: On-going</p>
+                  <p>Progress: 10%</p>
+                </div>
+              </div>
+            </div>
+            <div className="project-grid">
+              <div className="project-box" onClick={handleTrackingClick}>
+                <div className="project-header">
+                  <div className="logo-box">P2</div>
+                  <h2 className="project-title">Project 2</h2>
+                </div>
+                <div className="project-info">
+                  <p>Status: On-going</p>
+                  <p>Progress: 30%</p>
+                </div>
+              </div>
+            </div>
+            {/* Add more project boxes as needed */}
+          </div>
+        )}
+
+        {/* Completed Toggle Section with a separate class */}
+        <div className="toggle-button-completed" onClick={toggleCompletedVisibility}>
+          {isCompletedVisible ? <FaChevronDown /> : <FaChevronRight />} Completed
+        </div>
+
+        {isCompletedVisible && (
+          <div className="project-grid">
+            <div className="project-box">
+              <div className="project-header">
+                <div className="logo-box">C1</div>
+                <h2 className="project-title">Completed Project 1</h2>
+              </div>
+              <div className="project-info">
+                <p>Status: Completed</p>
+                <p>Progress: 100%</p>
+              </div>
+            </div>
+            {/* Add more completed project boxes as needed */}
+          </div>
+        )}
       </div>
     </div>
   );

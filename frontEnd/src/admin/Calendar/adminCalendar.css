@@ -1,0 +1,224 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+.appointment-form-container {
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.calendar-form-container {
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.content {
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
+
+.form-group {
+  margin-bottom: 5px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+input,
+textarea {
+  width: 50%;
+  padding: 8px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 43px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button + button {
+  margin-left: 10px;
+}
+
+.calendar-date {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.calendar-date.available {
+  background-color: #d4edda; /* Green for available */
+  color: #050c2f;
+}
+
+.calendar-date.unavailable {
+  background-color: #f8d7da; /* Red for unavailable */
+  color: #721c24;
+  cursor: not-allowed;
+}
+
+.time-slots-admin {
+  padding: 10px 15px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.time-slots-admin.booked {
+  background-color: #ffcccc; /* Light red for booked slots */
+  cursor: not-allowed;
+}
+
+.time-slots-admin.selected {
+  background-color: #90ee90; /* Light green for selected slot */
+  font-weight: bold;
+}
+
+.time-slots-admin h4 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.wrapper-admin {
+  width: 1000px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+.wrapper header {
+  display: flex;
+  align-items: center;
+  padding: 25px 30px 10px;
+  justify-content: space-between;
+}
+header .icons {
+  display: flex;
+}
+header .icons span {
+  height: 38px;
+  width: 38px;
+  margin: 0 1px;
+  cursor: pointer;
+  color: #878787;
+  text-align: center;
+  line-height: 38px;
+  font-size: 1.9rem;
+  user-select: none;
+  border-radius: 50%;
+}
+.icons span:last-child {
+  margin-right: -10px;
+}
+header .icons span:hover {
+  background: #f2f2f2;
+}
+header .current-date {
+  /*   */
+  font-weight: 700;
+}
+.calendar {
+  padding: 20px;
+}
+.calendar ul {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  text-align: center;
+}
+.calendar .days {
+  margin-bottom: 20px;
+}
+.calendar li {
+  color: #333;
+  width: calc(100% / 7);
+}
+.calendar .weeks li {
+  font-weight: 500;
+  cursor: default;
+}
+.calendar .days li {
+  z-index: 1;
+  cursor: pointer;
+  position: relative;
+  margin-top: 20px;
+}
+.calendar .days li.selected-date {
+  border: 2px solid #0f3a68;
+}
+.days li.inactive {
+  color: #aaa;
+}
+.days li.active {
+  color: #fff;
+}
+.days li::before {
+  content: "";
+  left: 50%;
+  top: 50%;
+  height: 40px;
+  width: 40px;
+  z-index: -1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.days li.active::before {
+  background: #231f88;
+}
+.days li:not(.active):hover::before {
+  background: #f2f2f2;
+}
+
+.available {
+  color: white;
+  cursor: pointer;
+}
+
+.available:hover {
+  background-color: rgb(133, 168, 238);
+  color: #f0f0f0;
+}
+
+.selected {
+  background-color: rgb(133, 168, 238);
+  color: white;
+}
+
+.fully-booked {
+  background-color: red;
+  color: white;
+  pointer-events: none;
+}
+
+.unavailable {
+  background-color: white;
+  pointer-events: none;
+}
+
+.inactive {
+  background-color: transparent;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.unavailable,
+.inactive,
+.disabled {
+  pointer-events: none;
+  color: gray;
+  opacity: 0.6;
+}

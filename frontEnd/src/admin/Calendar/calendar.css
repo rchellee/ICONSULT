@@ -10,6 +10,11 @@
   font-size: 30px;
 }
 
+.admin-appointment-form-container {
+  margin: 40px auto; 
+  padding: 20px;
+}
+
 /* Style for the Box that contains the Button and Menu */
 .menu-container {
   display: flex;
@@ -50,7 +55,7 @@ button {
   padding: 10px 20px;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 43px;
   cursor: pointer;
 }
 
@@ -134,8 +139,8 @@ button + button {
     color: #fcf9f9;
   }
 
-.wrapper{
-  width: 550px;
+.wrapper-admin{
+  width: 1000px;
   background: #fff;
   border-radius: 10px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.12);
@@ -250,55 +255,3 @@ header .current-date{
   }
 
 
-  /* Availability */
-  .selected-dates {
-    margin-top: 20px;
-    background-color: #f9f9f9;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-  }
-  
-  .selected-date-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  
-  .selected-date-item p {
-    margin-right: 10px;
-    font-weight: bold;
-  }
-  
-  .time-selectors {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .time-selectors select {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-  }
-  
-  span {
-    font-weight: bold;
-  }
-  
-  .submit-button {
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .submit-button:hover {
-    background-color: #45a049;
-  }
-  
-  

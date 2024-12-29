@@ -39,8 +39,12 @@ const ProjectList = ({
         <h3>Progress</h3>
         <h3>Timeline</h3>
         <h3>Status</h3>
-        <h3>Action</h3>
+        <h3>Downpayment</h3>
+        <h3>Total</h3>
+        <h3>Payment Status</h3>
+        <h3></h3>
       </div>
+      <div className="project-list-scrollable">
       {filteredProjects.map((project) => (
         <div key={project.id} className="project-item">
           <p className="truncate" title={project.projectName}>
@@ -51,10 +55,13 @@ const ProjectList = ({
           </p>
           <p>{project.progress}</p>
           <p>
-            {formatDate(project.startDate)} - {formatDate(project.endDate)}
+            {formatDate(project.startDate)} - <br /> {formatDate(project.endDate)}
           </p>
           <p>{project.status}</p>
-          <div className="action-menu">
+          <p>{project.downpayment || "N/A"}</p>
+          <p>{project.totalPayment}</p>
+          <p>{project.paymentStatus}</p>
+          <div className="action-project">
             <button
               className="action-menu-button"
               onClick={() => toggleDropdown(project.id)}
@@ -70,6 +77,7 @@ const ProjectList = ({
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 };

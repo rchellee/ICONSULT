@@ -19,6 +19,10 @@ import ChangePassword from "./Login/ChangePassword.jsx";
 import Transactions from './admin/Transaction/transactions.jsx';
 import Transaction from './client/Transactions/transaction.jsx'
 import ClientNotification from './client/Notification/ClientNotification.jsx'
+import Tracking from './client/project/tracking.jsx';
+import ProjectTask from './admin/Project/ProjectTask.jsx';
+
+
 
 // for google icons
 const link = document.createElement('link');
@@ -53,6 +57,8 @@ function App() {
         <Route path="/transact" element={<Transaction />} />
         <Route path="/client-notif" element={<ClientNotification />} />
 
+        <Route path="/tracking" element={<Tracking />} />
+        <Route path="/projecttask" element={<ProjectTask />} />
       </Routes>
     </Router>
   );

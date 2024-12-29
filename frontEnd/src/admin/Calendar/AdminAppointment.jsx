@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import Sidebar from "../sidebar"; // Import the Sidebar component
-import "./calendar.css";
-import Calendar from "./DynamicCalendar";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../sidebar";
+import "./adminCalendar.css";
+import Calendar from "./AdminDynamicCalendar";
 
 function AdminAppointment() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1); // Track the current step
+  const [currentStep, setCurrentStep] = useState(1);
+  const [timePeriod, setTimePeriod] = useState("");
   const [formData, setFormData] = useState({
     date: "",
     time: "",
@@ -15,48 +16,87 @@ function AdminAppointment() {
     reminder: "",
   });
 
-  const generateRandomAvailability = () => {
-    const today = new Date();
-    const dates = {};
-    for (let i = 0; i < 60; i++) {
-      // Current and next month
-      const date = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate() + i
-      );
-      const dateStr = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-      const rand = Math.random();
-      if (rand < 0.3) {
-        dates[dateStr] = "available";
-      } else if (rand < 0.6) {
-        dates[dateStr] = "fullyBooked";
-      }
-    }
-    return dates;
-  };
-
-  const [availableDates] = useState(generateRandomAvailability());
-
-  const times = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-  ];
+  const [availableDates, setAvailableDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
-  const handleDateSelect = (date) => {
+  const fetchAppointmentCounts = async () => {
+    try {
+      const response = await fetch("http://localhost:8081/appointments/count");
+      if (!response.ok) throw new Error("Failed to fetch appointment counts");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching appointment counts:", error);
+      return {};
+    }
+  };
+
+  useEffect(() => {
+    const loadAvailability = async () => {
+      const counts = await fetchAppointmentCounts();
+      const availability = {};
+      Object.entries(counts).forEach(([date, count]) => {
+        availability[date] = count < 3 ? "available" : "fullyBooked";
+      });
+      setAvailableDates(availability);
+    };
+
+    loadAvailability();
+  }, []);
+
+  const times = [
+    "07:00 AM",
+    "08:00 AM",
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "01:00 PM",
+    "02:00 PM",
+    "03:00 PM",
+    "04:00 PM",
+    "05:00 PM",
+    "06:00 PM",
+    "07:00 PM",
+  ];
+
+  const handleDateSelect = async (date) => {
     setSelectedDate(date);
     setFormData({ ...formData, date });
-    setAvailableTimes(times); // Adjust dynamically if necessary
+
+    try {
+      const response = await fetch(
+        `http://localhost:8081/appointments/times?date=${date}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch booked times");
+
+      const { bookedTimes } = await response.json();
+      const blockedTimes = new Set(bookedTimes);
+
+      bookedTimes.forEach((bookedTime) => {
+        const bookedIndex = times.indexOf(bookedTime);
+        if (bookedIndex !== -1) {
+          if (bookedIndex + 1 < times.length) blockedTimes.add(times[bookedIndex + 1]);
+          if (bookedIndex + 2 < times.length) blockedTimes.add(times[bookedIndex + 2]);
+        }
+      });
+
+      // Mark times as booked or available
+      const updatedTimes = times.map((time) => ({
+        time,
+        isBooked: blockedTimes.has(time),
+      }));
+
+      setAvailableTimes(updatedTimes);
+    } catch (error) {
+      console.error("Error fetching times for date:", error);
+      setAvailableTimes(times.map((time) => ({ time, isBooked: false }))); // Default to all available
+    }
+  };
+
+  const handleTimePeriodChange = (e) => {
+    setTimePeriod(e.target.value);
+    setFormData({ ...formData, time: "" }); // Reset time when period changes
   };
 
   const handleTimeSelect = (time) => {
@@ -78,45 +118,49 @@ function AdminAppointment() {
     const clientId = localStorage.getItem("clientId"); // Get clientId from local storage or context
 
     if (!clientId) {
-        alert("Client ID not found. Please log in.");
-        return;
+      alert("Client ID not found. Please log in.");
+      return;
     }
 
-    const formDataWithClientId = { ...formData, clientId, contact: formData.contact }; // Include clientId and contact
+    const formDataWithClientId = {
+      ...formData,
+      clientId,
+      contact: formData.contact,
+    }; // Include clientId and contact
 
     try {
-        const response = await fetch("http://localhost:8081/appointments", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formDataWithClientId),
-        });
+      const response = await fetch("http://localhost:8081/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formDataWithClientId),
+      });
 
-        if (!response.ok) {
-            throw new Error("Failed to save appointment");
-        }
+      if (!response.ok) {
+        throw new Error("Failed to save appointment");
+      }
 
-        const result = await response.json();
-        console.log("Appointment Submitted:", result);
-        alert("Appointment Confirmed!");
-        navigate("/clientdashboard");
+      const result = await response.json();
+      console.log("Appointment Submitted:", result);
+      alert("Appointment Confirmed!");
+      navigate("/clientdashboard");
 
-        // Reset the form
-        setCurrentStep(1);
-        setFormData({
-            date: "",
-            time: "",
-            consultationType: "",
-            additionalInfo: "",
-            reminder: "", 
-            client: "", 
-        });
+      // Reset the form
+      setCurrentStep(1);
+      setFormData({
+        date: "",
+        time: "",
+        consultationType: "",
+        additionalInfo: "",
+        reminder: "",
+        client: "",
+      });
     } catch (error) {
-        console.error("Error submitting appointment:", error);
-        alert("An error occurred. Please try again.");
+      console.error("Error submitting appointment:", error);
+      alert("An error occurred. Please try again.");
     }
-};
+  };
 
   return (
     <div className="appointment-form-container">
@@ -131,19 +175,50 @@ function AdminAppointment() {
                 onDateSelect={handleDateSelect}
               />
               {selectedDate && (
-                <div className="time-slots">
+                <div className="time-slots-admin">
                   <h4>Available Times for {selectedDate}</h4>
-                  {availableTimes.map((time) => (
-                    <button
-                      key={time}
-                      className={`time-slot ${
-                        formData.time === time ? "selected" : ""
-                      }`}
-                      onClick={() => handleTimeSelect(time)}
+                  <div className="time-dropdowns">
+                    <label htmlFor="timePeriod">Choose Time Format:</label>
+                    <select
+                      id="timePeriod"
+                      value={timePeriod}
+                      onChange={handleTimePeriodChange}
                     >
-                      {time}
-                    </button>
-                  ))}
+                      <option value="" disabled>
+                        -- Select --
+                      </option>
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+
+                  {timePeriod && (
+                    <div className="time-dropdowns">
+                      <label htmlFor="time">Select Time:</label>
+                      <select
+                        id="time"
+                        value={formData.time}
+                        onChange={(e) => handleTimeSelect(e.target.value)}
+                        disabled={!timePeriod}
+                      >
+                        <option value="" disabled>
+                          -- Select Time --
+                        </option>
+                        {availableTimes
+                          .filter(({ time }) => time.endsWith(timePeriod))
+                          .map(({ time, isBooked }) => (
+                            <option
+                              key={time}
+                              value={time}
+                              disabled={isBooked}
+                              className={isBooked ? "booked" : ""}
+                            >
+                              {time} {isBooked ? "(Booked)" : ""}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -297,8 +372,8 @@ function AdminAppointment() {
                 <option value="In-Person">In-Person</option>
                 <option value="Zoom">Zoom</option>
                 <option value="Google Meet">Google Meet</option>
-                <option value="Phone Call">Phone Call</option> 
-                <option value="Microsoft Teams">Microsoft Teams</option> 
+                <option value="Phone Call">Phone Call</option>
+                <option value="Microsoft Teams">Microsoft Teams</option>
               </select>
             </div>
 
@@ -345,8 +420,8 @@ function AdminAppointment() {
         {currentStep === 3 && (
           <div>
             <p>
-            <strong>Client:</strong> {formData.client}
-          </p>
+              <strong>Client:</strong> {formData.client}
+            </p>
             <p>
               <strong>Date:</strong> {formData.date}
             </p>
