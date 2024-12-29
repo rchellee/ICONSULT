@@ -8,12 +8,14 @@ function AdminAppointment() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [timePeriod, setTimePeriod] = useState("");
+  const [clients, setClients] = useState([]);
   const [formData, setFormData] = useState({
     date: "",
     time: "",
     consultationType: "",
     additionalInfo: "",
     reminder: "",
+    client: "",
   });
 
   const [availableDates, setAvailableDates] = useState({});
@@ -31,6 +33,18 @@ function AdminAppointment() {
     }
   };
 
+  const fetchClients = async () => {
+    try {
+      const response = await fetch("http://localhost:8081/clients");
+      if (!response.ok) throw new Error("Failed to fetch clients");
+      const clientData = await response.json();
+      console.log(clientData);
+      setClients(clientData);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    }
+  };
+
   useEffect(() => {
     const loadAvailability = async () => {
       const counts = await fetchAppointmentCounts();
@@ -42,6 +56,7 @@ function AdminAppointment() {
     };
 
     loadAvailability();
+    fetchClients();
   }, []);
 
   const times = [
@@ -76,8 +91,10 @@ function AdminAppointment() {
       bookedTimes.forEach((bookedTime) => {
         const bookedIndex = times.indexOf(bookedTime);
         if (bookedIndex !== -1) {
-          if (bookedIndex + 1 < times.length) blockedTimes.add(times[bookedIndex + 1]);
-          if (bookedIndex + 2 < times.length) blockedTimes.add(times[bookedIndex + 2]);
+          if (bookedIndex + 1 < times.length)
+            blockedTimes.add(times[bookedIndex + 1]);
+          if (bookedIndex + 2 < times.length)
+            blockedTimes.add(times[bookedIndex + 2]);
         }
       });
 
@@ -115,18 +132,36 @@ function AdminAppointment() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const clientId = localStorage.getItem("clientId"); // Get clientId from local storage or context
+    const client_Id = formData.client;
 
-    if (!clientId) {
-      alert("Client ID not found. Please log in.");
+    if (!client_Id) {
+      alert("Please select a client.");
       return;
     }
 
-    const formDataWithClientId = {
-      ...formData,
-      clientId,
-      contact: formData.contact,
-    }; // Include clientId and contact
+    const selectedClient = clients.find(
+      (client) => client.id === parseInt(client_Id)
+    );
+
+    if (!selectedClient) {
+      alert("Client not found. Please select a valid client.");
+      return;
+    }
+
+    const formDataWithClientName = {
+      date: formData.date,
+      time: formData.time,
+      name: `${selectedClient.firstName} ${selectedClient.lastName}`,
+      email: selectedClient.email_add,
+      contact: selectedClient.mobile_number,
+      consultationType: formData.consultationType,
+      additionalInfo: formData.additionalInfo || "",
+      platform: formData.platform || "",
+      clientId: client_Id, // Note: Correct field naming `clientId` as per backend
+      companyName: selectedClient.companyName || "",
+      reminder: formData.reminder || "",
+    };
+    console.log("Submitting appointment:", formDataWithClientName);
 
     try {
       const response = await fetch("http://localhost:8081/appointments", {
@@ -134,7 +169,7 @@ function AdminAppointment() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formDataWithClientId),
+        body: JSON.stringify(formDataWithClientName),
       });
 
       if (!response.ok) {
@@ -144,7 +179,7 @@ function AdminAppointment() {
       const result = await response.json();
       console.log("Appointment Submitted:", result);
       alert("Appointment Confirmed!");
-      navigate("/clientdashboard");
+      navigate("/calendar");
 
       // Reset the form
       setCurrentStep(1);
@@ -166,7 +201,6 @@ function AdminAppointment() {
     <div className="appointment-form-container">
       <Sidebar />
       <div className="content">
-        {/** Step 1: Date and Time **/}
         {currentStep === 1 && (
           <div>
             <div className="calendar-time-container">
@@ -230,8 +264,6 @@ function AdminAppointment() {
             </button>
           </div>
         )}
-
-        {/** Step 2: Consultation Details **/}
         {currentStep === 2 && (
           <div>
             <div className="form-group">
@@ -240,20 +272,31 @@ function AdminAppointment() {
                 id="client"
                 name="client"
                 value={formData.client}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const selectedClientId = e.target.value;
+                  const selectedClient = clients.find(
+                    (client) => client.id === parseInt(selectedClientId)
+                  );
+                  setFormData({
+                    ...formData,
+                    client: selectedClientId, // Set the client ID
+                    clientName: selectedClient
+                      ? `${selectedClient.firstName} ${selectedClient.lastName}`
+                      : "", // Set the client name for display purposes
+                  });
+                }}
                 required
               >
                 <option value="" disabled>
                   -- Select Client --
                 </option>
-                {/* Add your client options here */}
-                <option value="Client 1">Client 1</option>
-                <option value="Client 2">Client 2</option>
-                <option value="Client 3">Client 3</option>
-                {/* Example, you can dynamically populate this list from an API or local data */}
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    {client.firstName} {client.lastName}
+                  </option>
+                ))}
               </select>
             </div>
-
             <div className="form-group">
               <label htmlFor="consultationType">Consultation Type:</label>
               <select
@@ -420,7 +463,7 @@ function AdminAppointment() {
         {currentStep === 3 && (
           <div>
             <p>
-              <strong>Client:</strong> {formData.client}
+              <strong>Client:</strong> {formData.clientName}
             </p>
             <p>
               <strong>Date:</strong> {formData.date}

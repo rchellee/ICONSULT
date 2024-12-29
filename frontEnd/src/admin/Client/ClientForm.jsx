@@ -11,7 +11,7 @@ const ClientForm = ({
   showToast,
 }) => {
   const [formData, setFormData] = useState({
-    prefix: "Mr.", // Default prefix
+    prefix: "Mr.",
     lastName: "",
     middleInitial: "",
     firstName: "",

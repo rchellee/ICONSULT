@@ -5,6 +5,7 @@ const cron = require("node-cron");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
+const moment = require("moment");
 require("dotenv").config();
 
 const scheduledTasks = {};
@@ -813,12 +814,10 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
   db.query(recalculateSql, [id, id], (err, result) => {
     if (err) {
       console.error("Error recalculating totalPayment: ", err);
-      return res
-        .status(500)
-        .json({
-          message: "Error recalculating totalPayment",
-          error: err.message,
-        });
+      return res.status(500).json({
+        message: "Error recalculating totalPayment",
+        error: err.message,
+      });
     }
 
     res
@@ -904,12 +903,10 @@ app.post("/tasks", (req, res) => {
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating totalPayment: ", updateErr);
-          return res
-            .status(500)
-            .json({
-              message: "Error updating totalPayment",
-              error: updateErr.message,
-            });
+          return res.status(500).json({
+            message: "Error updating totalPayment",
+            error: updateErr.message,
+          });
         }
 
         res.status(201).json({
@@ -973,19 +970,15 @@ app.put("/tasks/:id", (req, res) => {
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating totalPayment: ", updateErr);
-          return res
-            .status(500)
-            .json({
-              message: "Error updating totalPayment",
-              error: updateErr.message,
-            });
+          return res.status(500).json({
+            message: "Error updating totalPayment",
+            error: updateErr.message,
+          });
         }
 
-        res
-          .status(200)
-          .json({
-            message: "Task updated successfully and totalPayment updated",
-          });
+        res.status(200).json({
+          message: "Task updated successfully and totalPayment updated",
+        });
       });
     }
   );
@@ -1047,42 +1040,19 @@ app.post("/appointments", (req, res) => {
     ],
     (err, result) => {
       if (err) {
-        console.error("Error inserting appointment:", err);
-        return res
-          .status(500)
-          .json({ message: "Failed to save appointment", error: err });
+        console.error("SQL Error:", err.sqlMessage);
+        return res.status(500).json({
+          message: "Failed to save appointment",
+          error: err.sqlMessage,
+        });
       }
 
       const appointmentId = result.insertId;
-      const appointmentDateTime = new Date(`${date}T${time}`);
-      let reminderTime = new Date(appointmentDateTime);
-
-      // Adjust reminderTime based on the reminder value
-      if (reminder === "5 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 5);
-      else if (reminder === "10 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 10);
-      else if (reminder === "15 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 15);
-      else if (reminder === "30 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 30);
-      else if (reminder === "1 hour before")
-        reminderTime.setHours(reminderTime.getHours() - 1);
-      else if (reminder === "1 day before")
-        reminderTime.setDate(reminderTime.getDate() - 1);
-      else if (reminder === "2 days before")
-        reminderTime.setDate(reminderTime.getDate() - 2);
-      else if (reminder === "1 week before")
-        reminderTime.setDate(reminderTime.getDate() - 7);
-
-      // Log the reminder time and cron expression for debugging
-      console.log("Reminder Time:", reminderTime);
-      console.log(
-        "Cron Expression:",
-        `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${
-          reminderTime.getMonth() + 1
-        } *`
-      );
+      // Parse date and time
+      const formattedDateTime = moment(`${date} ${time}`, "YYYY-MM-DD hh:mm A");
+      if (!formattedDateTime.isValid()) {
+        return res.status(400).json({ message: "Invalid date or time format" });
+      }
 
       const notificationSql = `
                 INSERT INTO notifications (title, description, timestamp, isRead)
@@ -1123,60 +1093,12 @@ app.post("/appointments", (req, res) => {
                   .status(500)
                   .json({ message: "Failed to save client notification" });
               }
-              // Schedule email reminder
-              const jobId = `${appointmentId}-reminder`;
-
-              scheduledTasks[jobId] = cron.schedule(
-                `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${
-                  reminderTime.getMonth() + 1
-                } *`,
-                () => {
-                  const message = {
-                    to: [email, "ritchelle.rueras@tup.edu.ph"], // Client and admin emails
-                    from: "ritchelle.rueras@tup.edu.ph",
-                    subject: `Reminder: Upcoming Appointment on ${date} at ${time}`,
-                    text: `Hello ${name},\n\nThis is a reminder for your upcoming appointment scheduled on ${date} at ${time}.\n\nConsultation Type: ${consultationType}\nPlatform: ${platform}\nAdditional Info: ${additionalInfo}\n\nThank you!`,
-                    html: `
-                                    <p>Hello ${name},</p>
-                                    <p>This is a reminder for your upcoming appointment:</p>
-                                    <ul>
-                                        <li><strong>Date:</strong> ${date}</li>
-                                        <li><strong>Time:</strong> ${time}</li>
-                                        <li><strong>Consultation Type:</strong> ${consultationType}</li>
-                                        <li><strong>Platform:</strong> ${platform}</li>
-                                        <li><strong>Additional Info:</strong> ${additionalInfo}</li>
-                                    </ul>
-                                    <p>Thank you!</p>
-                                `,
-                  };
-
-                  sgMail
-                    .send(message)
-                    .then(() =>
-                      console.log(
-                        `Reminder email sent for appointment ID: ${appointmentId}`
-                      )
-                    )
-                    .catch((error) =>
-                      console.error("Error sending reminder email:", error)
-                    );
-                },
-                {
-                  scheduled: true,
-                  timezone: "Asia/Manila", // Adjust to your timezone
-                }
-              );
-
-              // Log the cron job ID for debugging
-              console.log(
-                `Scheduled cron job for appointment ID: ${appointmentId}, Job ID: ${jobId}`
-              );
 
               // Send the final response after both operations (appointment and notification) are complete
               return res.status(201).json({
-                message:
-                  "Appointment saved successfully, notification created, and reminder scheduled",
+                message: "Appointment saved successfully, notification created",
                 appointmentId: appointmentId,
+                id: result.insertId,
               });
             }
           );
@@ -1185,6 +1107,7 @@ app.post("/appointments", (req, res) => {
     }
   );
 });
+
 //Fetch appointments
 app.get("/appointments", (req, res) => {
   const sql = `
@@ -1211,7 +1134,9 @@ app.get("/appointments/count", (req, res) => {
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error fetching appointment counts:", err);
-      return res.status(500).json({ message: "Failed to fetch data", error: err });
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch data", error: err });
     }
 
     const formattedData = results.reduce((acc, { date, appointmentCount }) => {
@@ -1234,7 +1159,9 @@ app.get("/appointments/times", (req, res) => {
   db.query(sql, [date], (err, results) => {
     if (err) {
       console.error("Error fetching times for date:", err);
-      return res.status(500).json({ message: "Failed to fetch data", error: err });
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch data", error: err });
     }
 
     const bookedTimes = results.map((row) => row.time);
@@ -1263,7 +1190,9 @@ app.delete("/appointments/:id", (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    return res.status(200).json({ message: "Appointment deleted successfully" });
+    return res
+      .status(200)
+      .json({ message: "Appointment deleted successfully" });
   });
 });
 
@@ -1288,7 +1217,6 @@ app.delete("/appointments/:id", (req, res) => {
 // };
 
 // backfillTimeFormat();
-
 
 // Endpoint to upload a file
 app.post("/upload", (req, res) => {
