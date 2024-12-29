@@ -113,16 +113,11 @@ const Calendar = () => {
   };
 
   const handleMouseEnter = (selected) => {
-    const { title, start, id, extendedProps } = selected.event;
+    const { title, start, id } = selected.event;
     setPopup({
       id,
       title,
       start,
-      email: extendedProps.email,
-      contact: extendedProps.contact,
-      consultationType: extendedProps.consultationType,
-      additionalInfo: extendedProps.additionalInfo,
-      platform: extendedProps.platform,
       x: selected.jsEvent.clientX,
       y: selected.jsEvent.clientY,
     });
@@ -367,31 +362,7 @@ const Calendar = () => {
                   <Typography variant="body2">
                     {new Date(popup.start).toLocaleString()}
                   </Typography>
-                  <Typography variant="body2">Email: {popup.email}</Typography>
-                  <Typography variant="body2">
-                    Contact: {popup.contact}
-                  </Typography>
-                  <Typography variant="body2">
-                    Type: {popup.consultationType}
-                  </Typography>
-                  <Typography>Info: {popup.additionalInfo}</Typography>
-                  <Typography>Platform: {popup.platform}</Typography>
                   <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                    <button
-                      style={{
-                        backgroundColor: "#4caf50",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        //handleEdit
-                      }}
-                    >
-                      Edit
-                    </button>
                     <Button
                       onClick={() => handleDeleteClick(popup.id)}
                       color="error"
