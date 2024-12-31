@@ -5,7 +5,7 @@ html, body {
   height: 100%;
 }
 /* Container for the whole page */
-.client-project-page {
+.client-task-page {
     display: flex;
     flex-direction: row;
     height: 100vh;

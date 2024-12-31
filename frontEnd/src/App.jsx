@@ -56,8 +56,7 @@ function App() {
         <Route path="/transactions" element={<Transactions />} />
         <Route path="/transact" element={<Transaction />} />
         <Route path="/client-notif" element={<ClientNotification />} />
-
-        <Route path="/tracking" element={<Tracking />} />
+        <Route path="/tracking/:projectId" element={<Tracking />} />
         <Route path="/projecttask" element={<ProjectTask />} />
       </Routes>
     </Router>

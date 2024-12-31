@@ -731,6 +731,14 @@ app.get("/project", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/project/:clientId", (req, res) => {
+  const { clientId } = req.params;
+  const sql = "SELECT * FROM project WHERE clientId = ? AND isDeleted = 0";
+  db.query(sql, [clientId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
 // Update an existing project (PUT request)
 app.put("/project/:id", (req, res) => {
   const projectId = req.params.id;

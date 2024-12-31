@@ -1,14 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight, FaPlus, FaArrowUp, FaFolder, FaFile, FaHome } from "react-icons/fa";
 import Sidebar from "../sidebar";
+import axios from "axios";
 import "./tracking.css";
 
 function Tracking() {
+  const { projectId } = useParams();
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("posts");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [folders, setFolders] = useState([]);
+
+  useEffect(() => {
+    // Fetch tasks for the specific project
+    axios
+      .get(`http://localhost:8081/tasks`, { params: { projectId } })
+      .then((response) => {
+        setTasks(response.data.tasks || []); // Save tasks to state
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        setError("Error fetching tasks. Please try again later.");
+        setIsLoading(false);
+      });
+  }, [projectId]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -45,7 +65,7 @@ function Tracking() {
   };
 
   return (
-    <div className="client-project-page">
+    <div className="client-task-page">
       <Sidebar />
       <div className="content">
         <div className="home-icon-container">
@@ -92,75 +112,40 @@ function Tracking() {
 
         {/* Content Area */}
         <div className="content-area">
-          {activeTab === "posts" && (
-            <div className="posts">
-              <h2>Track the project here</h2>
-            </div>
-          )}
+          <h2>Tasks for Project ID: {projectId}</h2>
 
-          {activeTab === "files" && (
-            <div className="files">
-              <div className="file-actions">
-                <button onClick={handleNewFolderClick}>
-                  <FaPlus style={{ marginRight: "5px" }} /> New
-                </button>
-                <button>
-                  <FaArrowUp style={{ marginRight: "5px" }} /> Upload
-                </button>
-                <button>Edit in Grid View</button>
-              </div>
+          {isLoading && <p>Loading tasks...</p>}
 
-              {showNewFolderInput && (
-                <div className="new-folder-input">
-                  <h3>Create a Folder</h3>
-                  <div className="input-group">
-                    <label>Name</label>
-                    <input
-                      type="text"
-                      value={folderName}
-                      onChange={handleFolderNameChange}
-                      placeholder="Enter your folder name"
-                    />
-                  </div>
-                  <div className="button-group">
-                    <button onClick={handleCreateFolder}>Create</button>
-                    <button onClick={handleCancelCreate}>Cancel</button>
-                  </div>
-                </div>
-              )}
+          {error && <p className="error">{error}</p>}
 
-              {/* Table of Folders */}
-              <div className="folder-list">
-                {folders.length > 0 ? (
-                  <table className="folder-table no-vertical-lines">
-                    <thead>
-                      <tr>
-                        <th>
-                          <FaFile style={{ marginRight: "20px" }} /> Name
-                        </th>
-                        <th>Modified</th>
-                        <th>Modified by</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {folders.map((folder, index) => (
-                        <tr key={index}>
-                          <td className="icon-name">
-                            <FaFolder className="icon" style={{ marginRight: "20px" }} />
-                            <span className="truncate" title={folder.name}>
-                              {folder.name}
-                            </span>
-                          </td>
-                          <td>{folder.modifiedDate}</td>
-                          <td>{folder.modifiedBy}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p>No files created yet.</p>
-                )}
-              </div>
+          {!isLoading && !error && tasks.length === 0 && <p>No tasks found.</p>}
+
+          {!isLoading && !error && tasks.length > 0 && (
+            <div className="task-list">
+              <table className="task-table">
+                <thead>
+                  <tr>
+                    <th>Task Name</th>
+                    <th>Fee</th>
+                    <th>Due Date</th>
+                    <th>Employee</th>
+                    <th>Status</th>
+                    <th>Total Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tasks.map((task) => (
+                    <tr key={task.id}>
+                      <td>{task.task_name}</td>
+                      <td>{task.task_fee}</td>
+                      <td>{task.due_date}</td>
+                      <td>{task.employee}</td>
+                      <td>{task.status}</td>
+                      <td>{task.amount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
