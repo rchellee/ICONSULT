@@ -1282,15 +1282,19 @@ app.post("/upload", (req, res) => {
       return res.status(500).json({ message: "File upload error" });
     }
 
-    const { project_id } = req.body;
-    const originalName = req.file.originalname; // Correctly defined variable
+    const { project_id, uploaded_by } = req.body;
+    const originalName = req.file.originalname;
     const fileName = req.file.filename;
     const file_type = req.file.mimetype;
 
-    const sql = `INSERT INTO uploads (project_id, original_name, file_name, file_type) VALUES (?, ?, ?, ?)`;
+    const sql = `
+      INSERT INTO uploads 
+      (project_id, original_name, file_name, file_type, uploaded_by) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
     db.query(
       sql,
-      [project_id, originalName, fileName, file_type], // Use originalName here
+      [project_id, originalName, fileName, file_type, uploaded_by],
       (err, result) => {
         if (err) {
           console.error("Error inserting file info:", err);
@@ -1299,9 +1303,10 @@ app.post("/upload", (req, res) => {
         res.status(201).json({
           id: result.insertId,
           project_id,
-          original_name: originalName, // Use originalName here
+          original_name: originalName,
           file_name: fileName,
           file_type,
+          uploaded_by,
         });
       }
     );
@@ -1310,7 +1315,18 @@ app.post("/upload", (req, res) => {
 // Endpoint to fetch files by project ID
 app.get("/upload", (req, res) => {
   const { project_id } = req.query;
-  const sql = `SELECT * FROM uploads WHERE project_id = ?`;
+  const sql = `
+    SELECT 
+      uploads.*,
+      CASE 
+        WHEN uploads.uploaded_by = 'admin' THEN 'admin'
+        ELSE CONCAT(client.firstName, ' ', client.lastName)
+      END AS uploaded_by_name
+    FROM uploads
+    LEFT JOIN client ON uploads.uploaded_by = client.id
+    WHERE uploads.project_id = ?
+  `;
+
   db.query(sql, [project_id], (err, results) => {
     if (err) {
       console.error("Error fetching files:", err);

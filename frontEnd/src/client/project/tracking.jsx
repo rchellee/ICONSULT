@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -9,13 +9,19 @@ import {
   FaFile,
   FaHome,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import axios from "axios";
 import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
+import Files from "./Files";
 
 function Tracking() {
   const { projectId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const clientId = queryParams.get("clientId");
+
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,6 +30,7 @@ function Tracking() {
   const [folderName, setFolderName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [folders, setFolders] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (activeTab === "tasks") {
@@ -50,7 +57,7 @@ function Tracking() {
     }
   };
 
-  const handleNewFolderClick = () => {
+  const handleNewFolderClick = () => {  
     setShowNewFolderInput(true);
   };
 
@@ -80,6 +87,10 @@ function Tracking() {
     setSearchTerm(e.target.value);
   };
 
+  const handleGoback = () => {
+    navigate("/clientproject");
+  }; 
+
   return (
     <div className="client-task-page">
       <Sidebar />
@@ -90,12 +101,9 @@ function Tracking() {
         </div>
 
         <div className="navigation-buttons">
-          <button className="nav-button">
+          <button className="nav-button" onClick={handleGoback}>
             <FaChevronLeft />
             <span className="tooltip">Go back</span>
-          </button>
-          <button className="nav-button">
-            <FaChevronRight />
           </button>
         </div>
 
@@ -187,6 +195,7 @@ function Tracking() {
           )}
         </div>
       </div>
+      {activeTab === "files" && <Files projectId={projectId} clientId={clientId} />}
     </div>
   );
 }

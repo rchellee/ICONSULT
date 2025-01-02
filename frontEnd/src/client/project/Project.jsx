@@ -59,8 +59,8 @@ function Project() {
   };
 
   const handleTrackingClick = (projectId) => {
-    navigate(`/tracking/${projectId}`);
-  };
+    navigate(`/tracking/${projectId}?clientId=${clientId}`);
+  };  
 
   const toggleProjectsVisibility = () => {
     setIsProjectsVisible(!isProjectsVisible); // Toggle Projects section
