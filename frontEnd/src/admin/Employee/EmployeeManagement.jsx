@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeDetails from "./EmployeeDetails";
-import "./employee.css";  // Import the CSS file for the toggle button
+import "./employee.css"; // Import the CSS file for the toggle button and initials
 import Sidebar from "../sidebar";
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
-  const [isFormVisible, setIsFormVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [toastVisible, setToastVisible] = useState(false); // State for toast visibility
 
   // Fetch employees from the database when the component mounts
   useEffect(() => {
@@ -22,11 +24,7 @@ const EmployeeManagement = () => {
     };
 
     fetchEmployees();
-  }, []); // Empty dependency array means this runs once on mount
-
-  const toggleForm = () => {
-    setIsFormVisible(!isFormVisible);
-  };
+  }, []);
 
   const viewEmployeeDetails = (employee) => {
     setSelectedEmployee(employee);
@@ -34,129 +32,137 @@ const EmployeeManagement = () => {
 
   const goBackToList = () => {
     setSelectedEmployee(null);
+    setShowForm(false);
   };
-
-  const updateEmployee = async (updatedEmployee) => {
-    try {
-      // Send a PUT request to update employee information in the database
-      const response = await fetch(`http://localhost:8081/employee/${updatedEmployee.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedEmployee),
-      });
-  
-      // Check if the response is successful
-      if (response.ok) {
-        const result = await response.json();
-        // Update the employee in the local state only if the database update was successful
-        setEmployees(
-          employees.map((employee) =>
-            employee.id === updatedEmployee.id ? updatedEmployee : employee
-          )
-        );
-        setSelectedEmployee(updatedEmployee); // Update the selected employee
-        console.log("Employee updated successfully:", result.message);
-      } else {
-        console.error("Failed to update employee:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error updating employee:", error);
-    }
-  };
- 
 
   const toggleStatus = async (employeeId, currentStatus) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
       const response = await fetch(`http://localhost:8081/employees/${employeeId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
       const result = await response.json();
       if (response.ok) {
-        // Update the status of the employee in the state
         setEmployees(
           employees.map((employee) =>
             employee.id === employeeId ? { ...employee, status: newStatus } : employee
           )
         );
       } else {
-        console.error('Failed to update status:', result.message);
+        console.error("Failed to update status:", result.message);
       }
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     }
   };
 
+  // Function to generate initials
+  const getInitials = (firstName, lastName) => {
+    return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
+  };
+
+  // Function to generate random background color
+  const generateRandomColor = () => {
+    const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#FFC300", "#A833FF"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Filter employees based on search term
+  const filteredEmployees = employees.filter((employee) =>
+    `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleEmployeeAdded = () => {
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 3000); // Auto-hide after 3 seconds
+  };
+
   return (
-    <div className="admin-home-page">     
+    <div className="employee-home-page">
       <Sidebar />
-      <div className="content">
-        <h2>Employees</h2>
-        {selectedEmployee ? (
+      <div className="employee-content">
+        {showForm ? (
+          <EmployeeForm
+            employees={employees}
+            setEmployees={setEmployees}
+            toggleForm={() => setShowForm(false)}
+            onEmployeeAdded={handleEmployeeAdded} // Callback for adding employee
+          />
+        ) : selectedEmployee ? (
           <EmployeeDetails
             employee={selectedEmployee}
             goBack={goBackToList}
-            updateEmployee={updateEmployee}
           />
         ) : (
           <>
-            <button onClick={toggleForm}>
-              {isFormVisible ? "Cancel" : "Add Employee"}
+            <button onClick={() => setShowForm(true)} className="add-employee-btn">
+              Add Employee
             </button>
-            {isFormVisible && (
-              <EmployeeForm
-                employees={employees}
-                setEmployees={setEmployees}
-                toggleForm={toggleForm}
-              />
-            )}
-            {!isFormVisible && (
-              <>
-                {employees.length === 0 ? (
-                  <p>No employees added yet.</p>
-                ) : (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {employees.map((employee, index) => (
-                        <tr key={index}>
-                          <td
-                            onClick={() => viewEmployeeDetails(employee)}
-                            style={{ cursor: "pointer", color: "black" }}
-                          >
-                            {employee.firstName} {employee.lastName}
-                          </td>
-                          {/* <td
-                            onClick={() => viewEmployeeDetails(employee)}
-                            style={{ cursor: "pointer", color: "blue" }}
-                          >
-                            {employee.status}
-                          </td> */}
-                          <td>
-                            <label className="toggle-btn">
-                              <input
-                                type="checkbox"
-                                checked={employee.status === "active"}
-                                onChange={() => toggleStatus(employee.id, employee.status)}
-                              />
-                              <span className="slider"></span>
-                            </label>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </>
+            <input
+              type="text"
+              placeholder="Search employee"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-bar"
+            />
+            {filteredEmployees.length === 0 ? (
+              <p>No matching employees found.</p>
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredEmployees.map((employee, index) => (
+                    <tr key={index}>
+                      <td onClick={() => viewEmployeeDetails(employee)}>
+                        <div
+                          className="initials-circle"
+                          style={{ backgroundColor: generateRandomColor() }}
+                        >
+                          {getInitials(employee.firstName, employee.lastName)}
+                        </div>
+                        {employee.firstName} {employee.lastName}
+                      </td>
+                      <td>
+                        <label className="toggle-btn">
+                          <input
+                            type="checkbox"
+                            checked={employee.status === "active"}
+                            onChange={() => toggleStatus(employee.id, employee.status)}
+                          />
+                          <span className="slider"></span>
+                        </label>
+                      </td>
+                      <td>{employee.role || "role 1"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </>
+        )}
+        {/* Toast Notification */}
+        {toastVisible && (
+          <div className="toast active">
+            <div className="toast-content">
+              <i className="fas fa-solid fa-check check"></i>
+              <div className="message">
+                <div className="text text-2">Success, your employee has been added.</div>
+              </div>
+            </div>
+            <i
+              className="fa-solid fa-xmark close"
+              onClick={() => setToastVisible(false)}
+            ></i>
+            <div className="progress active"></div>
+          </div>
         )}
       </div>
     </div>

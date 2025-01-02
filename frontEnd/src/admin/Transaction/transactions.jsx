@@ -28,7 +28,7 @@ const Transactions = () => {
     <div className="transactions-page">
     <Sidebar />
     <div className="content">
-      <h2>Transactions</h2>
+      <h3>Transactions</h3>
       {transactions.length > 0 ? (
         <table className="transactions-table">
           <thead>

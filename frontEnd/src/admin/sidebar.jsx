@@ -11,6 +11,20 @@ const Sidebar = () => {
     navigate("/");
   };
 
+  const Sidebar = ({ onNavigate }) => {
+    return (
+      <div className="sidebar">
+        <ul>
+          <li onClick={() => onNavigate("clients")}>Clients</li>
+          <li onClick={() => onNavigate("dashboard")}>Dashboard</li>
+          <li onClick={() => onNavigate("projects")}>Projects</li>
+          <li onClick={() => onNavigate("logout")}>Logout</li>
+        </ul>
+      </div>
+    );
+  };
+  
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">

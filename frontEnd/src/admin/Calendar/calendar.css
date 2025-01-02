@@ -53,7 +53,6 @@ textarea {
 
 button {
   padding: 10px 20px;
-  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 43px;
@@ -227,6 +226,21 @@ header .current-date{
 }
 .days li:not(.active):hover::before{
   background: #f2f2f2;
+}
+.available {
+  background-color: #85a8ee;
+  color: white;
+  cursor: pointer;
+}
+
+.available:hover {
+  background-color: #062459;
+  color: #f0f0f0;
+}
+
+.selected {
+  background-color: #101f6a; /* kapag sinelect ang availability ng admin */
+  color: white;
 }
 
   .fully-booked {

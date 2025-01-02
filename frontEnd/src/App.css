@@ -1,5 +1,6 @@
 /* Ensure the container class is scoped to landing-page */
 .landing-page .container {
+    font-family: "Poppins", sans-serif;
     max-width: 85%; /* Controls the width */
     margin: 0 auto; /* Centers the container horizontally on the screen */
     padding: 20px;  /* Optional padding for extra spacing */

@@ -45,12 +45,12 @@ body {
 .sidebar-links {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin-top: 1px;
 }
 
 .sidebar-links li {
   position: relative;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
 }
 
 .sidebar-links a {
@@ -60,7 +60,7 @@ body {
   flex-direction: column;
   text-decoration: none;
   color: #444;
-  font-size: 12px;
+  font-size: 10px;
   padding: 10px 0;
   transition: background 0.3s ease;
   border-radius: 5px;
@@ -74,7 +74,7 @@ body {
 
 /* Icon Styles */
 .sidebar-links a .icon {
-  font-size: 24px;
+  font-size: 22px;
   color: #061b38;
 }
 
@@ -87,7 +87,7 @@ body {
 }
 
 /* Tooltip on Hover */
-.sidebar-links a::after {
+/* .sidebar-links a::after {
   content: attr(data-tooltip);
   position: absolute;
   left: 100%;
@@ -102,7 +102,7 @@ body {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.5s ease, visibility 0.5s ease;
-}
+} */
 
 .sidebar-links a:hover::after {
   opacity: 1;
@@ -138,7 +138,7 @@ body {
 }
 
 /* Logout Tooltip */
-.logout-btn::after {
+/* .logout-btn::after {
   content: "Logout";
   position: absolute;
   left: 100%;
@@ -153,7 +153,7 @@ body {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+} */
 
 .logout-btn:hover {
   background: #e0e0e0;
