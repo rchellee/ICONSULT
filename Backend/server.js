@@ -1039,7 +1039,6 @@ app.get("/admin/tasks", (req, res) => {
     res.status(200).json({ tasks });
   });
 });
-
 app.get("/tasks", (req, res) => {
   const projectIds = req.query.projectIds;
 
@@ -1287,26 +1286,39 @@ app.post("/upload", (req, res) => {
     const fileName = req.file.filename;
     const file_type = req.file.mimetype;
 
-    const sql = `
+    const insertSql = `
       INSERT INTO uploads 
       (project_id, original_name, file_name, file_type, uploaded_by) 
       VALUES (?, ?, ?, ?, ?)
     `;
     db.query(
-      sql,
+      insertSql,
       [project_id, originalName, fileName, file_type, uploaded_by],
       (err, result) => {
         if (err) {
           console.error("Error inserting file info:", err);
           return res.status(500).json({ message: "Error uploading file" });
         }
-        res.status(201).json({
-          id: result.insertId,
-          project_id,
-          original_name: originalName,
-          file_name: fileName,
-          file_type,
-          uploaded_by,
+
+
+        const fetchSql = `
+          SELECT 
+            uploads.*,
+            CASE 
+              WHEN uploads.uploaded_by = 'admin' THEN 'admin'
+              ELSE CONCAT(client.firstName, ' ', client.lastName)
+            END AS uploaded_by_name
+          FROM uploads
+          LEFT JOIN client ON uploads.uploaded_by = client.id
+          WHERE uploads.id = ?
+        `;
+
+        db.query(fetchSql, [result.insertId], (err, results) => {
+          if (err) {
+            console.error("Error fetching uploaded file info:", err);
+            return res.status(500).json({ message: "Error fetching file data" });
+          }
+          res.status(201).json(results[0]);
         });
       }
     );
