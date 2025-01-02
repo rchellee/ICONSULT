@@ -859,6 +859,7 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 // backfillTotalPayment();
 
 // POST endpoint to create a new task
+
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
@@ -872,10 +873,7 @@ app.post("/tasks", (req, res) => {
       return sum + parseFloat(item.fee || 0);
     }, 0);
   }
-
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-
-  // SQL query to insert the task into the database
   const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
              VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
 
@@ -991,17 +989,18 @@ app.put("/tasks/:id", (req, res) => {
     }
   );
 });
-// GET endpoint to retrieve all tasks
 app.get("/tasks", (req, res) => {
-  const { projectId } = req.query;
-  const sql = "SELECT * FROM tasks WHERE project_id = ?";
+  const projectIds = req.query.projectIds;
 
-  db.query(sql, [projectId], (err, tasks) => {
+  // Ensure projectIds is an array
+  const idsArray = Array.isArray(projectIds) ? projectIds : [projectIds];
+
+  const sql = "SELECT * FROM tasks WHERE project_id IN (?)";
+
+  db.query(sql, [idsArray], (err, tasks) => {
     if (err) {
       console.error("Error fetching tasks: ", err);
-      return res
-        .status(500)
-        .json({ message: "Error retrieving tasks", error: err });
+      return res.status(500).json({ message: "Error retrieving tasks", error: err });
     }
     res.status(200).json({ tasks });
   });
@@ -1115,7 +1114,6 @@ app.post("/appointments", (req, res) => {
     }
   );
 });
-
 //Fetch appointments
 app.get("/appointments", (req, res) => {
   const sql = `

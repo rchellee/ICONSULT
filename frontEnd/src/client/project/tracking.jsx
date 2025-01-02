@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight, FaPlus, FaArrowUp, FaFolder, FaFile, FaHome } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaPlus,
+  FaArrowUp,
+  FaFolder,
+  FaFile,
+  FaHome,
+} from "react-icons/fa";
 import Sidebar from "../sidebar";
 import axios from "axios";
+import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
 
 function Tracking() {
@@ -10,7 +19,7 @@ function Tracking() {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState("tasks");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +28,9 @@ function Tracking() {
   useEffect(() => {
     // Fetch tasks for the specific project
     axios
-      .get(`http://localhost:8081/tasks`, { params: { projectId } })
+      .get("http://localhost:8081/tasks", {
+        params: { projectIds: [projectId] },
+      })
       .then((response) => {
         setTasks(response.data.tasks || []); // Save tasks to state
         setIsLoading(false);
@@ -97,10 +108,10 @@ function Tracking() {
         {/* Tabs */}
         <div className="tabs">
           <button
-            className={activeTab === "posts" ? "active" : ""}
-            onClick={() => handleTabClick("posts")}
+            className={activeTab === "tasks" ? "active" : ""}
+            onClick={() => handleTabClick("tasks")}
           >
-            Posts
+            Tasks
           </button>
           <button
             className={activeTab === "files" ? "active" : ""}
@@ -112,7 +123,7 @@ function Tracking() {
 
         {/* Content Area */}
         <div className="content-area">
-          <h2>Tasks for Project ID: {projectId}</h2>
+          {/* <h2>Tasks for Project ID: {projectId}</h2> */}
 
           {isLoading && <p>Loading tasks...</p>}
 
@@ -125,8 +136,9 @@ function Tracking() {
               <table className="task-table">
                 <thead>
                   <tr>
-                    <th>Task Name</th>
+                    <th>Task</th>
                     <th>Fee</th>
+                    <th>Miscellaneous</th>
                     <th>Due Date</th>
                     <th>Employee</th>
                     <th>Status</th>
@@ -134,16 +146,26 @@ function Tracking() {
                   </tr>
                 </thead>
                 <tbody>
-                  {tasks.map((task) => (
-                    <tr key={task.id}>
-                      <td>{task.task_name}</td>
-                      <td>{task.task_fee}</td>
-                      <td>{task.due_date}</td>
-                      <td>{task.employee}</td>
-                      <td>{task.status}</td>
-                      <td>{task.amount}</td>
-                    </tr>
-                  ))}
+                  {tasks.map((task) => {
+                    const miscellaneousItems = JSON.parse(
+                      task.miscellaneous || "[]"
+                    );
+                    const miscellaneousDetails = miscellaneousItems
+                      .map((item) => `${item.name}: ${item.fee}`)
+                      .join(", ");
+
+                    return (
+                      <tr key={task.id}>
+                        <td>{task.task_name}</td>
+                        <td>{task.task_fee}</td>
+                        <td>{miscellaneousDetails || "N/A"}</td>{" "}
+                        <td>{task.due_date}</td>
+                        <td>{task.employee}</td>
+                        <td>{task.status}</td>
+                        <td>{task.amount}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

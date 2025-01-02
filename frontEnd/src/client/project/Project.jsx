@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import qs from "qs";
 import { useNavigate } from "react-router-dom";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa"; // Import icons
 import Sidebar from "../sidebar";
@@ -10,20 +11,29 @@ function Project() {
   const [isProjectsVisible, setIsProjectsVisible] = useState(true);
   const [isCompletedVisible, setIsCompletedVisible] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [clientId, setClientId] = useState(null);
 
   useEffect(() => {
     const loggedClientId = localStorage.getItem("clientId");
-    console.log("Logged Client ID:", loggedClientId); // Debugging log
     setClientId(loggedClientId);
 
     if (loggedClientId) {
       axios
         .get(`http://localhost:8081/project/${loggedClientId}`)
         .then((response) => {
-          console.log("API Response:", response.data);
           if (Array.isArray(response.data)) {
             setProjects(response.data);
+
+            const projectIds = response.data.map((project) => project.id);
+
+            axios
+              .get(`http://localhost:8081/tasks`, { params: { projectIds } }) // Adjust backend to accept multiple IDs if needed
+              .then((taskResponse) => {
+                console.log("Fetched tasks:", taskResponse.data.tasks);
+                setTasks(taskResponse.data.tasks || []);
+              })
+              .catch((error) => console.error("Error fetching tasks:", error));
           } else {
             console.error("Unexpected response format:", response.data);
             setProjects([]);
@@ -32,6 +42,21 @@ function Project() {
         .catch((error) => console.error("Error fetching projects:", error));
     }
   }, []);
+
+  const calculateProgress = (projectId) => {
+    const projectTasks = tasks.filter((task) => task.project_id === projectId);
+    const totalTasks = projectTasks.length;
+    if (totalTasks === 0) return "N/A";
+
+    const completedTasks = projectTasks.filter(
+      (task) => task.status === "completed"
+    ).length;
+    return Math.round((completedTasks / totalTasks) * 100);
+  };
+
+  const getTaskCountForProject = (projectId) => {
+    return tasks.filter((task) => task.project_id === projectId).length;
+  };
 
   const handleTrackingClick = (projectId) => {
     navigate(`/tracking/${projectId}`);
@@ -73,7 +98,8 @@ function Project() {
                     </div>
                     <div className="project-info">
                       <p>Status: {project.status}</p>
-                      <p>Progress: {project.progress || "N/A"}%</p>
+                      <p>Tasks: {getTaskCountForProject(project.id)}</p>
+                      <p>Progress: {calculateProgress(project.id)}%</p>
                     </div>
                   </div>
                 </div>
@@ -103,7 +129,8 @@ function Project() {
                     </div>
                     <div className="project-info">
                       <p>Status: {project.status}</p>
-                      <p>Progress: 100%</p>
+                      <p>Tasks: {getTaskCountForProject(project.id)}</p>
+                      <p>Progress: {calculateProgress(project.id)}%</p>
                     </div>
                   </div>
                 </div>
