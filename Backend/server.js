@@ -1025,6 +1025,21 @@ app.put("/tasks/:id", (req, res) => {
     }
   );
 });
+app.get("/admin/tasks", (req, res) => {
+  const { projectId } = req.query;
+  const sql = "SELECT * FROM tasks WHERE project_id = ?";
+
+  db.query(sql, [projectId], (err, tasks) => {
+    if (err) {
+      console.error("Error fetching tasks: ", err);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving tasks", error: err });
+    }
+    res.status(200).json({ tasks });
+  });
+});
+
 app.get("/tasks", (req, res) => {
   const projectIds = req.query.projectIds;
 
@@ -1304,9 +1319,27 @@ app.get("/upload", (req, res) => {
     res.json(results);
   });
 });
-
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));
+
+app.post('/reviews', (req, res) => {
+  const { clientId, projectId, rating, comment, status } = req.body;
+
+  const query = `
+      INSERT INTO reviews (client_id, project_id, rating, comment, status)
+      VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(query, [clientId, projectId, rating, comment, status], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).json({ message: "Failed to submit the review." });
+      } else {
+          res.status(201).json({ message: "Review submitted successfully." });
+      }
+  });
+});
+
 
 // Start the server
 app.listen(8081, () => {

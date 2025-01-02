@@ -21,6 +21,7 @@ import Transaction from './client/Transactions/transaction.jsx'
 import ClientNotification from './client/Notification/ClientNotification.jsx'
 import Tracking from './client/project/tracking.jsx';
 import ProjectTask from './admin/Project/ProjectTask.jsx';
+import Review from './client/Feedback/Review.jsx';
 
 
 
@@ -58,6 +59,7 @@ function App() {
         <Route path="/client-notif" element={<ClientNotification />} />
         <Route path="/tracking/:projectId" element={<Tracking />} />
         <Route path="/projecttask" element={<ProjectTask />} />
+        <Route path="/review" element={<Review />} />
       </Routes>
     </Router>
   );

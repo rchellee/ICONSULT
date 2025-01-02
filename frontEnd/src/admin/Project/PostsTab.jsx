@@ -17,7 +17,7 @@ const PostsTab = ({
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`http://localhost:8081/tasks?projectId=${projectId}`);
+        const response = await fetch(`http://localhost:8081/admin/tasks?projectId=${projectId}`);
         if (!response.ok) {
           throw new Error("Failed to fetch tasks");
         }

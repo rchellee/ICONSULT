@@ -39,6 +39,10 @@ function ProjectOverview({ projectId }) {
     navigate("/payment", { state: { projectId, amount: remainingPayment } });
   };
 
+  const handleReviewClick = () => {
+    navigate("/review", { state: { projectId, clientId: project.clientId } });
+  };  
+
   return (
     <div className="project-overview">
       <h2>Project Overview</h2>
@@ -66,6 +70,22 @@ function ProjectOverview({ projectId }) {
               }}
             >
               Pay Now
+            </button>
+          )}
+          {project.paymentStatus === "Paid" && project.status === "completed" && (
+            <button
+              onClick={handleReviewClick}
+              style={{
+                marginTop: "20px",
+                padding: "10px 20px",
+                backgroundColor: "#007bff",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              Leave a Review
             </button>
           )}
         </div>
