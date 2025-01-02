@@ -20,6 +20,7 @@ const db = mysql.createConnection({
   user: "root",
   password: "",
   database: "iconsult",
+  timezone: "Z"
 });
 
 app.get("/", (req, res) => {
@@ -224,13 +225,13 @@ app.post("/payments", (req, res) => {
     currency,
     payedToEmail,
     clientId,
+    projectId,
   } = req.body;
 
   const query = `
-      INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id, project_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
   db.query(
     query,
     [
@@ -241,6 +242,7 @@ app.post("/payments", (req, res) => {
       currency,
       payedToEmail,
       clientId,
+      projectId,
     ],
     (err, result) => {
       if (err) {
@@ -739,7 +741,22 @@ app.get("/project/:clientId", (req, res) => {
     return res.json(data);
   });
 });
-// Update an existing project (PUT request)
+app.get("/projects/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM project WHERE id = ? AND isDeleted = 0";
+  db.query(sql, [id], (err, data) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+    if (data.length > 0) {
+      const project = data[0];
+      if (project.endDate) {
+        project.endDate = new Date(project.endDate).toISOString().split("T")[0];
+      }
+      return res.status(200).json({ project });
+    } else {
+      return res.status(404).json({ message: "Project not found" });
+    }
+  });
+});
 app.put("/project/:id", (req, res) => {
   const projectId = req.params.id;
   const {
@@ -791,7 +808,26 @@ app.put("/project/:id", (req, res) => {
     }
   );
 });
-// Delete a project (DELETE request)
+app.put("/project/update-payment-status/:id", (req, res) => {
+  const projectId = req.params.id;
+  const { paymentStatus } = req.body;
+
+  if (!paymentStatus) {
+    return res.status(400).json({ error: "Payment status is required" });
+  }
+
+  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
+  db.query(sql, [paymentStatus, projectId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    return res.json({
+      id: projectId,
+      paymentStatus,
+      message: "Payment status updated successfully",
+    });
+  });
+});
+
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
 
@@ -833,6 +869,7 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
       .json({ message: "Total payment recalculated successfully" });
   });
 });
+
 // const backfillTotalPayment = () => {
 //   const updateTotalPaymentSql = `
 //     UPDATE project p
@@ -858,7 +895,6 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 // };
 // backfillTotalPayment();
 
-// POST endpoint to create a new task
 
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =

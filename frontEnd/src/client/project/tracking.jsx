@@ -26,23 +26,28 @@ function Tracking() {
   const [folders, setFolders] = useState([]);
 
   useEffect(() => {
-    // Fetch tasks for the specific project
-    axios
-      .get("http://localhost:8081/tasks", {
-        params: { projectIds: [projectId] },
-      })
-      .then((response) => {
-        setTasks(response.data.tasks || []); // Save tasks to state
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setError("Error fetching tasks. Please try again later.");
-        setIsLoading(false);
-      });
-  }, [projectId]);
+    if (activeTab === "tasks") {
+      // Fetch tasks for the specific project
+      axios
+        .get("http://localhost:8081/tasks", {
+          params: { projectIds: [projectId] },
+        })
+        .then((response) => {
+          setTasks(response.data.tasks || []);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setError("Error fetching tasks. Please try again later.");
+          setIsLoading(false);
+        });
+    }
+  }, [projectId, activeTab]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    if (tab === "overview") {
+      setIsLoading(false);
+    }
   };
 
   const handleNewFolderClick = () => {
@@ -108,6 +113,12 @@ function Tracking() {
         {/* Tabs */}
         <div className="tabs">
           <button
+            className={activeTab === "overview" ? "active" : ""}
+            onClick={() => handleTabClick("overview")}
+          >
+            Overview
+          </button>
+          <button
             className={activeTab === "tasks" ? "active" : ""}
             onClick={() => handleTabClick("tasks")}
           >
@@ -123,52 +134,56 @@ function Tracking() {
 
         {/* Content Area */}
         <div className="content-area">
-          {/* <h2>Tasks for Project ID: {projectId}</h2> */}
-
-          {isLoading && <p>Loading tasks...</p>}
-
-          {error && <p className="error">{error}</p>}
-
-          {!isLoading && !error && tasks.length === 0 && <p>No tasks found.</p>}
-
-          {!isLoading && !error && tasks.length > 0 && (
-            <div className="task-list">
-              <table className="task-table">
-                <thead>
-                  <tr>
-                    <th>Task</th>
-                    <th>Fee</th>
-                    <th>Miscellaneous</th>
-                    <th>Due Date</th>
-                    <th>Employee</th>
-                    <th>Status</th>
-                    <th>Total Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task) => {
-                    const miscellaneousItems = JSON.parse(
-                      task.miscellaneous || "[]"
-                    );
-                    const miscellaneousDetails = miscellaneousItems
-                      .map((item) => `${item.name}: ${item.fee}`)
-                      .join(", ");
-
-                    return (
-                      <tr key={task.id}>
-                        <td>{task.task_name}</td>
-                        <td>{task.task_fee}</td>
-                        <td>{miscellaneousDetails || "N/A"}</td>{" "}
-                        <td>{task.due_date}</td>
-                        <td>{task.employee}</td>
-                        <td>{task.status}</td>
-                        <td>{task.amount}</td>
+          {activeTab === "overview" && (
+            <ProjectOverview projectId={projectId} />
+          )}
+          {activeTab === "tasks" && (
+            <>
+              {isLoading && <p>Loading tasks...</p>}
+              {error && <p className="error">{error}</p>}
+              {!isLoading && !error && tasks.length === 0 && (
+                <p>No tasks found.</p>
+              )}
+              {!isLoading && !error && tasks.length > 0 && (
+                <div className="task-list">
+                  <table className="task-table">
+                    <thead>
+                      <tr>
+                        <th>Task</th>
+                        <th>Fee</th>
+                        <th>Miscellaneous</th>
+                        <th>Due Date</th>
+                        <th>Employee</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                    </thead>
+                    <tbody>
+                      {tasks.map((task) => {
+                        const miscellaneousItems = JSON.parse(
+                          task.miscellaneous || "[]"
+                        );
+                        const miscellaneousDetails = miscellaneousItems
+                          .map((item) => `${item.name}: ${item.fee}`)
+                          .join(", ");
+
+                        return (
+                          <tr key={task.id}>
+                            <td>{task.task_name}</td>
+                            <td>{task.task_fee}</td>
+                            <td>{miscellaneousDetails || "N/A"}</td>
+                            <td>{task.due_date}</td>
+                            <td>{task.employee}</td>
+                            <td>{task.status}</td>
+                            <td>{task.amount}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

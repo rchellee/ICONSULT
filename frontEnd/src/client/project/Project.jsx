@@ -121,7 +121,11 @@ function Project() {
             {projects
               .filter((project) => project.status === "completed")
               .map((project) => (
-                <div className="project-grid" key={project.id}>
+                <div
+                  className="project-grid"
+                  key={project.id}
+                  onClick={() => handleTrackingClick(project.id)}
+                >
                   <div className="project-box">
                     <div className="project-header">
                       <div className="logo-box">{project.projectName[0]}</div>
