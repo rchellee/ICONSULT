@@ -9,7 +9,7 @@ import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
 import FormSelector from "./FormSelector"; // Add this import
- 
+
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +30,7 @@ const ProjectManagement = () => {
   const [contractPrice, setContractPrice] = useState("");
   const [downpayment, setDownpayment] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("Not Paid");
- 
+
   // Fetch data on component mount
   useEffect(() => {
     fetch("http://localhost:8081/project")
@@ -40,21 +40,21 @@ const ProjectManagement = () => {
         setProjects(data);
       })
       .catch((error) => console.error("Error fetching projects:", error));
- 
+
     fetch("http://localhost:8081/clients")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
- 
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
- 
+
   const openModal = () => {
     setIsModalOpen(true);
   };
- 
+
   const closeModal = () => {
     setIsModalOpen(false);
     setProjectName("");
@@ -65,7 +65,7 @@ const ProjectManagement = () => {
     setDescription("");
     setEditingProjectId(null);
   };
- 
+
   const saveProject = () => {
     const projectData = {
       clientId,
@@ -81,7 +81,7 @@ const ProjectManagement = () => {
         parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
       paymentStatus,
     };
- 
+
     if (editingProjectId) {
       // Update existing project
       fetch(`http://localhost:8081/project/${editingProjectId}`, {
@@ -113,7 +113,7 @@ const ProjectManagement = () => {
         .catch((error) => console.error("Error creating project:", error));
     }
   };
- 
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", {
@@ -122,11 +122,11 @@ const ProjectManagement = () => {
       year: "2-digit",
     });
   };
- 
+
   const toggleSortDropdown = () => {
     setIsSortDropdownOpen((prev) => !prev);
   };
- 
+
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -136,7 +136,7 @@ const ProjectManagement = () => {
     sortProjects(key, direction);
     setIsSortDropdownOpen(false);
   };
- 
+
   const sortProjects = (key, direction) => {
     const sortedProjects = [...projects].sort((a, b) => {
       if (a[key] < b[key]) {
@@ -149,11 +149,11 @@ const ProjectManagement = () => {
     });
     setProjects(sortedProjects);
   };
- 
+
   const toggleDropdown = (projectId) => {
     setActiveDropdown(activeDropdown === projectId ? null : projectId);
   };
- 
+
   const handleEdit = (projectId) => {
     const projectToEdit = projects.find((project) => project.id === projectId);
     if (projectToEdit) {
@@ -167,7 +167,7 @@ const ProjectManagement = () => {
     }
     toggleDropdown(null);
   };
- 
+
   const handleDelete = (projectId) => {
     fetch(`http://localhost:8081/project/${projectId}`, {
       method: "PATCH",
@@ -180,11 +180,11 @@ const ProjectManagement = () => {
       })
       .catch((error) => console.error("Error deleting project:", error));
   };
- 
+
   const filteredProjects = projects.filter((project) =>
     (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
- 
+
   // Render ProjectList or ProjectTask based on selectedProjectId
   const renderProjectContent = () => {
     if (selectedProjectId) {
@@ -215,11 +215,11 @@ const ProjectManagement = () => {
       />
     );
   };
- 
+
   return (
     <div className="project-management-page">
       <Sidebar />
-      <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
+      <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> New
@@ -274,5 +274,5 @@ const ProjectManagement = () => {
     </div>
   );
 };
- 
+
 export default ProjectManagement;

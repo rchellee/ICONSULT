@@ -258,7 +258,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
           {/* Submit & Cancel Buttons */}
           <div className={formStyles.buttonContainer}>
             <button type="submit" className={formStyles.createButton}>
-              {existingTask ? "Update Task" : "Create Task"}
+              {existingTask ? "Update Task" : "Create"}
             </button>
             <button
               type="button"

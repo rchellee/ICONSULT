@@ -4,7 +4,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import naviga
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
 import TaskForm from "./TaskForm";
 import MiscellaneousForm from "./MiscellaneousForm ";
- 
+
 const PostsTab = ({
   projectId,
   tasks,
@@ -17,7 +17,7 @@ const PostsTab = ({
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false); // State for showing miscellaneous form
- 
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -33,19 +33,18 @@ const PostsTab = ({
         console.error("Error fetching tasks:", error);
       }
     };
- 
+
     if (projectId) {
       fetchTasks();
     }
   }, [projectId]);
- 
+
   const handleRowClick = (task) => {
     console.log("Row clicked:", task);
     setSelectedTaskName(task.task_name);
     setSelectedTaskDetails(task);
   };
- 
- 
+
   const calculateTotal = (task) => {
     const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
     const miscellaneousFee =
@@ -54,7 +53,7 @@ const PostsTab = ({
         : 0; // Sum of all miscellaneous fees
     return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
   };
- 
+
   const updateTaskWithMiscellaneous = (updatedTask) => {
     setSelectedTaskDetails(updatedTask);
     setShowMiscellaneousForm(false);
@@ -63,16 +62,11 @@ const PostsTab = ({
     );
     setTasks(updatedTasks);
   };
- 
+
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-        {/* Task Header with IoIosArrowDown Icon */}
-        <div className="task-header">
-          <h2>Task</h2>
-          <IoIosArrowDown className="toggle-icon down" />
-        </div>
- 
+
         {/* Top Navigation Buttons */}
         <div className="top-button">
           <button className="nav-button">
@@ -83,7 +77,7 @@ const PostsTab = ({
             <FaChevronRight />
           </button>
         </div>
- 
+
         {/* If a task is selected, show details in the desired format */}
         {selectedTaskName ? (
           <div className="task-details">
@@ -102,14 +96,15 @@ const PostsTab = ({
             <div className="task-detail-row">
               <div>
                 <strong>Miscellaneous</strong>
-                <IoAddCircle
-                  size={20}
-                  style={{ marginLeft: "10px", cursor: "pointer" }}
+                <button
+                  className="task-add-icon"
                   onClick={() => setShowMiscellaneousForm(true)}
-                />
+                >
+                  +
+                </button>
               </div>
             </div>
- 
+
             {/* Loop through miscellaneous entries and display them */}
             {selectedTaskDetails.miscellaneous &&
             Array.isArray(selectedTaskDetails.miscellaneous) &&
@@ -123,7 +118,7 @@ const PostsTab = ({
             ) : (
               <div className="task-detail-row">No Miscellaneous added yet</div>
             )}
- 
+
             {/* Total Row */}
             <div className="task-detail-row total-row">
               <div>
@@ -165,17 +160,17 @@ const PostsTab = ({
             </table>
           </div>
         )}
- 
-        {/* Create Button */}
+
+        {/* Create Button with Icon */}
         <div className="create-button-container">
           <button
-            className="create-task-button"
+            className="task-add-icon"
             onClick={() => setShowTaskForm(true)}
           >
-            Create
+            +
           </button>
         </div>
- 
+
         {/* Task Form */}
         {showTaskForm && (
           <TaskForm
@@ -185,7 +180,7 @@ const PostsTab = ({
             projectId={projectId}
           />
         )}
- 
+
         {/* Miscellaneous Form */}
         {showMiscellaneousForm && (
           <MiscellaneousForm
@@ -198,5 +193,5 @@ const PostsTab = ({
     </div>
   );
 };
- 
+
 export default PostsTab;
