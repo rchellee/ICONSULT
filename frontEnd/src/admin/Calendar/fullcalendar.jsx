@@ -347,77 +347,175 @@ const Calendar = () => {
               />
               {/* nag appear kapag tignan appointment sa calendar */}
               {popup && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: popup.y + 10,
-                    left: popup.x + 10,
-                    backgroundColor: "white",
-                    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
-                    borderRadius: "8px",
-                    padding: "10px",
-                    zIndex: 1000,
-                  }}
-                  onMouseEnter={() => clearTimeout()} // Prevent hiding when mouse enters popup
-                  onMouseLeave={() => setPopup(null)} // Hide popup when mouse leaves
-                >
-                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                    {popup.title}
-                  </Typography>
-                  <Typography variant="body2">
-                    {new Date(popup.start).toLocaleString()}
-                  </Typography>
-                  <Typography variant="body2">Email: {popup.email}</Typography>
-                  <Typography variant="body2">
-                    Contact: {popup.contact}
-                  </Typography>
-                  <Typography variant="body2">
-                    Type: {popup.consultationType}
-                  </Typography>
-                  <Typography>Info: {popup.additionalInfo}</Typography>
-                  <Typography>Platform: {popup.platform}</Typography>
-                  <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                    <button
-                      style={{
-                        backgroundColor: "#4caf50",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        //handleEdit
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <Button
-                      onClick={() => handleDeleteClick(popup.id)}
-                      color="error"
-                      variant="contained"
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-                </Box>
-              )}
+  <Box
+    sx={{
+      position: "absolute",
+      top: popup.y + 10,
+      left: popup.x + 10,
+      backgroundColor: "#fff", // Clean white background
+      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
+      borderRadius: "8px", // Rounded corners for a smooth, professional feel
+      padding: "14px", // Reduced internal padding for a minimalist design
+      zIndex: 1000, // Ensure it sits on top of other elements
+      width: "300px", // Control the width of the box
+      border: "2px solid #e0e0e0", // Light border for subtle contrast
+      display: "flex",
+      flexDirection: "column", // Stack content vertically
+    }}
+    onMouseEnter={() => clearTimeout()} // Prevent hiding on mouse enter
+    onMouseLeave={() => setPopup(null)} // Hide popup when mouse leaves
+  >
+    {/* Title (Name) */}
+    <Typography
+      variant="h6"
+      sx={{
+        
+        marginBottom: "12px", // Space below the title
+        color: "#333", // Dark text for contrast
+        fontSize: "16px", // Slightly smaller title for a minimalist look
+      }}
+    >
+      {popup.title} {/* Name */}
+    </Typography>
+
+    {/* Time */}
+    <Box
+      sx={{
+        marginBottom: "12px", // Space below the time section
+      }}
+    >
+      <Typography
+        variant="body2"
+        sx={{ fontSize: "14px", color: "#666" }}
+      >
+        ⏰ {new Date(popup.start).toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}
+      </Typography>
+    </Box>
+
+    {/* Platform (Place) */}
+    <Box
+      sx={{
+        marginBottom: "16px", // Space below the platform section
+      }}
+    >
+      <Typography
+        variant="body2"
+        sx={{ fontSize: "14px", color: "#666" }}
+      >
+        🌐 {(() => {
+          switch (popup.platform) {
+            case "zoom":
+              return "Zoom";
+            case "teams":
+              return "MS Teams";
+            case "googleMeet":
+              return "Google Meet";
+            case "phone":
+              return "Phone Call";
+            default:
+              return "In person";
+          }
+        })()} {/* Place */}
+      </Typography>
+    </Box>
+
+    {/* Button Section */}
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "flex-end", // Align button to the right
+        marginTop: "16px", // Space above button
+      }}
+    >
+      <button
+        style={{
+          backgroundColor: "#003366", // Dark blue for the button
+          color: "#fff", // White text for contrast
+          border: "none", // Remove border
+          padding: "8px 12px", // Comfortable padding for a minimalist look
+          borderRadius: "4px", // Rounded corners for a smooth feel
+          cursor: "pointer", // Pointer cursor on hover
+          fontWeight: "bold", // Bold text for visibility
+          fontSize: "14px", // Smaller font size for consistency
+          transition: "background-color 0.3s", // Smooth background color transition
+        }}
+        onClick={() => handleDeleteClick(popup.id)}
+        onMouseEnter={(e) => e.target.style.backgroundColor = "#002244"} // Darker blue on hover
+        onMouseLeave={(e) => e.target.style.backgroundColor = "#003366"} // Revert back to original blue
+      >
+        Delete
+      </button>
+    </Box>
+  </Box>
+)}
+
             </Box>
           </Box>
-
           <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogContent>
-              Are you sure you want to delete this appointment? This action
-              cannot be undone.
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={cancelDelete}>Cancel</Button>
-              <Button onClick={confirmDelete} color="error">
-                Delete
-              </Button>
-            </DialogActions>
-          </Dialog>
+  <DialogTitle
+    sx={{
+      fontWeight: "bold",
+      fontSize: "18px",
+      color: "#333", // Dark text for the title
+      paddingBottom: "10px",
+    }}
+  >
+    Confirm Deletion
+  </DialogTitle>
+  <DialogContent
+    sx={{
+      fontSize: "13px",
+      color: "black", // Neutral text color for the content
+      paddingBottom: "20px",
+    }}
+  >
+    Are you sure you want to delete this appointment? This action cannot be undone.
+  </DialogContent>
+  <DialogActions
+    sx={{
+      padding: "12px", // Add padding for a balanced layout
+      justifyContent: "flex-end", // Align buttons to the right
+    }}
+  >
+    <Button
+      onClick={cancelDelete}
+      sx={{
+        backgroundColor: "#003366", // Dark blue button background
+        color: "#fff", // White text
+        borderRadius: "4px",
+        fontWeight: "bold",
+        fontSize: "12px", // Small font size for a compact look
+        padding: "8px 16px", // Comfortable padding for buttons
+        "&:hover": {
+          backgroundColor: "#002244", // Darker blue on hover
+        },
+      }}
+    >
+      Cancel
+    </Button>
+    <Button
+      onClick={confirmDelete}
+      color="error"
+      sx={{
+        backgroundColor: "#003366", // Dark blue button background
+        color: "#fff", // White text
+        borderRadius: "4px",
+        fontWeight: "bold",
+        fontSize: "12px",
+        padding: "8px 16px",
+        "&:hover": {
+          backgroundColor: "#002244", // Darker blue on hover
+        },
+      }}
+    >
+      Delete
+    </Button>
+  </DialogActions>
+</Dialog>
+
         </Box>
       </div>
     </div>
