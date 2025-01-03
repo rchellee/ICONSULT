@@ -5,6 +5,7 @@ const cron = require("node-cron");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
+const moment = require("moment");
 require("dotenv").config();
 
 const scheduledTasks = {};
@@ -19,6 +20,7 @@ const db = mysql.createConnection({
   user: "root",
   password: "",
   database: "iconsult",
+  timezone: "Z"
 });
 
 app.get("/", (req, res) => {
@@ -223,13 +225,13 @@ app.post("/payments", (req, res) => {
     currency,
     payedToEmail,
     clientId,
+    projectId,
   } = req.body;
 
   const query = `
-      INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id, project_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
   db.query(
     query,
     [
@@ -240,6 +242,7 @@ app.post("/payments", (req, res) => {
       currency,
       payedToEmail,
       clientId,
+      projectId,
     ],
     (err, result) => {
       if (err) {
@@ -730,7 +733,30 @@ app.get("/project", (req, res) => {
     return res.json(data);
   });
 });
-// Update an existing project (PUT request)
+app.get("/project/:clientId", (req, res) => {
+  const { clientId } = req.params;
+  const sql = "SELECT * FROM project WHERE clientId = ? AND isDeleted = 0";
+  db.query(sql, [clientId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+app.get("/projects/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM project WHERE id = ? AND isDeleted = 0";
+  db.query(sql, [id], (err, data) => {
+    if (err) return res.status(500).json({ error: "Database error" });
+    if (data.length > 0) {
+      const project = data[0];
+      if (project.endDate) {
+        project.endDate = new Date(project.endDate).toISOString().split("T")[0];
+      }
+      return res.status(200).json({ project });
+    } else {
+      return res.status(404).json({ message: "Project not found" });
+    }
+  });
+});
 app.put("/project/:id", (req, res) => {
   const projectId = req.params.id;
   const {
@@ -782,7 +808,26 @@ app.put("/project/:id", (req, res) => {
     }
   );
 });
-// Delete a project (DELETE request)
+app.put("/project/update-payment-status/:id", (req, res) => {
+  const projectId = req.params.id;
+  const { paymentStatus } = req.body;
+
+  if (!paymentStatus) {
+    return res.status(400).json({ error: "Payment status is required" });
+  }
+
+  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
+  db.query(sql, [paymentStatus, projectId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    return res.json({
+      id: projectId,
+      paymentStatus,
+      message: "Payment status updated successfully",
+    });
+  });
+});
+
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
 
@@ -813,12 +858,10 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
   db.query(recalculateSql, [id, id], (err, result) => {
     if (err) {
       console.error("Error recalculating totalPayment: ", err);
-      return res
-        .status(500)
-        .json({
-          message: "Error recalculating totalPayment",
-          error: err.message,
-        });
+      return res.status(500).json({
+        message: "Error recalculating totalPayment",
+        error: err.message,
+      });
     }
 
     res
@@ -826,6 +869,7 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
       .json({ message: "Total payment recalculated successfully" });
   });
 });
+
 // const backfillTotalPayment = () => {
 //   const updateTotalPaymentSql = `
 //     UPDATE project p
@@ -851,7 +895,7 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 // };
 // backfillTotalPayment();
 
-// POST endpoint to create a new task
+
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
@@ -865,10 +909,7 @@ app.post("/tasks", (req, res) => {
       return sum + parseFloat(item.fee || 0);
     }, 0);
   }
-
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-
-  // SQL query to insert the task into the database
   const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
              VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
 
@@ -904,12 +945,10 @@ app.post("/tasks", (req, res) => {
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating totalPayment: ", updateErr);
-          return res
-            .status(500)
-            .json({
-              message: "Error updating totalPayment",
-              error: updateErr.message,
-            });
+          return res.status(500).json({
+            message: "Error updating totalPayment",
+            error: updateErr.message,
+          });
         }
 
         res.status(201).json({
@@ -973,25 +1012,20 @@ app.put("/tasks/:id", (req, res) => {
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating totalPayment: ", updateErr);
-          return res
-            .status(500)
-            .json({
-              message: "Error updating totalPayment",
-              error: updateErr.message,
-            });
+          return res.status(500).json({
+            message: "Error updating totalPayment",
+            error: updateErr.message,
+          });
         }
 
-        res
-          .status(200)
-          .json({
-            message: "Task updated successfully and totalPayment updated",
-          });
+        res.status(200).json({
+          message: "Task updated successfully and totalPayment updated",
+        });
       });
     }
   );
 });
-// GET endpoint to retrieve all tasks
-app.get("/tasks", (req, res) => {
+app.get("/admin/tasks", (req, res) => {
   const { projectId } = req.query;
   const sql = "SELECT * FROM tasks WHERE project_id = ?";
 
@@ -1001,6 +1035,22 @@ app.get("/tasks", (req, res) => {
       return res
         .status(500)
         .json({ message: "Error retrieving tasks", error: err });
+    }
+    res.status(200).json({ tasks });
+  });
+});
+app.get("/tasks", (req, res) => {
+  const projectIds = req.query.projectIds;
+
+  // Ensure projectIds is an array
+  const idsArray = Array.isArray(projectIds) ? projectIds : [projectIds];
+
+  const sql = "SELECT * FROM tasks WHERE project_id IN (?)";
+
+  db.query(sql, [idsArray], (err, tasks) => {
+    if (err) {
+      console.error("Error fetching tasks: ", err);
+      return res.status(500).json({ message: "Error retrieving tasks", error: err });
     }
     res.status(200).json({ tasks });
   });
@@ -1047,42 +1097,19 @@ app.post("/appointments", (req, res) => {
     ],
     (err, result) => {
       if (err) {
-        console.error("Error inserting appointment:", err);
-        return res
-          .status(500)
-          .json({ message: "Failed to save appointment", error: err });
+        console.error("SQL Error:", err.sqlMessage);
+        return res.status(500).json({
+          message: "Failed to save appointment",
+          error: err.sqlMessage,
+        });
       }
 
       const appointmentId = result.insertId;
-      const appointmentDateTime = new Date(`${date}T${time}`);
-      let reminderTime = new Date(appointmentDateTime);
-
-      // Adjust reminderTime based on the reminder value
-      if (reminder === "5 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 5);
-      else if (reminder === "10 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 10);
-      else if (reminder === "15 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 15);
-      else if (reminder === "30 minutes before")
-        reminderTime.setMinutes(reminderTime.getMinutes() - 30);
-      else if (reminder === "1 hour before")
-        reminderTime.setHours(reminderTime.getHours() - 1);
-      else if (reminder === "1 day before")
-        reminderTime.setDate(reminderTime.getDate() - 1);
-      else if (reminder === "2 days before")
-        reminderTime.setDate(reminderTime.getDate() - 2);
-      else if (reminder === "1 week before")
-        reminderTime.setDate(reminderTime.getDate() - 7);
-
-      // Log the reminder time and cron expression for debugging
-      console.log("Reminder Time:", reminderTime);
-      console.log(
-        "Cron Expression:",
-        `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${
-          reminderTime.getMonth() + 1
-        } *`
-      );
+      // Parse date and time
+      const formattedDateTime = moment(`${date} ${time}`, "YYYY-MM-DD hh:mm A");
+      if (!formattedDateTime.isValid()) {
+        return res.status(400).json({ message: "Invalid date or time format" });
+      }
 
       const notificationSql = `
                 INSERT INTO notifications (title, description, timestamp, isRead)
@@ -1123,60 +1150,12 @@ app.post("/appointments", (req, res) => {
                   .status(500)
                   .json({ message: "Failed to save client notification" });
               }
-              // Schedule email reminder
-              const jobId = `${appointmentId}-reminder`;
-
-              scheduledTasks[jobId] = cron.schedule(
-                `${reminderTime.getMinutes()} ${reminderTime.getHours()} ${reminderTime.getDate()} ${
-                  reminderTime.getMonth() + 1
-                } *`,
-                () => {
-                  const message = {
-                    to: [email, "ritchelle.rueras@tup.edu.ph"], // Client and admin emails
-                    from: "ritchelle.rueras@tup.edu.ph",
-                    subject: `Reminder: Upcoming Appointment on ${date} at ${time}`,
-                    text: `Hello ${name},\n\nThis is a reminder for your upcoming appointment scheduled on ${date} at ${time}.\n\nConsultation Type: ${consultationType}\nPlatform: ${platform}\nAdditional Info: ${additionalInfo}\n\nThank you!`,
-                    html: `
-                                    <p>Hello ${name},</p>
-                                    <p>This is a reminder for your upcoming appointment:</p>
-                                    <ul>
-                                        <li><strong>Date:</strong> ${date}</li>
-                                        <li><strong>Time:</strong> ${time}</li>
-                                        <li><strong>Consultation Type:</strong> ${consultationType}</li>
-                                        <li><strong>Platform:</strong> ${platform}</li>
-                                        <li><strong>Additional Info:</strong> ${additionalInfo}</li>
-                                    </ul>
-                                    <p>Thank you!</p>
-                                `,
-                  };
-
-                  sgMail
-                    .send(message)
-                    .then(() =>
-                      console.log(
-                        `Reminder email sent for appointment ID: ${appointmentId}`
-                      )
-                    )
-                    .catch((error) =>
-                      console.error("Error sending reminder email:", error)
-                    );
-                },
-                {
-                  scheduled: true,
-                  timezone: "Asia/Manila", // Adjust to your timezone
-                }
-              );
-
-              // Log the cron job ID for debugging
-              console.log(
-                `Scheduled cron job for appointment ID: ${appointmentId}, Job ID: ${jobId}`
-              );
 
               // Send the final response after both operations (appointment and notification) are complete
               return res.status(201).json({
-                message:
-                  "Appointment saved successfully, notification created, and reminder scheduled",
+                message: "Appointment saved successfully, notification created",
                 appointmentId: appointmentId,
+                id: result.insertId,
               });
             }
           );
@@ -1211,7 +1190,9 @@ app.get("/appointments/count", (req, res) => {
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error fetching appointment counts:", err);
-      return res.status(500).json({ message: "Failed to fetch data", error: err });
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch data", error: err });
     }
 
     const formattedData = results.reduce((acc, { date, appointmentCount }) => {
@@ -1234,7 +1215,9 @@ app.get("/appointments/times", (req, res) => {
   db.query(sql, [date], (err, results) => {
     if (err) {
       console.error("Error fetching times for date:", err);
-      return res.status(500).json({ message: "Failed to fetch data", error: err });
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch data", error: err });
     }
 
     const bookedTimes = results.map((row) => row.time);
@@ -1263,7 +1246,9 @@ app.delete("/appointments/:id", (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    return res.status(200).json({ message: "Appointment deleted successfully" });
+    return res
+      .status(200)
+      .json({ message: "Appointment deleted successfully" });
   });
 });
 
@@ -1289,7 +1274,6 @@ app.delete("/appointments/:id", (req, res) => {
 
 // backfillTimeFormat();
 
-
 // Endpoint to upload a file
 app.post("/upload", (req, res) => {
   upload.single("file")(req, res, (err) => {
@@ -1297,26 +1281,44 @@ app.post("/upload", (req, res) => {
       return res.status(500).json({ message: "File upload error" });
     }
 
-    const { project_id } = req.body;
-    const originalName = req.file.originalname; // Correctly defined variable
+    const { project_id, uploaded_by } = req.body;
+    const originalName = req.file.originalname;
     const fileName = req.file.filename;
     const file_type = req.file.mimetype;
 
-    const sql = `INSERT INTO uploads (project_id, original_name, file_name, file_type) VALUES (?, ?, ?, ?)`;
+    const insertSql = `
+      INSERT INTO uploads 
+      (project_id, original_name, file_name, file_type, uploaded_by) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
     db.query(
-      sql,
-      [project_id, originalName, fileName, file_type], // Use originalName here
+      insertSql,
+      [project_id, originalName, fileName, file_type, uploaded_by],
       (err, result) => {
         if (err) {
           console.error("Error inserting file info:", err);
           return res.status(500).json({ message: "Error uploading file" });
         }
-        res.status(201).json({
-          id: result.insertId,
-          project_id,
-          original_name: originalName, // Use originalName here
-          file_name: fileName,
-          file_type,
+
+
+        const fetchSql = `
+          SELECT 
+            uploads.*,
+            CASE 
+              WHEN uploads.uploaded_by = 'admin' THEN 'admin'
+              ELSE CONCAT(client.firstName, ' ', client.lastName)
+            END AS uploaded_by_name
+          FROM uploads
+          LEFT JOIN client ON uploads.uploaded_by = client.id
+          WHERE uploads.id = ?
+        `;
+
+        db.query(fetchSql, [result.insertId], (err, results) => {
+          if (err) {
+            console.error("Error fetching uploaded file info:", err);
+            return res.status(500).json({ message: "Error fetching file data" });
+          }
+          res.status(201).json(results[0]);
         });
       }
     );
@@ -1325,7 +1327,18 @@ app.post("/upload", (req, res) => {
 // Endpoint to fetch files by project ID
 app.get("/upload", (req, res) => {
   const { project_id } = req.query;
-  const sql = `SELECT * FROM uploads WHERE project_id = ?`;
+  const sql = `
+    SELECT 
+      uploads.*,
+      CASE 
+        WHEN uploads.uploaded_by = 'admin' THEN 'admin'
+        ELSE CONCAT(client.firstName, ' ', client.lastName)
+      END AS uploaded_by_name
+    FROM uploads
+    LEFT JOIN client ON uploads.uploaded_by = client.id
+    WHERE uploads.project_id = ?
+  `;
+
   db.query(sql, [project_id], (err, results) => {
     if (err) {
       console.error("Error fetching files:", err);
@@ -1334,9 +1347,27 @@ app.get("/upload", (req, res) => {
     res.json(results);
   });
 });
-
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));
+
+app.post('/reviews', (req, res) => {
+  const { clientId, projectId, rating, comment, status } = req.body;
+
+  const query = `
+      INSERT INTO reviews (client_id, project_id, rating, comment, status)
+      VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(query, [clientId, projectId, rating, comment, status], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).json({ message: "Failed to submit the review." });
+      } else {
+          res.status(201).json({ message: "Review submitted successfully." });
+      }
+  });
+});
+
 
 // Start the server
 app.listen(8081, () => {

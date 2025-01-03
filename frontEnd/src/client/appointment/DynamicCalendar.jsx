@@ -37,7 +37,7 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
         date: i,
         currentMonth: true,
         available: status === "available",
-        fullyBooked: status === "fullyBooked",
+        fullyBooked: status === "fully-booked",
         dateStr,
       });
     }

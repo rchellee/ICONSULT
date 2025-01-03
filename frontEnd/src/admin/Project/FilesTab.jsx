@@ -30,6 +30,7 @@ const FilesTab = ({ projectId }) => {
     const formData = new FormData();
     formData.append("file", uploadedFile);
     formData.append("project_id", projectId);
+    formData.append("uploaded_by", "admin"); // Ensure 'admin' is always sent as the uploader
 
     setUploading(true);
 
@@ -94,9 +95,22 @@ const FilesTab = ({ projectId }) => {
                 >
                   {file.original_name}
                 </a>
+                <p>
+                  <strong>Uploaded By:</strong>{" "}
+                  {file.uploaded_by_name || "Unknown"}
+                </p>
+                <p>
+                  <strong>Upload Date:</strong>
+                  {new Date(file.upload_date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
                 <button onClick={() => handleRemoveFile(file.file_name)}>
                   Remove
                 </button>
+                <button onClick={() => handlePreviewFile(file)}>Preview</button>
               </li>
             ))}
           </ul>

@@ -220,5 +220,4 @@ header .current-date {
 .disabled {
   pointer-events: none;
   color: gray;
-  opacity: 0.6;
 }

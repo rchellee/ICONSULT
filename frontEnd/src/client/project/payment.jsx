@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Payment = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const { projectId, amount } = state || {};
 
   useEffect(() => {
     if (!document.getElementById("paypal-sdk")) {
@@ -17,13 +19,33 @@ const Payment = () => {
     }
 
     return () => {
-      // Clean up only the PayPal buttons, not the container
       const paypalButtons = document.getElementById("paypal-button-container");
       if (paypalButtons) {
         paypalButtons.innerHTML = ""; // Ensure no duplicate buttons are rendered
       }
     };
   }, []);
+
+  const updatePaymentStatus = async (projectId) => {
+    try {
+      const response = await fetch(`http://localhost:8081/project/update-payment-status/${projectId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paymentStatus: "Paid" }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update payment status.");
+      }
+  
+      console.log("Payment status updated to 'Paid'.");
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      alert("Error updating payment status. Please try again.");
+    }
+  };
 
   const initializePayPalButtons = () => {
     if (window.paypal) {
@@ -33,7 +55,7 @@ const Payment = () => {
             purchase_units: [
               {
                 amount: {
-                  value: "15.00", // Replace with dynamic amount
+                  value: amount, 
                 },
               },
             ],
@@ -48,11 +70,12 @@ const Payment = () => {
               payerEmail: details.payer.email_address,
               amount: details.purchase_units[0].amount.value,
               currency: details.purchase_units[0].amount.currency_code,
-              payedToEmail: "ritchelle.rueras@tup.edu.ph", // Replace with dynamic value if needed
-              clientId, // Include clientId in the payment details
+              payedToEmail: "ritchelle.rueras@tup.edu.ph",
+              clientId,
+              projectId,
             };
-            // Save transaction details to the database
             savePaymentDetails(transactionDetails);
+            updatePaymentStatus(projectId);
 
             console.log("Transaction Details:", details);
             alert(`Transaction completed by ${transactionDetails.payerName}`);

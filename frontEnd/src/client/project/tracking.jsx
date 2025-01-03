@@ -1,20 +1,63 @@
-import React, { useState } from "react";
-import { FaChevronLeft, FaChevronRight, FaPlus, FaArrowUp, FaFolder, FaFile, FaHome } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaPlus,
+  FaArrowUp,
+  FaFolder,
+  FaFile,
+  FaHome,
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
+import axios from "axios";
+import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
+import Files from "./Files";
 
 function Tracking() {
-  const [activeTab, setActiveTab] = useState("posts");
+  const { projectId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const clientId = queryParams.get("clientId");
+
+  const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("overview");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [folders, setFolders] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (activeTab === "tasks") {
+      // Fetch tasks for the specific project
+      axios
+        .get("http://localhost:8081/tasks", {
+          params: { projectIds: [projectId] },
+        })
+        .then((response) => {
+          setTasks(response.data.tasks || []);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setError("Error fetching tasks. Please try again later.");
+          setIsLoading(false);
+        });
+    }
+  }, [projectId, activeTab]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    if (tab === "overview") {
+      setIsLoading(false);
+    }
   };
 
-  const handleNewFolderClick = () => {
+  const handleNewFolderClick = () => {  
     setShowNewFolderInput(true);
   };
 
@@ -44,8 +87,12 @@ function Tracking() {
     setSearchTerm(e.target.value);
   };
 
+  const handleGoback = () => {
+    navigate("/clientproject");
+  }; 
+
   return (
-    <div className="client-project-page">
+    <div className="client-task-page">
       <Sidebar />
       <div className="content">
         <div className="home-icon-container">
@@ -54,12 +101,9 @@ function Tracking() {
         </div>
 
         <div className="navigation-buttons">
-          <button className="nav-button">
+          <button className="nav-button" onClick={handleGoback}>
             <FaChevronLeft />
             <span className="tooltip">Go back</span>
-          </button>
-          <button className="nav-button">
-            <FaChevronRight />
           </button>
         </div>
 
@@ -77,10 +121,16 @@ function Tracking() {
         {/* Tabs */}
         <div className="tabs">
           <button
-            className={activeTab === "posts" ? "active" : ""}
-            onClick={() => handleTabClick("posts")}
+            className={activeTab === "overview" ? "active" : ""}
+            onClick={() => handleTabClick("overview")}
           >
-            Posts
+            Overview
+          </button>
+          <button
+            className={activeTab === "tasks" ? "active" : ""}
+            onClick={() => handleTabClick("tasks")}
+          >
+            Tasks
           </button>
           <button
             className={activeTab === "files" ? "active" : ""}
@@ -92,79 +142,60 @@ function Tracking() {
 
         {/* Content Area */}
         <div className="content-area">
-          {activeTab === "posts" && (
-            <div className="posts">
-              <h2>Track the project here</h2>
-            </div>
+          {activeTab === "overview" && (
+            <ProjectOverview projectId={projectId} />
           )}
-
-          {activeTab === "files" && (
-            <div className="files">
-              <div className="file-actions">
-                <button onClick={handleNewFolderClick}>
-                  <FaPlus style={{ marginRight: "5px" }} /> New
-                </button>
-                <button>
-                  <FaArrowUp style={{ marginRight: "5px" }} /> Upload
-                </button>
-                <button>Edit in Grid View</button>
-              </div>
-
-              {showNewFolderInput && (
-                <div className="new-folder-input">
-                  <h3>Create a Folder</h3>
-                  <div className="input-group">
-                    <label>Name</label>
-                    <input
-                      type="text"
-                      value={folderName}
-                      onChange={handleFolderNameChange}
-                      placeholder="Enter your folder name"
-                    />
-                  </div>
-                  <div className="button-group">
-                    <button onClick={handleCreateFolder}>Create</button>
-                    <button onClick={handleCancelCreate}>Cancel</button>
-                  </div>
-                </div>
+          {activeTab === "tasks" && (
+            <>
+              {isLoading && <p>Loading tasks...</p>}
+              {error && <p className="error">{error}</p>}
+              {!isLoading && !error && tasks.length === 0 && (
+                <p>No tasks found.</p>
               )}
-
-              {/* Table of Folders */}
-              <div className="folder-list">
-                {folders.length > 0 ? (
-                  <table className="folder-table no-vertical-lines">
+              {!isLoading && !error && tasks.length > 0 && (
+                <div className="task-list">
+                  <table className="task-table">
                     <thead>
                       <tr>
-                        <th>
-                          <FaFile style={{ marginRight: "20px" }} /> Name
-                        </th>
-                        <th>Modified</th>
-                        <th>Modified by</th>
+                        <th>Task</th>
+                        <th>Fee</th>
+                        <th>Miscellaneous</th>
+                        <th>Due Date</th>
+                        <th>Employee</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {folders.map((folder, index) => (
-                        <tr key={index}>
-                          <td className="icon-name">
-                            <FaFolder className="icon" style={{ marginRight: "20px" }} />
-                            <span className="truncate" title={folder.name}>
-                              {folder.name}
-                            </span>
-                          </td>
-                          <td>{folder.modifiedDate}</td>
-                          <td>{folder.modifiedBy}</td>
-                        </tr>
-                      ))}
+                      {tasks.map((task) => {
+                        const miscellaneousItems = JSON.parse(
+                          task.miscellaneous || "[]"
+                        );
+                        const miscellaneousDetails = miscellaneousItems
+                          .map((item) => `${item.name}: ${item.fee}`)
+                          .join(", ");
+
+                        return (
+                          <tr key={task.id}>
+                            <td>{task.task_name}</td>
+                            <td>{task.task_fee}</td>
+                            <td>{miscellaneousDetails || "N/A"}</td>
+                            <td>{task.due_date}</td>
+                            <td>{task.employee}</td>
+                            <td>{task.status}</td>
+                            <td>{task.amount}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
-                ) : (
-                  <p>No files created yet.</p>
-                )}
-              </div>
-            </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
+      {activeTab === "files" && <Files projectId={projectId} clientId={clientId} />}
     </div>
   );
 }

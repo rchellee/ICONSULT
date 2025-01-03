@@ -41,13 +41,13 @@
   color: #0a0a0a; 
 }
 
-/* upcoming and completed button */
 .upcoming-appointments,
 .completed-appointments {
-  margin: 10px 0; /* Spacing between sections */
+  margin: 10px 0; 
   border-radius: 5px;
-  overflow-y: auto; /* Enable vertical scrolling */
-  max-height: calc(75vh - 60px); /* Adjust for header/margins if needed */
+  overflow-y: auto; 
+  width: 300px;
+  max-height: calc(75vh - 60px); 
 }
 .upcoming-appointments button,
 .completed-appointments button {

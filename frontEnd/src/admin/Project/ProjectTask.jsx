@@ -27,7 +27,6 @@ const ProjectTask = ({ projectId, onBack }) => {
     setSelectedProjectId(projectId); // Set selected project id
   };
 
-  // Cancel task form
   const handleCancelForm = () => setShowTaskForm(false);
   useEffect(() => {
     console.log("Project ID in ProjectTask:", projectId);

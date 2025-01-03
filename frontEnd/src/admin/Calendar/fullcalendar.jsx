@@ -113,16 +113,11 @@ const Calendar = () => {
   };
 
   const handleMouseEnter = (selected) => {
-    const { title, start, id, extendedProps } = selected.event;
+    const { title, start, id } = selected.event;
     setPopup({
       id,
       title,
       start,
-      email: extendedProps.email,
-      contact: extendedProps.contact,
-      consultationType: extendedProps.consultationType,
-      additionalInfo: extendedProps.additionalInfo,
-      platform: extendedProps.platform,
       x: selected.jsEvent.clientX,
       y: selected.jsEvent.clientY,
     });
@@ -193,7 +188,7 @@ const Calendar = () => {
   return (
     <div>
       <Sidebar />
-      <div className="content">
+      <div className="content-fullcalendar">
         <Box m="0px">
           <Button
             onClick={handleMenuClick}
