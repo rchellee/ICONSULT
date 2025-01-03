@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { IoIosArrowDown } from "react-icons/io";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
 import TaskForm from "./TaskForm";
@@ -161,15 +160,20 @@ const PostsTab = ({
           </div>
         )}
 
-        {/* Create Button with Icon */}
-        <div className="create-button-container">
+
+
+
+         
+        {/* Create Button */}
+         <div className="create-button-container">
           <button
-            className="task-add-icon"
+            className="create-task-button"
             onClick={() => setShowTaskForm(true)}
           >
             +
           </button>
         </div>
+
 
         {/* Task Form */}
         {showTaskForm && (

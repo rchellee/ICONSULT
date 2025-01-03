@@ -3,7 +3,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import React, { useState, useEffect } from "react";
 import { MdAddCircle } from "react-icons/md";
 import formStyles from "./FormStyle.module.css";
- 
+
 const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
   const [taskName, setTaskName] = useState(
     existingTask ? existingTask.taskName : ""
@@ -24,11 +24,11 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
     Array.isArray(existingTask?.miscellaneous) ? existingTask.miscellaneous : []
   );
   const [totalAmount, setTotalAmount] = useState(0);
- 
+
   useEffect(() => {
     console.log("Received projectId in TaskForm:", projectId);
   }, [projectId]);
- 
+
   useEffect(() => {
     const taskFeeValue = parseFloat(taskFee) || 0;
     const miscellaneousTotal = miscellaneousList.reduce((sum, item) => {
@@ -36,7 +36,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
     }, 0);
     setTotalAmount(taskFeeValue + miscellaneousTotal);
   }, [taskFee, miscellaneousList]);
- 
+
   useEffect(() => {
     // Fetch employees when the component mounts
     const fetchEmployees = async () => {
@@ -48,10 +48,10 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
         console.error("Error fetching employee list:", error);
       }
     };
- 
+
     fetchEmployees();
   }, []);
- 
+
   const handleTaskFeeChange = (e) => {
     const value = e.target.value;
     if (/[^0-9.]/.test(value)) {
@@ -60,7 +60,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       setTaskFee(value);
     }
   };
- 
+
   const handleMiscellaneousFeeChange = (e) => {
     const value = e.target.value;
     if (/[^0-9.]/.test(value)) {
@@ -69,7 +69,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       setMiscellaneousFee(value);
     }
   };
- 
+
   const handleAddMiscellaneous = () => {
     if (miscellaneousName && miscellaneousFee) {
       setMiscellaneousList([
@@ -82,17 +82,17 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       alert("Please provide both a name and a fee for the miscellaneous item.");
     }
   };
- 
+
   const handleRemoveMiscellaneous = (index) => {
     const updatedList = miscellaneousList.filter((_, i) => i !== index);
     setMiscellaneousList(updatedList);
   };
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
- 
+
     console.log("Sending projectId:", projectId);
- 
+
     // Create a task object from the form values
     const newTask = {
       taskName,
@@ -102,7 +102,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       miscellaneous: miscellaneousList,
       projectId,
     };
- 
+
     try {
       // Send a POST request to create the task
       const response = await fetch("http://localhost:8081/tasks", {
@@ -112,13 +112,13 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
         },
         body: JSON.stringify(newTask),
       });
- 
+
       if (response.ok) {
         const data = await response.json();
         console.log("Task created successfully", data);
         // Optionally, call onCreate to update the UI or perform other actions
         onCreate(newTask);
- 
+
         // Reset the form fields
         setTaskName("");
         setTaskFee("");
@@ -132,7 +132,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       console.error("Error creating task:", error);
     }
   };
- 
+
   return (
     <div className="project-form">
       <div className={formStyles.taskFormContainer}>
@@ -162,19 +162,9 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 required
               />
             </div>
-            <div className={formStyles.dueDate}>
-              <label htmlFor="dueDate">Due Date</label>
-              <input
-                type="date"
-                id="dueDate"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                required
-              />
-            </div>
           </div>
- 
-          {/* Employee Dropdown */}
+
+          {/* Employee and Due Date Input */}
           <div className={formStyles.taskInputGroup}>
             <div className={formStyles.employee}>
               <label htmlFor="employee">Assign Employee</label>
@@ -185,7 +175,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                   onChange={(e) => setEmployee(e.target.value)}
                   required
                 >
-                  <option value="" disabled>
+                  <option value="" disabled style={{ color: '#ccc' }}>
                     Choose an Employee
                   </option>
                   {employeeList.map((emp) => (
@@ -197,8 +187,19 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 <IoMdArrowDropdown className={formStyles.dropdownIcon} />
               </div>
             </div>
+
+            <div className={formStyles.dueDate}>
+              <label htmlFor="dueDate">Due Date</label>
+              <input
+                type="date"
+                id="dueDate"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
+            </div>
           </div>
- 
+
           {/* Miscellaneous Items */}
           <div className={formStyles.taskInputGroup}>
             <div className={formStyles.miscellaneous}>
@@ -230,7 +231,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
               <MdAddCircle size={24} />
             </button>
           </div>
- 
+
           {/* Display Miscellaneous Items List with Remove Icon */}
           {miscellaneousList.length > 0 && (
             <div className={formStyles.scrollableMiscellaneousList}>
@@ -249,12 +250,12 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
               </ul>
             </div>
           )}
- 
+
           <div className={formStyles.totalAmount}>
             <label>Total Amount:</label>
             <span>₱{totalAmount.toFixed(2)}</span>
           </div>
- 
+
           {/* Submit & Cancel Buttons */}
           <div className={formStyles.buttonContainer}>
             <button type="submit" className={formStyles.createButton}>
@@ -273,5 +274,5 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
     </div>
   );
 };
- 
+
 export default TaskForm;
