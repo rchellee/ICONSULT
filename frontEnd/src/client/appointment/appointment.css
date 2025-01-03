@@ -129,7 +129,6 @@ button:hover {
 header {
   display: flex;
   justify-content: space-between;
-  padding: 15px 0;
 }
 
 header .current-date {

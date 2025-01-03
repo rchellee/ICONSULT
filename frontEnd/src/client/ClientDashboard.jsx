@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Sidebar from "../client/sidebar";
 import "./client.css";
+import Topbar from "./Topbar";
 
 function ClientDashboard() {
   const [projects, setProjects] = useState([
@@ -56,9 +57,11 @@ function ClientDashboard() {
   );
 
   return (
-    <div className="client-home-page">
+    
+    <div>
+    <Topbar />
       <Sidebar />
-      <div className="content">
+      <div className="content-client">
         <div className="dashboard-content">
           <div className="dashboard-summary">
             <div className="card summary-card">

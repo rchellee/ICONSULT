@@ -219,7 +219,7 @@ const ProjectManagement = () => {
   return (
     <div className="project-management-page">
       <Sidebar />
-      <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
+      <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> New

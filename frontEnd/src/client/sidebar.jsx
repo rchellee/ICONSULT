@@ -62,12 +62,6 @@ const Sidebar = () => {
             <span>Settings</span>
           </Link>
         </li>
-        <li>
-          <button onClick={handleLogout} className="logout-btn" data-tooltip="Logout">
-            <div className="material-symbols-outlined icon">logout</div>
-            <span>Logout</span>
-          </button>
-        </li>
       </ul>
     </div>
   );

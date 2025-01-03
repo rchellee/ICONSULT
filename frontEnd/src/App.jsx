@@ -22,6 +22,7 @@ import ClientNotification from './client/Notification/ClientNotification.jsx'
 import Tracking from './client/project/tracking.jsx';
 import ProjectTask from './admin/Project/ProjectTask.jsx';
 import Review from './client/Feedback/Review.jsx';
+import HelpCentre from './client/HelpCentre.jsx';
 
 
 
@@ -60,6 +61,7 @@ function App() {
         <Route path="/tracking/:projectId" element={<Tracking />} />
         <Route path="/projecttask" element={<ProjectTask />} />
         <Route path="/review" element={<Review />} />
+        <Route path="//help-centre" element={<HelpCentre />} />
       </Routes>
     </Router>
   );
