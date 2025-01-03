@@ -9,8 +9,7 @@ import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
 import FormSelector from "./FormSelector"; // Add this import
-
-
+ 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,61 +26,35 @@ const ProjectManagement = () => {
   const [clients, setClients] = useState([]);
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [description, setDescription] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState(null); // Track selected project
-
-
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [contractPrice, setContractPrice] = useState("");
+  const [downpayment, setDownpayment] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("Not Paid");
+ 
   // Fetch data on component mount
   useEffect(() => {
-<<<<<<< HEAD
-    const handleClickOutside = (event) => {
-      // Check if the click is outside the task button
-      if (
-        taskButtonRef.current &&
-        !taskButtonRef.current.contains(event.target)
-      ) {
-        setSelectedProjectId(null); // Deselect project if clicked outside
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const saveTaskToLocalStorage = (newTask) => {
-    const updatedTasks = [
-      ...tasks,
-      { ...newTask, projectId: selectedProjectId },
-    ];
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-  };
-
-  // useEffect for fetching projects from the server
-  useEffect(() => {
-    //fetch projects
-=======
->>>>>>> bautista
-    fetch("http://localhost:8081/projects")
+    fetch("http://localhost:8081/project")
       .then((response) => response.json())
-      .then((data) => setProjects(data))
+      .then((data) => {
+        console.log(data); // Inspect the data structure
+        setProjects(data);
+      })
       .catch((error) => console.error("Error fetching projects:", error));
-
+ 
     fetch("http://localhost:8081/clients")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
-
+ 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
+ 
   const openModal = () => {
     setIsModalOpen(true);
   };
-
+ 
   const closeModal = () => {
     setIsModalOpen(false);
     setProjectName("");
@@ -92,7 +65,7 @@ const ProjectManagement = () => {
     setDescription("");
     setEditingProjectId(null);
   };
-
+ 
   const saveProject = () => {
     const projectData = {
       clientId,
@@ -102,11 +75,16 @@ const ProjectManagement = () => {
       startDate,
       endDate,
       status: "Ongoing",
+      contractPrice,
+      downpayment,
+      totalPayment:
+        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
+      paymentStatus,
     };
-
+ 
     if (editingProjectId) {
       // Update existing project
-      fetch(`http://localhost:8081/projects/${editingProjectId}`, {
+      fetch(`http://localhost:8081/project/${editingProjectId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
@@ -122,8 +100,7 @@ const ProjectManagement = () => {
         })
         .catch((error) => console.error("Error updating project:", error));
     } else {
-      // Create new project
-      fetch("http://localhost:8081/projects", {
+      fetch("http://localhost:8081/project", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
@@ -136,7 +113,7 @@ const ProjectManagement = () => {
         .catch((error) => console.error("Error creating project:", error));
     }
   };
-
+ 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-GB", {
@@ -145,11 +122,11 @@ const ProjectManagement = () => {
       year: "2-digit",
     });
   };
-
+ 
   const toggleSortDropdown = () => {
     setIsSortDropdownOpen((prev) => !prev);
   };
-
+ 
   const requestSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -159,7 +136,7 @@ const ProjectManagement = () => {
     sortProjects(key, direction);
     setIsSortDropdownOpen(false);
   };
-
+ 
   const sortProjects = (key, direction) => {
     const sortedProjects = [...projects].sort((a, b) => {
       if (a[key] < b[key]) {
@@ -172,11 +149,11 @@ const ProjectManagement = () => {
     });
     setProjects(sortedProjects);
   };
-
+ 
   const toggleDropdown = (projectId) => {
     setActiveDropdown(activeDropdown === projectId ? null : projectId);
   };
-
+ 
   const handleEdit = (projectId) => {
     const projectToEdit = projects.find((project) => project.id === projectId);
     if (projectToEdit) {
@@ -190,9 +167,9 @@ const ProjectManagement = () => {
     }
     toggleDropdown(null);
   };
-
+ 
   const handleDelete = (projectId) => {
-    fetch(`http://localhost:8081/projects/${projectId}`, {
+    fetch(`http://localhost:8081/project/${projectId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isDeleted: true }),
@@ -203,18 +180,18 @@ const ProjectManagement = () => {
       })
       .catch((error) => console.error("Error deleting project:", error));
   };
-
+ 
   const filteredProjects = projects.filter((project) =>
-    project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
+    (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
+ 
   // Render ProjectList or ProjectTask based on selectedProjectId
   const renderProjectContent = () => {
     if (selectedProjectId) {
       return (
-      <ProjectTask 
-        projectId={selectedProjectId} 
-        onBack={() => setSelectedProjectId(null)} 
+        <ProjectTask
+          projectId={selectedProjectId}
+          onBack={() => setSelectedProjectId(null)}
         />
       );
     }
@@ -231,16 +208,18 @@ const ProjectManagement = () => {
         toggleDropdown={toggleDropdown}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
-        onProjectClick={(projectId) => setSelectedProjectId(projectId)} // Set project ID when a project is clicked
+        onProjectClick={(projectId) => {
+          console.log("Clicked Project ID:", projectId);
+          setSelectedProjectId(projectId);
+        }}
       />
     );
   };
-
+ 
   return (
     <div className="project-management-page">
       <Sidebar />
       <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
-      {/* project management txt */}
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> New
@@ -250,11 +229,7 @@ const ProjectManagement = () => {
           <ProjectForm
             projectName={projectName}
             setProjectName={setProjectName}
-<<<<<<< HEAD
-            clientId={clientId} // Pass this prop
-=======
             clientId={clientId}
->>>>>>> bautista
             setClientId={setClientId}
             clientName={clientName}
             setClientName={setClientName}
@@ -264,32 +239,15 @@ const ProjectManagement = () => {
             setEndDate={setEndDate}
             description={description}
             setDescription={setDescription}
+            contractPrice={contractPrice}
+            setContractPrice={setContractPrice}
+            setDownpayment={setDownpayment}
             clients={clients}
             onCancel={closeModal}
             onSave={saveProject}
             editingProjectId={editingProjectId}
           />
         )}
-<<<<<<< HEAD
-        {/* naka display dapat sa rightside */}
-        {selectedProjectId && (
-          <div className="add-task-button" ref={taskButtonRef}>
-            <button onClick={openTaskForm}>
-              <FaPlus className="icon" /> Task
-            </button>
-          </div>
-        )}
-        {isTaskFormOpen && (
-          <TaskForm onClose={closeTaskForm} onSave={saveTaskToLocalStorage} />
-        )}
-
-        {selectedTask && (
-          <Task task={selectedTask} onClose={() => setSelectedTask(null)} />
-        )}
-
-        {/* Search and Sort */}
-=======
->>>>>>> bautista
         <div className="search-box-container">
           <input
             type="text"
@@ -309,16 +267,12 @@ const ProjectManagement = () => {
         {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
-<<<<<<< HEAD
-            onProjectClick={handleProjectClick}
-=======
             onProjectClick={(projectId) => setSelectedProjectId(projectId)}
->>>>>>> bautista
           />
         )}
       </div>
     </div>
   );
 };
-
+ 
 export default ProjectManagement;

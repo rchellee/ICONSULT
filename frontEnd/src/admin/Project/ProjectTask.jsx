@@ -1,16 +1,16 @@
 // ProjectTask.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import "./task.css";
 import "./PostTab.css";
-import PostsTab from "./PostsTab"; // Import the PostsTab component
+import PostsTab from "./PostsTab";
+import FilesTab from "./FilesTab";
 
-const ProjectTask = () => {
-  const { projectId } = useParams();
+const ProjectTask = ({ projectId, onBack }) => {
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
   const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState("posts");
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tasks, setTasks] = useState([]);
@@ -23,15 +23,21 @@ const ProjectTask = () => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
     setShowTaskForm(false);
   };
+  const handleProjectClick = (projectId) => {
+    setSelectedProjectId(projectId); // Set selected project id
+  };
 
-  // Cancel task form
   const handleCancelForm = () => setShowTaskForm(false);
+  useEffect(() => {
+    console.log("Project ID in ProjectTask:", projectId);
+    // Fetch or perform actions based on projectId
+  }, [projectId]);
 
   return (
     <div className="project-task-container">
       {/* Home Button */}
       <div className="home-button-container">
-        <button className="home-button" onClick={() => navigate("/")}>
+        <button className="home-button" onClick={() => navigate("/admin")}>
           <FontAwesomeIcon icon={faHome} size="lg" />
         </button>
       </div>
@@ -57,22 +63,16 @@ const ProjectTask = () => {
         {/* Posts Tab */}
         {activeTab === "posts" && (
           <PostsTab
+            projectId={projectId}
             tasks={tasks}
+            setTasks={setTasks}
             setShowTaskForm={setShowTaskForm}
             showTaskForm={showTaskForm}
             handleCreateTask={handleCreateTask}
             handleCancelForm={handleCancelForm}
           />
         )}
-
-        {/* Files Tab */}
-        {activeTab === "files" && (
-          <div className="files-tab-content">
-            <div className="files-posts">
-              <h2>Manage project files</h2>
-            </div>
-          </div>
-        )}
+        {activeTab === "files" && <FilesTab projectId={projectId} />}
       </div>
     </div>
   );

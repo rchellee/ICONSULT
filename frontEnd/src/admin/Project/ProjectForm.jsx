@@ -4,7 +4,7 @@ import "./project.css";
 const ProjectForm = ({
   projectName,
   setProjectName,
-  clientId, // Ensure this is included
+  clientId,
   setClientId,
   clientName,
   setClientName,
@@ -14,6 +14,10 @@ const ProjectForm = ({
   setEndDate,
   description,
   setDescription,
+  contractPrice,
+  setContractPrice,
+  downpayment,
+  setDownpayment,
   clients,
   onCancel,
   onSave,
@@ -85,7 +89,24 @@ const ProjectForm = ({
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
-
+        <div className="modal-field">
+          <label>Contract Price:</label>
+          <input
+            type="number"
+            placeholder="Enter contract price"
+            value={contractPrice}
+            onChange={(e) => setContractPrice(e.target.value)}
+          />
+        </div>
+        <div className="modal-field">
+          <label>Downpayment (Optional):</label>
+          <input
+            type="number"
+            placeholder="Enter downpayment (if applicable)"
+            value={downpayment}
+            onChange={(e) => setDownpayment(e.target.value)}
+          />
+        </div>
         <div className="modal-actions">
           <button className="cancel-button" onClick={onCancel}>
             Cancel

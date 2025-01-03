@@ -1,16 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
-
+ 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-
+ 
 body {
   background: #F0F4FF;
 }
-
+ 
 .admin-home-page {
   display: flex;
 }
@@ -24,8 +24,7 @@ body {
   width: 42px;
   border-radius: 50%;
 }
-
-<<<<<<< HEAD
+ 
 /* Sidebar Container */
 .sidebar {
   position: fixed;
@@ -39,32 +38,21 @@ body {
   padding: 15px 10px;
   border-right: 1px solid #d1d1d1;
   transition: width 0.3s ease;
-=======
-/* Admin text hidden initially */
-.sidebar .sidebar-header h2 {
-  color: rgb(216, 230, 236);
-  font-size: 1.25rem;
-  font-weight: 600;
-  white-space: nowrap;
-  margin-left: 23px;
-  opacity: 0;
-  transition: opacity 0.4s ease;
->>>>>>> bautista
 }
-
-
+ 
+ 
 /* Sidebar Links */
 .sidebar-links {
   list-style: none;
   padding: 0;
   margin-top: 20px;
 }
-
+ 
 .sidebar-links li {
   position: relative;
   margin-bottom: 10px;
 }
-
+ 
 .sidebar-links a {
   display: flex;
   align-items: center;
@@ -78,18 +66,18 @@ body {
   border-radius: 5px;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-
+ 
 .sidebar-links a:hover {
   background: #e0e0e0;
   color: #000;
 }
-
+ 
 /* Icon Styles */
 .sidebar-links a .icon {
   font-size: 24px;
   color: #061b38;
 }
-
+ 
 /* Text Label Below Icon */
 .sidebar-links a span {
   margin-top: 5px;
@@ -97,7 +85,7 @@ body {
   font-weight: 500;
   transition: all 0.2s ease;
 }
-
+ 
 /* Tooltip on Hover */
 .sidebar-links a::after {
   content: attr(data-tooltip);
@@ -115,12 +103,12 @@ body {
   visibility: hidden;
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
-
+ 
 .sidebar-links a:hover::after {
   opacity: 1;
   visibility: visible;
 }
-
+ 
 /* Updated Logout Button */
 .logout-btn {
   display: flex;
@@ -137,18 +125,18 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
   position: relative;
 }
-
+ 
 .logout-btn .icon {
   font-size: 24px;
   color: #04121d;
 }
-
+ 
 .logout-btn span {
   margin-top: 5px;
   opacity: 0.7;
   font-weight: 500;
 }
-
+ 
 /* Logout Tooltip */
 .logout-btn::after {
   content: "Logout";
@@ -166,14 +154,13 @@ body {
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-
+ 
 .logout-btn:hover {
   background: #e0e0e0;
   color: #000;
 }
-
+ 
 .logout-btn:hover::after {
   opacity: 1;
   visibility: visible;
 }
-
