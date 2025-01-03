@@ -1,11 +1,21 @@
 import React from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./project.css";
 
 const ProjectList = ({ filteredProjects, formatDate }) => {
   return (
     <div className="project-list">
-      {/* Removed sort and detail buttons */}
-      
+      {/* Top Navigation Buttons */}
+      <div className="top-nav-buttons">
+        <button className="nav-btn">
+          <FaChevronLeft />
+          <span className="tooltip">Go back</span>
+        </button>
+        <button className="nav-btn">
+          <FaChevronRight />
+        </button>
+      </div>
+
       <div className="project-list-header">
         <h3>Project Name</h3>
         <h3>Client</h3>
@@ -16,7 +26,7 @@ const ProjectList = ({ filteredProjects, formatDate }) => {
         <h3>Total</h3>
         <h3>Payment Status</h3>
       </div>
-      
+
       {filteredProjects.map((project) => (
         <div key={project.id} className="project-item">
           <p className="truncate" title={project.projectName}>

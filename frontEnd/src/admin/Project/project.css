@@ -291,6 +291,39 @@ ct-list-header h3:nth-child(3) { /* Client */
   font-size: 16px;
 }
 
+/* Navigation buttons */
+.top-nav-buttons{
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  margin-bottom: 20px; 
+  font-size: 18px;
+  position: absolute;
+  top: 30px;
+  margin-left: -300px;
+}
+
+.top-nav-buttons button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: rgb(53, 52, 52);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.top-nav-buttons svg {
+  font-size: 25px; 
+}
+
+.nav-btn {
+  position: relative;
+}
 
 /* search box */
 .search-box {
@@ -363,13 +396,16 @@ ct-list-header h3:nth-child(3) { /* Client */
 }
 
 /* Individual Folder Item */
-.project-name-item {
+/* Individual Folder Item */
+.project-name-item p {
+  font-size: 14px; /* Adjust font size for folder names */
   padding: 12px;
   transition: background-color 0.3s;
   cursor: pointer;
   margin-bottom: 1px;
   position: relative;
 }
+
 
 /* Hover Effect */
 .project-name-item:hover {

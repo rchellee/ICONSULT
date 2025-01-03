@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./project.css";
 
-const ProjectFolders = ({ projects, onProjectClick }) => {
+const ProjectFolders = ({ projects, onProjectClick, fontSize = "14px" }) => {
   const [hoveredProjectId, setHoveredProjectId] = useState(null);
 
   return (
@@ -27,7 +27,7 @@ const ProjectFolders = ({ projects, onProjectClick }) => {
               }}
               style={{
                 cursor: "pointer",
-                fontWeight: hoveredProjectId === project.id ? "bold" : "normal",
+                fontSize: "16px"  // Applying the custom font size
               }}
             >
               {project.projectName}
