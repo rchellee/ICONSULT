@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,24 +9,24 @@ import {
   Box,
   Typography,
   useTheme,
-  List,
-  ListItem,
-  ListItemText,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import Sidebar from "../sidebar";
-import Header from "../../components/Header";
-import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
 import "./consultation.css";
 
 const Consultation = () => {
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
   const [appointments, setAppointments] = useState([]);
-  const [clientId, setClientId] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [clientId, setClientId] = useState("");
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [visibleSection, setVisibleSection] = useState(null); // Track which section is visible
+  const [visibleSection, setVisibleSection] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [popup, setPopup] = useState(null);
 
   useEffect(() => {
@@ -34,8 +34,7 @@ const Consultation = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch clientId from localStorage
-    const storedClientId = localStorage.getItem('clientId');
+    const storedClientId = localStorage.getItem("clientId");
     if (storedClientId) {
       setClientId(storedClientId);
       fetchAppointments(storedClientId);
@@ -44,17 +43,61 @@ const Consultation = () => {
 
   const fetchAppointments = async (clientId) => {
     try {
-      const response = await axios.get('http://localhost:8081/appointments');
+      const response = await axios.get("http://localhost:8081/appointments");
       const filteredAppointments = response.data.filter(
         (appointment) => appointment.client_id === parseInt(clientId)
       );
       setAppointments(filteredAppointments);
     } catch (error) {
-      console.error('Error fetching appointments:', error);
+      console.error("Error fetching appointments:", error);
     }
   };
 
-  // Function to format the date for display
+  const handleDeleteClick = (appointmentId) => {
+    if (appointments.some((appointment) => appointment.id === appointmentId)) {
+      setSelectedAppointmentId(appointmentId);
+      setDeleteDialogOpen(true);
+    } else {
+      alert("Invalid appointment ID.");
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedAppointmentId) {
+      alert("Invalid appointment ID.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8081/appointments/${selectedAppointmentId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete appointment");
+      }
+
+      setAppointments((prev) =>
+        prev.filter((appointment) => appointment.id !== selectedAppointmentId)
+      );
+
+      setDeleteDialogOpen(false);
+      setSelectedAppointmentId(null);
+    } catch (error) {
+      console.error("Error deleting appointment:", error.message);
+      alert(`Failed to delete appointment: ${error.message}`);
+    }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setSelectedAppointmentId(null);
+  };
+
   const formatDayAndDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = date.toLocaleDateString(undefined, { weekday: "long" });
@@ -63,55 +106,58 @@ const Consultation = () => {
     return `${day}, ${formattedDate}`;
   };
 
-// Function to get appointments dynamically categorized by status
-const getAppointmentsByView = (status) => {
-  const today = new Date();
+  const getAppointmentsByView = (status) => {
+    const today = new Date();
 
-  // Filter and sort the appointments
-  const sortedAppointments = appointments
-    .filter((appointment) => {
-      const appointmentDate = new Date(appointment.date);
-      if (status === "Upcoming") {
-        return appointmentDate >= today; // Future appointments
-      } else if (status === "Completed") {
-        return appointmentDate < today; // Past appointments
-      }
-      return false;
-    })
-    .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date (ascending)
+    const sortedAppointments = appointments
+      .filter((appointment) => {
+        const appointmentDate = new Date(appointment.date);
+        if (status === "Upcoming") {
+          return appointmentDate >= today; 
+        } else if (status === "Completed") {
+          return appointmentDate < today; 
+        }
+        return false;
+      })
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    if (status === "Completed") {
+      return sortedAppointments.slice(-3);
+    }
 
-  return sortedAppointments;
-};
+    return sortedAppointments;
+  };
 
-  // Toggle section visibility
   const toggleSection = (section) => {
     setVisibleSection(visibleSection === section ? null : section);
   };
 
-  // Map appointments into FullCalendar events
   const mapAppointmentsToEvents = () => {
-    return appointments.map((appointment) => ({
-      title: `Consultation - ${appointment.consultationType}`,
-      start: appointment.date, // ISO string format
-      allDay: true,
-      extendedProps: {
-        time: appointment.time,
-        platform: appointment.platform,
-        name: appointment.name,
-        email: appointment.email,
-        contact: appointment.contact,
-        companyName: appointment.companyName,
-        reminder: appointment.reminder,
-      },
-    }));
+    return appointments.map((appointment) => {
+      console.log("Fetched Appointment ID:", appointment.id);
+      return {
+        title: `Consultation - ${appointment.consultationType}`,
+        start: appointment.date,
+        allDay: true,
+        extendedProps: {
+          id: appointment.id,
+          time: appointment.time,
+          platform: appointment.platform,
+          name: appointment.name,
+          email: appointment.email,
+          contact: appointment.contact,
+          companyName: appointment.companyName,
+          reminder: appointment.reminder,
+        },
+      };
+    });
   };
-
 
   const handleMouseEnter = (selected) => {
     const { title, extendedProps } = selected.event;
     setPopup({
       title,
       time: extendedProps.time,
+      id: extendedProps.id, // Add the id here to ensure it's available in the popup
       x: selected.jsEvent.clientX,
       y: selected.jsEvent.clientY,
     });
@@ -143,7 +189,6 @@ const getAppointmentsByView = (status) => {
               ) : (
                 <div className="appointments-and-calendar">
                   <div className="appointments-details">
-        
                     {/* Upcoming Appointments */}
                     <div className="upcoming-appointments">
                       <button onClick={() => toggleSection("Upcoming")}>
@@ -154,22 +199,38 @@ const getAppointmentsByView = (status) => {
                         <div className="appointments-list-container">
                           {getAppointmentsByView("Upcoming").length > 0 ? (
                             <ul>
-                              {getAppointmentsByView("Upcoming").map((appointment, index) => (
-                                <li key={index} className="appointment-item">
-                                  <div className="date-box">
-                                    {formatDayAndDate(appointment.date)} at {appointment.time}
-                                  </div>
-                                  <div className="details-box">
-                                    <p><strong>Name:</strong> {appointment.name}</p>
-                                    <p><strong>Email:</strong> {appointment.email}</p>
-                                    <p><strong>Contact:</strong> {appointment.contact}</p>
-                                    <p><strong>Type:</strong> {appointment.consultationType}</p>
-                                    <p><strong>Platform:</strong> {appointment.platform}</p>
-                                    <p><strong>Company:</strong> {appointment.companyName}</p>
-                                    <p><strong>Reminder:</strong> {appointment.reminder}</p>
-                                  </div>
-                                </li>
-                              ))}
+                              {getAppointmentsByView("Upcoming").map(
+                                (appointment, index) => (
+                                  <li key={index} className="appointment-item">
+                                    <div className="date-box">
+                                      {formatDayAndDate(appointment.date)} at{" "}
+                                      {appointment.time}
+                                    </div>
+                                    <div className="details-box">
+                                      <p>
+                                        <strong>Email:</strong>{" "}
+                                        {appointment.email}
+                                      </p>
+                                      <p>
+                                        <strong>Contact:</strong>{" "}
+                                        {appointment.contact}
+                                      </p>
+                                      <p>
+                                        <strong>Type:</strong>{" "}
+                                        {appointment.consultationType}
+                                      </p>
+                                      <p>
+                                        <strong>Platform:</strong>{" "}
+                                        {appointment.platform}
+                                      </p>
+                                      <p>
+                                        <strong>Company:</strong>{" "}
+                                        {appointment.companyName}
+                                      </p>
+                                    </div>
+                                  </li>
+                                )
+                              )}
                             </ul>
                           ) : (
                             <p>No upcoming appointments.</p>
@@ -188,22 +249,26 @@ const getAppointmentsByView = (status) => {
                         <div className="appointments-list-container">
                           {getAppointmentsByView("Completed").length > 0 ? (
                             <ul>
-                              {getAppointmentsByView("Completed").map((appointment, index) => (
-                                <li key={index} className="appointment-item">
-                                  <div className="date-box">
-                                    {formatDayAndDate(appointment.date)} at {appointment.time}
-                                  </div>
-                                  <div className="details-box">
-                                    <p><strong>Name:</strong> {appointment.name}</p>
-                                    <p><strong>Email:</strong> {appointment.email}</p>
-                                    <p><strong>Contact:</strong> {appointment.contact}</p>
-                                    <p><strong>Type:</strong> {appointment.consultationType}</p>
-                                    <p><strong>Platform:</strong> {appointment.platform}</p>
-                                    <p><strong>Company:</strong> {appointment.companyName}</p>
-                                    <p><strong>Reminder:</strong> {appointment.reminder}</p>
-                                  </div>
-                                </li>
-                              ))}
+                              {getAppointmentsByView("Completed").map(
+                                (appointment, index) => (
+                                  <li key={index} className="appointment-item">
+                                    <div className="date-box">
+                                      {formatDayAndDate(appointment.date)} at{" "}
+                                      {appointment.time}
+                                    </div>
+                                    <div className="details-box">
+                                      <p>
+                                        <strong>Type:</strong>{" "}
+                                        {appointment.consultationType}
+                                      </p>
+                                      <p>
+                                        <strong>Platform:</strong>{" "}
+                                        {appointment.platform}
+                                      </p>
+                                    </div>
+                                  </li>
+                                )
+                              )}
                             </ul>
                           ) : (
                             <p>No completed appointments.</p>
@@ -263,26 +328,31 @@ const getAppointmentsByView = (status) => {
                   </Typography>
                   <Typography variant="body2">Time: {popup.time}</Typography>
                   <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                    <button
-                      style={{
-                        backgroundColor: "#f44336",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        console.log("Delete clicked for event:", popup.title);
-                      }}
+                    <Button
+                      onClick={() => handleDeleteClick(popup.id)}
+                      color="error"
+                      variant="contained"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </Box>
                 </Box>
               )}
             </Box>
           </Box>
+          <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+              Are you sure you want to delete this appointment? This action
+              cannot be undone.
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={cancelDelete}>Cancel</Button>
+              <Button onClick={confirmDelete} color="error">
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </div>
     </div>

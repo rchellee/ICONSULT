@@ -251,8 +251,6 @@ function AppointmentForm() {
       clientId,
       contact: formData.contact,
     };
-    console.log("Client ID:", clientId);
-    console.log("Form Data:", formDataWithUpdates);
 
     try {
       const response = await fetch("http://localhost:8081/appointments", {

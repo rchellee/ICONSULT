@@ -21,7 +21,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
   const [miscellaneousName, setMiscellaneousName] = useState("");
   const [miscellaneousFee, setMiscellaneousFee] = useState("");
   const [miscellaneousList, setMiscellaneousList] = useState(
-    existingTask ? existingTask.miscellaneous : []
+    Array.isArray(existingTask?.miscellaneous) ? existingTask.miscellaneous : []
   );
   const [totalAmount, setTotalAmount] = useState(0);
 

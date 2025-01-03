@@ -14,10 +14,16 @@ const PostsTab = ({
   handleCancelForm,
   setTasks, // Assuming this is passed as a prop to update tasks
 }) => {
+  const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
+  const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false); // State for showing miscellaneous form
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`http://localhost:8081/admin/tasks?projectId=${projectId}`);
+        const response = await fetch(
+          `http://localhost:8081/admin/tasks?projectId=${projectId}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch tasks");
         }
@@ -27,43 +33,35 @@ const PostsTab = ({
         console.error("Error fetching tasks:", error);
       }
     };
-  
+
     if (projectId) {
       fetchTasks();
     }
   }, [projectId]);
-  
-  const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
-  const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false); // State for showing miscellaneous form
 
   const handleRowClick = (task) => {
-    setSelectedTaskName(task.taskName); // Set the selected task name when a row is clicked
-    setSelectedTaskDetails(task); // Set the selected task details
+    console.log("Row clicked:", task);
+    setSelectedTaskName(task.task_name);
+    setSelectedTaskDetails(task);
+  };
+  
+
+  const calculateTotal = (task) => {
+    const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
+    const miscellaneousFee =
+      task.miscellaneous && Array.isArray(task.miscellaneous)
+        ? task.miscellaneous.reduce((total, item) => total + (parseFloat(item.fee) || 0), 0)
+        : 0; // Sum of all miscellaneous fees
+    return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
   };
 
-  // Function to calculate the total amount for the task
-  // const calculateTotal = (task) => {
-  //   const taskFee = parseFloat(task.task_fee) || 0; // Ensure it's a valid number
-  //   const miscellaneousFee =
-  //     task.miscellaneous && Array.isArray(task.miscellaneous)
-  //       ? task.miscellaneous.reduce(
-  //           (total, item) => total + (parseFloat(item.fee) || 0),
-  //           0
-  //         )
-  //       : 0; // Sum of all miscellaneous fees
-  //   return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
-  // };
-
-  // Function to update task with new miscellaneous
   const updateTaskWithMiscellaneous = (updatedTask) => {
-    setSelectedTaskDetails(updatedTask); // Update the task details in the state
-    setShowMiscellaneousForm(false); // Hide the form after updating
-    // Update tasks array to reflect the changes
+    setSelectedTaskDetails(updatedTask);
+    setShowMiscellaneousForm(false);
     const updatedTasks = tasks.map((task) =>
-      task.taskName === updatedTask.taskName ? updatedTask : task
+      task.task_name === updatedTask.task_name ? updatedTask : task
     );
-    setTasks(updatedTasks); // Assuming you have a setTasks function to update the tasks list
+    setTasks(updatedTasks);
   };
 
   return (
@@ -98,7 +96,7 @@ const PostsTab = ({
               </div>
             </div>
             <div className="task-detail-row">
-              <div>{selectedTaskDetails.taskName}</div>
+              <div>{selectedTaskDetails.task_name}</div>
               <div className="align-right">{selectedTaskDetails.taskFee}</div>
             </div>
             <div className="task-detail-row">
@@ -114,6 +112,7 @@ const PostsTab = ({
 
             {/* Loop through miscellaneous entries and display them */}
             {selectedTaskDetails.miscellaneous &&
+            Array.isArray(selectedTaskDetails.miscellaneous) &&
             selectedTaskDetails.miscellaneous.length > 0 ? (
               selectedTaskDetails.miscellaneous.map((misc, index) => (
                 <div className="task-detail-row" key={index}>

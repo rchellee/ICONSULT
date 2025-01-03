@@ -188,7 +188,7 @@ const Calendar = () => {
   return (
     <div>
       <Sidebar />
-      <div className="content">
+      <div className="content-fullcalendar">
         <Box m="0px">
           <Button
             onClick={handleMenuClick}
