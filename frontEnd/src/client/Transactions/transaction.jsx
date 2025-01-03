@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../sidebar";
 import "./transactions.css";
+import Topbar from "../Topbar";
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
@@ -15,10 +16,14 @@ const Transaction = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:8081/payments/${clientId}`);
+        const response = await fetch(
+          `http://localhost:8081/payments/${clientId}`
+        );
         if (!response.ok) {
           const errorDetails = await response.json();
-          throw new Error(errorDetails.error || "Failed to fetch transactions.");
+          throw new Error(
+            errorDetails.error || "Failed to fetch transactions."
+          );
         }
         const data = await response.json();
         setTransactions(data);
@@ -32,9 +37,10 @@ const Transaction = () => {
 
   return (
     <div className="transactions-page">
+      <Topbar />
       <Sidebar />
       <div className="content">
-        <h2>Your Transactions</h2>
+        <h4>Transactions</h4>
         {transactions.length > 0 ? (
           <table className="transactions-table">
             <thead>
@@ -57,7 +63,9 @@ const Transaction = () => {
                   <td>{transaction.amount}</td>
                   <td>{transaction.currency}</td>
                   <td>{transaction.payed_to_email}</td>
-                  <td>{new Date(transaction.created_at).toLocaleDateString()}</td>
+                  <td>
+                    {new Date(transaction.created_at).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>

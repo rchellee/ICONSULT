@@ -9,7 +9,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-
+import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 
 const AccountSettings = () => {
@@ -158,6 +158,7 @@ const AccountSettings = () => {
 
   return (
     <div className="account-settings">
+      <Topbar />
       <Sidebar />
       <div className="content">
         <h2>Account Settings</h2>

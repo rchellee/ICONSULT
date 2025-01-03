@@ -1,4 +1,10 @@
-.content {
+.content-consultation {
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
+
+.content-notification {
     margin-left: 85px;
     padding: 20px;
     transition: margin-left 0.4s ease;

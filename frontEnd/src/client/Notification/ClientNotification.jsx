@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./clientNotification.css"; // Import the CSS for styling
 import Sidebar from "../sidebar";
+import Topbar from "../Topbar";
 
 const ClientNotification = () => {
   const [notifications, setNotifications] = useState([]);
@@ -87,8 +88,9 @@ const ClientNotification = () => {
 
   return (
     <div className="client-notification-wrapper">
+      <Topbar />
       <Sidebar />
-      <div className="content">
+      <div className="content-notification">
         <h3>Client Notifications</h3>
         <div className="filter-buttons">
           <button

@@ -15,6 +15,7 @@ import axios from "axios";
 import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
 import Files from "./Files";
+import Topbar from "../Topbar";
 
 function Tracking() {
   const { projectId } = useParams();
@@ -92,6 +93,8 @@ function Tracking() {
   }; 
 
   return (
+    <div>
+      <Topbar />
     <div className="client-task-page">
       <Sidebar />
       <div className="content">
@@ -196,6 +199,7 @@ function Tracking() {
         </div>
       </div>
       {activeTab === "files" && <Files projectId={projectId} clientId={clientId} />}
+    </div>
     </div>
   );
 }

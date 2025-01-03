@@ -4,13 +4,6 @@ html, body {
   overflow: hidden;
   height: 100%;
 }
-/* Container for the whole page */
-.client-task-page {
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-}
-
 .content {
     margin-top: 80px; /* Adds space below the fixed tabs */
     padding: 20px;
