@@ -1,4 +1,15 @@
 import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  useTheme,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+
 import Sidebar from "../sidebar";
 
 const AccountSettings = () => {
@@ -13,6 +24,8 @@ const AccountSettings = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [message, setMessage] = useState("");
   const clientId = localStorage.getItem("clientId");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState("");
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -83,8 +96,9 @@ const AccountSettings = () => {
       const data = await response.json();
       if (response.ok) {
         setIsVerified(true);
-        setMessage(
-          "Verification successful. You can now update your password."
+        setOpenDialog(true); // Open the confirmation dialog
+        setConfirmationMessage(
+          "Verification successful. Are you sure you want to update the password?"
         );
       } else {
         setMessage(
@@ -97,9 +111,16 @@ const AccountSettings = () => {
     }
   };
 
+  const handleDialogClose = (confirm) => {
+    if (confirm) {
+      handlePasswordChange(); // Proceed with password change if confirmed
+    }
+    setOpenDialog(false); // Close the dialog
+  };
+
   // Handle Password Change with New Endpoint
   const handlePasswordChange = async (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
 
     if (!isVerified) {
       setMessage("Please verify your email before updating the password.");
@@ -125,12 +146,13 @@ const AccountSettings = () => {
         setCurrentPassword("");
         setCodeSent(false);
         setIsVerified(false);
+        alert("Password successfully updated!");
       } else {
-        setMessage("Error updating password. Please try again.");
+        alert("Error updating password. Please try again.");
       }
     } catch (error) {
       console.error("Error updating password:", error);
-      setMessage("An unexpected error occurred.");
+      alert("An unexpected error occurred.");
     }
   };
 
@@ -142,30 +164,34 @@ const AccountSettings = () => {
 
         {isUpdatingPassword ? (
           <form onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label>New Password:</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Confirm New Password:</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+            {!codeSent && (
+              <>
+                <div>
+                  <label>New Password:</label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Confirm New Password:</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
             {!codeSent ? (
               <button type="button" onClick={sendVerificationCode}>
-                Send Verification Code
+                Submit
               </button>
             ) : (
               <>
                 <div>
-                  <label>Verification Code:</label>
+                  <label>Enter Verification Code:</label>
                   <input
                     type="text"
                     value={enteredCode}
@@ -173,13 +199,13 @@ const AccountSettings = () => {
                   />
                 </div>
                 <button type="button" onClick={verifyCodeAndProceed}>
-                  Verify Code
+                  Submit
                 </button>
               </>
             )}
             {isVerified && (
-              <button type="submit" onClick={handlePasswordChange}>
-                Change Password
+              <button type="button" onClick={(e) => handlePasswordChange(e)}>
+                Confirm Changes
               </button>
             )}
             <button
@@ -189,10 +215,13 @@ const AccountSettings = () => {
                 setMessage("");
                 setCodeSent(false);
                 setIsVerified(false);
+                setNewPassword(""); // Clear password fields
+                setConfirmPassword(""); // Clear confirm password fields
               }}
             >
               Cancel
             </button>
+            {message && <div className="message">{message}</div>}
           </form>
         ) : (
           clientDetails && (
@@ -224,8 +253,21 @@ const AccountSettings = () => {
             </>
           )
         )}
-        {message && <div className="message">{message}</div>}
       </div>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogContent>
+          <Typography>{confirmationMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleDialogClose(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={() => handleDialogClose(true)} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
