@@ -265,21 +265,6 @@ const getAppointmentsByView = (status) => {
                   <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
                     <button
                       style={{
-                        backgroundColor: "#4caf50",
-                        color: "white",
-                        border: "none",
-                        padding: "5px 10px",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        console.log("Edit clicked for event:", popup.title);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      style={{
                         backgroundColor: "#f44336",
                         color: "white",
                         border: "none",

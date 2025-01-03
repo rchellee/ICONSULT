@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../sidebar"; // Import the Sidebar component
+import Sidebar from "../sidebar";
 import "./appointment.css";
 import DynamicCalendar from "./DynamicCalendar";
 
 function AppointmentForm() {
   const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(1); // Track the current step
+  const [currentStep, setCurrentStep] = useState(1);
+  const [timePeriod, setTimePeriod] = useState("");
+  const [clients, setClients] = useState([]);
   const [formData, setFormData] = useState({
     date: "",
     time: "",
@@ -20,49 +22,124 @@ function AppointmentForm() {
     platform: "",
     reminder: "",
   });
-
-  const generateRandomAvailability = () => {
-    const today = new Date();
-    const dates = {};
-    for (let i = 0; i < 60; i++) {
-      // Current and next month
-      const date = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate() + i
-      );
-      const dateStr = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-      const rand = Math.random();
-      if (rand < 0.3) {
-        dates[dateStr] = "available";
-      } else if (rand < 0.6) {
-        dates[dateStr] = "fullyBooked";
-      }
-    }
-    return dates;
-  };
-
-  const [availableDates] = useState(generateRandomAvailability());
-
-  const times = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-  ];
+  const [availableDates, setAvailableDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
-  const handleDateSelect = (date) => {
+  const fetchAppointmentCounts = async () => {
+    try {
+      const response = await fetch("http://localhost:8081/appointments/count");
+      if (!response.ok) throw new Error("Failed to fetch appointment counts");
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching appointment counts:", error);
+      return {};
+    }
+  };
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch("http://localhost:8081/clients");
+      if (!response.ok) throw new Error("Failed to fetch clients");
+      const clientData = await response.json();
+      // console.log(clientData);
+      setClients(clientData);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    }
+  };
+
+  const fetchAvailability = async () => {
+    try {
+      const response = await fetch("http://localhost:8081/availability");
+      if (!response.ok) throw new Error("Failed to fetch availability data");
+      const data = await response.json();
+
+      const formattedData = {};
+      data.forEach((entry) => {
+        formattedData[entry.dates] = entry.status || "available";
+      });
+
+      return formattedData; // Return formatted data
+    } catch (error) {
+      console.error("Error fetching availability data:", error);
+      return {}; // Return empty object on error
+    }
+  };
+
+  useEffect(() => {
+    const loadAvailability = async () => {
+      const counts = await fetchAppointmentCounts();
+      const availability = await fetchAvailability(); // Await result
+
+      Object.entries(counts).forEach(([date, count]) => {
+        availability[date] = count < 3 ? "available" : "fully-booked";
+      });
+
+      setAvailableDates(availability);
+    };
+
+    loadAvailability();
+    fetchClients();
+  }, []);
+
+  const times = [
+    "07:00 AM",
+    "08:00 AM",
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "01:00 PM",
+    "02:00 PM",
+    "03:00 PM",
+    "04:00 PM",
+    "05:00 PM",
+    "06:00 PM",
+    "07:00 PM",
+  ];
+
+  const handleDateSelect = async (date) => {
     setSelectedDate(date);
     setFormData({ ...formData, date });
-    setAvailableTimes(times); // Adjust dynamically if necessary
+
+    try {
+      const response = await fetch(
+        `http://localhost:8081/appointments/times?date=${date}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch booked times");
+
+      const { bookedTimes } = await response.json();
+      const blockedTimes = new Set(bookedTimes);
+
+      bookedTimes.forEach((bookedTime) => {
+        const bookedIndex = times.indexOf(bookedTime);
+        if (bookedIndex !== -1) {
+          if (bookedIndex - 1 >= 0) {
+            blockedTimes.add(times[bookedIndex - 1]);
+          }
+          blockedTimes.add(bookedTime);
+          if (bookedIndex + 1 < times.length) {
+            blockedTimes.add(times[bookedIndex + 1]);
+          }
+        }
+      });
+
+      const updatedTimes = times.map((time) => ({
+        time,
+        isBooked: blockedTimes.has(time),
+      }));
+
+      setAvailableTimes(updatedTimes);
+    } catch (error) {
+      console.error("Error fetching times for date:", error);
+      setAvailableTimes(times.map((time) => ({ time, isBooked: false })));
+    }
+  };
+
+  const handleTimePeriodChange = (e) => {
+    setTimePeriod(e.target.value);
+    setFormData({ ...formData, time: "" }); // Reset time when period changes
   };
 
   const handleTimeSelect = (time) => {
@@ -75,13 +152,80 @@ function AppointmentForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const nextStep = () => setCurrentStep((prevStep) => prevStep + 1);
+  const nextStep = () => {
+    const stepFields = {
+      1: ["date", "time"],
+      2: ["firstName", "lastName", "email", "contact", "companyName"],
+      3: ["consultationType"],
+    };
+
+    const missingFields = stepFields[currentStep].filter((field) => {
+      if (field === "consultationType") {
+        return (
+          !formData[field] ||
+          (formData[field] === "Others" && !formData.otherDetails)
+        );
+      }
+      return !formData[field];
+    });
+
+    if (missingFields.length > 0) {
+      const missingFieldNames = missingFields
+        .map((field) => {
+          switch (field) {
+            case "date":
+              return "Date";
+            case "time":
+              return "Time";
+            case "firstName":
+              return "First Name";
+            case "lastName":
+              return "Last Name";
+            case "email":
+              return "Email";
+            case "contact":
+              return "Contact Number";
+            case "companyName":
+              return "Company Name";
+            case "consultationType":
+              return "Consultation Type";
+            case "otherDetails":
+              return "Other Details";
+            default:
+              return field;
+          }
+        })
+        .join(", ");
+
+      alert(`Please fill out the following fields: ${missingFieldNames}`);
+      return;
+    }
+
+    if (currentStep === 2) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      const contactRegex = /^[0-9]{10}$/;
+      if (!contactRegex.test(formData.contact)) {
+        alert("Please enter a valid phone number.");
+        return;
+      }
+    }
+
+    setCurrentStep((prevStep) => prevStep + 1);
+  };
+
   const prevStep = () => setCurrentStep((prevStep) => prevStep - 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const clientId = localStorage.getItem("clientId");
 
-    const clientId = localStorage.getItem("clientId"); // Get clientId from local storage or context
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+    const fullContact = `+63${formData.contact}`;
 
     if (!clientId) {
       alert("Client ID not found. Please log in.");
@@ -89,16 +233,26 @@ function AppointmentForm() {
     }
 
     const consultationType =
-    formData.consultationType === "Others"
-      ? formData.otherDetails // Use specified value for "Others"
-      : formData.consultationType;
+      formData.consultationType === "Others"
+        ? formData.otherDetails
+        : formData.consultationType;
+
+    const formDataWithUpdates = {
+      ...formData,
+      name: fullName,
+      contact: fullContact,
+      consultationType,
+      clientId,
+    };
 
     const formDataWithClientId = {
       ...formData,
       consultationType,
       clientId,
       contact: formData.contact,
-    }; // Include clientId and contact
+    };
+    console.log("Client ID:", clientId);
+    console.log("Form Data:", formDataWithUpdates);
 
     try {
       const response = await fetch("http://localhost:8081/appointments", {
@@ -106,7 +260,7 @@ function AppointmentForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formDataWithClientId),
+        body: JSON.stringify(formDataWithUpdates),
       });
 
       if (!response.ok) {
@@ -142,7 +296,6 @@ function AppointmentForm() {
     <div className="appointment-form-container">
       <Sidebar />
       <div className="content">
-        {/** Step 1: Date and Time **/}
         {currentStep === 1 && (
           <div>
             <h3>Step 1: Date and Time</h3>
@@ -154,17 +307,51 @@ function AppointmentForm() {
               {selectedDate && (
                 <div className="time-slots">
                   <h4>Available Times for {selectedDate}</h4>
-                  {availableTimes.map((time) => (
-                    <button
-                      key={time}
-                      className={`time-slot ${
-                        formData.time === time ? "selected" : ""
-                      }`}
-                      onClick={() => handleTimeSelect(time)}
+                  <div className="time-dropdowns">
+                    <label htmlFor="timePeriod" className="required-label">
+                      Choose Time Format *
+                    </label>
+                    <select
+                      id="timePeriod"
+                      value={timePeriod}
+                      onChange={handleTimePeriodChange}
                     >
-                      {time}
-                    </button>
-                  ))}
+                      <option value="" disabled>
+                        -- Select --
+                      </option>
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
+                  {timePeriod && (
+                    <div className="time-dropdowns">
+                      <label htmlFor="time" className="required-label">
+                        Select Time *
+                      </label>
+                      <select
+                        id="time"
+                        value={formData.time}
+                        onChange={(e) => handleTimeSelect(e.target.value)}
+                        disabled={!timePeriod}
+                      >
+                        <option value="" disabled>
+                          -- Select Time --
+                        </option>
+                        {availableTimes
+                          .filter(({ time }) => time.endsWith(timePeriod))
+                          .map(({ time, isBooked }) => (
+                            <option
+                              key={time}
+                              value={time}
+                              disabled={isBooked}
+                              className={isBooked ? "booked" : ""}
+                            >
+                              {time} {isBooked ? "(Booked)" : ""}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -177,23 +364,39 @@ function AppointmentForm() {
           </div>
         )}
 
-        {/** Step 2: Personal Information **/}
         {currentStep === 2 && (
           <div>
             <h3>Step 2: Personal Information</h3>
             <div className="form-group">
-              <label htmlFor="name">Name:</label>
+              <label htmlFor="firstName" className="required-label">
+                First Name *
+              </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="firstName"
+                name="firstName"
+                value={formData.firstName || ""}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="email">Email:</label>
+              <label htmlFor="lastName" className="required-label">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName || ""}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email" className="required-label">
+                Email *
+              </label>
               <input
                 type="email"
                 id="email"
@@ -204,30 +407,47 @@ function AppointmentForm() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="contact">Phone Number:</label>
-              <input
-                type="contact"
-                id="contact"
-                name="contact"
-                value={formData.contact}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            {/* New Company Name Field */}
-            <div className="form-group">
-              <label htmlFor="companyName">Company Name:</label>
-              <input
-                type="text"
-                id="companyName"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                required
-              />
+              <label htmlFor="contact" className="required-label">
+                Contact Number *
+              </label>
+              <div className="phone-number-input">
+                <span>+63</span>
+                <input
+                  type="tel"
+                  id="contact"
+                  name="contact"
+                  value={formData.contact}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="companyName">Company Name:</label>
+                <input
+                  type="text"
+                  id="companyName"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
             <button onClick={prevStep}>Back</button>
-            <button onClick={nextStep}>Next</button>
+            <button
+              onClick={nextStep}
+              disabled={
+                !formData.firstName ||
+                !formData.lastName ||
+                !formData.email ||
+                !formData.contact ||
+                !formData.email ||
+                !formData.contact ||
+                !formData.companyName
+              }
+            >
+              Next
+            </button>
           </div>
         )}
 
@@ -236,7 +456,9 @@ function AppointmentForm() {
           <div>
             <h3>Step 3: Consultation Details</h3>
             <div className="form-group">
-              <label htmlFor="consultationType">Consultation Type:</label>
+              <label htmlFor="consultationType" className="required-label">
+                Consultation Type *
+              </label>
               <select
                 id="consultationType"
                 name="consultationType"
