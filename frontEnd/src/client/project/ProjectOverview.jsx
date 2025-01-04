@@ -46,11 +46,10 @@ function ProjectOverview({ projectId }) {
 
   return (
     <div className="project-overview">
-      <h2>Project Overview</h2>
       {project ? (
         <div className="project-details">
           <p>
-          <p classname="pro-name">
+          <p className="pro-name">
             <strong>Project Name:</strong> {project.projectName}
           </p>
             <span className="payment-status">
@@ -58,16 +57,17 @@ function ProjectOverview({ projectId }) {
             </span>
           </p>
           <p>
-            <p classname="description">
+          <p className="description" style={{ marginTop: '-10px' }}>
               <strong>Description:</strong> {project.description}
             </p>
-            <span className="project-due">
+
+            <span className="project-due" >
               <strong>Project Due:</strong> {project.endDate ? formatDate(project.endDate) : "N/A"}
             
             </span>
           </p>
           {/* Updated Status row */}
-          <p className="status-row">
+          <p className="status-row" style={{ marginTop: '-10px' }}>
             <strong>Status:</strong> {project.status}
           </p>
 
@@ -81,23 +81,24 @@ function ProjectOverview({ projectId }) {
             </thead>
             <tbody>
               <tr>
-                <td>₱{project.contractPrice}.00</td>
-                <td>₱{project.downpayment}.00</td>
-                <td>₱{remainingPayment}.00</td>
+                <td>₱ {project.contractPrice}.00</td>
+                <td>₱ {project.downpayment}.00</td>
+                <td>₱ {remainingPayment}.00</td>
               </tr>
             </tbody>
           </table>
-
+          <div className="payment-button-container">
           {project.paymentStatus !== "Paid" && (
             <button
               onClick={handlePaymentClick}
-              style={{
-                backgroundColor: "#28a745",
-              }}
+              className="pay-now-button"
+             
             >
               Pay Now
             </button>
           )}
+          </div>
+
           {project.paymentStatus === "Paid" && project.status === "completed" && (
             <button
               onClick={handleReviewClick}

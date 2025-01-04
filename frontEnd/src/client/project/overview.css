@@ -30,50 +30,73 @@
 /* Customize the distance between Payment Status and Project Due */
 .payment-status {
     margin-right: 700px; /* Adjust this to control the distance from Project Name */
+    margin-bottom: 0px;
+    
   }
   
   .project-due {
     margin-right: 718px; /* Adjust this for controlling the distance between Payment Status and Project Due */
-  }
+    margin-top: -20px;
+}
   
   
   /* New style for Status row to align Status and value in a row without side-by-side */
   .project-overview .status-row {
     display: block; /* Keep Status in a block to prevent it from floating side-by-side */
-    margin-top: 10px; /* Optional: Add space between rows */
+    margin-top: 5px; /* Optional: Add space between rows */
   }
   
   .project-overview .status-row strong {
     margin-right: 10px; /* Adds space between the label and value */
+    margin-top: -10px;
   }
   
-  .project-overview .Description p strong {
-    margin-right: 10px; /* Adds space between the label and value */
+  .description {
+    margin-top: 10px;
   }
   
-
+  
+  
   /* Styling the table */
-  .payment-table {
+.payment-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 50px;
+
   }
   
   .payment-table th,
   .payment-table td {
-    border: 1px solid #ccc;
+    border-top: 1px solid #ccc; /* Horizontal top border */
+    border-bottom: 1px solid #ccc; /* Horizontal bottom border */
+    border-left: none; /* Remove column separation */
+    border-right: none; /* Remove column separation */
     padding: 10px;
     text-align: center;
   }
   
+  /* Add left and right borders for the table */
+  .payment-table th:first-child,
+  .payment-table td:first-child {
+    border-left: 1px solid #ccc;
+  }
+  
+  .payment-table th:last-child,
+  .payment-table td:last-child {
+    border-right: 1px solid #ccc;
+  }
+  
   .payment-table th {
-    background-color: #f1f1f1;
+    background-color: #c5d0ee;
     font-weight: bold;
   }
   
   .payment-table td {
-    color: #333;
+    color: #333333;
   }
+  
+
+ 
   
   /* Styling the buttons */
   button {
@@ -92,7 +115,7 @@
   }
   
   button[style*="background-color: #28a745"] {
-    background-color: #28a745;
+    background-color: #3a5b84;
     color: #fff;
   }
   
@@ -100,6 +123,43 @@
     background-color: #007bff;
     color: #fff;
   }
+
+
+/* Styling the Pay Now button */
+.pay-now-button {
+    background-color: #547099; 
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-style: italic;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 20%;
+  }
+  
+  .pay-now-button:hover {
+    background-color: #3a5b84; /* Darker green on hover */
+  }
+  
+  .pay-now-button:active {
+    background-color: #4c709c; /* Even darker green on click */
+  }
+  
+  .pay-now-button:focus {
+    outline: none; /* Removes the default outline */
+    box-shadow: #4c709c;  /* Green shadow on focus */
+  }
+  
+  .payment-button-container {
+    display: flex;
+    justify-content: flex-end; /* Aligns the button to the right */
+    margin-top: 20px; /* Adjust as needed */
+  }
+  
+
+
   
   /* Responsive design */
   @media (max-width: 768px) {
