@@ -10,9 +10,10 @@
   font-size: 30px;
 }
 
-.admin-appointment-form-container {
-  margin: 40px auto;
+.content-availability {
+  margin-left: 85px;
   padding: 20px;
+  transition: margin-left 0.4s ease;
 }
 
 /* Style for the Box that contains the Button and Menu */

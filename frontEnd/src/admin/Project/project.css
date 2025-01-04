@@ -13,16 +13,12 @@
 }
 
 .project-management-page {
-  height: 100vh; 
-  margin: 0 20px; 
-  
+  height: 100vh;
 }
 .content-project {
-  margin-left: 100px; 
-  padding: 84px 6px 3px;
+  margin-left: 100px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   height: 100%;
 }
 
@@ -35,159 +31,151 @@
   height: 100%;
 }
 
-
 h1 {
-  margin-top: 20px; 
+  margin-top: 20px;
   margin-bottom: 10px;
   padding: 0;
 }
 
-
 .create-button {
-  background-color: #3a9b9a; 
-  color: white; 
+  background-color: #3a9b9a;
+  color: white;
   border: none;
-  padding: 10px 20px; 
-  text-align: center; 
-  text-decoration: none; 
-  display: inline-flex; 
-  align-items: center; 
-  border-radius: 5px; 
-  cursor: pointer; 
-  font-size: 16px; 
-  margin-top: 10px; 
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
 .create-button:hover {
-  background-color: #51d1eb; 
+  background-color: #51d1eb;
 }
 
 .create-button .icon {
-  margin-right: 8px; 
-} 
+  margin-right: 8px;
+}
 
 /* notification box styles *****************************************************************/
 
 .notification-icon {
-  margin-top: 10px; 
+  margin-top: 10px;
   cursor: pointer;
   font-size: 24px;
-  color: #3a9b9a; 
-  position: absolute; 
-  right: 0; 
-  top: 5px; 
+  color: #3a9b9a;
+  position: absolute;
+  right: 0;
+  top: 5px;
   margin-right: 70px;
   margin-top: 50px;
 }
 .notification-icon:hover {
-  color: #51d1eb; 
+  color: #51d1eb;
 }
 
 /*eto sa no project created yet*/
 .no-projects-message {
-  font-size: 30px; 
-  text-align: center; 
-  color: #333; 
-  margin-top: 20px; 
+  font-size: 30px;
+  text-align: center;
+  color: #333;
+  margin-top: 20px;
 }
 
 /* eto yung pag mag create ng project**************************************************/
 
 .modal-overlay {
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
   overflow: hidden;
 }
 
 .modal-content {
-  background-color: white; 
-  padding: 20px; 
+  background-color: white;
+  padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-  width: 400px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 400px;
   overflow: hidden;
 }
 
 .modal-title {
-  text-align: center; 
-  margin: 0; 
-  margin-bottom: 20px; 
-  font-size: 24px; 
+  text-align: center;
+  margin: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
 }
 
 .modal-field {
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .modal-field label {
-  display: block; 
-  margin-bottom: 10px; 
-  font-size: 18px; 
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
 }
 
 .modal-field input {
-  width: 100%; 
-  padding: 15px; 
-  border: 1px solid #ccc; 
-  border-radius: 4px; 
-  font-size: 18px; 
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 18px;
 }
 
 .modal-actions {
-  display: flex; 
-  justify-content: space-between; 
+  display: flex;
+  justify-content: space-between;
 }
 
 .cancel-button,
 .create-button {
-  background-color: #7eb3de; 
-  color: rgb(255, 255, 255); 
-  border: none; 
-  padding: 15px 30px; 
-  border-radius: 5px; 
-  cursor: pointer; 
-  font-size: 18px; 
-  height: 50px; 
+  background-color: #7eb3de;
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 15px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  height: 50px;
 }
 
 .cancel-button {
-  background-color: red; 
+  background-color: red;
 }
 
 .cancel-button:hover,
 .create-button:hover {
-  background-color: #51d1eb; 
+  background-color: #51d1eb;
 }
 
 .cancel-button {
-  background-color: red; 
-  margin-top: 10px; 
+  background-color: red;
+  margin-top: 10px;
 }
 
-ct-list-header h3:nth-child(3) { /* Client */
+ct-list-header h3:nth-child(3) {
+  /* Client */
   width: 25%;
 }
-
-
-
 
 .project-list-wrapper {
   display: flex;
   position: relative;
   overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
-  height: 100%; /* Ensure the wrapper has a defined height */
-  max-height: 650px;
 }
-
-
 
 .project-list {
   width: 100%; /* Full width of the container */
@@ -244,18 +232,17 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 .project-list-header h3,
 .project-item p {
-  display: table-cell; 
-  padding: 15px; 
-  overflow: hidden; 
-  text-overflow: ellipsis; 
-  white-space: nowrap; 
+  display: table-cell;
+  padding: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .project-item p {
   font-size: 16px; /* Adjust the font size for the <p> elements */
   padding: 15px; /* Optional: Add padding for better spacing */
 }
-
 
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
@@ -313,8 +300,6 @@ ct-list-header h3:nth-child(3) { /* Client */
   font-size: 16px;
 }
 
-
-
 /* Navigation buttons */
 .top-nav-buttons {
   display: flex;
@@ -323,11 +308,9 @@ ct-list-header h3:nth-child(3) { /* Client */
   margin-bottom: 20px;
   font-size: 18px;
   position: absolute;
-  top: 0px;  /* Move the buttons up by setting a smaller value for top */
-  left: 0;    /* Adjust the position to the left */
+  top: 0px; /* Move the buttons up by setting a smaller value for top */
+  left: 0; /* Adjust the position to the left */
 }
-
-
 
 .top-nav-buttons button {
   display: flex;
@@ -344,45 +327,32 @@ ct-list-header h3:nth-child(3) { /* Client */
 }
 
 .top-nav-buttons svg {
-  font-size: 25px; 
+  font-size: 25px;
 }
 .nav-btn {
   position: relative;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* search box */
 .search-box {
   position: absolute;
-  bottom: 30px;
+  bottom: 18px;
   left: 600px;
   width: 250%;
-  max-width: 500px; 
-  height: 50px;
-  padding: 15px; 
-  font-size: 15px; 
+  max-width: 500px;
+  height: 40px;
+  padding: 15px;
+  font-size: 15px;
   border: 2px solid #3498db;
-  border-radius: 10px; 
+  border-radius: 10px;
   outline: none;
-  box-sizing: border-box; 
-  background: #fff; 
+  box-sizing: border-box;
+  background: #fff;
 }
 
 .search-box:focus {
-  border-color: #7fbcf6; 
-  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); 
+  border-color: #7fbcf6;
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
 }
 
 /* LEFT SIDE PROJECT NAMES */
@@ -402,13 +372,13 @@ ct-list-header h3:nth-child(3) { /* Client */
   padding: 15px;
   position: absolute;
   margin-left: 10px;
-  margin-top: 100px;
+  margin-top: 112px;
   width: 250px; /* Adjust the width as needed */
 }
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 550px; /* Set the max height of the scrollable area */
+  max-height: 754px; /* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;
@@ -420,7 +390,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 }
 
 .folders-scroll-container::-webkit-scrollbar-track {
-  background: #b4bad5;/* Optional: Make track transparent */
+  background: #b4bad5; /* Optional: Make track transparent */
 }
 
 .folders-scroll-container::-webkit-scrollbar-thumb {
@@ -445,7 +415,7 @@ ct-list-header h3:nth-child(3) { /* Client */
 
 /* Hover Effect */
 .project-name-item:hover {
-  background-color: #d2cfcfc7; ;
+  background-color: #d2cfcfc7;
 }
 
 /* No Border for Last Folder */

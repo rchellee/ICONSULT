@@ -27,6 +27,8 @@ const PostsTab = ({
           throw new Error("Failed to fetch tasks");
         }
         const data = await response.json();
+        console.log("Fetched tasks:", data.tasks);
+
         setTasks(data.tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -45,27 +47,38 @@ const PostsTab = ({
   };
 
   const calculateTotal = (task) => {
-    const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
+    const task_fee = parseFloat(task.task_fee) || 0;
     const miscellaneousFee =
       task.miscellaneous && Array.isArray(task.miscellaneous)
-        ? task.miscellaneous.reduce((total, item) => total + (parseFloat(item.fee) || 0), 0)
-        : 0; // Sum of all miscellaneous fees
-    return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
+        ? task.miscellaneous.reduce(
+            (total, item) => total + (parseFloat(item.fee) || 0),
+            0
+          )
+        : 0;
+    return task_fee + miscellaneousFee;
   };
 
   const updateTaskWithMiscellaneous = (updatedTask) => {
     setSelectedTaskDetails(updatedTask);
     setShowMiscellaneousForm(false);
+
     const updatedTasks = tasks.map((task) =>
-      task.task_name === updatedTask.task_name ? updatedTask : task
+      task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
+    console.log("Updated selectedTaskDetails:", updatedTask);
   };
+
+  console.log("Tasks passed to PostsTab:", tasks);
+  console.log("Selected Task Details:", selectedTaskDetails);
+  console.log(
+    "Miscellaneous in selected task:",
+    selectedTaskDetails?.miscellaneous
+  );
 
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-
         {/* Top Navigation Buttons */}
         <div className="top-button">
           <button className="nav-button">
@@ -77,7 +90,6 @@ const PostsTab = ({
           </button>
         </div>
 
-        {/* If a task is selected, show details in the desired format */}
         {selectedTaskName ? (
           <div className="task-details">
             <div className="task-detail-row">
@@ -90,7 +102,7 @@ const PostsTab = ({
             </div>
             <div className="task-detail-row">
               <div>{selectedTaskDetails.task_name}</div>
-              <div className="align-right">{selectedTaskDetails.taskFee}</div>
+              <div className="align-right">{selectedTaskDetails.task_fee}</div>
             </div>
             <div className="task-detail-row">
               <div>
@@ -105,9 +117,7 @@ const PostsTab = ({
             </div>
 
             {/* Loop through miscellaneous entries and display them */}
-            {selectedTaskDetails.miscellaneous &&
-            Array.isArray(selectedTaskDetails.miscellaneous) &&
-            selectedTaskDetails.miscellaneous.length > 0 ? (
+            {selectedTaskDetails?.miscellaneous?.length > 0 ? (
               selectedTaskDetails.miscellaneous.map((misc, index) => (
                 <div className="task-detail-row" key={index}>
                   <div>{misc.name}</div>
@@ -142,6 +152,8 @@ const PostsTab = ({
                   <th>Employee</th>
                   <th>Status</th>
                   <th>Due Date</th>
+                  <th>Task Fee</th>
+                  <th>Miscellaneous</th>
                   <th className="align-right">Amount</th>
                 </tr>
               </thead>
@@ -152,6 +164,16 @@ const PostsTab = ({
                     <td>{task.employee || "Unassigned"}</td>
                     <td>{task.status}</td>
                     <td>{task.due_date}</td>
+                    <td>{task.task_fee}</td>
+                    <td>
+                      {Array.isArray(task.miscellaneous) &&
+                      task.miscellaneous.length > 0
+                        ? task.miscellaneous
+                            .map((misc) => `${misc.name} (${misc.fee})`)
+                            .join(", ")
+                        : "None"}
+                    </td>
+
                     <td className="align-right">{task.amount}</td>
                   </tr>
                 ))}
@@ -160,12 +182,8 @@ const PostsTab = ({
           </div>
         )}
 
-
-
-
-         
         {/* Create Button */}
-         <div className="create-button-container">
+        <div className="create-button-container">
           <button
             className="create-task-button"
             onClick={() => setShowTaskForm(true)}
@@ -173,7 +191,6 @@ const PostsTab = ({
             +
           </button>
         </div>
-
 
         {/* Task Form */}
         {showTaskForm && (

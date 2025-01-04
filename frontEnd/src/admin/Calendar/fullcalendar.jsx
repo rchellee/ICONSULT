@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
+import Topbar from "../Topbar";
 import Header from "../../components/Header";
 import "./calendar.css";
 
@@ -187,6 +188,7 @@ const Calendar = () => {
 
   return (
     <div>
+    <Topbar />
       <Sidebar />
       <div className="content-fullcalendar">
         <Box m="0px">

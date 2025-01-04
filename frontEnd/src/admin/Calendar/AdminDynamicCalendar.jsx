@@ -92,7 +92,7 @@ const AdminDynamicCalendar = ({ availableDates, onDateSelect }) => {
 
   return (
     <div className="calendar-form-container">
-      <div className="wrapper">
+      <div className="wrapper-adminCalendar">
         <header>
           <p className="current-date">
             {months[currDate.getMonth()]} {currDate.getFullYear()}

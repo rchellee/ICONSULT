@@ -1,4 +1,4 @@
-.content {
+.content-notification {
   margin-left: 85px;
   padding: 20px;
   transition: margin-left 0.4s ease;
@@ -12,21 +12,47 @@
 
 .notification-item {
   padding: 15px;
-  border-bottom: 1px solid #cccaca;  /* Adds a line between notifications */
-  background-color: #f2f2f2;  /* Light background for notifications */
+  border-bottom: 1px solid #cccaca;
+  background-color: #f2f2f2;
 }
 
 .notification-item:hover {
-  background-color: #e4e2e2;  /* Change background on hover */
+  background-color: #e4e2e2;
 }
 
 .notification-item.read {
-  background-color: #f2f2f2;   /* Lighter background for read notifications */
-  color:gray;
+  background-color: #f2f2f2;
+  color: gray;
+}
+
+.scrollable-notifications {
+  max-height: 850px;
+  overflow-y: auto;
+  padding-right: 10px; 
+  scrollbar-width: thin;
+  scrollbar-color: #0d4976 #9d8383; 
+  
+  opacity: 0.9;
+}
+
+.scrollable-notifications::-webkit-scrollbar {
+  width: 1px; 
+  opacity: 1;
+}
+
+.scrollable-notifications::-webkit-scrollbar-thumb {
+  background-color: #0d4976; 
+  border-radius: 2px;
+  opacity: 1;
+}
+
+.scrollable-notifications::-webkit-scrollbar-track {
+  background-color: #f2f2f2; /* Background color of the scrollbar track */
+  opacity: 1;
 }
 
 .notification-item.unread {
-  color:black;  /* Bold text for unread notifications */
+  color: black;
 }
 
 .notification-time {

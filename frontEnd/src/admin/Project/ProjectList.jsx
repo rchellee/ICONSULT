@@ -1,21 +1,11 @@
 import React from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./project.css";
 
 const ProjectList = ({ filteredProjects, formatDate }) => {
   return (
     <div className="project-list-wrapper">
       <div className="project-list">
-        {/* Top Navigation Buttons */}
-        <div className="top-nav-buttons">
-          <button className="nav-btn">
-            <FaChevronLeft />
-            <span className="tooltip">Go back</span>
-          </button>
-          <button className="nav-btn">
-            <FaChevronRight />
-          </button>
-        </div>
+
 
         <div className="project-list-header">
           <h3>Project </h3>
