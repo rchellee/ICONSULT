@@ -1,4 +1,3 @@
-// ClientForm.jsx
 import { useState } from "react";
 import "./client.css";
 import Sidebar from "../sidebar";
@@ -83,104 +82,125 @@ const ClientForm = ({ clients, setClients, showToast }) => {
     <div className="client-home-page">
       <Sidebar />
       <div className="client-content">
-        <form onSubmit={handleSubmit}>
-          <select name="prefix" value={formData.prefix} onChange={handleChange}>
-            <option value="Mr.">Mr.</option>
-            <option value="Mrs.">Mrs.</option>
-            <option value="Ms.">Ms.</option>
-            <option value="Dr.">Dr.</option>
-          </select>
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="text"
-            name="middleInitial"
-            placeholder="Middle Initial"
-            value={formData.middleInitial}
-            onChange={handleChange}
-          />
-          <input
-            type="date"
-            name="birthday"
-            value={formData.birthday}
-            onChange={handleChange}
-          />
-          <label>Username:</label>
-          <input
-            type="text"
-            value={`${formData.lastName.toLowerCase()}.${formData.firstName.toLowerCase()}`}
-            disabled
-          />
-          <label>Password:</label>
-          <input
-            type="text"
-            value={`${formData.lastName.toUpperCase()}12345`}
-            disabled
-          />
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleChange}
-          />
-          <input
-            type="tel"
-            name="mobile_number"
-            placeholder="Mobile Number"
-            value={formData.mobile_number}
-            onChange={handleChange}
-          />
-          <input
-            type="email"
-            name="email_add"
-            placeholder="Email Address"
-            value={formData.email_add}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="companyName"
-            placeholder="Company Name"
-            value={formData.companyName}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            value={formData.city}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            name="postalCode"
-            placeholder="Postal Code"
-            value={formData.postalCode}
-            onChange={handleChange}
-          />
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-          >
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+        <form onSubmit={handleSubmit} className="client-form-grid">
+          <div className="client-form-row">
+            <select name="prefix" value={formData.prefix} onChange={handleChange}>
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Dr.">Dr.</option>
+            </select>
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={formData.firstName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="client-form-row">
+            <input
+              type="text"
+              name="middleInitial"
+              placeholder="Middle Initial"
+              value={formData.middleInitial}
+              onChange={handleChange}
+            />
+            <input
+              type="date"
+              name="birthday"
+              value={formData.birthday}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="client-form-row">
+            <label>Username:</label>
+            <input
+              type="text"
+              value={`${formData.lastName.toLowerCase()}.${formData.firstName.toLowerCase()}`}
+              disabled
+            />
+            <label>Password:</label>
+            <input
+              type="text"
+              value={`${formData.lastName.toUpperCase()}12345`}
+              disabled
+            />
+          </div>
+
+          <div className="client-form-row">
+            <input
+              type="text"
+              name="address"
+              placeholder="Address"
+              value={formData.address}
+              onChange={handleChange}
+            />
+            <input
+              type="tel"
+              name="mobile_number"
+              placeholder="Mobile Number"
+              value={formData.mobile_number}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="client-form-row">
+            <input
+              type="email"
+              name="email_add"
+              placeholder="Email Address"
+              value={formData.email_add}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="companyName"
+              placeholder="Company Name"
+              value={formData.companyName}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="client-form-row">
+            <input
+              type="text"
+              name="city"
+              placeholder="City"
+              value={formData.city}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="postalCode"
+              placeholder="Postal Code"
+              value={formData.postalCode}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="client-form-row">
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
           <button type="submit">Add Client</button>
         </form>
       </div>

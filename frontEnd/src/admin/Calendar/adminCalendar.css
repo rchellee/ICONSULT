@@ -1,14 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
-
-.appointment-form-container {
-  margin: 40px auto;
-  padding: 20px;
-}
-
-.calendar-form-container {
-  margin: 40px auto;
-  padding: 20px;
-}
+/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 
 .content {
   margin-left: 85px;
@@ -61,12 +51,12 @@ button + button {
 }
 
 .calendar-date.available {
-  background-color: #d4edda; /* Green for available */
+  background-color: #d4edda; 
   color: #050c2f;
 }
 
 .calendar-date.unavailable {
-  background-color: #f8d7da; /* Red for unavailable */
+  background-color: #f8d7da; 
   color: #721c24;
   cursor: not-allowed;
 }
@@ -80,12 +70,12 @@ button + button {
 }
 
 .time-slots-admin.booked {
-  background-color: #ffcccc; /* Light red for booked slots */
+  background-color: #ffcccc; 
   cursor: not-allowed;
 }
 
 .time-slots-admin.selected {
-  background-color: #90ee90; /* Light green for selected slot */
+  background-color: #90ee90; 
   font-weight: bold;
 }
 
@@ -128,7 +118,7 @@ header .icons span:hover {
   background: #f2f2f2;
 }
 header .current-date {
-  /*   */
+  
   font-weight: 700;
 }
 .calendar {
@@ -220,4 +210,4 @@ header .current-date {
 .disabled {
   pointer-events: none;
   color: gray;
-}
+} */

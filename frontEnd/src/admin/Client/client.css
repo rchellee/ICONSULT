@@ -13,51 +13,66 @@
 
 /* Search Bar */
 .search-bar {
-  width: 100%;
-  max-width: 300px;
+  width: 300px;
+  padding: 10px;
+  margin: 10px 0;
   border: 1px solid #ccc;
-  margin-left: 900px;
+  border-radius: 5px;
 }
 
-/* Table */
-table th,
-table td {
-  padding: 6px;
+/* Table Styles for client and employee */
+table {
+  width: 90%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  border-radius: 3px; 
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+table th, table td {
+  padding: 15px 15px; 
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f1f1f1; 
 }
 
 table th {
-  background-color: #f4f4f4;
-  font-weight: bold;
+  background-color: #092b70; 
+  color: white;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9; 
 }
 
 table tr:hover {
-  background-color: #f9f9f9;
+  background-color: #f1f1f1; 
+  cursor: pointer;
+  transition: background 0.3s ease-in-out; 
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+table td {
+  color: #555; 
 }
-
-
-th {
-  background-color: #f4f4f4;
-}
-
 .initials-circle {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 10px;
+  margin-right: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: #fff;
-  text-transform: uppercase;
+  background-color: #007bff; /* Default background for initials */
 }
+
+table td a {
+  text-decoration: none; /* Remove underline from links */
+  transition: color 0.3s ease-in-out;
+}
+
 /* Toast notif  */
 .toast {
   position: fixed;
@@ -95,109 +110,215 @@ th {
   animation: progress 5s linear;
 }
 
-
-/* ClientForm.jsx */
-form {
-  background-color: white;
-  padding: 30px;
+/* client form row */
+.client-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  background-color: #fff;
   border-radius: 8px;
-  max-width: 700px;
-  margin: 20px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 70%;
+  margin-top: 8px;
+  margin-left: 160px;
+
 }
 
-form input,
-form select {
+.client-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.client-form-row input,
+.client-form-row select {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #dcdcdc;
-  border-radius: 4px;
-  font-size: 14px;
-  box-sizing: border-box;
 }
 
-form label {
-  display: block;
-  margin-bottom: 5px;
-  color: #34495e;
-  font-weight: bold;
+.client-form-row input[type="date"] {
+  padding: 8px;
 }
 
-form input:disabled {
+.client-form-row select {
   background-color: #f0f0f0;
-  color: #999;
 }
 
-form select {
-  appearance: none;
-  background-color: white;
+.client-form-row label {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Client Details */
+
+.client-details {
+  display: flex;
+  flex-direction: column;
+  width: 80%; /* Adjust width as needed */
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.client-info {
+  margin-bottom: 20px;
+}
+
+.client-view, .client-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-view p {
+  margin-bottom: 10px;
+}
+
+.client-view strong {
+  margin-right: 5px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn-edit, .btn-save, .btn-cancel, .btn-back {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.client-history {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.clickable {
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-form input,
-form select {
-  margin-bottom: 15px;
-}
-/* Status Column */
-/* .status.active {
-  color: green;
-}
-.status.inactive {
-  color: red;
-} */
-
-/* Client Details */
-.client-details {
-  display: grid;
-  grid-template-columns: 2fr;
-  gap: 20px;
-  padding: 20px;
-  max-width: 900px;
-  margin: 0 auto;
-  background: #f7f7f7;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.clickable:hover {
+  background-color: #f0f0f0;
 }
 
-/* Info and History Wrapper */
-.client-info-and-history {
-  display: grid;
-  grid-template-rows: 2fr 2fr 2fr;
-  gap: 20px;
+.section-details {
+  margin-top: 20px;
 }
 
-/* Individual Sections Styling */
-.client-info {
-  grid-row: span 2;
-  background: #ffffff;
-  padding: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.section-details table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.client-history {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.section-details th, .section-details td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.section-details th {
+  background-color: #f2f2f2;
+}
+
+.toast {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.form-label {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  margin-left: 10px;
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Form Styling */
+.client-info form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-/* History Links Styling */
-.client-history h4 {
-  padding: 10px;
-  cursor: pointer;
-  background: #007bff;
-  color: #fff;
+.client-info label {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-info input {
+  padding: 8px;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  text-align: center;
-  transition: background-color 0.3s ease;
+}
+
+/* Button Styling */
+.button-row {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit, .btn-save, .btn-back {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-edit {
+  background: #ffa726;
+  color: white;
+}
+
+.btn-save {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-back {
+  background: #f44336;
+  color: white;
+}
+
+.btn-edit:hover, .btn-save:hover, .btn-back:hover {
+  opacity: 0.9;
+}
+
+/* Section Links */
+.client-history h4 {
+  cursor: pointer;
+  color: #0d2c45;
+  text-decoration: underline;
+  margin-top: 10px;
 }
 
 .client-history h4:hover {
-  background-color: #0056b3;
+  color: #1a3856;
 }
+
 
 /* Button Row Styling */
 .button-row {
@@ -270,7 +391,8 @@ form select {
 }
 
 
-/* active and inactive */
+/* Edit client */
+
 
 
 /* Responsive design */

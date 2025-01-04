@@ -18,7 +18,6 @@ const ClientDetails = ({ client, goBack }) => {
       });
 
       if (response.ok) {
-        console.log("Client updated successfully");
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
       } else {
@@ -31,15 +30,10 @@ const ClientDetails = ({ client, goBack }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
-  };
+  const toggleEdit = () => setIsEditing(!isEditing);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -47,21 +41,10 @@ const ClientDetails = ({ client, goBack }) => {
     toggleEdit();
   };
 
-  const handleSectionClick = (section) => {
-    setSelectedSection(section);
-  };
-
-  const goBackToMain = () => {
-    setSelectedSection(null);
-  };
+  const handleSectionClick = (section) => setSelectedSection(section);
+  const goBackToMain = () => setSelectedSection(null);
 
   const renderSectionDetails = () => {
-    const data = client[selectedSection] || [];
-
-    if (data.length === 0) {
-      return <p>No data found for this section.</p>;
-    }
-
     const headers = {
       appointments: ["ID", "Date", "Details", "Status", "Type"],
       projects: ["ID", "Project Name", "Start Date", "End Date", "Status"],
@@ -69,16 +52,13 @@ const ClientDetails = ({ client, goBack }) => {
       documents: ["ID", "Document Name", "Uploaded Date", "Type", "Action"],
     };
 
+    const data = client[selectedSection] || [];
     return (
-      <>
+      <div className="section-details">
         <h4>{selectedSection.charAt(0).toUpperCase() + selectedSection.slice(1)} Details</h4>
         <table>
           <thead>
-            <tr>
-              {headers[selectedSection].map((header, index) => (
-                <th key={index}>{header}</th>
-              ))}
-            </tr>
+            <tr>{headers[selectedSection].map((header) => <th key={header}>{header}</th>)}</tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
@@ -87,117 +67,76 @@ const ClientDetails = ({ client, goBack }) => {
                   <td key={idx}>
                     {selectedSection === "documents" && idx === Object.values(item).length - 1 ? (
                       <a href={item.url} target="_blank" rel="noopener noreferrer">View</a>
-                    ) : (
-                      value
-                    )}
+                    ) : value}
                   </td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
-        <button className="btn-back" onClick={goBackToMain}>
-          Back
-        </button>
-      </>
+        <button className="btn-back" onClick={goBackToMain}>Back</button>
+      </div>
     );
   };
 
   return (
     <div className="client-details">
-      {showToast && (
-        <div className="toast">
-          Client information updated successfully!
-          <div className="toast-progress"></div>
-        </div>
+      {showToast && <div className="toast">Client information updated successfully!</div>}
+      {!isEditing && (
+      <div className="client-history">
+        {["appointments", "projects", "payments", "documents"].map((section) => (
+          <h4 key={section} onClick={() => handleSectionClick(section)} className="clickable">
+            {section.charAt(0).toUpperCase() + section.slice(1)}
+          </h4>
+        ))}
+      </div>
       )}
 
       {!selectedSection ? (
-        <>
-          <div className="client-info">
-            {isEditing ? (
-              <form onSubmit={handleSave}>
-                <label>
-                  <strong>First Name:</strong>
+        <div className="client-info">
+           {isEditing ? (
+            <form onSubmit={handleSave} className="client-form">
+              {Object.keys(formData).map((key) => (
+                <label key={key} className="form-label">
+                  {key.replace(/_/g, " ")}:
                   <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
+                    type={key === "birthday" ? "date" : "text"}
+                    name={key}
+                    value={formData[key]}
                     onChange={handleChange}
+                    className="form-input"
                   />
                 </label>
-                <label>
-                  <strong>Email:</strong>
-                  <input
-                    type="email"
-                    name="email_add"
-                    value={formData.email_add}
-                    onChange={handleChange}
-                  />
-                </label>
-                <label>
-                  <strong>Address:</strong>
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-                </label>
-                <label>
-                  <strong>Contact Number:</strong>
-                  <input
-                    type="tel"
-                    name="mobile_number"
-                    value={formData.mobile_number}
-                    onChange={handleChange}
-                  />
-                </label>
-                <label>
-                  <strong>Birthday:</strong>
-                  <input
-                    type="date"
-                    name="birthday"
-                    value={formData.birthday}
-                    onChange={handleChange}
-                  />
-                </label>
-
-                <div className="button-row">
-                  <button type="submit" className="btn-save">Update</button>
-                  <button type="button" className="btn-edit" onClick={toggleEdit}>Cancel</button>
-                </div>
-              </form>
-            ) : (
-              <>
-                <p><strong>ID:</strong> {client.id}</p>
-                <p><strong>Last Name:</strong> {client.lastName}</p>
-                <p><strong>First Name:</strong> {client.firstName}</p>
-                <p><strong>Email:</strong> {client.email_add}</p>
-                <p><strong>Username:</strong> {client.username}</p>
-                <p><strong>Address:</strong> {client.address}</p>
-                <p><strong>Contact Number:</strong> {client.mobile_number}</p>
-                <p><strong>Status:</strong> {client.status}</p>
-                <p><strong>Birthday:</strong> {client.birthday}</p>
-
-                <div className="button-row">
-                  <button className="btn-edit" onClick={toggleEdit}>Edit</button>
-                  <button className="btn-back" onClick={goBack}>Back</button>
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="client-history">
-            <h4 onClick={() => handleSectionClick("appointments")} className="clickable">Appointment History</h4>
-            <h4 onClick={() => handleSectionClick("projects")} className="clickable">Project History</h4>
-            <h4 onClick={() => handleSectionClick("payments")} className="clickable">Payment History</h4>
-            <h4 onClick={() => handleSectionClick("documents")} className="clickable">Documents</h4>
-          </div>
-        </>
-      ) : (
-        renderSectionDetails()
-      )}
+                
+              ))}
+              <div className="button-row">
+                <button type="submit" className="btn-save">
+                  Save
+                </button>
+                <button type="button" className="btn-cancel" onClick={toggleEdit}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="client-view">
+              {Object.entries(client).map(([key, value]) => (
+                <p key={key}>
+                  <strong>{key.replace(/_/g, " ")}:</strong> {value}
+                </p>
+              ))}
+              <div className="button-row">
+                <button className="btn-edit" onClick={toggleEdit}>
+                  Edit
+                </button>
+                <button className="btn-back" onClick={goBack}>
+                  Back
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : renderSectionDetails()}
     </div>
   );
 };

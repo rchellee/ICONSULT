@@ -200,10 +200,10 @@ function AdminAppointment() {
   return (
     <div className="appointment-form-container">
       <Sidebar />
-      <div className="content">
+      <div className="appointment-form-content">
         {currentStep === 1 && (
           <div>
-            <div className="calendar-time-container">
+            <div className="admin-calendar-time-container">
               <Calendar
                 availableDates={availableDates}
                 onDateSelect={handleDateSelect}
@@ -219,7 +219,7 @@ function AdminAppointment() {
                       onChange={handleTimePeriodChange}
                     >
                       <option value="" disabled>
-                        -- Select --
+                        Select
                       </option>
                       <option value="AM">AM</option>
                       <option value="PM">PM</option>
@@ -251,242 +251,232 @@ function AdminAppointment() {
                             </option>
                           ))}
                       </select>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-            <button
+                      <button
               onClick={nextStep}
               disabled={!formData.date || !formData.time}
             >
               Next
             </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )}
-        {currentStep === 2 && (
-          <div>
-            <div className="form-group">
-              <label htmlFor="client">Select Client:</label>
-              <select
-                id="client"
-                name="client"
-                value={formData.client}
-                onChange={(e) => {
-                  const selectedClientId = e.target.value;
-                  const selectedClient = clients.find(
-                    (client) => client.id === parseInt(selectedClientId)
-                  );
-                  setFormData({
-                    ...formData,
-                    client: selectedClientId, // Set the client ID
-                    clientName: selectedClient
-                      ? `${selectedClient.firstName} ${selectedClient.lastName}`
-                      : "", // Set the client name for display purposes
-                  });
-                }}
-                required
-              >
-                <option value="" disabled>
-                  -- Select Client --
-                </option>
-                {clients.map((client) => (
-                  <option key={client.id} value={client.id}>
-                    {client.firstName} {client.lastName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group">
-              <label htmlFor="consultationType">Consultation Type:</label>
-              <select
-                id="consultationType"
-                name="consultationType"
-                value={formData.consultationType}
-                onChange={(e) => {
-                  const selectedValue = e.target.value;
-                  setFormData({
-                    ...formData,
-                    consultationType: selectedValue,
-                    otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
-                  });
-                }}
-                required
-              >
-                <option value="" disabled>
-                  -- Select Consultation Type --
-                </option>
-                <optgroup label="Corporate and Consultancy Services">
-                  <option value="Strategic Planning Consultation">
-                    Strategic Planning Consultation
-                  </option>
-                  <option value="Corporate Governance Review">
-                    Corporate Governance Review
-                  </option>
-                  <option value="Business Process Improvement">
-                    Business Process Improvement
-                  </option>
-                </optgroup>
-                <optgroup label="Management Advisory Services">
-                  <option value="Risk Management Consultation">
-                    Risk Management Consultation
-                  </option>
-                  <option value="Organizational Development Advisory">
-                    Organizational Development Advisory
-                  </option>
-                  <option value="Financial Advisory">Financial Advisory</option>
-                </optgroup>
-                <optgroup label="Professional Services">
-                  <option value="Accounting Consultation">
-                    Accounting Consultation
-                  </option>
-                  <option value="Legal Advisory">Legal Advisory</option>
-                  <option value="Tax Advisory">Tax Advisory</option>
-                </optgroup>
-                <optgroup label="Payroll Services">
-                  <option value="Payroll System Setup Consultation">
-                    Payroll System Setup Consultation
-                  </option>
-                  <option value="Employee Benefits and Compliance Advisory">
-                    Employee Benefits and Compliance Advisory
-                  </option>
-                </optgroup>
-                <optgroup label="Business Set-up">
-                  <option value="Startup Planning">Startup Planning</option>
-                  <option value="Business Structuring and Licensing Advisory">
-                    Business Structuring and Licensing Advisory
-                  </option>
-                </optgroup>
-                <optgroup label="Registrations">
-                  <option value="Business Name Registration">
-                    Business Name Registration
-                  </option>
-                  <option value="SEC/DTI/Mayor’s Permit Assistance">
-                    SEC/DTI/Mayor’s Permit Assistance
-                  </option>
-                  <option value="Compliance Consultation">
-                    Compliance Consultation
-                  </option>
-                </optgroup>
-                <option value="Follow up">Follow up</option>
-                <option value="Others">Others</option>
-              </select>
-            </div>
+{currentStep === 2 && (
+  <div className="step2form">
+    <div className="form-group">
+      <label htmlFor="client">Select Client:</label>
+      <select
+        id="client"
+        name="client"
+        value={formData.client}
+        onChange={(e) => {
+          const selectedClientId = e.target.value;
+          const selectedClient = clients.find(
+            (client) => client.id === parseInt(selectedClientId)
+          );
+          setFormData({
+            ...formData,
+            client: selectedClientId, // Set the client ID
+            clientName: selectedClient
+              ? `${selectedClient.firstName} ${selectedClient.lastName}`
+              : "", // Set the client name for display purposes
+          });
+        }}
+        required
+      >
+        <option value="" disabled>
+          -- Select Client --
+        </option>
+        {clients.map((client) => (
+          <option key={client.id} value={client.id}>
+            {client.firstName} {client.lastName}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div className="form-group">
+      <label htmlFor="consultationType">Consultation Type:</label>
+      <select
+        id="consultationType"
+        name="consultationType"
+        value={formData.consultationType}
+        onChange={(e) => {
+          const selectedValue = e.target.value;
+          setFormData({
+            ...formData,
+            consultationType: selectedValue,
+            otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
+          });
+        }}
+        required
+      >
+        <option value="" disabled>
+          -- Select Consultation Type --
+        </option>
+        <optgroup label="Corporate and Consultancy Services">
+          <option value="Strategic Planning Consultation">
+            Strategic Planning Consultation
+          </option>
+          <option value="Corporate Governance Review">
+            Corporate Governance Review
+          </option>
+          <option value="Business Process Improvement">
+            Business Process Improvement
+          </option>
+        </optgroup>
+        <optgroup label="Management Advisory Services">
+          <option value="Risk Management Consultation">
+            Risk Management Consultation
+          </option>
+          <option value="Organizational Development Advisory">
+            Organizational Development Advisory
+          </option>
+          <option value="Financial Advisory">Financial Advisory</option>
+        </optgroup>
+        <optgroup label="Professional Services">
+          <option value="Accounting Consultation">
+            Accounting Consultation
+          </option>
+          <option value="Legal Advisory">Legal Advisory</option>
+          <option value="Tax Advisory">Tax Advisory</option>
+        </optgroup>
+        <optgroup label="Payroll Services">
+          <option value="Payroll System Setup Consultation">
+            Payroll System Setup Consultation
+          </option>
+          <option value="Employee Benefits and Compliance Advisory">
+            Employee Benefits and Compliance Advisory
+          </option>
+        </optgroup>
+        <optgroup label="Business Set-up">
+          <option value="Startup Planning">Startup Planning</option>
+          <option value="Business Structuring and Licensing Advisory">
+            Business Structuring and Licensing Advisory
+          </option>
+        </optgroup>
+        <optgroup label="Registrations">
+          <option value="Business Name Registration">
+            Business Name Registration
+          </option>
+          <option value="SEC/DTI/Mayor’s Permit Assistance">
+            SEC/DTI/Mayor’s Permit Assistance
+          </option>
+          <option value="Compliance Consultation">
+            Compliance Consultation
+          </option>
+        </optgroup>
+        <option value="Follow up">Follow up</option>
+        <option value="Others">Others</option>
+      </select>
+    </div>
 
-            {formData.consultationType === "Others" && (
-              <div className="form-group">
-                <label htmlFor="otherDetails">Please specify:</label>
-                <textarea
-                  id="otherDetails"
-                  name="otherDetails"
-                  value={formData.otherDetails || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, otherDetails: e.target.value })
-                  }
-                  required
-                />
-              </div>
-            )}
+    {formData.consultationType === "Others" && (
+      <div className="form-group">
+        <label htmlFor="otherDetails">Please specify:</label>
+        <textarea
+          id="otherDetails"
+          name="otherDetails"
+          value={formData.otherDetails || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, otherDetails: e.target.value })
+          }
+          required
+        />
+      </div>
+    )}
 
-            <div className="form-group">
-              <label htmlFor="additionalInfo">Purpose:</label>
-              <textarea
-                id="additionalInfo"
-                name="additionalInfo"
-                value={formData.additionalInfo}
-                onChange={handleChange}
-              />
-            </div>
+    <div className="form-group">
+      <label htmlFor="additionalInfo">Purpose:</label>
+      <textarea
+        id="additionalInfo"
+        name="additionalInfo"
+        value={formData.additionalInfo}
+        onChange={handleChange}
+      />
+    </div>
 
-            <div className="form-group">
-              <label htmlFor="platform">
-                Preferred Communication Platform:
-              </label>
-              <select
-                id="platform"
-                name="platform"
-                value={formData.platform || ""}
-                onChange={handleChange}
-                required
-              >
-                <option value="" disabled>
-                  -- Select Platform --
-                </option>
-                <option value="In-Person">In-Person</option>
-                <option value="Zoom">Zoom</option>
-                <option value="Google Meet">Google Meet</option>
-                <option value="Phone Call">Phone Call</option>
-                <option value="Microsoft Teams">Microsoft Teams</option>
-              </select>
-            </div>
+    <div className="form-group">
+      <label htmlFor="platform">Preferred Communication Platform:</label>
+      <select
+        id="platform"
+        name="platform"
+        value={formData.platform || ""}
+        onChange={handleChange}
+        required
+      >
+        <option value="" disabled>
+          -- Select Platform --
+        </option>
+        <option value="In-Person">In-Person</option>
+        <option value="Zoom">Zoom</option>
+        <option value="Google Meet">Google Meet</option>
+        <option value="Phone Call">Phone Call</option>
+        <option value="Microsoft Teams">Microsoft Teams</option>
+      </select>
+    </div>
 
-            <div className="form-group">
-              <label htmlFor="reminder">Reminder Me:</label>
-              <select
-                id="reminder"
-                name="reminder"
-                value={formData.reminder || ""}
-                onChange={handleChange}
-                required
-              >
-                <option value="" disabled>
-                  -- Select Reminder Time --
-                </option>
-                <option value="At Time of Event">At Time of Event</option>
-                <option value="5 minutes before">5 minutes before</option>
-                <option value="10 minutes before">10 minutes before</option>
-                <option value="15 minutes before">15 minutes before</option>
-                <option value="30 minutes before">30 minutes before</option>
-                <option value="1 hour before">1 hour before</option>
-                <option value="2 hours before">2 hours before</option>
-                <option value="1 day before">1 day before</option>
-                <option value="2 days before">2 days before</option>
-                <option value="1 week before">1 week before</option>
-              </select>
-            </div>
+    <div className="form-group">
+      <label htmlFor="reminder">Reminder Me:</label>
+      <select
+        id="reminder"
+        name="reminder"
+        value={formData.reminder || ""}
+        onChange={handleChange}
+        required
+      >
+        <option value="" disabled>
+          -- Select Reminder Time --
+        </option>
+        <option value="At Time of Event">At Time of Event</option>
+        <option value="5 minutes before">5 minutes before</option>
+        <option value="10 minutes before">10 minutes before</option>
+        <option value="15 minutes before">15 minutes before</option>
+        <option value="30 minutes before">30 minutes before</option>
+        <option value="1 hour before">1 hour before</option>
+        <option value="2 hours before">2 hours before</option>
+        <option value="1 day before">1 day before</option>
+        <option value="2 days before">2 days before</option>
+        <option value="1 week before">1 week before</option>
+      </select>
+    </div>
 
-            <button onClick={prevStep}>Back</button>
-            <button
-              onClick={nextStep}
-              disabled={
-                !formData.consultationType ||
-                (formData.consultationType === "Others" &&
-                  !formData.otherDetails)
-              }
-            >
-              Next
-            </button>
-          </div>
-        )}
-
+    <button onClick={prevStep}>Back</button>
+    <button
+      onClick={nextStep}
+      disabled={
+        !formData.consultationType ||
+        (formData.consultationType === "Others" &&
+          !formData.otherDetails)
+      }
+    >
+      Next
+    </button>
+  </div>
+)}
         {/** Step 3: Confirmation **/}
-        {currentStep === 3 && (
-          <div>
-            <p>
-              <strong>Client:</strong> {formData.clientName}
-            </p>
-            <p>
-              <strong>Date:</strong> {formData.date}
-            </p>
-            <p>
-              <strong>Time:</strong> {formData.time}
-            </p>
-            <p>
-              <strong>Consultation Type:</strong> {formData.consultationType}
-            </p>
-            <p>
-              <strong>Additional Info:</strong> {formData.additionalInfo}
-            </p>
-            <p>
-              <strong>Consultation Mode:</strong> {formData.platform}
-            </p>
-            <p>
-              <strong>Reminder:</strong> {formData.reminder}
-            </p>
-            <button onClick={prevStep}>Back</button>
-            <button onClick={handleSubmit}>Submit</button>
-          </div>
-        )}
+{/** Step 3: Confirmation **/}
+{currentStep === 3 && (
+  <div className="confirmation-container">
+    <div className="confirmation-form">
+      <p><strong>Client:</strong> {formData.clientName}</p>
+      <p><strong>Date:</strong> {formData.date}</p>
+      <p><strong>Time:</strong> {formData.time}</p>
+      <p><strong>Consultation Type:</strong> {formData.consultationType}</p>
+      <p><strong>Additional Info:</strong> {formData.additionalInfo}</p>
+      <p><strong>Consultation Mode:</strong> {formData.platform}</p>
+      <p><strong>Reminder:</strong> {formData.reminder}</p>
+
+      <div className="confirmation-buttons">
+        <button onClick={prevStep}>Back</button>
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );

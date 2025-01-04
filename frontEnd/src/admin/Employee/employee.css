@@ -3,6 +3,7 @@
   display: flex;
   background-color: #f4f4f9;
   /* overflow: hidden; */
+  margin-right: 50px;
 }
 
 .employee-content {
@@ -78,7 +79,7 @@ button:hover {
   animation: progress 5s linear;
 }
 /* EmployeeForm.jsx */
-form {
+/* form {
   background-color: white;
   padding: 30px;
   border-radius: 8px;
@@ -136,7 +137,7 @@ form select {
 form input,
 form select {
   margin-bottom: 15px;
-}
+} */
 
 /* Employee details form */
 .employee-details {
@@ -230,7 +231,8 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(26px);
 }
-/* Client initials */
+
+/* employee initials */
 .initials-circle {
   display: inline-flex;
   justify-content: center;
@@ -245,7 +247,7 @@ input:checked + .slider:before {
 
 
 table {
-  width: 100%;
+  width: 90%;
   border-collapse: collapse;
 }
 
@@ -264,24 +266,59 @@ tr:hover {
 }
 
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  button {
-    padding: 10px 16px;
-    font-size: 14px;
-  }
+@media screen and (max-width: 768px) {
+}
 
-  .content h2 {
-    font-size: 20px;
-  }
+/* Add Employee Form */
+.employee-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 70%;
+  margin-top: 80px;
+  margin-left: 160px;
 
-  .employee-details {
-    margin: 20px;
-    padding: 15px;
-  }
+}
 
-  .btn-save, .btn-edit, .btn-back {
-    padding: 8px 16px;
-    font-size: 12px;
-  }
+.employee-form-grid h3 {
+  grid-column: span 2;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.employee-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.employee-form-row input,
+.employee-form-row select {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.employee-form-row input[type="date"] {
+  padding: 8px;
+}
+
+.employee-form-row select {
+  background-color: #f0f0f0;
+}
+
+.employee-form-row label {
+  font-size: 14px;
+  color: #555;
+}
+
+@media screen and (max-width: 768px) {
+
 }

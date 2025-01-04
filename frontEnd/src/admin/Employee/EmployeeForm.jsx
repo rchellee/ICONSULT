@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./employee.css"; // Assuming you have CSS for styling
+import "./employee.css"; 
 import Sidebar from "../sidebar";
 
 const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) => {
@@ -41,9 +41,8 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
 
     try {
       if (editingEmployee) {
-        // Update existing employee
         const response = await fetch(`http://localhost:8081/employee/${editingEmployee.id}`, {
-          method: "PUT", // Use PUT or PATCH depending on your backend setup
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
@@ -60,7 +59,6 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
           console.error("Error updating employee:", result);
         }
       } else {
-        // Add new employee
         const response = await fetch("http://localhost:8081/employee", {
           method: "POST",
           headers: {
@@ -73,7 +71,6 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
         if (response.ok) {
           setEmployees([...employees, result]);
 
-          // Create a notification for the new client
           await fetch("http://localhost:8081/notifications", {
             method: "POST",
             headers: {
@@ -91,9 +88,8 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
         }
       }
 
-      toggleForm(); // Close the form after submission
+      toggleForm();
 
-      // Reset form state
       setFormData({
         lastName: "",
         middleName: "",
@@ -114,78 +110,38 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
     <div className="employee-home-page">
       <Sidebar />
       <div className="employee-content">
-        <form onSubmit={handleSubmit}>
-          <h3>{editingEmployee ? "Edit Employee" : ""}</h3>
+        <form onSubmit={handleSubmit} className="employee-form-grid">
 
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
 
-          <input
-            type="text"
-            name="middleName"
-            placeholder="Middle Initial"
-            value={formData.middleName}
-            onChange={handleChange}
-          />
+          <div className="employee-form-row">
+            <input type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} required />
+            <input type="text" name="middleName" placeholder="Middle Initial" value={formData.middleName} onChange={handleChange} />
+            <input type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} required />
+          </div>
 
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-          />
+          <div className="employee-form-row">
+            <input type="date" name="birthday" placeholder="Birthday" value={formData.birthday} onChange={handleChange} />
+            <input type="text" name="address" placeholder="Address" value={formData.address} onChange={handleChange} />
+          </div>
 
-          <input
-            type="date"
-            name="birthday"
-            placeholder="Birthday"
-            value={formData.birthday}
-            onChange={handleChange}
-          />
+          <div className="employee-form-row">
+            <input type="tel" name="mobile_number" placeholder="Mobile Number" value={formData.mobile_number} onChange={handleChange} />
+            <input type="email" name="email_add" placeholder="Email Address" value={formData.email_add} onChange={handleChange} />
+          </div>
 
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={formData.address}
-            onChange={handleChange}
-          />
+          <div className="employee-form-row">
+            <label>Status:</label>
+            <select name="status" value={formData.status} onChange={handleChange}>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
 
-          <input
-            type="tel"
-            name="mobile_number"
-            placeholder="Mobile Number"
-            value={formData.mobile_number}
-            onChange={handleChange}
-          />
-
-          <input
-            type="email"
-            name="email_add"
-            placeholder="Email Address"
-            value={formData.email_add}
-            onChange={handleChange}
-          />
-
-          <label>Status:</label>
-          <select name="status" value={formData.status} onChange={handleChange}>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-
-          <label>Role:</label>
-          <select name="role" value={formData.role} onChange={handleChange}>
-            <option value="role1">Role 1</option>
-            <option value="role2">Role 2</option>
-          </select>
+            <label>Role:</label>
+            <select name="role" value={formData.role} onChange={handleChange}>
+              <option value="role1">Role 1</option>
+              <option value="role2">Role 2</option>
+            </select>
+          </div>
 
           <button type="submit">
             {editingEmployee ? "Update Employee" : "Add Employee"}
