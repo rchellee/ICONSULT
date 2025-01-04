@@ -281,6 +281,78 @@ app.delete("/availability/:date", (req, res) => {
   });
 });
 
+// Save availability data to the database
+app.post("/availability", (req, res) => {
+  const availabilityData = req.body;
+
+  const deleteSql = "DELETE FROM availability WHERE dates = ?";
+  const insertSql =
+    "INSERT INTO availability (start_time, end_time, dates) VALUES ?";
+
+  // First, delete existing availability for the given dates
+  const deletePromises = availabilityData.map((entry) => {
+    return new Promise((resolve, reject) => {
+      db.query(deleteSql, [entry.dates], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  });
+
+  // Once deletions are complete, insert new data
+  Promise.all(deletePromises)
+    .then(() => {
+      const values = availabilityData.map((entry) => [
+        entry.start_time,
+        entry.end_time,
+        entry.dates,
+      ]);
+      db.query(insertSql, [values], (err, result) => {
+        if (err) {
+          console.error("Error saving data to the database:", err);
+          return res.status(500).json({ message: "Error saving data" });
+        }
+        res.status(200).json({
+          message: "Availability saved/updated successfully",
+          data: result,
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error during update:", error);
+      res.status(500).json({ message: "Error updating availability" });
+    });
+});
+app.get("/availability", (req, res) => {
+  const sql = "SELECT * FROM availability";
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching availability data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    res.status(200).json(data);
+  });
+});
+// Delete availability for a specific date
+app.delete("/availability/:date", (req, res) => {
+  const { date } = req.params;
+
+  const sql = "DELETE FROM availability WHERE dates = ?";
+  db.query(sql, [date], (err, result) => {
+    if (err) {
+      console.error("Error deleting availability:", err);
+      return res.status(500).json({ message: "Error deleting data" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Date not found" });
+    }
+    res.status(200).json({ message: "Availability deleted successfully" });
+  });
+});
+
 // Save payment details to the database
 app.post("/payments", (req, res) => {
   const {

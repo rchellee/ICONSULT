@@ -176,32 +176,52 @@ ct-list-header h3:nth-child(3) { /* Client */
   width: 25%;
 }
 
+
+
+
+.project-list-wrapper {
+  display: flex;
+  position: relative;
+  overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
+  height: 100%; /* Ensure the wrapper has a defined height */
+  max-height: 650px;
+}
+
+
+
 .project-list {
   width: 100%; /* Full width of the container */
   margin: 40px 0 0 0; /* Adjust top margin */
   border-collapse: collapse; /* Ensures borders are collapsed */
-  overflow-x: hidden; /* Allow horizontal scrolling if needed */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
   max-height: 900px; /* Fixed height for the scrollable content */
-  margin-left: 300px;
-  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on mobile */
-  
+  margin-left: 300px; /* Adds left margin */
+  -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on mobile */
+  padding-bottom: 50px;
 }
 
-/* Add WebKit custom scrollbar styling */
+/* Custom scrollbar styling */
 .project-list::-webkit-scrollbar {
-  width: 15px; /* Set the width of the scrollbar */
-}
-
-.project-list::-webkit-scrollbar-thumb {
-  background-color: rgba(16, 41, 116, 0.5); /* Dark scrollbar thumb */
-  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+  width: 12px; /* Adjust the width of the scrollbar */
 }
 
 .project-list::-webkit-scrollbar-track {
-  background-color: #f6f6f6; /* Light background for the scrollbar track */
-  border-radius: 10px; /* Rounded corners for the scrollbar track */
+  background: #b4bad5; /* Light track background */
 }
 
+.project-list::-webkit-scrollbar-thumb {
+  background-color: #547099; /* Scrollbar thumb color */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Optional: Hover effect for the scrollbar thumb */
+.project-list::-webkit-scrollbar-thumb:hover {
+  background-color: #4f6d9a; /* Darker green on hover */
+}
+
+.project-list::-webkit-scrollbar {
+  margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
+}
 
 .project-list-header {
   display: table-row; /* Ensures they behave like table rows */
@@ -293,17 +313,21 @@ ct-list-header h3:nth-child(3) { /* Client */
   font-size: 16px;
 }
 
+
+
 /* Navigation buttons */
-.top-nav-buttons{
+.top-nav-buttons {
   display: flex;
   align-items: center;
-  gap: 10px; 
-  margin-bottom: 20px; 
+  gap: 10px;
+  margin-bottom: 20px;
   font-size: 18px;
   position: absolute;
-  top: 30px;
-  margin-left: -300px;
+  top: 0px;  /* Move the buttons up by setting a smaller value for top */
+  left: 0;    /* Adjust the position to the left */
 }
+
+
 
 .top-nav-buttons button {
   display: flex;
@@ -325,6 +349,19 @@ ct-list-header h3:nth-child(3) { /* Client */
 .nav-btn {
   position: relative;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* search box */
 .search-box {
@@ -396,7 +433,6 @@ ct-list-header h3:nth-child(3) { /* Client */
   margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
 }
 
-/* Individual Folder Item */
 /* Individual Folder Item */
 .project-name-item p {
   font-size: 14px; /* Adjust font size for folder names */

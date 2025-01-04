@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { IoIosArrowDown } from "react-icons/io";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
-import TaskForm from "./TaskForm";
+import TaskForm from "./Taskform";
 import MiscellaneousForm from "./MiscellaneousForm ";
 
 const PostsTab = ({
@@ -44,7 +43,6 @@ const PostsTab = ({
     setSelectedTaskName(task.task_name);
     setSelectedTaskDetails(task);
   };
-  
 
   const calculateTotal = (task) => {
     const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
@@ -67,11 +65,6 @@ const PostsTab = ({
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-        {/* Task Header with IoIosArrowDown Icon */}
-        <div className="task-header">
-          <h2>Task</h2>
-          <IoIosArrowDown className="toggle-icon down" />
-        </div>
 
         {/* Top Navigation Buttons */}
         <div className="top-button">
@@ -102,11 +95,12 @@ const PostsTab = ({
             <div className="task-detail-row">
               <div>
                 <strong>Miscellaneous</strong>
-                <IoAddCircle
-                  size={20}
-                  style={{ marginLeft: "10px", cursor: "pointer" }}
+                <button
+                  className="task-add-icon"
                   onClick={() => setShowMiscellaneousForm(true)}
-                />
+                >
+                  +
+                </button>
               </div>
             </div>
 
@@ -166,15 +160,20 @@ const PostsTab = ({
           </div>
         )}
 
+
+
+
+         
         {/* Create Button */}
-        <div className="create-button-container">
+         <div className="create-button-container">
           <button
             className="create-task-button"
             onClick={() => setShowTaskForm(true)}
           >
-            Create
+            +
           </button>
         </div>
+
 
         {/* Task Form */}
         {showTaskForm && (

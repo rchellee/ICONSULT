@@ -38,7 +38,8 @@
     "react-native-modal": "^13.0.1",
     "react-native-vector-icons": "^10.2.0",
     "react-router-dom": "^6.26.1",
-    "side-channel": "^1.1.0"
+    "side-channel": "^1.1.0",
+    "side-channel-list": "^1.0.0"
   },
   "devDependencies": {
     "@babel/runtime": "^7.26.0",

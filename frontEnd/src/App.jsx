@@ -32,8 +32,6 @@ link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:
 link.rel = 'stylesheet';
 document.head.appendChild(link);
 
-
-
 function App() {
   return (
     <Router>

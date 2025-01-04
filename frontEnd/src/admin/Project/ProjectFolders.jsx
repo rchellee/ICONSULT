@@ -27,7 +27,7 @@ const ProjectFolders = ({ projects, onProjectClick, fontSize = "14px" }) => {
               }}
               style={{
                 cursor: "pointer",
-                fontSize: "16px",
+                fontSize: "16px"  // Applying the custom font size
               }}
             >
               {project.projectName}
