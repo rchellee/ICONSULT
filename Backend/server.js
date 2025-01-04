@@ -53,7 +53,7 @@ app.post("/Login", (req, res) => {
 
   // Check the client table
   const sqlClient = `
-          SELECT id, firstName, lastName, passwordChanged 
+          SELECT id, firstName, lastName, email_add, passwordChanged 
           FROM client 
           WHERE username = ? AND password = ?
       `;
@@ -122,10 +122,49 @@ app.post("/updatePassword", (req, res) => {
   });
 });
 
+app.post("/identifyUser", (req, res) => {
+  const { username } = req.body;
+
+  // Check the admin table first
+  const sqlAdmin = "SELECT email AS email FROM admin WHERE username = ?";
+  db.query(sqlAdmin, [username], (err, adminResults) => {
+    if (err) {
+      return res.status(500).json({ message: "Error checking admin table" });
+    }
+
+    if (adminResults.length > 0) {
+      return res
+        .status(200)
+        .json({ role: "admin", email: adminResults[0].email });
+    }
+
+    const sqlClient =
+      "SELECT id AS clientId, email_add AS email FROM client WHERE username = ?";
+    db.query(sqlClient, [username], (err, clientResults) => {
+      if (err) {
+        return res.status(500).json({ message: "Error checking client table" });
+      }
+
+      if (clientResults.length > 0) {
+        return res.status(200).json({
+          role: "client",
+          email: clientResults[0].email,
+          clientId: clientResults[0].clientId, // Include clientId here
+        });
+      }
+
+      return res
+        .status(404)
+        .json({ message: "Email associated with this username not found." });
+    });
+  });
+});
+
 // SendGrid email example
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
 const verificationCodes = new Map();
+const otpStore = {};
 
 // Save the code for an email
 function storeCodeForEmail(email, code) {
@@ -140,7 +179,7 @@ function getStoredCodeForEmail(email) {
   console.log(`Fetching code for ${email}`);
   return verificationCodes.get(email);
 }
-
+//clientchange of password
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit code
@@ -160,24 +199,6 @@ app.post("/sendVerificationCode", (req, res) => {
     })
     .catch((error) => res.status(500).json({ error: error.message }));
 });
-app.post("/sendVerificationCode", (req, res) => {
-  const { email } = req.body;
-  const code = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit code
-
-  const message = {
-    to: email,
-    from: "ritchelle.rueras@tup.edu.ph", // Verified sender email
-    subject: "Your Verification Code",
-    text: `Hey there,\n\nHere's the code to verify your email. The code is valid for 30 minutes. We recommend using the code now, as you will need to request a new one if it expires.\n\n${code}\n\nTo keep your account safe, please do not share this verification code. If you didn't try to sign in, you can safely ignore this email.\n\nCheers,\nYour Team`,
-  };
-
-  sgMail
-    .send(message)
-    .then(() =>
-      res.status(200).json({ message: "Code sent successfully", code })
-    )
-    .catch((error) => res.status(500).json({ error: error.message }));
-});
 app.post("/verifyCode", (req, res) => {
   try {
     const { email, code } = req.body;
@@ -195,7 +216,7 @@ app.post("/verifyCode", (req, res) => {
 
     if (!email || !code) {
       return res.status(400).json({ message: "Email and code are required." });
-    }    
+    }
 
     if (String(storedCode) !== String(code)) {
       return res.status(400).json({ message: "Invalid verification code." });
@@ -207,6 +228,93 @@ app.post("/verifyCode", (req, res) => {
     console.error("Error verifying code:", error);
     return res.status(500).json({ message: "An unexpected error occurred." });
   }
+});
+//forgot-password
+app.post("/sendOTP", async (req, res) => {
+  const { email } = req.body;
+  const OTP = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+
+  otpStore[email] = { OTP, timestamp: Date.now() }; // Store OTP with timestamp
+
+  const message = {
+    to: email,
+    from: "ritchelle.rueras@tup.edu.ph", // Replace with your verified sender email
+    subject: "Your OTP Code",
+    text: `Your OTP is ${OTP}. It is valid for 5 minutes.`,
+  };
+
+  try {
+    await sgMail.send(message);
+    console.log(`OTP sent to ${email}: ${OTP}`);
+    res.status(200).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.error("Error sending OTP email:", error);
+    res.status(500).json({ message: "Failed to send OTP email" });
+  }
+});
+app.post("/verifyOTP", (req, res) => {
+  const { email, inputOTP } = req.body;
+
+  const storedOtpData = otpStore[email];
+  if (inputOTP.length !== 4) {
+    return res.status(400).json({ message: "Invalid OTP format." });
+  }
+
+  if (!storedOtpData) {
+    return res.status(404).json({ message: "OTP not found for this email" });
+  }
+
+  const { OTP, timestamp } = storedOtpData;
+  const isExpired = Date.now() - timestamp > 5 * 60 * 1000; // OTP valid for 5 minutes
+
+  if (isExpired) {
+    delete otpStore[email];
+    return res.status(400).json({ message: "OTP expired" });
+  }
+
+  if (parseInt(inputOTP) === OTP) {
+    delete otpStore[email];
+    return res.status(200).json({ message: "OTP verified successfully" });
+  } else {
+    return res.status(400).json({ message: "Incorrect OTP" });
+  }
+});
+
+// Update password endpoint for clients
+app.post("/updateclientPassword", (req, res) => {
+  const { clientId, newPassword } = req.body;
+
+  if (!clientId || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "Client ID and new password are required" });
+  }
+
+  // Update client password in the database
+  const sqlUpdate = "UPDATE client SET password = ? WHERE id = ?";
+  db.query(sqlUpdate, [newPassword, clientId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Database update failed" });
+    }
+    res.status(200).json({ message: "Password updated successfully" });
+  });
+});
+// Update password endpoint for admin
+app.post("/updateAdminPassword", (req, res) => {
+  const { newPassword } = req.body;
+
+  if (!newPassword) {
+    return res.status(400).json({ message: "New password is required" });
+  }
+
+  // Update admin password in the database
+  const sqlUpdate = "UPDATE admin SET password = ?";
+  db.query(sqlUpdate, [newPassword], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Database update failed" });
+    }
+    res.status(200).json({ message: "Password updated successfully" });
+  });
 });
 
 // Save availability data to the database
