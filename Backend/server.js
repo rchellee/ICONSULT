@@ -1527,6 +1527,7 @@ app.get("/upload", (req, res) => {
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));
 
+
 app.post("/reviews", (req, res) => {
   const { clientId, projectId, rating, comment, status } = req.body;
 

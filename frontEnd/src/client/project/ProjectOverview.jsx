@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./overview.css";
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
-  }
+  const date = new Date(dateString);
+  return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
+}
 
 function ProjectOverview({ projectId }) {
   const [project, setProject] = useState(null);
@@ -29,44 +30,69 @@ function ProjectOverview({ projectId }) {
         setIsLoading(false);
       });
   }, [projectId]);
-  
+
   if (isLoading) return <p>Loading project overview...</p>;
   if (error) return <p className="error">{error}</p>;
 
   const remainingPayment = project ? project.totalPayment - project.downpayment : 0;
-  
+
   const handlePaymentClick = () => {
     navigate("/payment", { state: { projectId, amount: remainingPayment } });
   };
 
   const handleReviewClick = () => {
     navigate("/review", { state: { projectId, clientId: project.clientId } });
-  };  
+  };
 
   return (
     <div className="project-overview">
       <h2>Project Overview</h2>
       {project ? (
-        <div>
-          <p><strong>Project Name:</strong> {project.projectName}</p>
-          <p><strong>Description:</strong> {project.description}</p>
-          <p><strong>Contract Price:</strong> ₱{project.contractPrice}.00</p>
-          <p><strong>Downpayment:</strong> ₱{project.downpayment}.00</p>
-          <p><strong>To be Paid:</strong> ₱{remainingPayment}.00</p>
-          <p><strong>Payment Status:</strong> {project.paymentStatus}</p>
-          <p><strong>Project Due:</strong> {project.endDate ? formatDate(project.endDate) : "N/A"}</p>
-          <p><strong>Status:</strong> {project.status}</p>
+        <div className="project-details">
+          <p>
+          <p classname="pro-name">
+            <strong>Project Name:</strong> {project.projectName}
+          </p>
+            <span className="payment-status">
+              <strong>Payment Status:</strong> {project.paymentStatus}
+            </span>
+          </p>
+          <p>
+            <p classname="description">
+              <strong>Description:</strong> {project.description}
+            </p>
+            <span className="project-due">
+              <strong>Project Due:</strong> {project.endDate ? formatDate(project.endDate) : "N/A"}
+            
+            </span>
+          </p>
+          {/* Updated Status row */}
+          <p className="status-row">
+            <strong>Status:</strong> {project.status}
+          </p>
+
+          <table className="payment-table">
+            <thead>
+              <tr>
+                <th>Contract Price</th>
+                <th>Downpayment</th>
+                <th>To be Paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>₱{project.contractPrice}.00</td>
+                <td>₱{project.downpayment}.00</td>
+                <td>₱{remainingPayment}.00</td>
+              </tr>
+            </tbody>
+          </table>
+
           {project.paymentStatus !== "Paid" && (
             <button
               onClick={handlePaymentClick}
               style={{
-                marginTop: "20px",
-                padding: "10px 20px",
                 backgroundColor: "#28a745",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
               }}
             >
               Pay Now
@@ -76,13 +102,7 @@ function ProjectOverview({ projectId }) {
             <button
               onClick={handleReviewClick}
               style={{
-                marginTop: "20px",
-                padding: "10px 20px",
                 backgroundColor: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
               }}
             >
               Leave a Review

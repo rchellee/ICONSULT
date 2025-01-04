@@ -1,0 +1,130 @@
+.project-overview {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .project-overview h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333333;
+  }
+  
+  .project-overview p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #555555;
+    display: flex;
+    align-items: center; /* Align the content vertically */
+    justify-content: space-between; /* Ensure the items are spaced out evenly */
+  }
+  
+  .project-overview p strong {
+    color: #000;
+    margin-right: 10px;
+  }
+  
+/* Customize the distance between Payment Status and Project Due */
+.payment-status {
+    margin-right: 700px; /* Adjust this to control the distance from Project Name */
+  }
+  
+  .project-due {
+    margin-right: 718px; /* Adjust this for controlling the distance between Payment Status and Project Due */
+  }
+  
+  
+  /* New style for Status row to align Status and value in a row without side-by-side */
+  .project-overview .status-row {
+    display: block; /* Keep Status in a block to prevent it from floating side-by-side */
+    margin-top: 10px; /* Optional: Add space between rows */
+  }
+  
+  .project-overview .status-row strong {
+    margin-right: 10px; /* Adds space between the label and value */
+  }
+  
+  .project-overview .Description p strong {
+    margin-right: 10px; /* Adds space between the label and value */
+  }
+  
+
+  /* Styling the table */
+  .payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .payment-table th,
+  .payment-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .payment-table th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+  }
+  
+  .payment-table td {
+    color: #333;
+  }
+  
+  /* Styling the buttons */
+  button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+  }
+  
+  button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+  
+  button[style*="background-color: #28a745"] {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  button[style*="background-color: #007bff"] {
+    background-color: #007bff;
+    color: #fff;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .project-overview {
+      padding: 15px;
+    }
+  
+    .project-overview h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+  
+    .project-overview p {
+      font-size: 14px;
+    }
+  
+    .payment-table th,
+    .payment-table td {
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 8px 15px;
+    }
+  }
+  
