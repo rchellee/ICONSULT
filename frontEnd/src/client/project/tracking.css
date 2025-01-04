@@ -5,12 +5,14 @@ html, body {
   height: 100%;
 }
 .content {
-    margin-top: 80px; /* Adds space below the fixed tabs */
     padding: 20px;
     overflow-y: auto;
 }
 
-/* Navigation buttons */
+.files-tab{
+  margin-left: 108px;
+}
+
 .navigation-buttons {
   display: flex;
   align-items: center;
@@ -80,8 +82,8 @@ html, body {
   position: absolute;
   align-items: center;
   justify-content: center;
-  margin-left: 540px;
-  top: 45px;
+  margin-left: 565px;
+  top: 15px;
 }
 
 .home-icon {
@@ -100,18 +102,18 @@ html, body {
   display: flex;
   justify-content: flex-start; /* Align items to the left by default */
   width: 100%; /* Ensure it spans full width */
-  margin: 20px 0; /* Add some margin at the top and bottom for spacing */
+  margin: 15px 0; /* Add some margin at the top and bottom for spacing */
   
 }
 
 /* Input field for the search box */
 .search-input {
   position: absolute;
-  bottom: 30px;
+  bottom: 35px;
   left: 600px;
   width: 250%; /* Make the input field take up more space */
   max-width: 500px; /* Optional: increase max-width for larger screens */
-  height: 50px; /* Set the height of the search box */
+  height: 40px; /* Set the height of the search box */
   padding: 15px; /* Padding inside the search box */
   font-size: 15px; /* Larger text for better visibility */
   border: 2px solid #3498db; /* Add a blue border to the search box */

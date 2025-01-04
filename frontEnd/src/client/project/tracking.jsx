@@ -58,7 +58,7 @@ function Tracking() {
     }
   };
 
-  const handleNewFolderClick = () => {  
+  const handleNewFolderClick = () => {
     setShowNewFolderInput(true);
   };
 
@@ -90,116 +90,121 @@ function Tracking() {
 
   const handleGoback = () => {
     navigate("/clientproject");
-  }; 
+  };
 
   return (
     <div>
       <Topbar />
-    <div className="client-task-page">
-      <Sidebar />
-      <div className="content">
-        <div className="home-icon-container">
-          <FaHome className="home-icon" />
-          <span className="tooltip">All Project</span>
-        </div>
+      <div className="client-task-page">
+        <Sidebar />
+        <div className="content">
+          <div
+            className="home-icon-container"
+            onClick={() => navigate("/clientproject")}
+          >
+            <FaHome className="home-icon" />
+            <span className="tooltip">All Project</span>
+          </div>
 
-        <div className="navigation-buttons">
+          {/* <div className="navigation-buttons">
           <button className="nav-button" onClick={handleGoback}>
             <FaChevronLeft />
             <span className="tooltip">Go back</span>
           </button>
-        </div>
+        </div> */}
 
-        {/* Search Box */}
-        <div className="search-box-container">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="search-input"
-          />
-        </div>
+          {/* Search Box */}
+          <div className="search-box-container">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="search-input"
+            />
+          </div>
 
-        {/* Tabs */}
-        <div className="tabs">
-          <button
-            className={activeTab === "overview" ? "active" : ""}
-            onClick={() => handleTabClick("overview")}
-          >
-            Overview
-          </button>
-          <button
-            className={activeTab === "tasks" ? "active" : ""}
-            onClick={() => handleTabClick("tasks")}
-          >
-            Tasks
-          </button>
-          <button
-            className={activeTab === "files" ? "active" : ""}
-            onClick={() => handleTabClick("files")}
-          >
-            Files
-          </button>
-        </div>
+          {/* Tabs */}
+          <div className="tabs">
+            <button
+              className={activeTab === "overview" ? "active" : ""}
+              onClick={() => handleTabClick("overview")}
+            >
+              Overview
+            </button>
+            <button
+              className={activeTab === "tasks" ? "active" : ""}
+              onClick={() => handleTabClick("tasks")}
+            >
+              Tasks
+            </button>
+            <button
+              className={activeTab === "files" ? "active" : ""}
+              onClick={() => handleTabClick("files")}
+            >
+              Files
+            </button>
+          </div>
 
-        {/* Content Area */}
-        <div className="content-area">
-          {activeTab === "overview" && (
-            <ProjectOverview projectId={projectId} />
-          )}
-          {activeTab === "tasks" && (
-            <>
-              {isLoading && <p>Loading tasks...</p>}
-              {error && <p className="error">{error}</p>}
-              {!isLoading && !error && tasks.length === 0 && (
-                <p>No tasks found.</p>
-              )}
-              {!isLoading && !error && tasks.length > 0 && (
-                <div className="task-list">
-                  <table className="task-table">
-                    <thead>
-                      <tr>
-                        <th>Task</th>
-                        <th>Fee</th>
-                        <th>Miscellaneous</th>
-                        <th>Due Date</th>
-                        <th>Employee</th>
-                        <th>Status</th>
-                        <th>Total Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tasks.map((task) => {
-                        const miscellaneousItems = JSON.parse(
-                          task.miscellaneous || "[]"
-                        );
-                        const miscellaneousDetails = miscellaneousItems
-                          .map((item) => `${item.name}: ${item.fee}`)
-                          .join(", ");
+          {/* Content Area */}
+          <div className="content-area">
+            {activeTab === "overview" && (
+              <ProjectOverview projectId={projectId} />
+            )}
+            {activeTab === "tasks" && (
+              <>
+                {isLoading && <p>Loading tasks...</p>}
+                {error && <p className="error">{error}</p>}
+                {!isLoading && !error && tasks.length === 0 && (
+                  <p>No tasks found.</p>
+                )}
+                {!isLoading && !error && tasks.length > 0 && (
+                  <div className="task-list">
+                    <table className="task-table">
+                      <thead>
+                        <tr>
+                          <th>Task</th>
+                          <th>Fee</th>
+                          <th>Miscellaneous</th>
+                          <th>Due Date</th>
+                          <th>Employee</th>
+                          <th>Status</th>
+                          <th>Total Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tasks.map((task) => {
+                          const miscellaneousItems = JSON.parse(
+                            task.miscellaneous || "[]"
+                          );
+                          const miscellaneousDetails = miscellaneousItems
+                            .map((item) => `${item.name}: ${item.fee}`)
+                            .join(", ");
 
-                        return (
-                          <tr key={task.id}>
-                            <td>{task.task_name}</td>
-                            <td>{task.task_fee}</td>
-                            <td>{miscellaneousDetails || "N/A"}</td>
-                            <td>{task.due_date}</td>
-                            <td>{task.employee}</td>
-                            <td>{task.status}</td>
-                            <td>{task.amount}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </>
-          )}
+                          return (
+                            <tr key={task.id}>
+                              <td>{task.task_name}</td>
+                              <td>{task.task_fee}</td>
+                              <td>{miscellaneousDetails || "N/A"}</td>
+                              <td>{task.due_date}</td>
+                              <td>{task.employee}</td>
+                              <td>{task.status}</td>
+                              <td>{task.amount}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
+        {activeTab === "files" && (
+          <Files projectId={projectId} clientId={clientId} />
+        )}
       </div>
-      {activeTab === "files" && <Files projectId={projectId} clientId={clientId} />}
-    </div>
     </div>
   );
 }

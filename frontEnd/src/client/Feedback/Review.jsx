@@ -8,10 +8,12 @@ function Review() {
   const [comment, setComment] = useState("");
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  
 
   const location = useLocation();
   const navigate = useNavigate();
   const { projectId, clientId } = location.state || {};
+  
 
   if (!projectId || !clientId) {
     return <p>Project or Client ID is missing. Unable to submit a review.</p>;

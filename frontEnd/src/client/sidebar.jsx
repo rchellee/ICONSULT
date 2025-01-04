@@ -21,9 +21,7 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <img src={client} alt="Client Logo" />
-      </div>
+      
 
       <ul className="sidebar-links">
         <li>
@@ -48,6 +46,12 @@ const Sidebar = () => {
           <Link to="/client-notif" data-tooltip="Notifications">
             <div className="material-symbols-outlined icon">notifications</div>
             <span>Notifications</span>
+          </Link>
+        </li>
+        <li>
+          <Link to="/review" data-tooltip="Notifications">
+            <div className="material-symbols-outlined icon">reviews</div>
+            <span>Reviews</span>
           </Link>
         </li>
         <li>
