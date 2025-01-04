@@ -28,7 +28,7 @@ body {
 /* Sidebar Container */
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 57;
   left: 0;
   height: 100%;
   width: 85px; /* Default collapsed width */

@@ -61,7 +61,7 @@ function App() {
         <Route path="/tracking/:projectId" element={<Tracking />} />
         <Route path="/projecttask" element={<ProjectTask />} />
         <Route path="/review" element={<Review />} />
-        <Route path="//help-centre" element={<HelpCentre />} />
+        <Route path="/help-centre" element={<HelpCentre />} />
       </Routes>
     </Router>
   );

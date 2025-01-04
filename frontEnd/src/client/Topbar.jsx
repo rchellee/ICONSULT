@@ -9,6 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import client from "../assets/admin.jpg";
+import logo from "../assets/logo2.png";
 
 const Topbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -58,14 +60,19 @@ const Topbar = () => {
   return (
     <AppBar
       position="static"
-      sx={{ backgroundColor: "#061b38", height: "58px" }}
+      sx={{ backgroundColor: "#f3f3f3", height: "58px", borderBottom: "1px solid #d1d1d1" }}
     >
       <Toolbar sx={{ minHeight: "60px" }}>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
-        <Typography variant="body1" sx={{ marginRight: 2 }}>
+        <Typography variant="h7" sx={{ flexGrow: 1 }} >
+          {" "}
+          <div className="logo-topbar">
+            <img src={logo} alt="Logo" className="logo-topbar-img" />
+          </div>
+        </Typography>
+        <Typography variant="body1" sx={{ marginRight: 2 }} color="#143d58">
           {userName}
         </Typography>
-        <IconButton onClick={handleMenuOpen} color="inherit">
+        <IconButton onClick={handleMenuOpen} color="#0056b3">
           <Avatar alt={userName} src="/path/to/your/profile-pic.jpg" />
         </IconButton>
         <Menu
