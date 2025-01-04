@@ -117,7 +117,9 @@ const PostsTab = ({
             </div>
 
             {/* Loop through miscellaneous entries and display them */}
-            {selectedTaskDetails?.miscellaneous?.length > 0 ? (
+            {selectedTaskDetails?.miscellaneous &&
+            Array.isArray(selectedTaskDetails.miscellaneous) &&
+            selectedTaskDetails.miscellaneous.length > 0 ? (
               selectedTaskDetails.miscellaneous.map((misc, index) => (
                 <div className="task-detail-row" key={index}>
                   <div>{misc.name}</div>
@@ -148,35 +150,36 @@ const PostsTab = ({
             <table className="task-table">
               <thead>
                 <tr>
-                  <th>Task Name</th>
+                  <th>Task</th>
                   <th>Employee</th>
                   <th>Status</th>
                   <th>Due Date</th>
-                  <th>Task Fee</th>
+                  <th>Fee</th>
                   <th>Miscellaneous</th>
                   <th className="align-right">Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task, index) => (
-                  <tr key={index} onClick={() => handleRowClick(task)}>
-                    <td>{task.task_name}</td>
-                    <td>{task.employee || "Unassigned"}</td>
-                    <td>{task.status}</td>
-                    <td>{task.due_date}</td>
-                    <td>{task.task_fee}</td>
-                    <td>
-                      {Array.isArray(task.miscellaneous) &&
-                      task.miscellaneous.length > 0
-                        ? task.miscellaneous
-                            .map((misc) => `${misc.name} (${misc.fee})`)
-                            .join(", ")
-                        : "None"}
-                    </td>
+                {tasks.map((task) => {
+                  const miscellaneousItems = JSON.parse(
+                    task.miscellaneous || "[]"
+                  );
+                  const miscellaneousDetails = miscellaneousItems
+                    .map((item) => `${item.name}: ${item.fee}`)
+                    .join(", ");
 
-                    <td className="align-right">{task.amount}</td>
-                  </tr>
-                ))}
+                  return (
+                    <tr key={task.id} onClick={() => handleRowClick(task)}>
+                      <td>{task.task_name}</td>
+                      <td>{task.employee}</td>
+                      <td>{task.status}</td>
+                      <td>{task.due_date}</td>
+                      <td>{task.task_fee}</td>
+                      <td>{miscellaneousDetails || "N/A"}</td>
+                      <td>{task.amount}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
