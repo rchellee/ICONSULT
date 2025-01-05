@@ -171,26 +171,41 @@ ct-list-header h3:nth-child(3) {
   width: 25%;
 }
 
+
+
+
 .project-list-wrapper {
   display: flex;
   position: relative;
   overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
+  max-width: 100%; /* Ensure it doesn’t overflow */
+  padding-right: 190px; 
+  margin-right: 50px;
+  
 }
 
 .project-list {
   width: 100%; /* Full width of the container */
   margin: 40px 0 0 0; /* Adjust top margin */
-  border-collapse: collapse; /* Ensures borders are collapsed */
+  border-collapse: separate; /* Allows border-radius to work */
+  border-spacing: 0; /* Ensures no space between cells */
   overflow-x: hidden; /* Prevent horizontal scrolling */
   max-height: 900px; /* Fixed height for the scrollable content */
-  margin-left: 300px; /* Adds left margin */
+  margin-left: 400px; /* Adds left margin */
   -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on mobile */
   padding-bottom: 50px;
+  background-color: white;
+  border-radius: 30px; /* Adds rounded corners to the entire table */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow around the table */
+  max-height: 600px;
+  
 }
+
 
 /* Custom scrollbar styling */
 .project-list::-webkit-scrollbar {
   width: 12px; /* Adjust the width of the scrollbar */
+  margin-left: -50px;
 }
 
 .project-list::-webkit-scrollbar-track {
@@ -215,9 +230,10 @@ ct-list-header h3:nth-child(3) {
   display: table-row; /* Ensures they behave like table rows */
   position: sticky; /* Stick to the top when scrolling */
   top: 0; /* Make it stick to the top of the container */
-  background-color: #dceeff; /* Ensure the header has a background */
+  background-color: white; /* Ensure the header has a background */
   z-index: 1; /* Make sure the header stays on top of other rows */
   font-weight: bold; /* Make the header text bold */
+  max-height: 754px;
 }
 
 .project-list-header h3 {
@@ -226,17 +242,25 @@ ct-list-header h3:nth-child(3) {
   font-weight: bold;
 }
 
+
 .project-item {
   display: table-row; /* Ensures they behave like table rows */
 }
 
+.project-item:hover {
+  background-color: #f0f0f0; /* Light gray background on hover */
+  cursor: pointer; /* Change cursor to pointer to indicate interactivity */
+}
+
 .project-list-header h3,
 .project-item p {
-  display: table-cell;
-  padding: 15px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: table-cell; /* Ensures each project element behaves like a table cell */
+  padding: 15px; /* Adjust padding for better spacing between columns */
+  text-overflow: ellipsis; /* Ensure long text is truncated with ellipsis */
+  white-space: nowrap; /* Prevents wrapping within cells */
+  overflow: hidden; /* Hides overflow text */
+  font-size: 16px; /* Adjust font size for the <p> elements */
+  margin: 0; /* Remove any default margin */
 }
 
 .project-item p {
@@ -244,10 +268,53 @@ ct-list-header h3:nth-child(3) {
   padding: 15px; /* Optional: Add padding for better spacing */
 }
 
+
+
+/* Common styles for the select dropdown */
+.status-dropdown {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc; /* Add a subtle border */
+  border-radius: 20px; /* Make the shape oval */
+  appearance: none; /* Remove the default dropdown icon */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  outline: none;
+  background-color: white; /* Background color for default */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add smooth transition */
+}
+
+/* Remove the dropdown arrow by hiding the background image */
+.status-dropdown::-ms-expand {
+  display: none; /* For Internet Explorer */
+}
+
+/* Hover effect: Slight enlargement */
+.status-dropdown:hover {
+  transform: scale(1.05); /* Slightly enlarge */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+}
+
+/* Active effect: Make it slightly larger when clicked */
+.status-dropdown:active {
+  transform: scale(1.1); /* Further enlarge slightly */
+}
+
+/* Styles for specific statuses */
+.status-pending {
+  background-color: rgb(117, 224, 117) !important; /* Green color for Pending */
+}
+
+.status-completed {
+  background-color: rgb(244, 146, 182) !important; /* Red color for Completed */
+}
+
+
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
 .project-item p:nth-child(2) {
-  width: 200px; /* Fixed width for Project Name */
+  width: 20px; /* Fixed width for Project Name */
   font-size: 16px;
 }
 
@@ -282,12 +349,6 @@ ct-list-header h3:nth-child(3) {
   font-size: 16px;
 }
 
-.project-list-header h3:nth-child(7), /* Action */
-.project-item p:nth-child(7) {
-  width: 150px; /* Fixed width for Action */
-  font-size: 16px;
-}
-
 .project-list-header h3:nth-child(8), /* Total */
 .project-item p:nth-child(8) {
   width: 150px; /* Adjust width for Total */
@@ -299,6 +360,111 @@ ct-list-header h3:nth-child(3) {
   width: 150px; /* Adjust width for Payment Status */
   font-size: 16px;
 }
+
+
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.modal button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: none; 
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(12, 0, 0, 0.15); /* Floating shadow effect */
+  transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+  text-align: center;
+  width: 300px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.cancel-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.modal button {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.modal button:hover {
+  background-color: #f0f0f0; 
+}
+
+.modal button:last-child {
+  background-color: transparent;
+}
+
+.modal button:last-child:hover {
+  background-color: #f0f0f0; 
+}
+
+
+
 
 /* Navigation buttons */
 .top-nav-buttons {
@@ -378,10 +544,11 @@ ct-list-header h3:nth-child(3) {
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 754px; /* Set the max height of the scrollable area */
+  max-height: 550px;/* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;
+  
 }
 
 /* Shift the scrollbar to the right */
