@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { TbXboxXFilled } from "react-icons/tb"; // Import the remove icon
 import { IoMdArrowDropdown } from "react-icons/io";
 import React, { useState, useEffect } from "react";
@@ -5,14 +6,16 @@ import { MdAddCircle } from "react-icons/md";
 import formStyles from "./FormStyle.module.css";
 
 const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
+  const navigate = useNavigate();
+
   const [taskName, setTaskName] = useState(
-    existingTask ? existingTask.taskName : ""
+    existingTask ? existingTask.task_name : ""
   );
   const [taskFee, setTaskFee] = useState(
-    existingTask ? existingTask.taskFee : ""
+    existingTask ? existingTask.task_fee : ""
   );
   const [dueDate, setDueDate] = useState(
-    existingTask ? existingTask.dueDate : ""
+    existingTask ? existingTask.due_date : ""
   );
   const [employee, setEmployee] = useState(
     existingTask ? existingTask.employee : ""
@@ -93,8 +96,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
 
     console.log("Sending projectId:", projectId);
 
-    // Create a task object from the form values
-    const newTask = {
+    const taskData = {
       taskName,
       taskFee,
       dueDate,
@@ -104,40 +106,51 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
     };
 
     try {
-      // Send a POST request to create the task
-      const response = await fetch("http://localhost:8081/tasks", {
-        method: "POST",
+      const url = existingTask
+        ? `http://localhost:8081/tasks/${existingTask.id}`
+        : "http://localhost:8081/tasks";
+      const method = existingTask ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newTask),
+        body: JSON.stringify(taskData),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Task created successfully", data);
-        // Optionally, call onCreate to update the UI or perform other actions
-        onCreate(newTask);
-
-        // Reset the form fields
-        setTaskName("");
-        setTaskFee("");
-        setDueDate("");
-        setEmployee("");
-        setMiscellaneousList([]);
+        console.log(
+          `${existingTask ? "Task updated" : "Task created"} successfully`,
+          data
+        );
+        onCreate(taskData);
+        resetForm();
+        navigate("/admin");
       } else {
-        console.error("Failed to create task");
+        console.error(`Failed to ${existingTask ? "update" : "create"} task`);
       }
     } catch (error) {
-      console.error("Error creating task:", error);
+      console.error(
+        `Error ${existingTask ? "updating" : "creating"} task:`,
+        error
+      );
     }
+  };
+
+  const resetForm = () => {
+    setTaskName("");
+    setTaskFee("");
+    setDueDate("");
+    setEmployee("");
+    setMiscellaneousList([]);
   };
 
   return (
     <div className="project-form">
       <div className={formStyles.taskFormContainer}>
         <form className={formStyles.taskForm} onSubmit={handleSubmit}>
-          {/* Task Form Inputs */}
           <div className={formStyles.taskInputGroup}>
             <div className={formStyles.taskInput}>
               <label htmlFor="taskName">Task Name</label>
@@ -175,7 +188,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                   onChange={(e) => setEmployee(e.target.value)}
                   required
                 >
-                  <option value="" disabled style={{ color: '#ccc' }}>
+                  <option value="" disabled style={{ color: "#ccc" }}>
                     Choose an Employee
                   </option>
                   {employeeList.map((emp) => (

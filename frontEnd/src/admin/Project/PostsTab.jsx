@@ -70,7 +70,6 @@ const PostsTab = ({
     }
   };
 
-
   const calculateTotal = (task) => {
     const task_fee = parseFloat(task.task_fee) || 0;
     const miscellaneousFee =
@@ -169,7 +168,7 @@ const PostsTab = ({
               <thead>
                 <tr>
                   <th>Task</th>
-                  <th>Employee</th>
+                  <th>Assigned</th>
                   <th>Status</th>
                   <th>Due Date</th>
                   <th>Fee</th>
