@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./MiscellaneousForm.css"; 
+import "./MiscellaneousForm.css"; // Ensure the CSS file has the latest styles
 
 const MiscellaneousForm = ({ onClose, task, updateTaskWithMiscellaneous }) => {
   const [miscellaneousName, setMiscellaneousName] = useState("");

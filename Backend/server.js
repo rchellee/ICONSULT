@@ -1339,22 +1339,6 @@ app.get("/tasks", (req, res) => {
     res.status(200).json({ tasks });
   });
 });
-app.get("/tasks/:id", (req, res) => {
-  const { id } = req.params;
-  const sql = "SELECT * FROM tasks WHERE id = ?";
-  db.query(sql, [id], (err, tasks) => {
-    if (err) {
-      console.error("Error fetching task details: ", err);
-      return res
-        .status(500)
-        .json({ message: "Error retrieving task details", error: err });
-    }
-    if (tasks.length === 0) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-    res.status(200).json(tasks[0]);
-  });
-});
 
 app.post("/appointments", (req, res) => {
   const {
