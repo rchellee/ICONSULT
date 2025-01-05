@@ -60,12 +60,6 @@ const Sidebar = () => {
             <span>Transactions</span>
           </Link>
         </li>
-        <li>
-          <Link to="/account-settings" data-tooltip="Settings">
-            <div className="material-symbols-outlined icon">settings</div>
-            <span>Settings</span>
-          </Link>
-        </li>
       </ul>
     </div>
   );
