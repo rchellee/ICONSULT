@@ -162,19 +162,9 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 required
               />
             </div>
-            <div className={formStyles.dueDate}>
-              <label htmlFor="dueDate">Due Date</label>
-              <input
-                type="date"
-                id="dueDate"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                required
-              />
-            </div>
           </div>
 
-          {/* Employee Dropdown */}
+          {/* Employee and Due Date Input */}
           <div className={formStyles.taskInputGroup}>
             <div className={formStyles.employee}>
               <label htmlFor="employee">Assign Employee</label>
@@ -185,7 +175,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                   onChange={(e) => setEmployee(e.target.value)}
                   required
                 >
-                  <option value="" disabled>
+                  <option value="" disabled style={{ color: '#ccc' }}>
                     Choose an Employee
                   </option>
                   {employeeList.map((emp) => (
@@ -196,6 +186,17 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 </select>
                 <IoMdArrowDropdown className={formStyles.dropdownIcon} />
               </div>
+            </div>
+
+            <div className={formStyles.dueDate}>
+              <label htmlFor="dueDate">Due Date</label>
+              <input
+                type="date"
+                id="dueDate"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                required
+              />
             </div>
           </div>
 
@@ -258,7 +259,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
           {/* Submit & Cancel Buttons */}
           <div className={formStyles.buttonContainer}>
             <button type="submit" className={formStyles.createButton}>
-              {existingTask ? "Update Task" : "Create Task"}
+              {existingTask ? "Update Task" : "Create"}
             </button>
             <button
               type="button"

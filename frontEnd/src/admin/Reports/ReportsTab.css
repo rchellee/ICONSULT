@@ -1,0 +1,132 @@
+/* ReportsTab.css */
+
+.reports-tab-container {
+  max-height: 840px;
+  overflow-y: auto;
+  margin-left: 85px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  transition: margin-left 0.4s ease;
+}
+
+.reports-tab-header {
+  margin-bottom: 20px;
+}
+
+.reports-tab-header h2 {
+  font-size: 1.8rem;
+  color: #007bff;
+}
+
+.reports-section {
+  margin-bottom: 40px;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.reports-section h3 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.reports-section p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.overview-statistics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  padding: 15px;
+  text-align: center;
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h4 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.stat-card p {
+  font-size: 1rem;
+  color: #007bff;
+}
+
+.project-performance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.project-performance-table th,
+.project-performance-table td {
+  border: 1px solid #eaeaea;
+  padding: 10px;
+  text-align: left;
+}
+
+.project-performance-table th {
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 1rem;
+}
+
+.project-performance-table td {
+  color: #555;
+}
+
+.project-performance-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.project-performance-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.reports-export-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.reports-export-button:hover {
+  background-color: #0056b3;
+}
+
+.metric-card {
+    flex: 1;
+    min-width: 250px;
+    padding: 15px;
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .metric-card canvas {
+    max-width: 100%; /* Ensures the chart fits within its container */
+    height: auto; /* Automatically adjusts the height proportionally */
+  }
+  

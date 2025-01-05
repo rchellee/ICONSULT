@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AvailableCalendar from "./AvailableCalendar";
 import "./calendar.css";
 import Sidebar from "../sidebar";
+import Topbar from "../Topbar";
 import {
   Box,
   Typography,
@@ -182,151 +183,175 @@ const Availability = () => {
   }
 
   return (
-    <div className="admin-appointment-form-container">
-      <Sidebar />
-      <div className="content">
-        <h1>Set Your Availability</h1>
-        <div style={{ display: "flex", gap: "20px" }}>
-          {/* Calendar Component */}
-          <AvailableCalendar
-            availableDates={{ ...existingDates }}
-            onDateSelect={handleDateSelect}
-          />
-          {/* Display Selected Dates */}
-          <Box
-            sx={{
-              width: 800,
-              padding: 2,
-              border: "1px solid #ccc",
-              borderRadius: 4,
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            <strong>
-              <h2>Selected Dates & Time</h2>
-            </strong>
+    <div>
+      <Topbar />
 
-            {selectedDates.length > 0 ? (
-              <List>
-                {selectedDates.map((date, index) => (
-                  <ListItem
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 2,
-                    }}
-                  >
-                    <ListItemText
-                      primary={`${date.date}  ${date.startTime} - ${date.endTime}`}
-                      sx={{ flex: 1 }}
-                    />
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                      <FormControl sx={{ minWidth: 120 }}>
-                        <InputLabel>Start</InputLabel>
-                        <Select
-                          value={date.startTime}
-                          onChange={(e) =>
-                            handleTimeChange(index, "startTime", e.target.value)
-                          }
+      <div className="admin-appointment-form-container">
+        <Sidebar />
+        <div className="content-availability">
+          <h3>Set Your Availability</h3>
+          <div style={{ display: "flex", gap: "60px" }}>
+            <AvailableCalendar
+              availableDates={{ ...existingDates }}
+              onDateSelect={handleDateSelect}
+            />
+            <Box
+              sx={{
+                width: 800,
+                padding: 2,
+                border: "1px solid #ccc",
+                borderRadius: 4,
+                backgroundColor: "#f9f9f9",
+              }}
+            >
+              <strong>
+                <h6>Selected Dates & Time</h6>
+              </strong>
+
+              {selectedDates.length > 0 ? (
+                <List
+                  sx={{
+                    maxHeight: 100, // Set a fixed height for the scrollable list
+                    overflowY: "auto", // Enable vertical scrolling
+                    backgroundColor: "#ffffff", // Optional: Background color for the scrollable area
+                    border: "1px solid #ccc", // Optional: Border for better visual separation
+                    borderRadius: 4,
+                    padding: 1,
+                  }}
+                >
+                  {selectedDates.map((date, index) => (
+                    <ListItem
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 2,
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${date.date}  ${date.startTime} - ${date.endTime}`}
+                        sx={{ flex: 1 }}
+                      />
+                      <Box sx={{ display: "flex", gap: 2 }}>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel>Start</InputLabel>
+                          <Select
+                            value={date.startTime}
+                            onChange={(e) =>
+                              handleTimeChange(
+                                index,
+                                "startTime",
+                                e.target.value
+                              )
+                            }
+                          >
+                            {times.map((time, idx) => (
+                              <MenuItem key={idx} value={time}>
+                                {time}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel>End</InputLabel>
+                          <Select
+                            value={date.endTime}
+                            onChange={(e) =>
+                              handleTimeChange(index, "endTime", e.target.value)
+                            }
+                          >
+                            {times.map((time, idx) => (
+                              <MenuItem key={idx} value={time}>
+                                {time}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Box>
+                      {isTimeInvalid(date.startTime, date.endTime) && (
+                        <Typography
+                          variant="body6"
+                          sx={{ color: "red", marginTop: 1 }}
                         >
-                          {times.map((time, idx) => (
-                            <MenuItem key={idx} value={time}>
-                              {time}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl sx={{ minWidth: 120 }}>
-                        <InputLabel>End</InputLabel>
-                        <Select
-                          value={date.endTime}
-                          onChange={(e) =>
-                            handleTimeChange(index, "endTime", e.target.value)
-                          }
+                          *Time is invalid
+                        </Typography>
+                      )}
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="h7">No dates selected.</Typography>
+              )}
+              <strong>
+                <h6>Availability:</h6>
+              </strong>
+              <List
+                sx={{
+                  maxHeight: 300, 
+                  overflowY: "auto", 
+                  backgroundColor: "#ffffff", 
+                  border: "1px solid #ccc", 
+                  borderRadius: 4,
+                  padding: 1,
+                }}
+              >
+                {Object.entries(existingDates)
+                  .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // Sort by date
+                  .map(([date, { start_time, end_time }]) => (
+                    <ListItem
+                      key={date}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 2,
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${date}: ${start_time} - ${end_time}`}
+                        sx={{ flex: 1 }}
+                      />
+                      <Box sx={{ display: "flex", gap: 2 }}>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => handleEdit(date, start_time, end_time)}
                         >
-                          {times.map((time, idx) => (
-                            <MenuItem key={idx} value={time}>
-                              {time}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Box>
-                    {isTimeInvalid(date.startTime, date.endTime) && (
-                      <Typography
-                        variant="body6"
-                        sx={{ color: "red", marginTop: 1 }}
-                      >
-                        *Time is invalid
-                      </Typography>
-                    )}
-                  </ListItem>
-                ))}
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleDelete(date)}
+                        >
+                          Del
+                        </Button>
+                      </Box>
+                    </ListItem>
+                  ))}
               </List>
-            ) : (
-              <Typography variant="h7">No dates selected.</Typography>
-            )}
-            <strong>
-              <h2>Availability:</h2>
-            </strong>
-            <List>
-              {Object.entries(existingDates)
-                .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // Sort by date
-                .map(([date, { start_time, end_time }]) => (
-                  <ListItem
-                    key={date}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 2,
-                    }}
-                  >
-                    <ListItemText
-                      primary={`${date}: ${start_time} - ${end_time}`}
-                      sx={{ flex: 1 }}
-                    />
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => handleEdit(date, start_time, end_time)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="error"
-                        onClick={() => handleDelete(date)}
-                      >
-                        Del
-                      </Button>
-                    </Box>
-                  </ListItem>
-                ))}
-            </List>
 
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleClearSelection}
-              disabled={selectedDates.length === 0}
-              style={{ marginTop: "10px" }}
-            >
-              Clear
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              disabled={selectedDates.length === 0}
-              style={{ marginTop: "10px" }}
-            >
-              Save
-            </Button>
-          </Box>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleClearSelection}
+                disabled={selectedDates.length === 0}
+                style={{ marginTop: "10px" }}
+              >
+                Clear
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                disabled={selectedDates.length === 0}
+                style={{ marginTop: "10px" }}
+              >
+                Save
+              </Button>
+            </Box>
+          </div>
         </div>
       </div>
     </div>

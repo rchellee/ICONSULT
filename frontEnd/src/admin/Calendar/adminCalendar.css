@@ -84,6 +84,16 @@ button + button {
   font-size: 1.2rem;
 }
 
+.wrapper-adminCalendar {
+  width: 950px;
+  height: 500px;
+  overflow: hidden;
+  padding: 28px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
 .wrapper-admin {
   width: 1000px;
   background: #fff;
@@ -145,7 +155,7 @@ header .current-date {
   z-index: 1;
   cursor: pointer;
   position: relative;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 .calendar .days li.selected-date {
   border: 2px solid #0f3a68;

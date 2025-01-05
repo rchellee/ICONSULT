@@ -6,6 +6,10 @@ const MiscellaneousForm = ({ onClose, task, updateTaskWithMiscellaneous }) => {
   const [miscellaneousFee, setMiscellaneousFee] = useState("");
 
   const handleAddMiscellaneous = () => {
+    if (!miscellaneousName || !miscellaneousFee || isNaN(miscellaneousFee)) {
+      alert("Please enter a valid name and amount.");
+      return;
+    }
     const newMiscellaneous = {
       name: miscellaneousName,
       fee: miscellaneousFee,

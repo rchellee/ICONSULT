@@ -5,6 +5,7 @@ import { FaChevronDown, FaChevronRight } from "react-icons/fa"; // Import icons
 import Sidebar from "../sidebar";
 import axios from "axios";
 import "./project.css";
+import Topbar from "../Topbar";
 
 function Project() {
   const navigate = useNavigate();
@@ -71,9 +72,11 @@ function Project() {
   };
 
   return (
+    <div>
+    <Topbar />
     <div className="client-project-page">
       <Sidebar />
-      <div className="content">
+      <div className="content-client-project">
         <div
           className="toggle-button-projects"
           onClick={toggleProjectsVisibility}
@@ -142,6 +145,7 @@ function Project() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

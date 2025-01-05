@@ -16,9 +16,14 @@ body {
 
 }
 
-/* Main content styles */
-.content {
+.content-client {
+  margin-left: 100px; 
+  padding: 40px 20px 20px;
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 h3 {

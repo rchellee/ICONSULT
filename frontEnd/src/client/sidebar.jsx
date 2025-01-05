@@ -21,9 +21,7 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <img src={client} alt="Client Logo" />
-      </div>
+      
 
       <ul className="sidebar-links">
         <li>
@@ -51,22 +49,16 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/review" data-tooltip="Notifications">
+            <div className="material-symbols-outlined icon">reviews</div>
+            <span>Reviews</span>
+          </Link>
+        </li>
+        <li>
           <Link to="/transact" data-tooltip="Transactions">
             <div className="material-symbols-outlined icon">payments</div>
             <span>Transactions</span>
           </Link>
-        </li>
-        <li>
-          <Link to="/account-settings" data-tooltip="Settings">
-            <div className="material-symbols-outlined icon">settings</div>
-            <span>Settings</span>
-          </Link>
-        </li>
-        <li>
-          <button onClick={handleLogout} className="logout-btn" data-tooltip="Logout">
-            <div className="material-symbols-outlined icon">logout</div>
-            <span>Logout</span>
-          </button>
         </li>
       </ul>
     </div>

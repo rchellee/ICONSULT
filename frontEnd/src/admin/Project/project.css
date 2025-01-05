@@ -13,18 +13,22 @@
 }
 
 .project-management-page {
-  /* display: flex; 
-    height: 100vh;  */
-  margin: 0 20px;
+  height: 100vh;
+}
+.content-project {
+  margin-left: 100px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-/* button din for add client */
-.content { 
-    margin-left: 200px; /* eto yung distance sa sidebar */
-    padding: 40px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+.posts-tab-content {
+  margin-left: 200px; /* eto yung distance sa sidebar */
+  padding: 40px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 h1 {
@@ -57,6 +61,21 @@ h1 {
 }
 
 /* notification box styles *****************************************************************/
+
+.notification-icon {
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #3a9b9a;
+  position: absolute;
+  right: 0;
+  top: 5px;
+  margin-right: 70px;
+  margin-top: 50px;
+}
+.notification-icon:hover {
+  color: #51d1eb;
+}
 
 /*eto sa no project created yet*/
 .no-projects-message {
@@ -152,15 +171,61 @@ ct-list-header h3:nth-child(3) {
   width: 25%;
 }
 
-/*PROJECT CSS-------------------------------------------*/
-.project-list {
-  margin: -50px 0 0 0; /* Remove centering and move the table to the left */
-  border-collapse: collapse; /* Ensures borders are collapsed */
-  margin-left: 300px;
-  overflow: hidden;
+.project-list-wrapper {
+  display: flex;
+  position: relative;
+  overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
 }
 
-.project-list-header,
+.project-list {
+  width: 100%; /* Full width of the container */
+  margin: 40px 0 0 0; /* Adjust top margin */
+  border-collapse: collapse; /* Ensures borders are collapsed */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  max-height: 900px; /* Fixed height for the scrollable content */
+  margin-left: 300px; /* Adds left margin */
+  -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on mobile */
+  padding-bottom: 50px;
+}
+
+/* Custom scrollbar styling */
+.project-list::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
+}
+
+.project-list::-webkit-scrollbar-track {
+  background: #b4bad5; /* Light track background */
+}
+
+.project-list::-webkit-scrollbar-thumb {
+  background-color: #547099; /* Scrollbar thumb color */
+  border-radius: 10px; /* Rounded corners */
+}
+
+/* Optional: Hover effect for the scrollbar thumb */
+.project-list::-webkit-scrollbar-thumb:hover {
+  background-color: #4f6d9a; /* Darker green on hover */
+}
+
+.project-list::-webkit-scrollbar {
+  margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
+}
+
+.project-list-header {
+  display: table-row; /* Ensures they behave like table rows */
+  position: sticky; /* Stick to the top when scrolling */
+  top: 0; /* Make it stick to the top of the container */
+  background-color: #dceeff; /* Ensure the header has a background */
+  z-index: 1; /* Make sure the header stays on top of other rows */
+  font-weight: bold; /* Make the header text bold */
+}
+
+.project-list-header h3 {
+  font-size: 18px; /* Adjust font size for the header text */
+  padding: 20px; /* Padding for spacing */
+  font-weight: bold;
+}
+
 .project-item {
   display: table-row; /* Ensures they behave like table rows */
 }
@@ -169,110 +234,113 @@ ct-list-header h3:nth-child(3) {
 .project-item p {
   display: table-cell;
   padding: 15px;
-  border: 1px solid #ccc;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.project-item p {
+  font-size: 16px; /* Adjust the font size for the <p> elements */
+  padding: 15px; /* Optional: Add padding for better spacing */
 }
 
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
 .project-item p:nth-child(2) {
   width: 200px; /* Fixed width for Project Name */
+  font-size: 16px;
 }
 
 .project-list-header h3:nth-child(3), /* Client */
 .project-item p:nth-child(3) {
   width: 200px; /* Fixed width for Client */
+  font-size: 16px;
 }
 
 /* Other column widths */
 .project-list-header h3:nth-child(1), /* ID */
 .project-item p:nth-child(1) {
   width: 100px; /* Fixed width for ID */
+  font-size: 16px;
 }
 
 .project-list-header h3:nth-child(4), /* Progress */
 .project-item p:nth-child(4) {
   width: 150px; /* Fixed width for Progress */
+  font-size: 16px;
 }
 
 .project-list-header h3:nth-child(5), /* Date Start */
 .project-item p:nth-child(5) {
   width: 200px; /* Fixed width for Date Start */
+  font-size: 16px;
 }
 
 .project-list-header h3:nth-child(6), /* Status */
 .project-item p:nth-child(6) {
   width: 150px; /* Fixed width for Status */
+  font-size: 16px;
 }
 
 .project-list-header h3:nth-child(7), /* Action */
 .project-item p:nth-child(7) {
   width: 150px; /* Fixed width for Action */
+  font-size: 16px;
 }
 
-.project-list-scrollable {
-  max-height: 700px;
-  overflow-y: auto;
+.project-list-header h3:nth-child(8), /* Total */
+.project-item p:nth-child(8) {
+  width: 150px; /* Adjust width for Total */
+  font-size: 16px;
 }
 
-.project-list-scrollable::-webkit-scrollbar {
-  width: 8px;
+.project-list-header h3:nth-child(9), /* Payment Status */
+.project-item p:nth-child(9) {
+  width: 150px; /* Adjust width for Payment Status */
+  font-size: 16px;
 }
-.sort-button-container {
+
+/* Navigation buttons */
+.top-nav-buttons {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 50px;
-  justify-content: flex-start;
-  margin-left: 1px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  position: absolute;
+  top: 0px; /* Move the buttons up by setting a smaller value for top */
+  left: 0; /* Adjust the position to the left */
 }
 
-.sort-button,
-.detail-button {
-  padding: 12px 16px; /* Uniform padding for buttons */
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.sort-button {
-  background-color: #8cbdf2;
-  transition: background-color 0.3s;
-  width: 100px;
-}
-
-.detail-button {
-  background-color: #b1d1d1;
-  color: white;
-  width: 100px;
-}
-
-.sort-button:hover {
-  background-color: #7aa8d8;
-}
-
-.detail-button:hover {
-  background-color: #51d1eb;
-}
-
-.search-box-container {
+.top-nav-buttons button {
   display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  margin: 20px 0;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: rgb(53, 52, 52);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-/* Input field for the search box */
+.top-nav-buttons svg {
+  font-size: 25px;
+}
+.nav-btn {
+  position: relative;
+}
+
+/* search box */
 .search-box {
   position: absolute;
-  bottom: 30px;
+  bottom: 18px;
   left: 600px;
   width: 250%;
   max-width: 500px;
-  height: 50px;
+  height: 40px;
   padding: 15px;
   font-size: 15px;
   border: 2px solid #3498db;
@@ -304,13 +372,13 @@ ct-list-header h3:nth-child(3) {
   padding: 15px;
   position: absolute;
   margin-left: 10px;
-  margin-top: 100px;
+  margin-top: 112px;
   width: 250px; /* Adjust the width as needed */
 }
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 550px; /* Set the max height of the scrollable area */
+  max-height: 754px; /* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;
@@ -336,7 +404,8 @@ ct-list-header h3:nth-child(3) {
 }
 
 /* Individual Folder Item */
-.project-name-item {
+.project-name-item p {
+  font-size: 14px; /* Adjust font size for folder names */
   padding: 12px;
   transition: background-color 0.3s;
   cursor: pointer;

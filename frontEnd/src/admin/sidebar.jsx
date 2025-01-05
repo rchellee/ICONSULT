@@ -6,11 +6,6 @@ import admin from "../assets/admin.jpg";
 const Sidebar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
-  };
-
   const Sidebar = ({ onNavigate }) => {
     return (
       <div className="sidebar">
@@ -27,9 +22,6 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-header">
-        <img src={admin} alt="Admin Logo" />
-      </div>
       <ul className="sidebar-links">
         <li>
           <Link to="/calendar" data-tooltip="Calendar">
@@ -79,16 +71,6 @@ const Sidebar = () => {
             <div className="material-symbols-outlined icon">badge</div>
             <span>Employees</span>
           </Link>
-        </li>
-        <li>
-          <button
-            onClick={handleLogout}
-            className="logout-btn"
-            data-tooltip="Logout"
-          >
-            <div className="material-symbols-outlined icon">logout</div>
-            <span>Logout</span>
-          </button>
         </li>
       </ul>
     </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import "./appointment.css";
 import DynamicCalendar from "./DynamicCalendar";
+import Topbar from "../Topbar";
 
 function AppointmentForm() {
   const navigate = useNavigate();
@@ -291,9 +292,11 @@ function AppointmentForm() {
   };
 
   return (
-    <div className="appointment-form-container">
+    <div>
+      <Topbar />
       <Sidebar />
-      <div className="content">
+    <div className="appointment-form-container">
+      <div className="content-calendar">
         {currentStep === 1 && (
           <div>
             <h3>Step 1: Date and Time</h3>
@@ -653,6 +656,7 @@ function AppointmentForm() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

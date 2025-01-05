@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import FileViewer from "react-file-viewer";
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import "./PostTab.css";
 
 const FilesTab = ({ projectId }) => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./tracking.css";
 
 function Files({ projectId, clientId }) {
   const [files, setFiles] = useState([]);
@@ -69,16 +70,9 @@ function Files({ projectId, clientId }) {
   return (
     <div className="files-tab">
       <div className="upload-section">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          disabled={uploading}
-        />
-        <button
-          onClick={handleUpload}
-          disabled={uploading || !selectedFile}
-        >
-          {uploading ? "Uploading..." : "Upload File"}
+        <input type="file" onChange={handleFileChange} disabled={uploading} />
+        <button onClick={handleUpload} disabled={uploading || !selectedFile}>
+          {uploading ? "Uploading..." : "Upload"}
         </button>
       </div>
       {files.length === 0 ? (

@@ -8,7 +8,8 @@ import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
-import FormSelector from "./FormSelector"; // Add this import
+import FormSelector from "./FormSelector";
+import Topbar from "../Topbar";
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,7 +32,6 @@ const ProjectManagement = () => {
   const [downpayment, setDownpayment] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("Not Paid");
 
-  // Fetch data on component mount
   useEffect(() => {
     fetch("http://localhost:8081/project")
       .then((response) => response.json())
@@ -185,7 +185,6 @@ const ProjectManagement = () => {
     (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Render ProjectList or ProjectTask based on selectedProjectId
   const renderProjectContent = () => {
     if (selectedProjectId) {
       return (
@@ -218,8 +217,9 @@ const ProjectManagement = () => {
 
   return (
     <div className="project-management-page">
+    <Topbar />
       <Sidebar />
-      <div className={`content ${isSidebarOpen ? "shifted" : ""}`}>
+      <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
         <div className="header-actions">
           <button className="create-button" onClick={openModal}>
             <FaPlus className="icon" /> New

@@ -20,7 +20,7 @@ const db = mysql.createConnection({
   user: "root",
   password: "",
   database: "iconsult",
-  timezone: "Z"
+  timezone: "Z",
 });
 
 app.get("/", (req, res) => {
@@ -53,7 +53,7 @@ app.post("/Login", (req, res) => {
 
   // Check the client table
   const sqlClient = `
-          SELECT id, firstName, lastName, passwordChanged 
+          SELECT id, firstName, lastName, email_add, passwordChanged 
           FROM client 
           WHERE username = ? AND password = ?
       `;
@@ -122,25 +122,271 @@ app.post("/updatePassword", (req, res) => {
   });
 });
 
+app.post("/identifyUser", (req, res) => {
+  const { username } = req.body;
+
+  // Check the admin table first
+  const sqlAdmin = "SELECT email AS email FROM admin WHERE username = ?";
+  db.query(sqlAdmin, [username], (err, adminResults) => {
+    if (err) {
+      return res.status(500).json({ message: "Error checking admin table" });
+    }
+
+    if (adminResults.length > 0) {
+      return res
+        .status(200)
+        .json({ role: "admin", email: adminResults[0].email });
+    }
+
+    const sqlClient =
+      "SELECT id AS clientId, email_add AS email FROM client WHERE username = ?";
+    db.query(sqlClient, [username], (err, clientResults) => {
+      if (err) {
+        return res.status(500).json({ message: "Error checking client table" });
+      }
+
+      if (clientResults.length > 0) {
+        return res.status(200).json({
+          role: "client",
+          email: clientResults[0].email,
+          clientId: clientResults[0].clientId, // Include clientId here
+        });
+      }
+
+      return res
+        .status(404)
+        .json({ message: "Email associated with this username not found." });
+    });
+  });
+});
+
 // SendGrid email example
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
+const verificationCodes = new Map();
+const otpStore = {};
 
-app.post("/send-email", (req, res) => {
-  const { to, subject, text, html } = req.body;
+// Save the code for an email
+function storeCodeForEmail(email, code) {
+  verificationCodes.set(email, code);
+  console.log(`Code stored for ${email}: ${code}`);
+  setTimeout(() => {
+    verificationCodes.delete(email);
+    console.log(`Code expired for ${email}`);
+  }, 30 * 60 * 1000); // 30 minutes
+}
+function getStoredCodeForEmail(email) {
+  console.log(`Fetching code for ${email}`);
+  return verificationCodes.get(email);
+}
+//clientchange of password
+app.post("/sendVerificationCode", (req, res) => {
+  const { email } = req.body;
+  const code = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit code
 
   const message = {
-    to,
-    from: "ritchelle.rueras@tup.edu.ph", // Use a verified sender email from SendGrid
-    subject,
-    text,
-    html,
+    to: email,
+    from: "ritchelle.rueras@tup.edu.ph", // Verified sender email
+    subject: "Your Verification Code",
+    text: `Hey there,\n\nHere's the code to verify your email. The code is valid for 30 minutes. We recommend using the code now, as you will need to request a new one if it expires.\n\n${code}\n\nTo keep your account safe, please do not share this verification code. If you didn't try to sign in, you can safely ignore this email.\n\nCheers,\nYour Team`,
   };
 
   sgMail
     .send(message)
-    .then(() => res.status(200).json({ message: "Email sent successfully" }))
+    .then(() => {
+      storeCodeForEmail(email, code); // Store the code for later verification
+      res.status(200).json({ message: "Code sent successfully" });
+    })
     .catch((error) => res.status(500).json({ error: error.message }));
+});
+app.post("/verifyCode", (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    // Logging for debugging
+    console.log("Received email:", email);
+    console.log("Received code:", code);
+
+    const storedCode = getStoredCodeForEmail(email);
+    console.log("Stored code:", storedCode);
+
+    if (!storedCode) {
+      return res.status(400).json({ message: "Code expired or not found." });
+    }
+
+    if (!email || !code) {
+      return res.status(400).json({ message: "Email and code are required." });
+    }
+
+    if (String(storedCode) !== String(code)) {
+      return res.status(400).json({ message: "Invalid verification code." });
+    }
+
+    // Code is valid
+    return res.status(200).json({ message: "Verification successful." });
+  } catch (error) {
+    console.error("Error verifying code:", error);
+    return res.status(500).json({ message: "An unexpected error occurred." });
+  }
+});
+//forgot-password
+app.post("/sendOTP", async (req, res) => {
+  const { email } = req.body;
+  const OTP = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+
+  otpStore[email] = { OTP, timestamp: Date.now() }; // Store OTP with timestamp
+
+  const message = {
+    to: email,
+    from: "ritchelle.rueras@tup.edu.ph", // Replace with your verified sender email
+    subject: "Your OTP Code",
+    text: `Your OTP is ${OTP}. It is valid for 5 minutes.`,
+  };
+
+  try {
+    await sgMail.send(message);
+    console.log(`OTP sent to ${email}: ${OTP}`);
+    res.status(200).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.error("Error sending OTP email:", error);
+    res.status(500).json({ message: "Failed to send OTP email" });
+  }
+});
+app.post("/verifyOTP", (req, res) => {
+  const { email, inputOTP } = req.body;
+
+  const storedOtpData = otpStore[email];
+  if (inputOTP.length !== 4) {
+    return res.status(400).json({ message: "Invalid OTP format." });
+  }
+
+  if (!storedOtpData) {
+    return res.status(404).json({ message: "OTP not found for this email" });
+  }
+
+  const { OTP, timestamp } = storedOtpData;
+  const isExpired = Date.now() - timestamp > 5 * 60 * 1000; // OTP valid for 5 minutes
+
+  if (isExpired) {
+    delete otpStore[email];
+    return res.status(400).json({ message: "OTP expired" });
+  }
+
+  if (parseInt(inputOTP) === OTP) {
+    delete otpStore[email];
+    return res.status(200).json({ message: "OTP verified successfully" });
+  } else {
+    return res.status(400).json({ message: "Incorrect OTP" });
+  }
+});
+
+// Update password endpoint for clients
+app.post("/updateclientPassword", (req, res) => {
+  const { clientId, newPassword } = req.body;
+
+  if (!clientId || !newPassword) {
+    return res
+      .status(400)
+      .json({ message: "Client ID and new password are required" });
+  }
+
+  // Update client password in the database
+  const sqlUpdate = "UPDATE client SET password = ? WHERE id = ?";
+  db.query(sqlUpdate, [newPassword, clientId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Database update failed" });
+    }
+    res.status(200).json({ message: "Password updated successfully" });
+  });
+});
+// Update password endpoint for admin
+app.post("/updateAdminPassword", (req, res) => {
+  const { newPassword } = req.body;
+
+  if (!newPassword) {
+    return res.status(400).json({ message: "New password is required" });
+  }
+
+  // Update admin password in the database
+  const sqlUpdate = "UPDATE admin SET password = ?";
+  db.query(sqlUpdate, [newPassword], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: "Database update failed" });
+    }
+    res.status(200).json({ message: "Password updated successfully" });
+  });
+});
+
+// Save availability data to the database
+app.post("/availability", (req, res) => {
+  const availabilityData = req.body;
+
+  const deleteSql = "DELETE FROM availability WHERE dates = ?";
+  const insertSql =
+    "INSERT INTO availability (start_time, end_time, dates) VALUES ?";
+
+  // First, delete existing availability for the given dates
+  const deletePromises = availabilityData.map((entry) => {
+    return new Promise((resolve, reject) => {
+      db.query(deleteSql, [entry.dates], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  });
+
+  // Once deletions are complete, insert new data
+  Promise.all(deletePromises)
+    .then(() => {
+      const values = availabilityData.map((entry) => [
+        entry.start_time,
+        entry.end_time,
+        entry.dates,
+      ]);
+      db.query(insertSql, [values], (err, result) => {
+        if (err) {
+          console.error("Error saving data to the database:", err);
+          return res.status(500).json({ message: "Error saving data" });
+        }
+        res.status(200).json({
+          message: "Availability saved/updated successfully",
+          data: result,
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error during update:", error);
+      res.status(500).json({ message: "Error updating availability" });
+    });
+});
+app.get("/availability", (req, res) => {
+  const sql = "SELECT * FROM availability";
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching availability data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    res.status(200).json(data);
+  });
+});
+// Delete availability for a specific date
+app.delete("/availability/:date", (req, res) => {
+  const { date } = req.params;
+
+  const sql = "DELETE FROM availability WHERE dates = ?";
+  db.query(sql, [date], (err, result) => {
+    if (err) {
+      console.error("Error deleting availability:", err);
+      return res.status(500).json({ message: "Error deleting data" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Date not found" });
+    }
+    res.status(200).json({ message: "Availability deleted successfully" });
+  });
 });
 
 // Save availability data to the database
@@ -464,7 +710,44 @@ app.get("/clients", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/client/:id", (req, res) => {
+  const clientId = req.params.id;
 
+  const sql = "SELECT firstName, lastName FROM client WHERE id = ?";
+  db.query(sql, [clientId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching client details" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json(result[0]);
+    } else {
+      return res.status(404).json({ message: "Client not found" });
+    }
+  });
+});
+
+app.get("/clients/:id", (req, res) => {
+  const clientId = req.params.id;
+
+  const sql =
+    "SELECT firstName, lastName, middleInitial, mobile_number, email_add, address, username, companyName FROM client WHERE id = ?";
+  db.query(sql, [clientId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching client details" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json(result[0]); // Return the first result
+    } else {
+      return res.status(404).json({ message: "Client not found" });
+    }
+  });
+});
 // Update a client's status (PUT request)
 app.put("/clients/:id", (req, res) => {
   const clientId = req.params.id;
@@ -895,7 +1178,6 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 // };
 // backfillTotalPayment();
 
-
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
@@ -1050,7 +1332,9 @@ app.get("/tasks", (req, res) => {
   db.query(sql, [idsArray], (err, tasks) => {
     if (err) {
       console.error("Error fetching tasks: ", err);
-      return res.status(500).json({ message: "Error retrieving tasks", error: err });
+      return res
+        .status(500)
+        .json({ message: "Error retrieving tasks", error: err });
     }
     res.status(200).json({ tasks });
   });
@@ -1300,7 +1584,6 @@ app.post("/upload", (req, res) => {
           return res.status(500).json({ message: "Error uploading file" });
         }
 
-
         const fetchSql = `
           SELECT 
             uploads.*,
@@ -1316,7 +1599,9 @@ app.post("/upload", (req, res) => {
         db.query(fetchSql, [result.insertId], (err, results) => {
           if (err) {
             console.error("Error fetching uploaded file info:", err);
-            return res.status(500).json({ message: "Error fetching file data" });
+            return res
+              .status(500)
+              .json({ message: "Error fetching file data" });
           }
           res.status(201).json(results[0]);
         });
@@ -1350,7 +1635,8 @@ app.get("/upload", (req, res) => {
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));
 
-app.post('/reviews', (req, res) => {
+
+app.post("/reviews", (req, res) => {
   const { clientId, projectId, rating, comment, status } = req.body;
 
   const query = `
@@ -1358,16 +1644,19 @@ app.post('/reviews', (req, res) => {
       VALUES (?, ?, ?, ?, ?)
   `;
 
-  db.query(query, [clientId, projectId, rating, comment, status], (err, result) => {
+  db.query(
+    query,
+    [clientId, projectId, rating, comment, status],
+    (err, result) => {
       if (err) {
-          console.error(err);
-          res.status(500).json({ message: "Failed to submit the review." });
+        console.error(err);
+        res.status(500).json({ message: "Failed to submit the review." });
       } else {
-          res.status(201).json({ message: "Review submitted successfully." });
+        res.status(201).json({ message: "Review submitted successfully." });
       }
-  });
+    }
+  );
 });
-
 
 // Start the server
 app.listen(8081, () => {

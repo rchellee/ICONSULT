@@ -7,24 +7,27 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(206, 204, 204, 0.5);
+  z-index: 9999; /* Ensure the form is above all other elements */
 }
 
 .taskForm {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 800px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  margin-left: 500px;
+  width: 800px; /* Adjusted for better centering */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  margin-right: auto; /* Centering the form */
   display: flex;
   flex-direction: column;
 }
+
 
 .taskInputGroup {
   display: flex;
@@ -33,29 +36,82 @@
 }
 
 .taskInput {
-  width: 50%; 
-  margin-right: 10px;
+  width: 48%; /* Adjusted width to fit side by side */
+  margin-right: 20px; /* Add space between input fields */
 }
 
 .taskInput label {
-  margin-bottom: 10px;
+  margin-bottom: 5px; /* Reduced space between label and input */
   font-size: 14px;
+  font-weight: normal;
 }
 
 .taskInput input {
   width: 100%;
-  padding: 8px;
+  padding: 10px; /* Increased padding for better input field size */
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+  box-sizing: border-box; /* Ensure padding doesn't affect width */
 }
 
-.employee {
-  width: 100%;
+.employee select option:disabled {
+  color: #ccc; /* Set the color for the "Choose an Employee" text */
 }
+
+
+.taskInput label,
+.taskFee label,
+.employee label,
+.dueDate label,
+.miscellaneous label,
+.miscellaneousFee label,
+.scrollableMiscellaneousList h4,
+.totalAmount label {
+  color: #547099; /* Applies the color */
+  font-weight: normal; /* Removes bold styling */
+}
+
+
+
+
+
+/* Resize Assign Employee input field */
+.employee {
+  width: 45%; /* Adjusted width, you can change this to your desired value */
+  margin-right: 10px; /* Optional space between fields */
+}
+
+/* If you want the input field to be full width (100%) in some cases */
+.employee input {
+  
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Resize Due Date input field */
+.dueDate {
+  width: 47%; /* Adjust the width as needed */
+  margin-right: 10px; /* Optional space between fields */
+}
+
+/* If you want the input field to be full width (100%) in some cases */
+.dueDate input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+
 
 .taskFee {
-  width: 20%;
+  width: 50%;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -68,96 +124,131 @@
 /* Styles for Additional Fee section */
 .additionalFeeContainer {
   display: flex;
-  gap: 10px; 
+  gap: 10px;
 }
 
 .additionalFee input {
-  width: 48%; 
+  width: 50%;
 }
 
 .feeName {
-  padding: 8px;
+  padding: 10px; /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 .feeAmount {
-  padding: 8px;
+  padding: 10px; /* Increased padding */
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
+/* Miscellaneous Name and Miscellaneous Fee with 50/50 width */
+.miscellaneous, .miscellaneousFee {
+  width: 50%; /* Adjusted width for 50/50 split */
+  margin-right: 20px; /* Optional space between fields */
+}
+
+/* Remove right margin for the last input field */
+.miscellaneousFee {
+  margin-right: 0;
+}
+
+/* Optional: Adjusting label and input styling for Miscellaneous section */
+.miscellaneous label, .miscellaneousFee label {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.miscellaneous input, .miscellaneousFee input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+
+
 /* Button Styles */
 .taskForm button {
-  padding: 8px 20px;
-  font-size: 15px;    
-  background-color: transparent; 
+  padding: 10px 20px; /* Increased padding for better button size */
+  font-size: 15px;
+  background-color: transparent;
   color: rgb(21, 130, 150);
   font-weight: 600;
   border: none;
-  border-radius: 4px; 
+  border-radius: 4px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 30px;
   width: auto;
 }
 
 .taskForm button:hover {
-  background-color: #f5f5f5;  
+  transform: scale(1.1); /* Enlarge the button on hover */
+  background-color: transparent;
+}
+
+.taskForm button:active {
+  transform: scale(0.95); /* Slightly shrink the button when clicked */
+  background-color: transparent;
 }
 
 .createButton {
   background-color: transparent;
-  padding: 8px 20px;
+  padding: 10px 20px;
   font-size: 14px;
-  width: auto; 
-  border-radius: 4px; 
+  width: auto;
+  border-radius: 4px;
   cursor: pointer;
-  margin-left: 10px; 
+  margin-left: 10px;
 }
 
 .taskForm .cancelButton {
   background-color: transparent;
-  margin-left: 500px;
-  padding: 8px 20px;
-  font-size: 14px;    
-  width: auto; 
-  align-self: flex-start; 
+  margin-left: auto; /* Align it to the right within the form */
+  padding: 10px 20px;
+  font-size: 14px;
+  width: auto;
+  align-self: flex-start; /* Align at the start of the form */
 }
 
 .taskForm .cancelButton:hover {
-  background-color: #f5f5f5; 
+  background-color: #f5f5f5;
 }
 
 /* Container for buttons */
 .buttonContainer {
   display: flex;
-  justify-content: space-between; 
-  margin-top: 15px; 
+  justify-content: space-between;
+  margin-top: 15px;
 }
 
 /* Wrapper to align the input and icon */
 .employeeInputWrapper {
   position: relative;
-  width: 50%; 
+  width: 100%;
 }
 
 /* Style the input box to ensure there's space for the icon */
 .employeeInputWrapper input {
-  width: 100%; 
-  padding-right: 30px; 
-  padding-left: 10px; 
+  width: 100%;
+  padding-right: 30px;
+  padding-left: 10px;
 }
 
 /* Style the dropdown icon to position it inside the input box */
 .dropdownIcon {
   position: absolute;
-  right: 10px; 
-  top: 50%; 
-  transform: translateY(-50%); 
-  font-size: 1.2rem; 
-  color: #888; 
-  cursor: pointer; 
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: #888;
+  cursor: pointer;
 }
+
 
 
 
@@ -190,18 +281,20 @@
 
 /* Hover effect for each item */
 .miscellaneousItem:hover {
-  background-color: #e7e8e9; 
+  background-color: #f1f0f0;
   cursor: pointer;
 }
+
 
 .removeIcon {
   cursor: pointer;
   color: red;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.2s ease; /* Smooth color and scale transition */
 }
 
 .removeIcon:hover {
-  color: darkred;
+  color: red;
+  transform: scale(1.2); /* Enlarge the icon slightly on hover */
 }
 
 /* Container for the miscellaneous items list, making it scrollable */
@@ -236,3 +329,18 @@
   background-color: #f8f8f8; 
   border-radius: 10px;
 }
+
+/* Align Total Amount and its value side by side */
+.totalAmount {
+  display: flex;
+  margin-top: 20px; /* Space above the section */
+}
+
+.totalAmount label {
+  margin-right: 10px; /* Optional: Space between label and value */
+}
+
+.totalAmount span {
+  font-weight: bold; /* Optional: Make the value bold for emphasis */
+}
+

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { IoIosArrowDown } from "react-icons/io";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
-import TaskForm from "./TaskForm";
+import TaskForm from "./Taskform";
 import MiscellaneousForm from "./MiscellaneousForm ";
 
 const PostsTab = ({
@@ -28,6 +27,8 @@ const PostsTab = ({
           throw new Error("Failed to fetch tasks");
         }
         const data = await response.json();
+        console.log("Fetched tasks:", data.tasks);
+
         setTasks(data.tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -44,35 +45,40 @@ const PostsTab = ({
     setSelectedTaskName(task.task_name);
     setSelectedTaskDetails(task);
   };
-  
 
   const calculateTotal = (task) => {
-    const taskFee = parseFloat(task.taskFee) || 0; // Ensure it's a valid number
+    const task_fee = parseFloat(task.task_fee) || 0;
     const miscellaneousFee =
       task.miscellaneous && Array.isArray(task.miscellaneous)
-        ? task.miscellaneous.reduce((total, item) => total + (parseFloat(item.fee) || 0), 0)
-        : 0; // Sum of all miscellaneous fees
-    return taskFee + miscellaneousFee; // Return the sum of task fee and miscellaneous fee
+        ? task.miscellaneous.reduce(
+            (total, item) => total + (parseFloat(item.fee) || 0),
+            0
+          )
+        : 0;
+    return task_fee + miscellaneousFee;
   };
 
   const updateTaskWithMiscellaneous = (updatedTask) => {
     setSelectedTaskDetails(updatedTask);
     setShowMiscellaneousForm(false);
+
     const updatedTasks = tasks.map((task) =>
-      task.task_name === updatedTask.task_name ? updatedTask : task
+      task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
+    console.log("Updated selectedTaskDetails:", updatedTask);
   };
+
+  console.log("Tasks passed to PostsTab:", tasks);
+  console.log("Selected Task Details:", selectedTaskDetails);
+  console.log(
+    "Miscellaneous in selected task:",
+    selectedTaskDetails?.miscellaneous
+  );
 
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-        {/* Task Header with IoIosArrowDown Icon */}
-        <div className="task-header">
-          <h2>Task</h2>
-          <IoIosArrowDown className="toggle-icon down" />
-        </div>
-
         {/* Top Navigation Buttons */}
         <div className="top-button">
           <button className="nav-button">
@@ -84,7 +90,6 @@ const PostsTab = ({
           </button>
         </div>
 
-        {/* If a task is selected, show details in the desired format */}
         {selectedTaskName ? (
           <div className="task-details">
             <div className="task-detail-row">
@@ -97,21 +102,22 @@ const PostsTab = ({
             </div>
             <div className="task-detail-row">
               <div>{selectedTaskDetails.task_name}</div>
-              <div className="align-right">{selectedTaskDetails.taskFee}</div>
+              <div className="align-right">{selectedTaskDetails.task_fee}</div>
             </div>
             <div className="task-detail-row">
               <div>
                 <strong>Miscellaneous</strong>
-                <IoAddCircle
-                  size={20}
-                  style={{ marginLeft: "10px", cursor: "pointer" }}
+                <button
+                  className="task-add-icon"
                   onClick={() => setShowMiscellaneousForm(true)}
-                />
+                >
+                  +
+                </button>
               </div>
             </div>
 
             {/* Loop through miscellaneous entries and display them */}
-            {selectedTaskDetails.miscellaneous &&
+            {selectedTaskDetails?.miscellaneous &&
             Array.isArray(selectedTaskDetails.miscellaneous) &&
             selectedTaskDetails.miscellaneous.length > 0 ? (
               selectedTaskDetails.miscellaneous.map((misc, index) => (
@@ -144,23 +150,36 @@ const PostsTab = ({
             <table className="task-table">
               <thead>
                 <tr>
-                  <th>Task Name</th>
+                  <th>Task</th>
                   <th>Employee</th>
                   <th>Status</th>
                   <th>Due Date</th>
+                  <th>Fee</th>
+                  <th>Miscellaneous</th>
                   <th className="align-right">Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task, index) => (
-                  <tr key={index} onClick={() => handleRowClick(task)}>
-                    <td>{task.task_name}</td>
-                    <td>{task.employee || "Unassigned"}</td>
-                    <td>{task.status}</td>
-                    <td>{task.due_date}</td>
-                    <td className="align-right">{task.amount}</td>
-                  </tr>
-                ))}
+                {tasks.map((task) => {
+                  const miscellaneousItems = JSON.parse(
+                    task.miscellaneous || "[]"
+                  );
+                  const miscellaneousDetails = miscellaneousItems
+                    .map((item) => `${item.name}: ${item.fee}`)
+                    .join(", ");
+
+                  return (
+                    <tr key={task.id} onClick={() => handleRowClick(task)}>
+                      <td>{task.task_name}</td>
+                      <td>{task.employee}</td>
+                      <td>{task.status}</td>
+                      <td>{task.due_date}</td>
+                      <td>{task.task_fee}</td>
+                      <td>{miscellaneousDetails || "N/A"}</td>
+                      <td>{task.amount}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -172,7 +191,7 @@ const PostsTab = ({
             className="create-task-button"
             onClick={() => setShowTaskForm(true)}
           >
-            Create
+            +
           </button>
         </div>
 

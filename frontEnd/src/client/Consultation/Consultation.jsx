@@ -18,6 +18,7 @@ import {
 import Sidebar from "../sidebar";
 import { Link } from "react-router-dom";
 import "./consultation.css";
+import Topbar from "../Topbar";
 
 const Consultation = () => {
   const theme = useTheme();
@@ -113,9 +114,9 @@ const Consultation = () => {
       .filter((appointment) => {
         const appointmentDate = new Date(appointment.date);
         if (status === "Upcoming") {
-          return appointmentDate >= today; 
+          return appointmentDate >= today;
         } else if (status === "Completed") {
-          return appointmentDate < today; 
+          return appointmentDate < today;
         }
         return false;
       })
@@ -172,8 +173,9 @@ const Consultation = () => {
 
   return (
     <div className="consultation-page">
+      <Topbar />
       <Sidebar />
-      <div className="content">
+      <div className="content-consultation">
         <Box m="2px">
           <Box display="flex">
             {/* Sidebar */}
