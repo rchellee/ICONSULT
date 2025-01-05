@@ -26,7 +26,7 @@
 }
 
 .scrollable-notifications {
-  max-height: 850px;
+  max-height: 840px;
   overflow-y: auto;
   padding-right: 10px; 
   scrollbar-width: thin;

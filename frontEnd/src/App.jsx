@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import './index.css'
+import "./index.css";
 import Login from "./Login/LoginForm";
 import AdminHomePage from "./admin/AdminHomePage";
 import ClientDashboard from "./client/ClientDashboard";
@@ -26,6 +26,7 @@ import Review from "./client/Feedback/Review.jsx";
 import HelpCentre from "./client/HelpCentre.jsx";
 import OtpVerification from "./Login/OtpVerification.jsx";
 import Reset from "./Login/Reset.jsx";
+import ReportsTab from "./admin/Reports/ReportsTab.jsx";
 
 // for google icons
 const link = document.createElement("link");
@@ -64,6 +65,7 @@ function App() {
         <Route path="/help-centre" element={<HelpCentre />} />
         <Route path="/otp-verification" element={<OtpVerification />} />
         <Route path="/reset-password" element={<Reset />} />
+        <Route path="/reports" element={<ReportsTab />} />
       </Routes>
     </Router>
   );
