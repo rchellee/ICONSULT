@@ -50,6 +50,7 @@ h1 {
   cursor: pointer;
   font-size: 16px;
   margin-top: 10px;
+  margin-left: 20px;
 }
 
 .create-button:hover {
@@ -85,91 +86,7 @@ h1 {
   margin-top: 20px;
 }
 
-/* eto yung pag mag create ng project**************************************************/
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  overflow: hidden;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 400px;
-  overflow: hidden;
-}
-
-.modal-title {
-  text-align: center;
-  margin: 0;
-  margin-bottom: 20px;
-  font-size: 24px;
-}
-
-.modal-field {
-  margin-bottom: 20px;
-}
-
-.modal-field label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-
-.modal-field input {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 18px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.cancel-button,
-.create-button {
-  background-color: #7eb3de;
-  color: rgb(255, 255, 255);
-  border: none;
-  padding: 15px 30px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 18px;
-  height: 50px;
-}
-
-.cancel-button {
-  background-color: red;
-}
-
-.cancel-button:hover,
-.create-button:hover {
-  background-color: #51d1eb;
-}
-
-.cancel-button {
-  background-color: red;
-  margin-top: 10px;
-}
-
-ct-list-header h3:nth-child(3) {
-  /* Client */
-  width: 25%;
-}
 
 
 
@@ -179,7 +96,7 @@ ct-list-header h3:nth-child(3) {
   position: relative;
   overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
   max-width: 100%; /* Ensure it doesn’t overflow */
-  padding-right: 190px; 
+  padding-right: 80px; 
   margin-right: 50px;
   
 }
@@ -206,21 +123,17 @@ ct-list-header h3:nth-child(3) {
 .project-list::-webkit-scrollbar {
   width: 12px; /* Adjust the width of the scrollbar */
   margin-left: -50px;
+  height: 100px;
 }
 
-.project-list::-webkit-scrollbar-track {
-  background: #b4bad5; /* Light track background */
-}
+
 
 .project-list::-webkit-scrollbar-thumb {
-  background-color: #547099; /* Scrollbar thumb color */
+  background-color: #d7d5d5;  /* Scrollbar thumb color */
   border-radius: 10px; /* Rounded corners */
 }
 
-/* Optional: Hover effect for the scrollbar thumb */
-.project-list::-webkit-scrollbar-thumb:hover {
-  background-color: #4f6d9a; /* Darker green on hover */
-}
+
 
 .project-list::-webkit-scrollbar {
   margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
@@ -463,41 +376,69 @@ ct-list-header h3:nth-child(3) {
   background-color: #f0f0f0; 
 }
 
-
-
-
-/* Navigation buttons */
-.top-nav-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  font-size: 18px;
-  position: absolute;
-  top: 0px; /* Move the buttons up by setting a smaller value for top */
-  left: 0; /* Adjust the position to the left */
+/* Action Dropdown Button Container */
+.action-project {
+  position: relative;
+  background-color: transparent;
 }
 
-.top-nav-buttons button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Action Menu Button */
+.action-menu-button {
   background-color: transparent;
-  color: rgb(53, 52, 52);
   border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
+  font-size: 24px; /* Adjust size as needed */
   cursor: pointer;
-  font-size: 16px;
+  color: #333;
+  transition: color 0.3s ease, transform 0.3s ease;
+  
+}
+
+/* Action Button Hover Effect */
+.action-menu-button:hover {
+  background-color: transparent;
+  color: #333;
+  transform: rotate(90deg); /* Optional: rotate icon on hover */
+  color: #9d9e9f;
+}
+
+/* Dropdown Menu Style */
+.dropdown-menu {
+  position: absolute;
+  top: 30px; /* Adjust the distance from the button */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 150px; /* Adjust width as necessary */
+  z-index: 10;
+  display: block;
+  border-radius: 4px;
+  padding: 5px 0;
+  
+}
+
+/* Dropdown Menu Button Style */
+.dropdown-menu button {
+  background-color: transparent;
+  border: none;
+  padding: 10px 15px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
   transition: background-color 0.3s ease;
 }
 
-.top-nav-buttons svg {
-  font-size: 25px;
+/* Dropdown Button Hover Effect */
+.dropdown-menu button:hover {
+  
+  color: #9d9e9f; /* Change color on hover */
 }
-.nav-btn {
-  position: relative;
-}
+
+
+
+
 
 /* search box */
 .search-box {
@@ -540,6 +481,8 @@ ct-list-header h3:nth-child(3) {
   margin-left: 10px;
   margin-top: 112px;
   width: 250px; /* Adjust the width as needed */
+  background-color: transparent;
+  border-radius: 30px; 
 }
 
 /* Scroll Container for Folders */
@@ -556,12 +499,8 @@ ct-list-header h3:nth-child(3) {
   width: 12px; /* Adjust scrollbar width */
 }
 
-.folders-scroll-container::-webkit-scrollbar-track {
-  background: #b4bad5; /* Optional: Make track transparent */
-}
-
 .folders-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #547099; /* Color of the scrollbar */
+  background-color: #d7d5d5;  /* Color of the scrollbar */
   border-radius: 10px; /* Rounded edges for the scrollbar */
 }
 

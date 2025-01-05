@@ -2,8 +2,16 @@ import React, { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { MdCancel } from "react-icons/md"; // Import cancel icon
 import "./project.css";
+import { Pending } from "@mui/icons-material";
 
-const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
+const ProjectList = ({
+  filteredProjects,
+  formatDate,
+  handleDelete,
+  onEdit,
+  toggleDropdown,
+  activeDropdown,
+}) => {
   const [statuses, setStatuses] = useState(
     filteredProjects.reduce((acc, project) => {
       acc[project.id] = project.status; // Initialize the status from filteredProjects
@@ -22,7 +30,9 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
   };
 
   const statusColors = {
-    Ongoing: "orange", // Default color for Ongoing
+    Ongoing: "pink",
+    Pending: "red",
+    Completed:  "#FFCD90"// Default color for Ongoing
   };
 
   const handleRightClick = (e, projectId) => {
@@ -33,7 +43,7 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
 
   const handleContextMenuAction = (action) => {
     if (action === "delete") {
-      onDelete(selectedProject); // Trigger delete action
+      handleDelete(selectedProject); // Trigger delete action
     } else if (action === "edit") {
       onEdit(selectedProject); // Trigger edit action
     }
@@ -48,15 +58,6 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
     <div className="project-list-wrapper">
       <div className="project-list">
         {/* Top Navigation Buttons */}
-        <div className="top-nav-buttons">
-          <button className="nav-btn">
-            <FaChevronLeft />
-            <span className="tooltip">Go back</span>
-          </button>
-          <button className="nav-btn">
-            <FaChevronRight />
-          </button>
-        </div>
 
         <div className="project-list-header">
           <h3>Project</h3>
@@ -67,6 +68,7 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
           <h3>Downpayment</h3>
           <h3>Total</h3>
           <h3>Payment Status</h3>
+          
         </div>
 
         {filteredProjects.map((project) => (
@@ -88,15 +90,15 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
             <select
               value={statuses[project.id]}
               onChange={(e) => handleStatusChange(project.id, e.target.value)}
-              className={`status-dropdown ${
+              className={`status-dropdown $(
                 statuses[project.id] === "Pending"
                   ? "status-pending"
                   : statuses[project.id] === "Completed"
                   ? "status-completed"
                   : ""
-              }`}
+              )`}
               style={{
-                backgroundColor: statusColors[statuses[project.id]] || "#FFCD90",
+                backgroundColor: statusColors[statuses[project.id]] || "pink",
               }}
             >
               <option value="Ongoing">Ongoing</option>
@@ -106,6 +108,22 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
             <p>{project.downpayment || "N/A"}</p>
             <p>{project.totalPayment}</p>
             <p>{project.paymentStatus}</p>
+
+            {/* Action Dropdown Button */}
+            <div className="action-project">
+              <button
+                className="action-menu-button"
+                onClick={() => toggleDropdown(project.id)}
+              >
+                &#x22EE;
+              </button>
+              {activeDropdown === project.id && (
+                <div className="dropdown-menu">
+                  <button onClick={() => onEdit(project.id)}>Edit</button>
+                  <button onClick={() => handleDelete(project.id)}>Move to Trash</button>
+                </div>
+              )}
+            </div>
           </div>
         ))}
 
@@ -114,12 +132,10 @@ const ProjectList = ({ filteredProjects, formatDate, onDelete, onEdit }) => {
           <div className="modal-overlay">
             <div className="modal">
               <div className="modal-header">
-                
                 <MdCancel className="cancel-icon" onClick={closeModal} />
               </div>
               <button onClick={() => handleContextMenuAction("edit")}>Edit</button>
-              <button onClick={() => handleContextMenuAction("delete")}>Move to Trash</button>
-            
+              <button onClick={() => handleContextMenuAction("delete")}>Delete</button>
             </div>
           </div>
         )}

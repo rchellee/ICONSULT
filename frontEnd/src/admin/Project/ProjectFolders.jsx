@@ -6,8 +6,9 @@ const ProjectFolders = ({ projects, onProjectClick, fontSize = "14px" }) => {
 
   return (
     <div className="project-names-section">
-      <h3 className="folder-title">Folders</h3>
+      
       <div className="folders-scroll-container">
+      <h3 className="folder-title">Folders</h3>
         {projects.map((project) => (
           <div
             key={project.id}
