@@ -43,7 +43,28 @@ const PostsTab = ({
   const handleRowClick = (task) => {
     console.log("Row clicked:", task);
     setSelectedTaskName(task.task_name);
-    setSelectedTaskDetails(task);
+    try {
+      const response = await fetch(`http://localhost:8081/tasks/${task.id}`);
+      if (!response.ok) throw new Error("Failed to fetch task details");
+      const taskDetails = await response.json();
+
+      // Parse miscellaneous if it's a string
+      taskDetails.miscellaneous = parseMiscellaneous(taskDetails.miscellaneous);
+      setSelectedTaskDetails(taskDetails);
+    } catch (error) {
+      console.error("Error fetching task details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const parseMiscellaneous = (miscellaneous) => {
+    try {
+      return JSON.parse(miscellaneous || "[]");
+    } catch (e) {
+      console.error("Failed to parse miscellaneous:", e);
+      return [];
+    }
   };
 
   const calculateTotal = (task) => {
@@ -151,7 +172,7 @@ const PostsTab = ({
               <thead>
                 <tr>
                   <th>Task</th>
-                  <th>Employee</th>
+                  <th>Assigned</th>
                   <th>Status</th>
                   <th>Due Date</th>
                   <th>Fee</th>

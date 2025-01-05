@@ -1246,7 +1246,7 @@ app.put("/tasks/:id", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
 
-  // Calculate the total miscellaneous fee
+  // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
   if (Array.isArray(miscellaneous)) {
     miscellaneousTotal = miscellaneous.reduce((sum, item) => {
@@ -1256,7 +1256,6 @@ app.put("/tasks/:id", (req, res) => {
 
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
 
-  // SQL query to update the task
   const updateTaskSql = `
     UPDATE tasks 
     SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ? 
@@ -1275,13 +1274,12 @@ app.put("/tasks/:id", (req, res) => {
     ],
     (err, result) => {
       if (err) {
-        console.error("Error updating task: ", err);
+        console.error("Error updating task:", err);
         return res
           .status(500)
           .json({ message: "Error updating task", error: err.message });
       }
 
-      // Update totalPayment in the project table
       const updateProjectSql = `
         UPDATE project 
         SET totalPayment = (
@@ -1293,7 +1291,7 @@ app.put("/tasks/:id", (req, res) => {
 
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
-          console.error("Error updating totalPayment: ", updateErr);
+          console.error("Error updating totalPayment:", updateErr);
           return res.status(500).json({
             message: "Error updating totalPayment",
             error: updateErr.message,
@@ -1307,6 +1305,7 @@ app.put("/tasks/:id", (req, res) => {
     }
   );
 });
+
 app.get("/admin/tasks", (req, res) => {
   const { projectId } = req.query;
   const sql = "SELECT * FROM tasks WHERE project_id = ?";
