@@ -42,12 +42,7 @@ button + button {
   margin-left: 10px;
 }
 
-.calendar-date {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer;
+@ -61,163 +51,163 @@
 }
 
 .calendar-date.available {
@@ -82,16 +77,6 @@ button + button {
 .time-slots-admin h4 {
   margin-bottom: 15px;
   font-size: 1.2rem;
-}
-
-.wrapper-adminCalendar {
-  width: 950px;
-  height: 500px;
-  overflow: hidden;
-  padding: 28px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
 }
 
 .wrapper-admin {
@@ -155,7 +140,7 @@ header .current-date {
   z-index: 1;
   cursor: pointer;
   position: relative;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 .calendar .days li.selected-date {
   border: 2px solid #0f3a68;
