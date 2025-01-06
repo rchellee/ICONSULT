@@ -534,3 +534,41 @@ h1 {
   position: absolute;
   /* Keeps the sort button inline */
 }
+
+.paymentstatus-dropdown {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc; /* Add a subtle border */
+  border-radius: 20px; /* Make the shape oval */
+  appearance: none; /* Remove the default dropdown icon */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  outline: none;
+  background-color: white; /* Background color for default */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add smooth transition */
+}
+
+/* Remove the dropdown arrow by hiding the background image */
+.paymentstatus-dropdown::-ms-expand {
+  display: none; /* For Internet Explorer */
+}
+
+/* Hover effect: Slight enlargement */
+.paymentstatus-dropdown:hover {
+  transform: scale(1.05); /* Slightly enlarge */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+}
+
+/* Active effect: Make it slightly larger when clicked */
+.paymentstatus-dropdown:active {
+  transform: scale(1.1); /* Further enlarge slightly */
+}
+
+.paymentstatus-partialPayment {
+  background-color: rgb(117, 224, 117) !important; /* Green color for Pending */
+}
+
+.paymentstatus-paid {
+  background-color: rgb(244, 146, 182) !important; /* Red color for Completed */
+}
