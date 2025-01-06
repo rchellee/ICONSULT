@@ -7,13 +7,13 @@ const multer = require("multer");
 const path = require("path");
 const moment = require("moment");
 require("dotenv").config();
-
+ 
 const scheduledTasks = {};
-
+ 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-
+ 
 // Create a MySQL connection pool
 const db = mysql.createConnection({
   host: "localhost",
@@ -22,11 +22,11 @@ const db = mysql.createConnection({
   database: "iconsult",
   timezone: "Z",
 });
-
+ 
 app.get("/", (req, res) => {
   return res.json("From Backend Side");
 });
-
+ 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -36,85 +36,37 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
-
+ 
 const upload = multer({ storage });
-
+ 
+// Get admin data (existing route)
 app.get("/admin", (req, res) => {
   const sql = "SELECT * FROM admin";
   db.query(sql, (err, data) => {
-    if (err) {
-      console.error("Error fetching admin data:", err);
-      return res.status(500).json({ message: "Error fetching data" });
-    }
-    res.status(200).json(data);
+    if (err) return res.json(err);
+    return res.json(data);
   });
 });
-
-app.get("/admin/:id", (req, res) => {
-  const { id } = req.params;
-  const sql = "SELECT * FROM admin WHERE id = ?";
-  db.query(sql, [id], (err, admin) => {
-    if (err) {
-      console.error("Error fetching admin details: ", err);
-      return res
-        .status(500)
-        .json({ message: "Error retrieving admin details", error: err });
-    }
-    if (admin.length === 0) {
-      return res.status(404).json({ message: "Admin not found" });
-    }
-    res.status(200).json(admin[0]);
-  });
-});
-
-app.post("/admin/update", (req, res) => {
-  const { id, username, email, password } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ message: "Admin ID is required." });
-  }
-
-  const updates = [];
-  if (username) updates.push(`username = '${username}'`);
-  if (email) updates.push(`email = '${email}'`);
-  if (password) updates.push(`password = '${password}'`);
-
-  if (updates.length === 0) {
-    return res.status(400).json({ message: "No updates provided." });
-  }
-
-  const sql = `UPDATE admin SET ${updates.join(", ")} WHERE id = ${id}`;
-  db.query(sql, (err, result) => {
-    if (err) return res.status(500).json({ message: "Database error" });
-    return res.json({ message: "Admin details updated successfully." });
-  });
-});
-
+ 
 app.post("/Login", (req, res) => {
   const { username, password } = req.body;
-
+ 
   // Check the client table
   const sqlClient = `
-          SELECT id, firstName, lastName, email_add, passwordChanged, status 
-          FROM client 
+          SELECT id, firstName, lastName, email_add, passwordChanged
+          FROM client
           WHERE username = ? AND password = ?
       `;
-
+ 
   db.query(sqlClient, [username, password], (err, clientResults) => {
     if (err) {
       return res
         .status(500)
         .json({ message: "An error occurred while checking the client table" });
     }
-
+ 
     if (clientResults.length > 0) {
       const client = clientResults[0];
-      if (client.status === "inactive") {
-        return res.status(403).json({
-          message: "Your account is inactive. Please contact the admin.",
-        });
-      }
-
       if (!client.passwordChanged) {
         return res.status(200).json({
           message: "Password change required",
@@ -132,7 +84,7 @@ app.post("/Login", (req, res) => {
         });
       }
     }
-
+ 
     // If no match in client table, check admin table
     const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
     db.query(sqlAdmin, [username, password], (err, adminResults) => {
@@ -141,25 +93,25 @@ app.post("/Login", (req, res) => {
           message: "An error occurred while checking the admin table",
         });
       }
-
+ 
       if (adminResults.length > 0) {
         return res
           .status(200)
           .json({ message: "Login successful", role: "admin" });
       }
-
+ 
       // If no match in both tables
       return res.status(401).json({ message: "Invalid username or password" });
     });
   });
 });
-
+ 
 app.post("/updatePassword", (req, res) => {
   const { clientId, newPassword } = req.body;
-
+ 
   const sqlUpdate = `
-        UPDATE client 
-        SET password = ?, passwordChanged = TRUE 
+        UPDATE client
+        SET password = ?, passwordChanged = TRUE
         WHERE id = ?
     `;
   db.query(sqlUpdate, [newPassword, clientId], (err, results) => {
@@ -169,30 +121,30 @@ app.post("/updatePassword", (req, res) => {
     return res.status(200).json({ message: "Password updated successfully" });
   });
 });
-
+ 
 app.post("/identifyUser", (req, res) => {
   const { username } = req.body;
-
+ 
   // Check the admin table first
   const sqlAdmin = "SELECT email AS email FROM admin WHERE username = ?";
   db.query(sqlAdmin, [username], (err, adminResults) => {
     if (err) {
       return res.status(500).json({ message: "Error checking admin table" });
     }
-
+ 
     if (adminResults.length > 0) {
       return res
         .status(200)
         .json({ role: "admin", email: adminResults[0].email });
     }
-
+ 
     const sqlClient =
       "SELECT id AS clientId, email_add AS email FROM client WHERE username = ?";
     db.query(sqlClient, [username], (err, clientResults) => {
       if (err) {
         return res.status(500).json({ message: "Error checking client table" });
       }
-
+ 
       if (clientResults.length > 0) {
         return res.status(200).json({
           role: "client",
@@ -200,20 +152,20 @@ app.post("/identifyUser", (req, res) => {
           clientId: clientResults[0].clientId, // Include clientId here
         });
       }
-
+ 
       return res
         .status(404)
         .json({ message: "Email associated with this username not found." });
     });
   });
 });
-
+ 
 // SendGrid email example
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
 const verificationCodes = new Map();
 const otpStore = {};
-
+ 
 // Save the code for an email
 function storeCodeForEmail(email, code) {
   verificationCodes.set(email, code);
@@ -231,14 +183,14 @@ function getStoredCodeForEmail(email) {
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit code
-
+ 
   const message = {
     to: email,
     from: "ritchelle.rueras@tup.edu.ph", // Verified sender email
     subject: "Your Verification Code",
     text: `Hey there,\n\nHere's the code to verify your email. The code is valid for 30 minutes. We recommend using the code now, as you will need to request a new one if it expires.\n\n${code}\n\nTo keep your account safe, please do not share this verification code. If you didn't try to sign in, you can safely ignore this email.\n\nCheers,\nYour Team`,
   };
-
+ 
   sgMail
     .send(message)
     .then(() => {
@@ -250,26 +202,26 @@ app.post("/sendVerificationCode", (req, res) => {
 app.post("/verifyCode", (req, res) => {
   try {
     const { email, code } = req.body;
-
+ 
     // Logging for debugging
     console.log("Received email:", email);
     console.log("Received code:", code);
-
+ 
     const storedCode = getStoredCodeForEmail(email);
     console.log("Stored code:", storedCode);
-
+ 
     if (!storedCode) {
       return res.status(400).json({ message: "Code expired or not found." });
     }
-
+ 
     if (!email || !code) {
       return res.status(400).json({ message: "Email and code are required." });
     }
-
+ 
     if (String(storedCode) !== String(code)) {
       return res.status(400).json({ message: "Invalid verification code." });
     }
-
+ 
     // Code is valid
     return res.status(200).json({ message: "Verification successful." });
   } catch (error) {
@@ -281,16 +233,16 @@ app.post("/verifyCode", (req, res) => {
 app.post("/sendOTP", async (req, res) => {
   const { email } = req.body;
   const OTP = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
-
+ 
   otpStore[email] = { OTP, timestamp: Date.now() }; // Store OTP with timestamp
-
+ 
   const message = {
     to: email,
     from: "ritchelle.rueras@tup.edu.ph", // Replace with your verified sender email
     subject: "Your OTP Code",
     text: `Your OTP is ${OTP}. It is valid for 5 minutes.`,
   };
-
+ 
   try {
     await sgMail.send(message);
     console.log(`OTP sent to ${email}: ${OTP}`);
@@ -302,24 +254,24 @@ app.post("/sendOTP", async (req, res) => {
 });
 app.post("/verifyOTP", (req, res) => {
   const { email, inputOTP } = req.body;
-
+ 
   const storedOtpData = otpStore[email];
   if (inputOTP.length !== 4) {
     return res.status(400).json({ message: "Invalid OTP format." });
   }
-
+ 
   if (!storedOtpData) {
     return res.status(404).json({ message: "OTP not found for this email" });
   }
-
+ 
   const { OTP, timestamp } = storedOtpData;
   const isExpired = Date.now() - timestamp > 5 * 60 * 1000; // OTP valid for 5 minutes
-
+ 
   if (isExpired) {
     delete otpStore[email];
     return res.status(400).json({ message: "OTP expired" });
   }
-
+ 
   if (parseInt(inputOTP) === OTP) {
     delete otpStore[email];
     return res.status(200).json({ message: "OTP verified successfully" });
@@ -327,17 +279,17 @@ app.post("/verifyOTP", (req, res) => {
     return res.status(400).json({ message: "Incorrect OTP" });
   }
 });
-
+ 
 // Update password endpoint for clients
 app.post("/updateclientPassword", (req, res) => {
   const { clientId, newPassword } = req.body;
-
+ 
   if (!clientId || !newPassword) {
     return res
       .status(400)
       .json({ message: "Client ID and new password are required" });
   }
-
+ 
   // Update client password in the database
   const sqlUpdate = "UPDATE client SET password = ? WHERE id = ?";
   db.query(sqlUpdate, [newPassword, clientId], (err, results) => {
@@ -350,11 +302,11 @@ app.post("/updateclientPassword", (req, res) => {
 // Update password endpoint for admin
 app.post("/updateAdminPassword", (req, res) => {
   const { newPassword } = req.body;
-
+ 
   if (!newPassword) {
     return res.status(400).json({ message: "New password is required" });
   }
-
+ 
   // Update admin password in the database
   const sqlUpdate = "UPDATE admin SET password = ?";
   db.query(sqlUpdate, [newPassword], (err, results) => {
@@ -364,15 +316,15 @@ app.post("/updateAdminPassword", (req, res) => {
     res.status(200).json({ message: "Password updated successfully" });
   });
 });
-
+ 
 // Save availability data to the database
 app.post("/availability", (req, res) => {
   const availabilityData = req.body;
-
+ 
   const deleteSql = "DELETE FROM availability WHERE dates = ?";
   const insertSql =
     "INSERT INTO availability (start_time, end_time, dates) VALUES ?";
-
+ 
   // First, delete existing availability for the given dates
   const deletePromises = availabilityData.map((entry) => {
     return new Promise((resolve, reject) => {
@@ -385,7 +337,7 @@ app.post("/availability", (req, res) => {
       });
     });
   });
-
+ 
   // Once deletions are complete, insert new data
   Promise.all(deletePromises)
     .then(() => {
@@ -423,7 +375,7 @@ app.get("/availability", (req, res) => {
 // Delete availability for a specific date
 app.delete("/availability/:date", (req, res) => {
   const { date } = req.params;
-
+ 
   const sql = "DELETE FROM availability WHERE dates = ?";
   db.query(sql, [date], (err, result) => {
     if (err) {
@@ -436,15 +388,15 @@ app.delete("/availability/:date", (req, res) => {
     res.status(200).json({ message: "Availability deleted successfully" });
   });
 });
-
+ 
 // Save availability data to the database
 app.post("/availability", (req, res) => {
   const availabilityData = req.body;
-
+ 
   const deleteSql = "DELETE FROM availability WHERE dates = ?";
   const insertSql =
     "INSERT INTO availability (start_time, end_time, dates) VALUES ?";
-
+ 
   // First, delete existing availability for the given dates
   const deletePromises = availabilityData.map((entry) => {
     return new Promise((resolve, reject) => {
@@ -457,7 +409,7 @@ app.post("/availability", (req, res) => {
       });
     });
   });
-
+ 
   // Once deletions are complete, insert new data
   Promise.all(deletePromises)
     .then(() => {
@@ -495,7 +447,7 @@ app.get("/availability", (req, res) => {
 // Delete availability for a specific date
 app.delete("/availability/:date", (req, res) => {
   const { date } = req.params;
-
+ 
   const sql = "DELETE FROM availability WHERE dates = ?";
   db.query(sql, [date], (err, result) => {
     if (err) {
@@ -508,7 +460,7 @@ app.delete("/availability/:date", (req, res) => {
     res.status(200).json({ message: "Availability deleted successfully" });
   });
 });
-
+ 
 // Save payment details to the database
 app.post("/payments", (req, res) => {
   const {
@@ -521,9 +473,9 @@ app.post("/payments", (req, res) => {
     clientId,
     projectId,
   } = req.body;
-
+ 
   const query = `
-    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id, project_id) 
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id, project_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
   db.query(
@@ -543,17 +495,17 @@ app.post("/payments", (req, res) => {
         console.error("Error saving payment:", err);
         return res.status(500).send("Error saving payment.");
       }
-
+ 
       // Save notification for the admin
       const notificationQuery = `
-      INSERT INTO notifications (title, description, timestamp, isRead) 
+      INSERT INTO notifications (title, description, timestamp, isRead)
       VALUES (?, ?, ?, ?)
     `;
-
+ 
       const notificationTitle = "New Payment Received";
       const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
       const timestamp = new Date();
-
+ 
       db.query(
         notificationQuery,
         [notificationTitle, notificationDescription, timestamp, false],
@@ -562,16 +514,16 @@ app.post("/payments", (req, res) => {
             console.error("Error creating notification:", err);
             return res.status(500).send("Error saving notification.");
           }
-
+ 
           // Save client notification
           const clientNotificationQuery = `
             INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
             VALUES (?, ?, ?, NOW(), FALSE)
           `;
-
+ 
           const clientNotificationTitle = "Payment Received";
           const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
-
+ 
           db.query(
             clientNotificationQuery,
             [clientId, clientNotificationTitle, clientNotificationDescription],
@@ -582,7 +534,7 @@ app.post("/payments", (req, res) => {
                   .status(500)
                   .send("Error saving client notification.");
               }
-
+ 
               res
                 .status(200)
                 .send("Payment and client notification saved successfully.");
@@ -593,7 +545,7 @@ app.post("/payments", (req, res) => {
     }
   );
 });
-
+ 
 // Fetch all payments
 app.get("/payments", (req, res) => {
   const query = "SELECT * FROM payments ORDER BY created_at DESC";
@@ -608,7 +560,7 @@ app.get("/payments", (req, res) => {
 // Fetch payments for a specific client
 app.get("/payments/:clientId", (req, res) => {
   const { clientId } = req.params;
-
+ 
   const query =
     "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
   db.query(query, [clientId], (err, results) => {
@@ -619,11 +571,11 @@ app.get("/payments/:clientId", (req, res) => {
     res.status(200).json(results);
   });
 });
-
+ 
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
   const { title, description } = req.body;
-
+ 
   const query =
     "INSERT INTO notifications (title, description, timestamp, isRead) VALUES (?, ?, NOW(), FALSE)";
   db.query(query, [title, description], (err, result) => {
@@ -663,10 +615,10 @@ app.put("/notifications/:id", (req, res) => {
 // Endpoint to get notifications for a specific client
 app.get("/notifications/:clientId", (req, res) => {
   const { clientId } = req.params;
-
+ 
   const query = `
-    SELECT * FROM notifications 
-    WHERE client_id = ? 
+    SELECT * FROM notifications
+    WHERE client_id = ?
     ORDER BY timestamp DESC
   `;
   db.query(query, [clientId], (err, results) => {
@@ -678,14 +630,14 @@ app.get("/notifications/:clientId", (req, res) => {
     }
   });
 });
-
+ 
 // Endpoint to get client notifications
 app.get("/client-notifications/:clientId", (req, res) => {
   const { clientId } = req.params;
-
+ 
   const query = `
-    SELECT * FROM client_notifications 
-    WHERE client_id = ? 
+    SELECT * FROM client_notifications
+    WHERE client_id = ?
     ORDER BY timestamp DESC
   `;
   db.query(query, [clientId], (err, results) => {
@@ -697,7 +649,7 @@ app.get("/client-notifications/:clientId", (req, res) => {
     }
   });
 });
-
+ 
 // Add a new endpoint to save a client
 app.post("/client", (req, res) => {
   const {
@@ -713,7 +665,7 @@ app.post("/client", (req, res) => {
     status,
     companyName,
   } = req.body;
-
+ 
   const sql =
     "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
@@ -749,7 +701,7 @@ app.post("/client", (req, res) => {
     }
   );
 });
-
+ 
 // Add a new endpoint to fetch all clients
 app.get("/clients", (req, res) => {
   const sql = "SELECT * FROM client";
@@ -760,7 +712,7 @@ app.get("/clients", (req, res) => {
 });
 app.get("/client/:id", (req, res) => {
   const clientId = req.params.id;
-
+ 
   const sql = "SELECT firstName, lastName FROM client WHERE id = ?";
   db.query(sql, [clientId], (err, result) => {
     if (err) {
@@ -768,7 +720,7 @@ app.get("/client/:id", (req, res) => {
         .status(500)
         .json({ message: "An error occurred while fetching client details" });
     }
-
+ 
     if (result.length > 0) {
       return res.status(200).json(result[0]);
     } else {
@@ -776,10 +728,10 @@ app.get("/client/:id", (req, res) => {
     }
   });
 });
-
+ 
 app.get("/clients/:id", (req, res) => {
   const clientId = req.params.id;
-
+ 
   const sql =
     "SELECT firstName, lastName, middleInitial, mobile_number, email_add, address, username, companyName FROM client WHERE id = ?";
   db.query(sql, [clientId], (err, result) => {
@@ -788,7 +740,7 @@ app.get("/clients/:id", (req, res) => {
         .status(500)
         .json({ message: "An error occurred while fetching client details" });
     }
-
+ 
     if (result.length > 0) {
       return res.status(200).json(result[0]); // Return the first result
     } else {
@@ -800,19 +752,19 @@ app.get("/clients/:id", (req, res) => {
 app.put("/clients/:id", (req, res) => {
   const clientId = req.params.id;
   const { status } = req.body; // Status will be passed in the request body
-
+ 
   // Ensure the status is valid (e.g., 'active' or 'inactive')
   if (status !== "active" && status !== "inactive") {
     return res.status(400).json({ message: "Invalid status value" });
   }
-
+ 
   const sql = "UPDATE client SET status = ? WHERE id = ?";
   db.query(sql, [status, clientId], (err, result) => {
     if (err)
       return res
         .status(500)
         .json({ message: "Error updating client status", error: err });
-
+ 
     // Check if any row was affected
     if (result.affectedRows > 0) {
       return res
@@ -823,7 +775,7 @@ app.put("/clients/:id", (req, res) => {
     }
   });
 });
-
+ 
 // Endpoint to update client details
 app.put("/client/:id", (req, res) => {
   const clientId = req.params.id;
@@ -837,7 +789,7 @@ app.put("/client/:id", (req, res) => {
     address,
   } = req.body;
   const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ? WHERE id = ?`;
-
+ 
   db.query(
     sql,
     [
@@ -863,7 +815,7 @@ app.put("/client/:id", (req, res) => {
     }
   );
 });
-
+ 
 // Save a new employee (POST request)
 app.post("/employee", (req, res) => {
   const {
@@ -876,7 +828,7 @@ app.post("/employee", (req, res) => {
     status,
     birthday,
   } = req.body;
-
+ 
   const sql =
     "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
@@ -907,7 +859,7 @@ app.post("/employee", (req, res) => {
     }
   );
 });
-
+ 
 // Fetch all employees (GET request)
 app.get("/employees", (req, res) => {
   const sql = "SELECT * FROM employee";
@@ -916,24 +868,24 @@ app.get("/employees", (req, res) => {
     return res.json(data);
   });
 });
-
+ 
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
   const { status } = req.body; // Status will be passed in the request body
-
+ 
   // Ensure the status is valid (e.g., 'active' or 'inactive')
   if (status !== "active" && status !== "inactive") {
     return res.status(400).json({ message: "Invalid status value" });
   }
-
+ 
   const sql = "UPDATE employee SET status = ? WHERE id = ?";
   db.query(sql, [status, employeeId], (err, result) => {
     if (err)
       return res
         .status(500)
         .json({ message: "Error updating employee status", error: err });
-
+ 
     // Check if any row was affected
     if (result.affectedRows > 0) {
       return res
@@ -944,7 +896,7 @@ app.put("/employees/:id", (req, res) => {
     }
   });
 });
-
+ 
 // Update employee's information (PUT request)
 app.put("/employee/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -957,7 +909,7 @@ app.put("/employee/:id", (req, res) => {
     email_add,
     birthday,
   } = req.body;
-
+ 
   const sql =
     "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
   db.query(
@@ -977,7 +929,7 @@ app.put("/employee/:id", (req, res) => {
         return res
           .status(500)
           .json({ message: "Error updating employee information", error: err });
-
+ 
       // Check if any row was affected
       if (result.affectedRows > 0) {
         return res
@@ -989,12 +941,12 @@ app.put("/employee/:id", (req, res) => {
     }
   );
 });
-
+ 
 // Mark a project as deleted (PATCH request - Soft Delete)
 app.patch("/project/:id", (req, res) => {
   const { id } = req.params;
   const { isDeleted } = req.body;
-
+ 
   const query = "UPDATE project SET isDeleted = ? WHERE id = ?";
   db.query(query, [isDeleted, id], (error, results) => {
     if (error) {
@@ -1019,7 +971,7 @@ app.post("/project", (req, res) => {
     paymentStatus = "Not Paid", // Default to Not Paid
     totalPayment,
   } = req.body;
-
+ 
   const sql =
     "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, totalPayment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
@@ -1102,7 +1054,7 @@ app.put("/project/:id", (req, res) => {
     paymentStatus,
     totalPayment,
   } = req.body;
-
+ 
   const sql =
     "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, contractPrice = ?, downpayment = ?, paymentStatus = ?, totalPayment = ? WHERE id = ?";
   db.query(
@@ -1122,7 +1074,7 @@ app.put("/project/:id", (req, res) => {
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
-
+ 
       return res.json({
         id: projectId,
         clientName,
@@ -1142,15 +1094,15 @@ app.put("/project/:id", (req, res) => {
 app.put("/project/update-payment-status/:id", (req, res) => {
   const projectId = req.params.id;
   const { paymentStatus } = req.body;
-
+ 
   if (!paymentStatus) {
     return res.status(400).json({ error: "Payment status is required" });
   }
-
+ 
   const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
   db.query(sql, [paymentStatus, projectId], (err, result) => {
     if (err) return res.status(500).json(err);
-
+ 
     return res.json({
       id: projectId,
       paymentStatus,
@@ -1158,14 +1110,14 @@ app.put("/project/update-payment-status/:id", (req, res) => {
     });
   });
 });
-
+ 
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
-
+ 
   const sql = "DELETE FROM project WHERE id = ?";
   db.query(sql, [projectId], (err, result) => {
     if (err) return res.status(500).json(err);
-
+ 
     // Check if any row was affected (deleted)
     if (result.affectedRows > 0) {
       return res.status(200).json({ message: "Project deleted successfully" });
@@ -1176,16 +1128,16 @@ app.delete("/project/:id", (req, res) => {
 });
 app.patch("/project/recalculate-total/:id", (req, res) => {
   const { id } = req.params;
-
+ 
   const recalculateSql = `
-    UPDATE project 
+    UPDATE project
     SET totalPayment = (
-      SELECT COALESCE(SUM(amount), 0) + contractPrice 
-      FROM tasks 
+      SELECT COALESCE(SUM(amount), 0) + contractPrice
+      FROM tasks
       WHERE project_id = ?
-    ) 
+    )
     WHERE id = ?`;
-
+ 
   db.query(recalculateSql, [id, id], (err, result) => {
     if (err) {
       console.error("Error recalculating totalPayment: ", err);
@@ -1194,13 +1146,13 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
         error: err.message,
       });
     }
-
+ 
     res
       .status(200)
       .json({ message: "Total payment recalculated successfully" });
   });
 });
-
+ 
 // const backfillTotalPayment = () => {
 //   const updateTotalPaymentSql = `
 //     UPDATE project p
@@ -1210,14 +1162,14 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 //       WHERE t.project_id = p.id
 //     )
 //   `;
-
+ 
 //   db.query(updateTotalPaymentSql, (err, result) => {
 //     if (err) {
 //       console.error("Error updating totalPayment:", err);
 //       db.end();
 //       return;
 //     }
-
+ 
 //     console.log(
 //       `TotalPayment backfilled successfully for ${result.affectedRows} projects`
 //     );
@@ -1225,13 +1177,13 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
 //   });
 // };
 // backfillTotalPayment();
-
+ 
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
-
+ 
   console.log("Received project_id:", projectId);
-
+ 
   // Calculate the total miscellaneous fee
   let miscellaneousTotal = 0;
   if (Array.isArray(miscellaneous)) {
@@ -1242,7 +1194,7 @@ app.post("/tasks", (req, res) => {
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
   const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
              VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
-
+ 
   db.query(
     tasksSql,
     [
@@ -1261,17 +1213,17 @@ app.post("/tasks", (req, res) => {
           .status(500)
           .json({ message: "Error creating task", error: err.message });
       }
-
+ 
       // Update totalPayment in the project table
       const updateProjectSql = `
-        UPDATE project 
+        UPDATE project
         SET totalPayment = (
-          SELECT COALESCE(SUM(amount), 0) + contractPrice 
-          FROM tasks 
+          SELECT COALESCE(SUM(amount), 0) + contractPrice
+          FROM tasks
           WHERE project_id = ?
-        ) 
+        )
         WHERE id = ?`;
-
+ 
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating totalPayment: ", updateErr);
@@ -1280,7 +1232,7 @@ app.post("/tasks", (req, res) => {
             error: updateErr.message,
           });
         }
-
+ 
         res.status(201).json({
           message: "Task created successfully and totalPayment updated",
           taskId: result.insertId,
@@ -1293,7 +1245,7 @@ app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
-
+ 
   // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
   if (Array.isArray(miscellaneous)) {
@@ -1301,14 +1253,14 @@ app.put("/tasks/:id", (req, res) => {
       return sum + parseFloat(item.fee || 0);
     }, 0);
   }
-
+ 
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-
+ 
   const updateTaskSql = `
-    UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ? 
+    UPDATE tasks
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?
     WHERE id = ?`;
-
+ 
   db.query(
     updateTaskSql,
     [
@@ -1327,16 +1279,16 @@ app.put("/tasks/:id", (req, res) => {
           .status(500)
           .json({ message: "Error updating task", error: err.message });
       }
-
+ 
       const updateProjectSql = `
-        UPDATE project 
+        UPDATE project
         SET totalPayment = (
-          SELECT COALESCE(SUM(amount), 0) + contractPrice 
-          FROM tasks 
+          SELECT COALESCE(SUM(amount), 0) + contractPrice
+          FROM tasks
           WHERE project_id = ?
-        ) 
+        )
         WHERE id = ?`;
-
+ 
       db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating totalPayment:", updateErr);
@@ -1345,7 +1297,7 @@ app.put("/tasks/:id", (req, res) => {
             error: updateErr.message,
           });
         }
-
+ 
         res.status(200).json({
           message: "Task updated successfully and totalPayment updated",
         });
@@ -1353,11 +1305,11 @@ app.put("/tasks/:id", (req, res) => {
     }
   );
 });
-
+ 
 app.get("/admin/tasks", (req, res) => {
   const { projectId } = req.query;
   const sql = "SELECT * FROM tasks WHERE project_id = ?";
-
+ 
   db.query(sql, [projectId], (err, tasks) => {
     if (err) {
       console.error("Error fetching tasks: ", err);
@@ -1370,12 +1322,12 @@ app.get("/admin/tasks", (req, res) => {
 });
 app.get("/tasks", (req, res) => {
   const projectIds = req.query.projectIds;
-
+ 
   // Ensure projectIds is an array
   const idsArray = Array.isArray(projectIds) ? projectIds : [projectIds];
-
+ 
   const sql = "SELECT * FROM tasks WHERE project_id IN (?)";
-
+ 
   db.query(sql, [idsArray], (err, tasks) => {
     if (err) {
       console.error("Error fetching tasks: ", err);
@@ -1386,23 +1338,7 @@ app.get("/tasks", (req, res) => {
     res.status(200).json({ tasks });
   });
 });
-app.get("/tasks/:id", (req, res) => {
-  const { id } = req.params;
-  const sql = "SELECT * FROM tasks WHERE id = ?";
-  db.query(sql, [id], (err, tasks) => {
-    if (err) {
-      console.error("Error fetching task details: ", err);
-      return res
-        .status(500)
-        .json({ message: "Error retrieving task details", error: err });
-    }
-    if (tasks.length === 0) {
-      return res.status(404).json({ message: "Task not found" });
-    }
-    res.status(200).json(tasks[0]);
-  });
-});
-
+ 
 app.post("/appointments", (req, res) => {
   const {
     date,
@@ -1417,16 +1353,16 @@ app.post("/appointments", (req, res) => {
     companyName,
     reminder,
   } = req.body;
-
+ 
   if (!clientId || clientId === 0) {
     return res.status(400).json({ message: "Invalid client ID" });
   }
-
+ 
   const appointmentSql = `
         INSERT INTO appointments (date, time, name, email, contact, consultationType, additionalInfo, platform, client_id, companyName, reminder)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-
+ 
   db.query(
     appointmentSql,
     [
@@ -1450,22 +1386,22 @@ app.post("/appointments", (req, res) => {
           error: err.sqlMessage,
         });
       }
-
+ 
       const appointmentId = result.insertId;
       // Parse date and time
       const formattedDateTime = moment(`${date} ${time}`, "YYYY-MM-DD hh:mm A");
       if (!formattedDateTime.isValid()) {
         return res.status(400).json({ message: "Invalid date or time format" });
       }
-
+ 
       const notificationSql = `
                 INSERT INTO notifications (title, description, timestamp, isRead)
                 VALUES (?, ?, NOW(), 0)
             `;
-
+ 
       const notificationTitle = "Appointment";
       const notificationDescription = `Appointment with ${name} (${email}) on ${date} at ${time}.`;
-
+ 
       db.query(
         notificationSql,
         [notificationTitle, notificationDescription],
@@ -1477,16 +1413,16 @@ app.post("/appointments", (req, res) => {
               error: notificationErr,
             });
           }
-
+ 
           // Save notification for the client
           const clientNotificationQuery = `
       INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
       VALUES (?, ?, ?, NOW(), 0)
       `;
-
+ 
           const clientNotificationTitle = "Appointment Scheduled";
           const clientNotificationDescription = `Your appointment on ${date} at ${time} has been confirmed.`;
-
+ 
           db.query(
             clientNotificationQuery,
             [clientId, clientNotificationTitle, clientNotificationDescription],
@@ -1497,7 +1433,7 @@ app.post("/appointments", (req, res) => {
                   .status(500)
                   .json({ message: "Failed to save client notification" });
               }
-
+ 
               // Send the final response after both operations (appointment and notification) are complete
               return res.status(201).json({
                 message: "Appointment saved successfully, notification created",
@@ -1516,7 +1452,7 @@ app.get("/appointments", (req, res) => {
   const sql = `
         SELECT * FROM appointments
     `;
-
+ 
   db.query(sql, (err, data) => {
     if (err) {
       console.error("Error fetching appointments:", err);
@@ -1533,7 +1469,7 @@ app.get("/appointments/count", (req, res) => {
     FROM appointments
     GROUP BY date
   `;
-
+ 
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error fetching appointment counts:", err);
@@ -1541,24 +1477,24 @@ app.get("/appointments/count", (req, res) => {
         .status(500)
         .json({ message: "Failed to fetch data", error: err });
     }
-
+ 
     const formattedData = results.reduce((acc, { date, appointmentCount }) => {
       acc[date] = appointmentCount;
       return acc;
     }, {});
-
+ 
     res.json(formattedData);
   });
 });
 app.get("/appointments/times", (req, res) => {
   const { date } = req.query;
-
+ 
   const sql = `
     SELECT time
     FROM appointments
     WHERE date = ?
   `;
-
+ 
   db.query(sql, [date], (err, results) => {
     if (err) {
       console.error("Error fetching times for date:", err);
@@ -1566,7 +1502,7 @@ app.get("/appointments/times", (req, res) => {
         .status(500)
         .json({ message: "Failed to fetch data", error: err });
     }
-
+ 
     const bookedTimes = results.map((row) => row.time);
     console.log(bookedTimes);
     res.json({ bookedTimes });
@@ -1574,68 +1510,68 @@ app.get("/appointments/times", (req, res) => {
 });
 app.delete("/appointments/:id", (req, res) => {
   const { id } = req.params;
-
+ 
   if (!id) {
     return res.status(400).json({ message: "Invalid appointment ID" });
   }
-
+ 
   const deleteSql = `
         DELETE FROM appointments WHERE id = ?
     `;
-
+ 
   db.query(deleteSql, [id], (err, result) => {
     if (err) {
       console.error("Error deleting appointment:", err);
       return res.status(500).json({ message: "Failed to delete appointment" });
     }
-
+ 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Appointment not found" });
     }
-
+ 
     return res
       .status(200)
       .json({ message: "Appointment deleted successfully" });
   });
 });
-
+ 
 // const backfillTimeFormat = () => {
 //   const updateTimeFormatSql = `
 //     UPDATE appointments
 //     SET time = DATE_FORMAT(STR_TO_DATE(time, '%H:%i:%s'), '%h:%i %p');
 //   `;
-
+ 
 //   db.query(updateTimeFormatSql, (err, result) => {
 //     if (err) {
 //       console.error("Error updating time format:", err);
 //       db.end();
 //       return;
 //     }
-
+ 
 //     console.log(
 //       `Time format updated successfully for ${result.affectedRows} rows`
 //     );
 //     db.end();
 //   });
 // };
-
+ 
 // backfillTimeFormat();
-
+ 
 // Endpoint to upload a file
 app.post("/upload", (req, res) => {
   upload.single("file")(req, res, (err) => {
     if (err) {
       return res.status(500).json({ message: "File upload error" });
     }
-
+ 
     const { project_id, uploaded_by } = req.body;
     const originalName = req.file.originalname;
     const fileName = req.file.filename;
     const file_type = req.file.mimetype;
-
+ 
     const insertSql = `
-      INSERT INTO uploads 
-      (project_id, original_name, file_name, file_type, uploaded_by) 
+      INSERT INTO uploads
+      (project_id, original_name, file_name, file_type, uploaded_by)
       VALUES (?, ?, ?, ?, ?)
     `;
     db.query(
@@ -1646,11 +1582,11 @@ app.post("/upload", (req, res) => {
           console.error("Error inserting file info:", err);
           return res.status(500).json({ message: "Error uploading file" });
         }
-
+ 
         const fetchSql = `
-          SELECT 
+          SELECT
             uploads.*,
-            CASE 
+            CASE
               WHEN uploads.uploaded_by = 'admin' THEN 'admin'
               ELSE CONCAT(client.firstName, ' ', client.lastName)
             END AS uploaded_by_name
@@ -1658,7 +1594,7 @@ app.post("/upload", (req, res) => {
           LEFT JOIN client ON uploads.uploaded_by = client.id
           WHERE uploads.id = ?
         `;
-
+ 
         db.query(fetchSql, [result.insertId], (err, results) => {
           if (err) {
             console.error("Error fetching uploaded file info:", err);
@@ -1676,9 +1612,9 @@ app.post("/upload", (req, res) => {
 app.get("/upload", (req, res) => {
   const { project_id } = req.query;
   const sql = `
-    SELECT 
+    SELECT
       uploads.*,
-      CASE 
+      CASE
         WHEN uploads.uploaded_by = 'admin' THEN 'admin'
         ELSE CONCAT(client.firstName, ' ', client.lastName)
       END AS uploaded_by_name
@@ -1686,7 +1622,7 @@ app.get("/upload", (req, res) => {
     LEFT JOIN client ON uploads.uploaded_by = client.id
     WHERE uploads.project_id = ?
   `;
-
+ 
   db.query(sql, [project_id], (err, results) => {
     if (err) {
       console.error("Error fetching files:", err);
@@ -1697,16 +1633,16 @@ app.get("/upload", (req, res) => {
 });
 // Serve uploaded files
 app.use("/uploads", express.static("uploads"));
-
-
+ 
+ 
 app.post("/reviews", (req, res) => {
   const { clientId, projectId, rating, comment, status } = req.body;
-
+ 
   const query = `
       INSERT INTO reviews (client_id, project_id, rating, comment, status)
       VALUES (?, ?, ?, ?, ?)
   `;
-
+ 
   db.query(
     query,
     [clientId, projectId, rating, comment, status],
@@ -1720,8 +1656,9 @@ app.post("/reviews", (req, res) => {
     }
   );
 });
-
-// Start the server
+ 
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");
 });
+ 
+ 
