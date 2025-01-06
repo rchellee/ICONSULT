@@ -22,14 +22,15 @@
   height: 100%;
 }
 
-.posts-tab-content {
-  margin-left: 200px; /* eto yung distance sa sidebar */
+/*.posts-tab-content {
+  margin-left: 200px; /* eto yung distance sa sidebar 
   padding: 40px 20px 20px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   height: 100%;
 }
+*/
 
 h1 {
   margin-top: 20px;
@@ -38,6 +39,7 @@ h1 {
 }
 
 .create-button {
+  
   background-color: #3a9b9a;
   color: white;
   border: none;
@@ -49,7 +51,7 @@ h1 {
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 10px;
+  margin-top: 20px; /*position ng new button*/
   margin-left: 20px;
 }
 
@@ -94,16 +96,16 @@ h1 {
 .project-list-wrapper {
   display: flex;
   position: relative;
-  overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
-  max-width: 100%; /* Ensure it doesn’t overflow */
+  overflow: hidden; 
+  max-width: 100%; 
   padding-right: 80px; 
   margin-right: 50px;
   
 }
 
 .project-list {
-  width: 100%; /* Full width of the container */
-  margin: 40px 0 0 0; /* Adjust top margin */
+  width: 100%; 
+  margin: 3px 0 0 0; /* Adjust top margin */
   border-collapse: separate; /* Allows border-radius to work */
   border-spacing: 0; /* Ensures no space between cells */
   overflow-x: hidden; /* Prevent horizontal scrolling */
@@ -436,32 +438,6 @@ h1 {
   color: #9d9e9f; /* Change color on hover */
 }
 
-
-
-
-
-/* search box */
-.search-box {
-  position: absolute;
-  bottom: 18px;
-  left: 600px;
-  width: 250%;
-  max-width: 500px;
-  height: 40px;
-  padding: 15px;
-  font-size: 15px;
-  border: 2px solid #3498db;
-  border-radius: 10px;
-  outline: none;
-  box-sizing: border-box;
-  background: #fff;
-}
-
-.search-box:focus {
-  border-color: #7fbcf6;
-  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
-}
-
 /* LEFT SIDE PROJECT NAMES */
 
 /* Folder Title */
@@ -475,19 +451,20 @@ h1 {
 
 /* Project Folders Section */
 .project-names-section {
-  margin-top: 30px;
+  
   padding: 15px;
   position: absolute;
   margin-left: 10px;
-  margin-top: 112px;
+  margin-top: 60px;
   width: 250px; /* Adjust the width as needed */
   background-color: transparent;
   border-radius: 30px; 
+
 }
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 550px;/* Set the max height of the scrollable area */
+  max-height: 600px;/* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;
@@ -529,8 +506,33 @@ h1 {
   border-bottom: none;
 }
 
+
+
 /* Additional Styling for Folder Search Box (if needed) */
 .search-box-container {
   position: absolute;
   /* Keeps the sort button inline */
+}
+
+/* search box */
+.search-box {
+  position: absolute;
+  bottom: 18px;
+  left: 600px;
+  width: 250%;
+  max-width: 500px;
+  height: 50px;
+  padding: 15px;
+  font-size: 15px;
+  border: 2px solid #3498db;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+  top: -90px;
+}
+
+.search-box:focus {
+  border-color: #7fbcf6;
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
 }

@@ -1,81 +1,87 @@
-/* Topbar Styles */
+/* Topbar styles */
+.topbar {
+  background-color: #d1bfbf;
+  height: 100px; /* Increased height */
+}
+
+/* AppBar customizations */
+.MuiAppBar-root {
+  background-color: #ffffff !important; /* Ensure the background color is applied */
+  height: 100px !important; /* Override the default height */
+  border-bottom: 1px solid #d1d1d1 !important; /* Add a 10px solid border with a light gray color */
+  box-shadow: none !important; /* Remove any shadow effect */
+}
+
+
+/* Toolbar customizations */
+.MuiToolbar-root {
+  min-height: 100px !important; /* Adjust toolbar height */
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Logo styles */
 .logo-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-  
-  .logo-topbar-img {
-    height: 40px;
-    width: auto;
-    margin-right: 10px;
-  }
-  
-  .MuiAppBar-root {
-    box-shadow: none; /* Removes default shadow */
-    height: 90px; /* Expands the height of the top bar */
-  }
-  
-  .MuiToolbar-root {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 90px; /* Matches the new height of the top bar */
-  }
-  
-  .MuiTypography-body1 {
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  .MuiIconButton-root {
-    padding: 8px;
-  }
-  
-  .MuiAvatar-root {
-    height: 35px;
-    width: 35px;
-    background-color: #0056b3;
-    color: white;
-    font-size: 1.1rem;
-  }
-  
-  .MuiMenu-paper {
-    border: 1px solid #d1d1d1;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .MuiMenuItem-root {
-    font-size: 14px;
-    padding: 8px 16px;
-    color: #143d58;
-  }
-  
-  .MuiMenuItem-root:hover {
-    background-color: #e9f4fb;
-  }
-  
-  /* Custom Styles for Logout and Account Options */
-  .MuiMenuItem-root:first-of-type {
-    font-weight: bold;
-  }
-  
-  .MuiMenuItem-root:last-of-type {
-    color: #ff4d4d;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 600px) {
-    .logo-topbar-img {
-      height: 30px;
-    }
-  
-    .MuiTypography-body1 {
-      font-size: 14px;
-    }
-  
-    .MuiAvatar-root {
-      height: 30px;
-      width: 30px;
-    }
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-topbar-img {
+  height: 50px; /* Adjust logo size */
+  width: auto;
+}
+
+/* Typography for the admin username */
+.topbar-username {
+  font-size: 16px;
+  color: #143d58;
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+}
+
+/* Avatar and Menu */
+.avatar-button {
+  padding: 0;
+}
+
+.avatar-button img {
+  width: 40px; /* Adjust avatar size */
+  height: 40px;
+}
+
+.menu-item {
+  font-size: 14px;
+  color: #0056b3;
+}
+
+
+/* Additional Styling for Folder Search Box (if needed) */
+.search-box-container {
+  position: absolute;
+  /* Keeps the sort button inline */
+}
+
+/* search box */
+.search-box {
+  position: absolute;
+  bottom: 18px;
+  left: 600px;
+  width: 250%;
+  max-width: 500px;
+  height: 50px;
+  padding: 15px;
+  font-size: 15px;
+  border: 2px solid #3498db;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+  top: -90px;
+}
+
+.search-box:focus {
+  border-color: #7fbcf6;
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
+}

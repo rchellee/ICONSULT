@@ -95,27 +95,21 @@ const FilesTab = ({ projectId }) => {
       </div>
 
       <div className="file-list">
-        <div className="file-list-scrollable"> {/* Scrollable container */}
-          <table>
-            <thead>
-              <tr>
-                <th>
-                  <CiFileOn className="file-icon" />
-                  Name
-                </th>
-                <th>Upload Date</th>
-                <th>Uploaded By</th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.length === 0 ? (
+        {files.length > 0 && (
+          <div className="file-list-scrollable"> {/* Scrollable container */}
+            <table>
+              <thead>
                 <tr>
-                  <td colSpan="4" style={{ textAlign: "center" }}>
-                    No files uploaded yet.
-                  </td>
+                  <th>
+                    <CiFileOn className="file-icon" />
+                    Name
+                  </th>
+                  <th>Upload Date</th>
+                  <th>Uploaded By</th>
                 </tr>
-              ) : (
-                files.map((file) => (
+              </thead>
+              <tbody>
+                {files.map((file) => (
                   <tr key={file.id}>
                     <td className="truncate-text">
                       <a
@@ -151,11 +145,17 @@ const FilesTab = ({ projectId }) => {
                       )}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {files.length === 0 && (
+          <div className="no-files-message">
+            No files uploaded yet.
+          </div>
+        )}
       </div>
     </div>
   );
