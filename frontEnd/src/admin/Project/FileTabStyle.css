@@ -11,8 +11,9 @@
     
   }
   
-  .upload-section {
-    margin-bottom: 20px;
+  .upload-section {    /*Upload and new button*/
+    margin-bottom: 10px;
+    margin-top: -15px;
   }
   
   .upload-btn {
@@ -20,7 +21,7 @@
     padding: 10px 20px;
     background-color: transparent;
     color: black;
-    border: 2px solid #8cb6dd; /* Border line added */
+    border: 2px solid #8cb6dd; 
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
@@ -66,7 +67,7 @@
   .file-list {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: -10px;
     margin-left: -100px;
   }
   

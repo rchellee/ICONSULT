@@ -1,4 +1,3 @@
-// ProjectTask.jsx
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,12 +34,12 @@ const ProjectTask = ({ projectId, onBack }) => {
 
   return (
     <div className="project-task-container">
-      {/* Home Button */}
+     
       <div className="home-button-container">
-        <button className="home-button" onClick={() => navigate("/admin")}>
+         {/*<button className="home-button" onClick={() => navigate("/admin")}>
           <FontAwesomeIcon icon={faHome} size="lg" />
-        </button>
-      </div>
+        </button>*/}
+      </div>   
 
       {/* Tab Navigation */}
       <div className="project-task-tabs">

@@ -436,32 +436,6 @@ h1 {
   color: #9d9e9f; /* Change color on hover */
 }
 
-
-
-
-
-/* search box */
-.search-box {
-  position: absolute;
-  bottom: 18px;
-  left: 600px;
-  width: 250%;
-  max-width: 500px;
-  height: 40px;
-  padding: 15px;
-  font-size: 15px;
-  border: 2px solid #3498db;
-  border-radius: 10px;
-  outline: none;
-  box-sizing: border-box;
-  background: #fff;
-}
-
-.search-box:focus {
-  border-color: #7fbcf6;
-  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
-}
-
 /* LEFT SIDE PROJECT NAMES */
 
 /* Folder Title */
@@ -529,8 +503,33 @@ h1 {
   border-bottom: none;
 }
 
+
+
 /* Additional Styling for Folder Search Box (if needed) */
 .search-box-container {
   position: absolute;
   /* Keeps the sort button inline */
+}
+
+/* search box */
+.search-box {
+  position: absolute;
+  bottom: 18px;
+  left: 600px;
+  width: 250%;
+  max-width: 500px;
+  height: 50px;
+  padding: 15px;
+  font-size: 15px;
+  border: 2px solid #3498db;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+  top: -90px;
+}
+
+.search-box:focus {
+  border-color: #7fbcf6;
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
 }

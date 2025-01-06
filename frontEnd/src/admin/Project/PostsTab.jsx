@@ -118,16 +118,16 @@ const PostsTab = ({
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-        {/* Top Navigation Buttons */}
+         
         <div className="top-button">
-          <button className="nav-button">
+           {/*<button className="nav-button">
             <FaChevronLeft />
             <span className="tooltip">Go back</span>
           </button>
           <button className="nav-button">
             <FaChevronRight />
-          </button>
-        </div>
+          </button>*/}
+        </div>   
 
         {selectedTaskDetails ? (
           <div className="task-details">
