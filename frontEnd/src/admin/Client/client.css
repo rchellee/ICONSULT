@@ -20,15 +20,28 @@
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
+/* Scroll */
+.scrollable-table-container {
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 8px;
+}
 /* Table Styles for client and employee */
 table {
-  width: 90%;
+  width: 100%;
   border-collapse: collapse;
   border: 1px solid #ddd;
   border-radius: 3px; 
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  border-radius: 7px;
+  
+}
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 2;
 }
 
 table th, table td {

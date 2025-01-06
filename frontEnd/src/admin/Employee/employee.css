@@ -248,7 +248,7 @@ input:checked + .slider:before {
 
 
 table {
-  width: 90%;
+  width: 100%;
   border-collapse: collapse;
 }
 

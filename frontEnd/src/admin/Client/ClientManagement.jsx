@@ -37,7 +37,6 @@ const ClientManagement = () => {
           body: JSON.stringify({ status: newStatus }),
         }
       );
-      const result = await response.json();
       if (response.ok) {
         setClients(
           clients.map((client) =>
@@ -45,7 +44,7 @@ const ClientManagement = () => {
           )
         );
       } else {
-        console.error("Failed to update status:", result.message);
+        console.error("Failed to update status");
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -72,7 +71,6 @@ const ClientManagement = () => {
   return (
     <div>
       <Topbar />
-
       <div className="client-home-page">
         <Sidebar />
         <div className="client-content">
@@ -99,57 +97,58 @@ const ClientManagement = () => {
               {filteredClients.length === 0 ? (
                 <p>No matching clients found.</p>
               ) : (
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Company</th>
-                      <th>Email Address</th>
-                      <th>Contact Number</th>
-                      <th>Status</th>
-                      <th>City</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredClients.map((client) => {
-                      const initials =
-                        `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
-                      const color = `#${Math.floor(
-                        Math.random() * 16777215
-                      ).toString(16)}`;
+                <div className="scrollable-table-container">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Company</th>
+                        <th>Email Address</th>
+                        <th>Contact Number</th>
+                        <th>Status</th>
+                        <th>City</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredClients.map((client) => {
+                        const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
+                        const color = `#${Math.floor(
+                          Math.random() * 16777215
+                        ).toString(16)}`;
 
-                      return (
-                        <tr key={client.id}>
-                          <td onClick={() => viewClientDetails(client)}>
-                            <div
-                              className="initials-circle"
-                              style={{ backgroundColor: color }}
-                            >
-                              {initials}
-                            </div>
-                            {`${client.firstName} ${client.lastName}`}
-                          </td>
-                          <td>{client.companyName}</td>
-                          <td>{client.email}</td>
-                          <td>{client.contactNumber}</td>
-                          <td>
-                            <label className="toggle-btn">
-                              <input
-                                type="checkbox"
-                                checked={client.status === "active"}
-                                onChange={() =>
-                                  toggleStatus(client.id, client.status)
-                                }
-                              />
-                              <span className="slider"></span>
-                            </label>
-                          </td>
-                          <td>{client.city}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                        return (
+                          <tr key={client.id}>
+                            <td onClick={() => viewClientDetails(client)}>
+                              <div
+                                className="initials-circle"
+                                style={{ backgroundColor: color }}
+                              >
+                                {initials}
+                              </div>
+                              {`${client.firstName} ${client.lastName}`}
+                            </td>
+                            <td>{client.companyName}</td>
+                            <td>{client.email}</td>
+                            <td>{client.contactNumber}</td>
+                            <td>
+                              <label className="toggle-btn">
+                                <input
+                                  type="checkbox"
+                                  checked={client.status === "active"}
+                                  onChange={() =>
+                                    toggleStatus(client.id, client.status)
+                                  }
+                                />
+                                <span className="slider"></span>
+                              </label>
+                            </td>
+                            <td>{client.city}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </>
           )}
