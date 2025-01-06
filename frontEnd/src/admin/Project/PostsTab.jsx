@@ -12,7 +12,7 @@ const PostsTab = ({
   showTaskForm,
   handleCreateTask,
   handleCancelForm,
-  setTasks, // Assuming this is passed as a prop to update tasks
+  setTasks, 
 }) => {
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details

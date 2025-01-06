@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { MdCancel } from "react-icons/md"; // Import cancel icon
 import "./project.css";
@@ -25,7 +25,8 @@ const ProjectList = ({
       return ass;
     }, {})
   );
-
+  const [totalTasks, setTotalTasks] = useState({});
+  const [tasksInfo, setTasksInfo] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -61,6 +62,36 @@ const ProjectList = ({
       });
   };
 
+  useEffect(() => {
+    const fetchTasksInfo = async () => {
+      const info = {};
+      for (const project of filteredProjects) {
+        try {
+          const response = await fetch(
+            `http://localhost:8081/admin/tasks?projectId=${project.id}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch tasks");
+          }
+          const data = await response.json();
+          const completedTasks = data.tasks.filter(
+            (task) => task.status === "completed"
+          ).length;
+          info[project.id] = {
+            total: data.tasks.length,
+            completed: completedTasks,
+          };
+        } catch (error) {
+          console.error("Error fetching tasks for project:", error);
+          info[project.id] = { total: 0, completed: 0 };
+        }
+      }
+      setTasksInfo(info);
+    };
+
+    fetchTasksInfo();
+  }, [filteredProjects]);
+
   const handlePaymentStatusChange = (projectId, newpaymentStatus) => {
     // Update paymentstatus locally
     setpaymentStatuses((prevpaymentStatuses) => ({
@@ -88,7 +119,8 @@ const ProjectList = ({
         // Revert the status locally if the update fails
         setpaymentStatuses((prevpaymentStatuses) => ({
           ...prevpaymentStatuses,
-          [projectId]: filteredProjects.find((p) => p.id === projectId).paymentStatus,
+          [projectId]: filteredProjects.find((p) => p.id === projectId)
+            .paymentStatus,
         }));
       });
   };
@@ -136,80 +168,88 @@ const ProjectList = ({
           <h3>Total</h3>
           <h3>Payment Status</h3>
         </div>
-        {filteredProjects.map((project) => (
-          <div
-            key={project.id}
-            className="project-item"
-            onContextMenu={(e) => handleRightClick(e, project.id)}
-          >
-            <p className="truncate" title={project.projectName}>
-              {project.projectName}
-            </p>
-            <p className="truncate" title={project.clientName}>
-              {project.clientName}
-            </p>
-            <p>{project.progress}</p>
-            <p>
-              {formatDate(project.startDate)} - {formatDate(project.endDate)}
-            </p>
-            <select
-              value={statuses[project.id] || "Pending"}
-              onChange={(e) => handleStatusChange(project.id, e.target.value)}
-              className={`status-dropdown $(
+        {filteredProjects.map((project) => {
+          const { total = 0, completed = 0 } = tasksInfo[project.id] || {};
+          const progress =
+            total > 0 ? Math.round((completed / total) * 100) : 0;
+
+          return (
+            <div
+              key={project.id}
+              className="project-item"
+              onContextMenu={(e) => handleRightClick(e, project.id)}
+            >
+              <p className="truncate" title={project.projectName}>
+                {project.projectName}
+              </p>
+              <p className="truncate" title={project.clientName}>
+                {project.clientName}
+              </p>
+              <p>{`${progress}%`}</p>
+              <p>
+                {formatDate(project.startDate)} - {formatDate(project.endDate)}
+              </p>
+              <select
+                value={statuses[project.id] || "Pending"}
+                onChange={(e) => handleStatusChange(project.id, e.target.value)}
+                className={`status-dropdown $(
                 statuses[project.id] === "Pending"
                   ? "status-pending"
                   : statuses[project.id] === "Completed"
                   ? "status-completed"
                   : ""
               )`}
-              style={{
-                backgroundColor: statusColors[statuses[project.id]] || "pink",
-              }}
-            >
-              <option value="Pending">Pending</option>
-              <option value="Ongoing">Ongoing</option>
-              <option value="Completed">Completed</option>
-            </select>
-            <p>{project.downpayment || "N/A"}</p>
-            <p>{project.totalPayment}</p>
-            <select
-              value={paymentstatuses[project.id] || "Not Paid"}
-              onChange={(e) => handlePaymentStatusChange(project.id, e.target.value)}
-              className={`paymentstatus-dropdown $(
+                style={{
+                  backgroundColor: statusColors[statuses[project.id]] || "pink",
+                }}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Ongoing">Ongoing</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <p>{project.downpayment || "N/A"}</p>
+              <p>{project.totalPayment}</p>
+              <select
+                value={paymentstatuses[project.id] || "Not Paid"}
+                onChange={(e) =>
+                  handlePaymentStatusChange(project.id, e.target.value)
+                }
+                className={`paymentstatus-dropdown $(
                 paymentstatuses[project.id] === "Partial Payment"
                   ? "paymentstatus-partialPayment"
                   : paymentstatuses[project.id] === "Paid"
                   ? "paymentstatus-paid"
                   : ""
               )`}
-              style={{
-                backgroundColor: paymentstatusColors[paymentstatuses[project.id]] || "pink",
-              }}
-            >
-              <option value="Not Paid">Not Paid</option>
-              <option value="Partial Payment">Partial Payment</option>
-              <option value="Paid">Paid</option>
-            </select>
-            {/* <p>{project.paymentStatus}</p> */}
-
-            <div className="action-project">
-              <button
-                className="action-menu-button"
-                onClick={() => toggleDropdown(project.id)}
+                style={{
+                  backgroundColor:
+                    paymentstatusColors[paymentstatuses[project.id]] || "pink",
+                }}
               >
-                &#x22EE;
-              </button>
-              {activeDropdown === project.id && (
-                <div className="dropdown-menu">
-                  <button onClick={() => onEdit(project.id)}>Edit</button>
-                  <button onClick={() => handleDelete(project.id)}>
-                    Move to Trash
-                  </button>
-                </div>
-              )}
+                <option value="Not Paid">Not Paid</option>
+                <option value="Partial Payment">Partial Payment</option>
+                <option value="Paid">Paid</option>
+              </select>
+
+              <div className="action-project">
+                <button
+                  className="action-menu-button"
+                  onClick={() => toggleDropdown(project.id)}
+                >
+                  &#x22EE;
+                </button>
+                {activeDropdown === project.id && (
+                  <div className="dropdown-menu">
+                    <button onClick={() => onEdit(project.id)}>Edit</button>
+                    <button onClick={() => handleDelete(project.id)}>
+                      Move to Trash
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal">
