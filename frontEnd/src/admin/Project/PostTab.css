@@ -57,31 +57,31 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3rem; /* Set a fixed width */
-  height: 3rem; /* Set a fixed height */
+  width: 3rem; 
+  height: 3rem; 
   color: white;
-  font-size: 2rem; /* Adjust size of the + symbol */
+  font-size: 2rem; 
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  position: absolute; /* Position absolutely within the parent */
-  right: -60px; /* Align to the right side of the parent */
-  top: -10px; /* Align it to the top of the parent */
-  transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+  position: absolute; 
+  right: -60px; 
+  top: -10px;
+  transition: transform 0.3s ease, background-color 0.3s ease; 
 }
 
 .create-task-button:hover {
   transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84; /* Change background color on hover */
+  background-color: #3a5b84; 
 }
 
 
 /* Task Table Container */
 .table-container {
-  max-height: 400px; /* Set the maximum height of the table container */
-  overflow-y: scroll; /* Enables vertical scrolling */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
-  padding-right: 10px; /* Adds space between the table and the scrollbar */
+  max-height: 400px; 
+  overflow-y: scroll; 
+  -webkit-overflow-scrolling: touch; 
+  padding-right: 10px; 
   margin-top: 20px;
 }
 
@@ -123,12 +123,12 @@
 /* Sticky header styles */
 .task-table thead th {
   position: sticky;
-  top: 0; /* Keeps the header fixed at the top */
+  top: 0; 
   background-color: #f0f8ff;
   color: #333;
   padding: 10px;
   text-align: left;
-  z-index: 2; /* Ensures the header stays on top */
+  z-index: 2; 
   border-top: 2px solid #dadada;
   border-bottom: 2px solid #dadada;
   border-left: none;
@@ -163,30 +163,30 @@
 }
 
 .create-button-container {
-  position: relative; /* Make the parent container position relative */
-  margin-top: 20px; /* Optional: Add some space between the table and the button */
+  position: relative; 
+  margin-top: 20px; 
 }
 
 .task-add-icon {
-  background-color: #547099; /* Circular background color */
-  border-radius: 50%; /* Make the background circular */
+  background-color: #547099; 
+  border-radius: 50%; 
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3rem; /* Set a fixed width */
-  height: 3rem; /* Set a fixed height */
+  width: 3rem; 
+  height: 3rem; 
   cursor: pointer;
-  color: white; /* Color for the + symbol */
-  font-size: 2rem; /* Adjust size of the + symbol */
-  position: absolute; /* Position absolutely within the parent */
-  right: -60px; /* Align to the right side of the parent */
-  top: -478px; /* Align it to the top of the parent */
-  transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+  color: white; 
+  font-size: 2rem; 
+  position: absolute; 
+  right: -60px; 
+  top: -478px; 
+  transition: transform 0.3s ease, background-color 0.3s ease; 
 }
 
 .task-add-icon:hover {
   transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84; /* Change background color on hover */
+  background-color: #3a5b84; 
 }
 
 

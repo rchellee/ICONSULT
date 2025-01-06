@@ -42,26 +42,26 @@
   }
   
   .file-list::-webkit-scrollbar {
-    width: 10px; /* Width of the scrollbar */
+    width: 10px; 
   }
   
   .file-list::-webkit-scrollbar-thumb {
-    background-color: #888; /* Scrollbar color */
-    border-radius: 5px; /* Round edges */
+    background-color: #888; 
+    border-radius: 5px; 
   }
   
   .file-list::-webkit-scrollbar-thumb:hover {
-    background-color: #555; /* Hover effect on the scrollbar */
+    background-color: #555; 
   }
   
   .file-list::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Scrollbar track color */
+    background: #f1f1f1; 
   }
 
   .file-list-scrollable {
-    max-height: 200px; /* Adjust height as needed */
-    overflow-y: auto; /* Enables vertical scrolling */
-    border: 1px solid #ccc; /* Optional: to visually define the scrollable area */
+    max-height: 200px;
+    overflow-y: auto; 
+    border: 1px solid #ccc; 
     max-height: 450px; 
     overflow-y: auto;
     overflow-x: hidden;
@@ -71,16 +71,16 @@
 
   .file-list table {
     width: 100%;
-    border: none; /* Removed border */
+    border: none;
   }
   
   .file-list th,
   .file-list td {
     padding: 1px;
     text-align: left;
-    border: none; /* Removed border */
-    height: 40px; /* Set the height for each table row */
-    border: none; /* Removed border */
+    border: none; 
+    height: 40px; 
+    border: none; 
     
   }
   
@@ -102,7 +102,7 @@
     position: sticky;
     top: 0;
     background-color: #fff; /* Set a background color to avoid overlapping content */
-    z-index: 1; /* Ensure it's above other content */
+    z-index: 1; 
     padding: 10px;
   }
   
@@ -113,7 +113,7 @@
   }
 
   
-  /* Style for the action button */
+  
  /* Action Button (Three Dots) */
 .action-file {
     background: none;
@@ -122,7 +122,7 @@
     padding: 5px;
     font-size: 20px;
     color: #333;
-    position: relative; /* Needed for positioning the floating box */
+    position: relative; 
   }
   
   .action-file:hover {
@@ -156,7 +156,7 @@
  
 /* Add this to FileTabStyle.css */
 .file-icon {
-    margin-right: 30px; /* Space between the icon and Name */
+    margin-right: 30px; 
     font-size: 25px;
   }
   
