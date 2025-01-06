@@ -105,14 +105,14 @@ const PostsTab = ({
 
   const handleEdit = () => {
     console.log("Edit task", selectedTaskId);
-    // Implement your edit logic
-    setShowActions(null); // Close the action box after editing
+    
+    setShowActions(null); 
   };
 
   const handleDelete = () => {
     console.log("Delete task", selectedTaskId);
-    // Implement your delete logic (e.g., API call)
-    setShowActions(null); // Close the action box after deleting
+    
+    setShowActions(null); 
   };
 
   return (

@@ -48,13 +48,13 @@ const ProjectTask = ({ projectId, onBack }) => {
           className={activeTab === "posts" ? "active" : ""}
           onClick={() => handleTabClick("posts")}
         >
-          Posts
+          Task
         </button>
         <button
           className={activeTab === "files" ? "active" : ""}
           onClick={() => handleTabClick("files")}
         >
-          Files
+          Documents
         </button>
       </div>
 
