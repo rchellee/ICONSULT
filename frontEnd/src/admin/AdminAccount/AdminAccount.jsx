@@ -23,7 +23,7 @@ const AdminAccount = () => {
     const fetchAdminDetails = async () => {
       try {
         const adminId = 1; // Replace with the actual admin ID you want to fetch
-        const response = await fetch(`http://localhost:8081/admin/${adminId}`);
+        const response = await fetch(`http://localhost:8081/admins/${adminId}`);
         if (response.ok) {
           const data = await response.json();
           setAdminDetails(data); // Admin details fetched as an object
@@ -41,7 +41,7 @@ const AdminAccount = () => {
 
   const handleUpdate = async () => {
     try {
-      const response = await fetch("http://localhost:8081/admin/update", {
+      const response = await fetch("http://localhost:8081/admins/update", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedDetails),

@@ -1,4 +1,4 @@
-/* AccountSettings.css */
+
 .account-settings {
     display: flex;
     justify-content: center;
@@ -6,6 +6,12 @@
     padding: 20px;
     background-color: #f4f4f4;
     min-height: 100vh;
+  }
+
+  .review-section {
+    margin-left: 85px;
+    padding: 20px;
+  
   }
   
   .settings-content {

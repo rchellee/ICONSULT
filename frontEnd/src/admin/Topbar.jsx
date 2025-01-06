@@ -50,6 +50,11 @@ const Topbar = () => {
     navigate("/admin-settings"); // Navigate to the account settings page
   };
 
+  const handleReviewClick = () => {
+    setAnchorEl(null); // Close the menu
+    navigate("/admin-reviews"); // Navigate to the account settings page
+  };
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -87,7 +92,7 @@ const Topbar = () => {
         >
           <MenuItem onClick={handleAccountClick}>Account</MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Reviews</MenuItem>
+          <MenuItem onClick={handleReviewClick}>Reviews</MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
