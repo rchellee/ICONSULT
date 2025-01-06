@@ -520,7 +520,6 @@ app.post("/payments", (req, res) => {
     }
   );
 });
-
 // Fetch all payments
 app.get("/payments", (req, res) => {
   const query = "SELECT * FROM payments ORDER BY created_at DESC";
@@ -923,6 +922,20 @@ app.patch("/project/:id", (req, res) => {
       return res.status(500).json({ error: "Failed to update project" });
     }
     return res.status(200).json({ message: "Project deleted successfully" });
+  });
+});
+app.patch("/projectStat/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  // Update project status in the database
+  const query = "UPDATE project SET status = ? WHERE id = ?";
+  db.query(query, [status, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating project status");
+    }
+    res.status(200).json({ id, status });
   });
 });
 // Add a new project (POST request)

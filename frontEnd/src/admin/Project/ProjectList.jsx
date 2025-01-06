@@ -14,51 +14,74 @@ const ProjectList = ({
 }) => {
   const [statuses, setStatuses] = useState(
     filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.status; // Initialize the status from filteredProjects
+      acc[project.id] = project.status;
       return acc;
     }, {})
   );
 
-  const [showModal, setShowModal] = useState(false); // State to control modal visibility
-  const [selectedProject, setSelectedProject] = useState(null); // Selected project for actions
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   const handleStatusChange = (projectId, newStatus) => {
+    // Update status locally
     setStatuses((prevStatuses) => ({
       ...prevStatuses,
-      [projectId]: newStatus, // Update the status when changed
+      [projectId]: newStatus,
     }));
+
+    // Send update to the database
+    fetch(`http://localhost:8081/projectStat/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update status");
+        }
+        return response.json();
+      })
+      .then((updatedProject) => {
+        console.log("Status updated successfully:", updatedProject);
+      })
+      .catch((error) => {
+        console.error("Error updating status:", error);
+        // Revert the status locally if the update fails
+        setStatuses((prevStatuses) => ({
+          ...prevStatuses,
+          [projectId]: filteredProjects.find((p) => p.id === projectId).status,
+        }));
+      });
   };
 
   const statusColors = {
     Ongoing: "pink",
     Pending: "red",
-    Completed:  "#FFCD90"// Default color for Ongoing
+    Completed: "#FFCD90",
   };
 
   const handleRightClick = (e, projectId) => {
-    e.preventDefault(); // Prevent the default context menu
-    setSelectedProject(projectId); // Store the selected project ID
-    setShowModal(true); // Show the confirmation modal
+    e.preventDefault();
+    setSelectedProject(projectId);
+    setShowModal(true);
   };
 
   const handleContextMenuAction = (action) => {
     if (action === "delete") {
-      handleDelete(selectedProject); // Trigger delete action
+      handleDelete(selectedProject);
     } else if (action === "edit") {
-      onEdit(selectedProject); // Trigger edit action
+      onEdit(selectedProject);
     }
-    setShowModal(false); // Close the modal after action
+    setShowModal(false);
   };
 
   const closeModal = () => {
-    setShowModal(false); // Close the modal without any action
+    setShowModal(false);
   };
 
   return (
     <div className="project-list-wrapper">
       <div className="project-list">
-        {/* Top Navigation Buttons */}
-
         <div className="project-list-header">
           <h3>Project</h3>
           <h3>Client</h3>
@@ -68,14 +91,12 @@ const ProjectList = ({
           <h3>Downpayment</h3>
           <h3>Total</h3>
           <h3>Payment Status</h3>
-          
         </div>
-
         {filteredProjects.map((project) => (
           <div
             key={project.id}
             className="project-item"
-            onContextMenu={(e) => handleRightClick(e, project.id)} // Add right-click handler
+            onContextMenu={(e) => handleRightClick(e, project.id)}
           >
             <p className="truncate" title={project.projectName}>
               {project.projectName}
@@ -101,15 +122,14 @@ const ProjectList = ({
                 backgroundColor: statusColors[statuses[project.id]] || "pink",
               }}
             >
-              <option value="Ongoing">Ongoing</option>
               <option value="Pending">Pending</option>
+              <option value="Ongoing">Ongoing</option>
               <option value="Completed">Completed</option>
             </select>
             <p>{project.downpayment || "N/A"}</p>
             <p>{project.totalPayment}</p>
             <p>{project.paymentStatus}</p>
 
-            {/* Action Dropdown Button */}
             <div className="action-project">
               <button
                 className="action-menu-button"
@@ -120,22 +140,26 @@ const ProjectList = ({
               {activeDropdown === project.id && (
                 <div className="dropdown-menu">
                   <button onClick={() => onEdit(project.id)}>Edit</button>
-                  <button onClick={() => handleDelete(project.id)}>Move to Trash</button>
+                  <button onClick={() => handleDelete(project.id)}>
+                    Move to Trash
+                  </button>
                 </div>
               )}
             </div>
           </div>
         ))}
-
-        {/* Confirmation Modal */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal">
               <div className="modal-header">
                 <MdCancel className="cancel-icon" onClick={closeModal} />
               </div>
-              <button onClick={() => handleContextMenuAction("edit")}>Edit</button>
-              <button onClick={() => handleContextMenuAction("delete")}>Delete</button>
+              <button onClick={() => handleContextMenuAction("edit")}>
+                Edit
+              </button>
+              <button onClick={() => handleContextMenuAction("delete")}>
+                Delete
+              </button>
             </div>
           </div>
         )}
