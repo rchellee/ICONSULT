@@ -128,7 +128,7 @@ body {
   box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Optional: add a shadow when the input is focused */
 }
 
-/* Tabs section at the top */
+/* Tabs section at the top both project and client details */
 .tabs {
   display: flex;
   justify-content: flex-start;

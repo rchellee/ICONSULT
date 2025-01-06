@@ -123,15 +123,12 @@ table td a {
   width: 70%;
   margin-top: 8px;
   margin-left: 160px;
-
 }
-
 .client-form-row {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 .client-form-row input,
 .client-form-row select {
   padding: 12px;
@@ -140,78 +137,51 @@ table td a {
   border-radius: 2px;
   width: 100%;
 }
-
 .client-form-row input[type="date"] {
   padding: 8px;
 }
-
 .client-form-row select {
   background-color: #f0f0f0;
 }
-
 .client-form-row label {
   font-size: 14px;
   color: #555;
 }
-
-/* Client Details */
+/**************Client Details *******************/
+.tabs-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 20px;
+  gap: 20px;
+  margin-top: -20px;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
 
 .client-details {
-  display: flex;
   flex-direction: column;
-  width: 80%; /* Adjust width as needed */
-  margin: 20px auto;
-  border: 1px solid #ccc;
   padding: 20px;
-  border-radius: 5px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.client-info {
-  margin-bottom: 20px;
+.client-tab-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 20px;
 }
 
-.client-view, .client-form {
-  display: flex;
-  flex-direction: column;
-}
-
-.client-view p {
-  margin-bottom: 10px;
-}
-
-.client-view strong {
-  margin-right: 5px;
-}
-
-.button-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.btn-edit, .btn-save, .btn-cancel, .btn-back {
-  padding: 8px 15px;
+.tabs button {
+  padding: 10px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-.client-history {
-  display: flex;
-  flex-wrap: wrap;
+  background-color: #e0e0e0;
+  transition: background-color 0.3s;
 }
 
-.clickable {
-  padding: 10px;
-  margin: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.clickable:hover {
-  background-color: #f0f0f0;
-}
 
 .section-details {
   margin-top: 20px;
@@ -220,16 +190,31 @@ table td a {
 .section-details table {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
 .section-details th, .section-details td {
-  border: 1px solid #ddd;
-  padding: 8px;
+  padding: 10px;
   text-align: left;
 }
 
 .section-details th {
-  background-color: #f2f2f2;
+  background-color: dark rgb(7, 7, 65);
+  font-weight: bold;
+}
+
+.button-row {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit, .btn-save, .btn-cancel, .btn-back {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .toast {
@@ -243,84 +228,30 @@ table td a {
   z-index: 1000;
 }
 
-.form-label {
-  display: flex;
-  margin-bottom: 5px;
+
+.client-details-form-input {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
 }
 
-.form-input {
-  margin-left: 10px;
-  flex: 1;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Form Styling */
-.client-info form {
-  display: flex;
-  flex-direction: column;
+/* Form spacing and input styles */
+.client-details-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
 
-.client-info label {
-  display: flex;
-  flex-direction: column;
+.client-form-label {
+  font-weight: 600;
+  margin-bottom: 5px;
 }
-
-.client-info input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.form-input:focus {
+  border-color: #007bff;
 }
-
-/* Button Styling */
-.button-row {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.btn-edit, .btn-save, .btn-back {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.btn-edit {
-  background: #ffa726;
-  color: white;
-}
-
-.btn-save {
-  background: #4caf50;
-  color: white;
-}
-
-.btn-back {
-  background: #f44336;
-  color: white;
-}
-
-.btn-edit:hover, .btn-save:hover, .btn-back:hover {
-  opacity: 0.9;
-}
-
-/* Section Links */
-.client-history h4 {
-  cursor: pointer;
-  color: #0d2c45;
-  text-decoration: underline;
-  margin-top: 10px;
-}
-
-.client-history h4:hover {
-  color: #1a3856;
-}
-
-
 /* Button Row Styling */
 .button-row {
   margin-top: 20px;
@@ -339,38 +270,6 @@ table td a {
   font-size: 14px;
   transition: transform 0.2s ease, background-color 0.3s ease;
 }
-
-.btn-edit {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.btn-edit:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-.btn-save {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.btn-save:hover {
-  background-color: #218838;
-  transform: scale(1.05);
-}
-
-.btn-back {
-  background-color: #6c757d;
-  color: #fff;
-}
-
-.btn-back:hover {
-  background-color: #5a6268;
-  transform: scale(1.05);
-}
-
-
 /* Toast Notification */
 .toast {
   background-color: #28a745;
@@ -390,11 +289,6 @@ table td a {
   background-color: #155724;
   animation: progressBar 3s linear;
 }
-
-
-/* Edit client */
-
-
 
 /* Responsive design */
 @media (max-width: 768px) {
