@@ -241,7 +241,7 @@ app.post("/sendVerificationCode", (req, res) => {
   sgMail
     .send(message)
     .then(() => {
-      storeCodeForEmail(email, code); 
+      storeCodeForEmail(email, code);
       res.status(200).json({ message: "Code sent successfully" });
     })
     .catch((error) => res.status(500).json({ error: error.message }));
@@ -1045,6 +1045,7 @@ app.put("/project/:id", (req, res) => {
     startDate,
     endDate,
     status,
+    clientId,
     contractPrice,
     downpayment,
     paymentStatus,
@@ -1052,7 +1053,7 @@ app.put("/project/:id", (req, res) => {
   } = req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, contractPrice = ?, downpayment = ?, paymentStatus = ?, totalPayment = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ?, totalPayment = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1062,6 +1063,7 @@ app.put("/project/:id", (req, res) => {
       startDate,
       endDate,
       status,
+      clientId,
       contractPrice,
       downpayment,
       paymentStatus,
@@ -1079,6 +1081,7 @@ app.put("/project/:id", (req, res) => {
         startDate,
         endDate,
         status,
+        clientId,
         contractPrice,
         downpayment,
         paymentStatus,
@@ -1303,7 +1306,9 @@ app.get("/admin/tasks", (req, res) => {
   console.log(req.query);
   const { projectId } = req.query;
   if (!projectId) {
-    return res.status(400).json({ message: "Missing projectId query parameter" });
+    return res
+      .status(400)
+      .json({ message: "Missing projectId query parameter" });
   }
   const sql = "SELECT * FROM tasks WHERE project_id = ?";
 
@@ -1679,7 +1684,6 @@ app.get("/reviews", (req, res) => {
     }
   });
 });
-
 
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");

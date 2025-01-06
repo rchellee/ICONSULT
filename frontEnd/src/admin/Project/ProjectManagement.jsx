@@ -63,6 +63,7 @@ const ProjectManagement = () => {
     setStartDate("");
     setEndDate("");
     setDescription("");
+    setDownpayment("");
     setEditingProjectId(null);
   };
 
@@ -159,9 +160,12 @@ const ProjectManagement = () => {
     if (projectToEdit) {
       setProjectName(projectToEdit.projectName);
       setClientName(projectToEdit.clientName);
+      setClientId(projectToEdit.clientId);
       setStartDate(projectToEdit.startDate);
       setEndDate(projectToEdit.endDate);
       setDescription(projectToEdit.description);
+      setContractPrice(projectToEdit.contractPrice || "");
+      setDownpayment(projectToEdit.downpayment || "");
       setEditingProjectId(projectId);
       openModal();
     }
@@ -217,7 +221,7 @@ const ProjectManagement = () => {
 
   return (
     <div className="project-management-page">
-    <Topbar />
+      <Topbar />
       <Sidebar />
       <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
         <div className="header-actions">
