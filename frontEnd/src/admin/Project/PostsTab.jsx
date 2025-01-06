@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
+import { BsThreeDotsVertical } from "react-icons/bs"; // Import BsThreeDotsVertical icon
 import TaskForm from "./Taskform";
 import MiscellaneousForm from "./MiscellaneousForm ";
 
@@ -16,9 +17,12 @@ const PostsTab = ({
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false);
-  const miscData = selectedTaskDetails?.miscellaneous || [];
-
   const [loading, setLoading] = useState(false);
+
+  const [showActions, setShowActions] = useState(null); // State for controlling visibility of action buttons
+  const [selectedTaskId, setSelectedTaskId] = useState(null); // To track which task is selected for actions
+
+  const miscData = selectedTaskDetails?.miscellaneous || [];
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -30,7 +34,6 @@ const PostsTab = ({
           throw new Error("Failed to fetch tasks");
         }
         const data = await response.json();
-
         setTasks(data.tasks);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -50,8 +53,6 @@ const PostsTab = ({
       const response = await fetch(`http://localhost:8081/tasks/${task.id}`);
       if (!response.ok) throw new Error("Failed to fetch task details");
       const taskDetails = await response.json();
-
-      // Parse miscellaneous if it's a string
       taskDetails.miscellaneous = parseMiscellaneous(taskDetails.miscellaneous);
       setSelectedTaskDetails(taskDetails);
     } catch (error) {
@@ -85,12 +86,33 @@ const PostsTab = ({
   const updateTaskWithMiscellaneous = (updatedTask) => {
     setSelectedTaskDetails(updatedTask);
     setShowMiscellaneousForm(false);
-
     const updatedTasks = tasks.map((task) =>
       task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
     console.log("Updated selectedTaskDetails:", updatedTask);
+  };
+
+  const handleActionClick = (event, taskId) => {
+    event.stopPropagation();  // Prevent the click event from bubbling up
+    if (showActions === taskId) {
+      setShowActions(null); // Close if the same task's action button is clicked
+    } else {
+      setShowActions(taskId); // Show the action menu for the clicked task
+      setSelectedTaskId(taskId); // Store the taskId for action
+    }
+  };
+
+  const handleEdit = () => {
+    console.log("Edit task", selectedTaskId);
+    // Implement your edit logic
+    setShowActions(null); // Close the action box after editing
+  };
+
+  const handleDelete = () => {
+    console.log("Delete task", selectedTaskId);
+    // Implement your delete logic (e.g., API call)
+    setShowActions(null); // Close the action box after deleting
   };
 
   return (
@@ -132,7 +154,6 @@ const PostsTab = ({
                 </button>
               </div>
             </div>
-
             {/* Loop through miscellaneous entries and display them */}
             {Array.isArray(selectedTaskDetails?.miscellaneous) ? (
               selectedTaskDetails.miscellaneous.map((item, index) => (
@@ -142,10 +163,7 @@ const PostsTab = ({
                 </div>
               ))
             ) : (
-              <p>
-                Miscellaneous data is not available or not in the expected
-                format.
-              </p>
+              <p>Miscellaneous data is not available or not in the expected format.</p>
             )}
 
             <div className="task-detail-row total-row">
@@ -174,16 +192,14 @@ const PostsTab = ({
                   <th>Fee</th>
                   <th>Miscellaneous</th>
                   <th className="align-right">Amount</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {tasks.map((task) => {
-                  const miscellaneousItems = JSON.parse(
-                    task.miscellaneous || "[]"
-                  );
+                  const miscellaneousItems = JSON.parse(task.miscellaneous || "[]");
                   const miscellaneousDetails =
-                    Array.isArray(miscellaneousItems) &&
-                    miscellaneousItems.length > 0
+                    Array.isArray(miscellaneousItems) && miscellaneousItems.length > 0
                       ? miscellaneousItems
                           .map((item) => `${item.name}: ${item.fee}`)
                           .join(", ")
@@ -198,6 +214,20 @@ const PostsTab = ({
                       <td>{task.task_fee}</td>
                       <td>{miscellaneousDetails || "N/A"}</td>
                       <td>{task.amount}</td>
+                      {/* Action Button */}
+                      <td
+                        className="click-post-action"
+                        onClick={(e) => handleActionClick(e, task.id)} // Pass the event and task id
+                      >
+                        <BsThreeDotsVertical />
+                        {/* Floating Action Box */}
+                        {showActions === task.id && (
+                          <div className="post-click-popup">
+                            <button onClick={handleEdit}>Edit</button>
+                            <button onClick={handleDelete}>Delete</button>
+                          </div>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
@@ -219,18 +249,19 @@ const PostsTab = ({
         {/* Task Form */}
         {showTaskForm && (
           <TaskForm
-            onCreate={handleCreateTask}
-            onCancel={handleCancelForm}
-            existingTask={selectedTaskDetails}
             projectId={projectId}
+            tasks={tasks}
+            handleCreateTask={handleCreateTask}
+            handleCancelForm={handleCancelForm}
           />
         )}
 
+        {/* Miscellaneous Form */}
         {showMiscellaneousForm && (
           <MiscellaneousForm
-            task={selectedTaskDetails}
-            updateTaskWithMiscellaneous={updateTaskWithMiscellaneous}
-            onClose={() => setShowMiscellaneousForm(false)}
+            taskDetails={selectedTaskDetails}
+            onSave={updateTaskWithMiscellaneous}
+            onCancel={() => setShowMiscellaneousForm(false)}
           />
         )}
       </div>

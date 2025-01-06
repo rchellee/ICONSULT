@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaFile, FaFileImage } from "react-icons/fa";
+import { CiFileOn } from "react-icons/ci";
 import "./FileTabStyle.css";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [activeFileId, setActiveFileId] = useState(null); // State to manage the active file for actions
+  const [activeFileId, setActiveFileId] = useState(null);
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -51,31 +53,19 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
-  // Handle the visibility of the edit/delete buttons
   const toggleActions = (fileId) => {
     setActiveFileId(activeFileId === fileId ? null : fileId);
   };
 
-  // Delete file handler
-  const handleDeleteFile = async (fileId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this file?");
-    if (!confirmDelete) return;
+  const getFileIcon = (fileName) => {
+    const fileExtension = fileName.split('.').pop().toLowerCase();
 
-    try {
-      const response = await fetch(
-        `http://localhost:8081/upload/${fileId}`, // Assuming the backend API supports file deletion with the fileId
-        { method: "DELETE" }
-      );
-
-      if (response.ok) {
-        setFiles(files.filter((file) => file.id !== fileId)); // Remove the file from the UI
-        setActiveFileId(null); // Hide the action buttons after deletion
-      } else {
-        console.error("Error deleting file");
-      }
-    } catch (error) {
-      console.error("Error deleting file:", error);
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
+      return <FaFileImage className="file-type-icon" />;
+    } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExtension)) {
+      return <FaFile className="file-type-icon" />;
     }
+    return <FaFile className="file-type-icon" />;
   };
 
   return (
@@ -96,10 +86,12 @@ const FilesTab = ({ projectId }) => {
         <table>
           <thead>
             <tr>
-              <th>Name</th>
+              <th>
+                <CiFileOn className="file-icon" />
+                Name
+              </th>
               <th>Upload Date</th>
               <th>Uploaded By</th>
-              {/* New column for actions */}
             </tr>
           </thead>
           <tbody>
@@ -119,7 +111,7 @@ const FilesTab = ({ projectId }) => {
                       rel="noopener noreferrer"
                       title={file.original_name}
                     >
-                      {file.original_name}
+                      {getFileIcon(file.original_name)} {file.original_name}
                     </a>
                   </td>
                   <td>
@@ -131,7 +123,6 @@ const FilesTab = ({ projectId }) => {
                   </td>
                   <td>{file.uploaded_by_name || "Unknown"}</td>
                   <td>
-                    {/* Action button with icon */}
                     <button
                       className={`action-file ${activeFileId === file.id ? "active" : ""}`}
                       onClick={() => toggleActions(file.id)}
@@ -140,14 +131,9 @@ const FilesTab = ({ projectId }) => {
                     </button>
 
                     {activeFileId === file.id && (
-                      <div className="file-actions-popup">
-                        <button className="edit-file">Edit</button>
-                        <button
-                          className="delete-file"
-                          onClick={() => handleDeleteFile(file.id)} // Call delete function on click
-                        >
-                          Delete
-                        </button>
+                      <div className="file-actions-popup click-delete-edit">
+                        <button className="edit-btn">Edit</button>
+                        <button className="delete-btn">Delete</button>
                       </div>
                     )}
                   </td>

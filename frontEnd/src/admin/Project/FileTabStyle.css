@@ -1,6 +1,6 @@
 /* Truncate text with ellipsis */
 .truncate-text {
-    max-width: 122px;
+    max-width: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -23,6 +23,7 @@
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
+    
   }
   
   .upload-btn input {
@@ -46,6 +47,7 @@
     text-align: left;
     border: none; /* Removed border */
     height: 40px; /* Set the height for each table row */
+    border: none; /* Removed border */
     
   }
   
@@ -59,12 +61,15 @@
   }
   
   /* Style for the action button */
-  .action-file {
+ /* Action Button (Three Dots) */
+.action-file {
     background: none;
     border: none;
     cursor: pointer;
-    color: #007bff;
+    padding: 5px;
     font-size: 20px;
+    color: #333;
+    position: relative; /* Needed for positioning the floating box */
   }
   
   .action-file:hover {
@@ -95,4 +100,47 @@
   }
   
   
+ 
+/* Add this to FileTabStyle.css */
+.file-icon {
+    margin-right: 30px; /* Space between the icon and Name */
+    font-size: 25px;
+  }
+  
+  .file-type-icon {
+    margin-right: 30px; /* Space between the file icon and the file name */
+    font-size: 20px;
+  }
+
+  .upload-btn input { display: none; /* Hides the default file input */ }
+
+
+  .file-actions-popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+  
+  .click-delete-edit {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    margin: 5px 0;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: black;
+  }
+  
+  .edit-btn:hover,
+  .delete-btn:hover {
+    background-color: #f0f0f0;
+  }
   
