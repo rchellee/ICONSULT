@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
+import { MdOutlineFileUpload } from "react-icons/md"; 
+import { FaPlus } from "react-icons/fa6";
 import "./FileTabStyle.css";
 
 const FilesTab = ({ projectId }) => {
@@ -53,6 +55,11 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
+  const handleNewButtonClick = () => {
+    // Add functionality for the new button here
+    console.log("New button clicked!");
+  };
+
   const toggleActions = (fileId) => {
     setActiveFileId(activeFileId === fileId ? null : fileId);
   };
@@ -72,7 +79,7 @@ const FilesTab = ({ projectId }) => {
     <div className="files-tab-content">
       <div className="upload-section">
         <label className="upload-btn">
-          + Upload
+          <MdOutlineFileUpload /> Upload
           <input
             type="file"
             onChange={handleFileUpload}
@@ -80,6 +87,11 @@ const FilesTab = ({ projectId }) => {
             style={{ display: "none" }}
           />
         </label>
+
+        {/* New Button */}
+        <button className="new-btn" onClick={handleNewButtonClick}>
+        <FaPlus /> New 
+        </button>
       </div>
 
       <div className="file-list">
