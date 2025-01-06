@@ -223,7 +223,78 @@ h2 {
   opacity: 1;
   visibility: visible;
 }
- 
+
+/* Sidebar Container */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 85px; /* Default collapsed width */
+  display: flex;
+  flex-direction: column;
+  background: #f3f3f3;
+  padding: 15px 10px;
+  border-right: 1px solid #d1d1d1;
+  transition: width 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 45px; /* Collapsed width */
+}
+
+.sidebar .hamburger-menu {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+/* Sidebar Links */
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li {
+  margin-bottom: 10px;
+}
+
+.sidebar-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-decoration: none;
+  color: #444;
+  font-size: 12px;
+  padding: 10px 0;
+  transition: background 0.3s ease, opacity 0.3s ease;
+  border-radius: 5px;
+}
+
+.sidebar-links a .icon {
+  font-size: 24px;
+  color: #061b38;
+}
+
+.sidebar-links a span {
+  margin-top: 5px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-links a span {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.sidebar.collapsed .sidebar-links a {
+  justify-content: center;
+}
+
 /* Updated Logout Button */
 .logout-btn {
   display: flex;

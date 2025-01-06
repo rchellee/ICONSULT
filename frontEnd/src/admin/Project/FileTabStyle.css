@@ -1,0 +1,146 @@
+/* Truncate text with ellipsis */
+.truncate-text {
+    max-width: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .files-tab-content {
+    padding: 20px;
+  }
+  
+  .upload-section {
+    margin-bottom: 20px;
+  }
+  
+  .upload-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    
+  }
+  
+  .upload-btn input {
+    display: none;
+  }
+  
+  .file-list {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .file-list table {
+    width: 100%;
+    border: none; /* Removed border */
+    
+  }
+  
+  .file-list th,
+  .file-list td {
+    padding: 1px;
+    text-align: left;
+    border: none; /* Removed border */
+    height: 40px; /* Set the height for each table row */
+    border: none; /* Removed border */
+    
+  }
+  
+  .file-list th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .file-list tr:hover {
+    background-color: #c1c1c1;
+  }
+  
+  /* Style for the action button */
+ /* Action Button (Three Dots) */
+.action-file {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 20px;
+    color: #333;
+    position: relative; /* Needed for positioning the floating box */
+  }
+  
+  .action-file:hover {
+    color: transparent;
+  }
+
+
+  .file-actions {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-file,
+  .delete-file {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+  }
+  
+  .edit-file:hover,
+  .delete-file:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .delete-file {
+    color: red;
+  }
+  
+  
+ 
+/* Add this to FileTabStyle.css */
+.file-icon {
+    margin-right: 30px; /* Space between the icon and Name */
+    font-size: 25px;
+  }
+  
+  .file-type-icon {
+    margin-right: 30px; /* Space between the file icon and the file name */
+    font-size: 20px;
+  }
+
+  .upload-btn input { display: none; /* Hides the default file input */ }
+
+
+  .file-actions-popup {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+  
+  .click-delete-edit {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    margin: 5px 0;
+    padding: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: black;
+  }
+  
+  .edit-btn:hover,
+  .delete-btn:hover {
+    background-color: #f0f0f0;
+  }
+  

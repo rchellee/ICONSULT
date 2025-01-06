@@ -50,6 +50,7 @@ h1 {
   cursor: pointer;
   font-size: 16px;
   margin-top: 10px;
+  margin-left: 20px;
 }
 
 .create-button:hover {
@@ -85,127 +86,54 @@ h1 {
   margin-top: 20px;
 }
 
-/* eto yung pag mag create ng project**************************************************/
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  overflow: hidden;
-}
 
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 400px;
-  overflow: hidden;
-}
 
-.modal-title {
-  text-align: center;
-  margin: 0;
-  margin-bottom: 20px;
-  font-size: 24px;
-}
 
-.modal-field {
-  margin-bottom: 20px;
-}
-
-.modal-field label {
-  display: block;
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-
-.modal-field input {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 18px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-}
-
-.cancel-button,
-.create-button {
-  background-color: #7eb3de;
-  color: rgb(255, 255, 255);
-  border: none;
-  padding: 15px 30px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 18px;
-  height: 50px;
-}
-
-.cancel-button {
-  background-color: red;
-}
-
-.cancel-button:hover,
-.create-button:hover {
-  background-color: #51d1eb;
-}
-
-.cancel-button {
-  background-color: red;
-  margin-top: 10px;
-}
-
-ct-list-header h3:nth-child(3) {
-  /* Client */
-  width: 25%;
-}
 
 .project-list-wrapper {
   display: flex;
   position: relative;
   overflow: hidden; /* Prevents horizontal scrolling in the wrapper */
+  max-width: 100%; /* Ensure it doesn’t overflow */
+  padding-right: 80px; 
+  margin-right: 50px;
+  
 }
 
 .project-list {
   width: 100%; /* Full width of the container */
   margin: 40px 0 0 0; /* Adjust top margin */
-  border-collapse: collapse; /* Ensures borders are collapsed */
+  border-collapse: separate; /* Allows border-radius to work */
+  border-spacing: 0; /* Ensures no space between cells */
   overflow-x: hidden; /* Prevent horizontal scrolling */
   max-height: 900px; /* Fixed height for the scrollable content */
-  margin-left: 300px; /* Adds left margin */
+  margin-left: 400px; /* Adds left margin */
   -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on mobile */
   padding-bottom: 50px;
+  background-color: white;
+  border-radius: 30px; /* Adds rounded corners to the entire table */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow around the table */
+  max-height: 600px;
+  
 }
+
 
 /* Custom scrollbar styling */
 .project-list::-webkit-scrollbar {
   width: 12px; /* Adjust the width of the scrollbar */
+  margin-left: -50px;
+  height: 100px;
 }
 
-.project-list::-webkit-scrollbar-track {
-  background: #b4bad5; /* Light track background */
-}
+
 
 .project-list::-webkit-scrollbar-thumb {
-  background-color: #547099; /* Scrollbar thumb color */
+  background-color: #d7d5d5;  /* Scrollbar thumb color */
   border-radius: 10px; /* Rounded corners */
 }
 
-/* Optional: Hover effect for the scrollbar thumb */
-.project-list::-webkit-scrollbar-thumb:hover {
-  background-color: #4f6d9a; /* Darker green on hover */
-}
+
 
 .project-list::-webkit-scrollbar {
   margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
@@ -215,9 +143,10 @@ ct-list-header h3:nth-child(3) {
   display: table-row; /* Ensures they behave like table rows */
   position: sticky; /* Stick to the top when scrolling */
   top: 0; /* Make it stick to the top of the container */
-  background-color: #dceeff; /* Ensure the header has a background */
+  background-color: white; /* Ensure the header has a background */
   z-index: 1; /* Make sure the header stays on top of other rows */
   font-weight: bold; /* Make the header text bold */
+  max-height: 754px;
 }
 
 .project-list-header h3 {
@@ -226,17 +155,25 @@ ct-list-header h3:nth-child(3) {
   font-weight: bold;
 }
 
+
 .project-item {
   display: table-row; /* Ensures they behave like table rows */
 }
 
+.project-item:hover {
+  background-color: #f0f0f0; /* Light gray background on hover */
+  cursor: pointer; /* Change cursor to pointer to indicate interactivity */
+}
+
 .project-list-header h3,
 .project-item p {
-  display: table-cell;
-  padding: 15px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: table-cell; /* Ensures each project element behaves like a table cell */
+  padding: 15px; /* Adjust padding for better spacing between columns */
+  text-overflow: ellipsis; /* Ensure long text is truncated with ellipsis */
+  white-space: nowrap; /* Prevents wrapping within cells */
+  overflow: hidden; /* Hides overflow text */
+  font-size: 16px; /* Adjust font size for the <p> elements */
+  margin: 0; /* Remove any default margin */
 }
 
 .project-item p {
@@ -244,10 +181,53 @@ ct-list-header h3:nth-child(3) {
   padding: 15px; /* Optional: Add padding for better spacing */
 }
 
+
+
+/* Common styles for the select dropdown */
+.status-dropdown {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc; /* Add a subtle border */
+  border-radius: 20px; /* Make the shape oval */
+  appearance: none; /* Remove the default dropdown icon */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  outline: none;
+  background-color: white; /* Background color for default */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Add smooth transition */
+}
+
+/* Remove the dropdown arrow by hiding the background image */
+.status-dropdown::-ms-expand {
+  display: none; /* For Internet Explorer */
+}
+
+/* Hover effect: Slight enlargement */
+.status-dropdown:hover {
+  transform: scale(1.05); /* Slightly enlarge */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow for emphasis */
+}
+
+/* Active effect: Make it slightly larger when clicked */
+.status-dropdown:active {
+  transform: scale(1.1); /* Further enlarge slightly */
+}
+
+/* Styles for specific statuses */
+.status-pending {
+  background-color: rgb(117, 224, 117) !important; /* Green color for Pending */
+}
+
+.status-completed {
+  background-color: rgb(244, 146, 182) !important; /* Red color for Completed */
+}
+
+
 /* Customize widths for columns with truncation */
 .project-list-header h3:nth-child(2), /* Project Name */
 .project-item p:nth-child(2) {
-  width: 200px; /* Fixed width for Project Name */
+  width: 20px; /* Fixed width for Project Name */
   font-size: 16px;
 }
 
@@ -282,12 +262,6 @@ ct-list-header h3:nth-child(3) {
   font-size: 16px;
 }
 
-.project-list-header h3:nth-child(7), /* Action */
-.project-item p:nth-child(7) {
-  width: 150px; /* Fixed width for Action */
-  font-size: 16px;
-}
-
 .project-list-header h3:nth-child(8), /* Total */
 .project-item p:nth-child(8) {
   width: 150px; /* Adjust width for Total */
@@ -300,38 +274,171 @@ ct-list-header h3:nth-child(3) {
   font-size: 16px;
 }
 
-/* Navigation buttons */
-.top-nav-buttons {
+
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  font-size: 18px;
-  position: absolute;
-  top: 0px; /* Move the buttons up by setting a smaller value for top */
-  left: 0; /* Adjust the position to the left */
+  z-index: 1000;
 }
 
-.top-nav-buttons button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  color: rgb(53, 52, 52);
+.modal {
+  
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.modal button {
+  background-color: #007bff;
+  color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
 }
 
-.top-nav-buttons svg {
-  font-size: 25px;
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: none; 
 }
-.nav-btn {
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(12, 0, 0, 0.15); /* Floating shadow effect */
+  transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+  text-align: center;
+  width: 300px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.cancel-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.modal button {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.modal button:hover {
+  background-color: #f0f0f0; 
+}
+
+.modal button:last-child {
+  background-color: transparent;
+}
+
+.modal button:last-child:hover {
+  background-color: #f0f0f0; 
+}
+
+/* Action Dropdown Button Container */
+.action-project {
   position: relative;
+  background-color: transparent;
 }
+
+/* Action Menu Button */
+.action-menu-button {
+  background-color: transparent;
+  border: none;
+  font-size: 24px; /* Adjust size as needed */
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s ease, transform 0.3s ease;
+  
+}
+
+/* Action Button Hover Effect */
+.action-menu-button:hover {
+  background-color: transparent;
+  color: #333;
+  transform: rotate(90deg); /* Optional: rotate icon on hover */
+  color: #9d9e9f;
+}
+
+/* Dropdown Menu Style */
+.dropdown-menu {
+  position: absolute;
+  top: 30px; /* Adjust the distance from the button */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 150px; /* Adjust width as necessary */
+  z-index: 10;
+  display: block;
+  border-radius: 4px;
+  padding: 5px 0;
+  
+}
+
+/* Dropdown Menu Button Style */
+.dropdown-menu button {
+  background-color: transparent;
+  border: none;
+  padding: 10px 15px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+/* Dropdown Button Hover Effect */
+.dropdown-menu button:hover {
+  
+  color: #9d9e9f; /* Change color on hover */
+}
+
+
+
+
 
 /* search box */
 .search-box {
@@ -374,14 +481,17 @@ ct-list-header h3:nth-child(3) {
   margin-left: 10px;
   margin-top: 112px;
   width: 250px; /* Adjust the width as needed */
+  background-color: transparent;
+  border-radius: 30px; 
 }
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 754px; /* Set the max height of the scrollable area */
+  max-height: 550px;/* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;
+  
 }
 
 /* Shift the scrollbar to the right */
@@ -389,12 +499,8 @@ ct-list-header h3:nth-child(3) {
   width: 12px; /* Adjust scrollbar width */
 }
 
-.folders-scroll-container::-webkit-scrollbar-track {
-  background: #b4bad5; /* Optional: Make track transparent */
-}
-
 .folders-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #547099; /* Color of the scrollbar */
+  background-color: #d7d5d5;  /* Color of the scrollbar */
   border-radius: 10px; /* Rounded edges for the scrollbar */
 }
 

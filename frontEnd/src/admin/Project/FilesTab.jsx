@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "./PostTab.css";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaFile, FaFileImage } from "react-icons/fa";
+import { CiFileOn } from "react-icons/ci";
+import "./FileTabStyle.css";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  const [previewFile, setPreviewFile] = useState(null);
+  const [activeFileId, setActiveFileId] = useState(null);
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -22,13 +25,12 @@ const FilesTab = ({ projectId }) => {
     fetchFiles();
   }, [projectId]);
 
-  // Handle file upload
   const handleFileUpload = async (e) => {
     const uploadedFile = e.target.files[0];
     const formData = new FormData();
     formData.append("file", uploadedFile);
     formData.append("project_id", projectId);
-    formData.append("uploaded_by", "admin"); // Ensure 'admin' is always sent as the uploader
+    formData.append("uploaded_by", "admin");
 
     setUploading(true);
 
@@ -51,68 +53,95 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
-  // Handle file removal
-  const handleRemoveFile = (fileName) => {
-    setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+  const toggleActions = (fileId) => {
+    setActiveFileId(activeFileId === fileId ? null : fileId);
   };
 
-  // Render file viewer modal
-  const handlePreviewFile = (fileObj) => {
-    const fileUrl = `http://localhost:8081/uploads/${fileObj.file_name}`;
-    window.open(fileUrl, "_blank");
+  const getFileIcon = (fileName) => {
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
+      return <FaFileImage className="file-type-icon" />;
+    } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(fileExtension)) {
+      return <FaFile className="file-type-icon" />;
+    }
+    return <FaFile className="file-type-icon" />;
   };
 
   return (
     <div className="files-tab-content">
-      <h2>Manage Project Files</h2>
-
-      {/* File Upload Section */}
-      <div className="file-upload">
-        <input
-          type="file"
-          multiple
-          onChange={handleFileUpload}
-          disabled={uploading}
-        />
-        {uploading && <p>Uploading files...</p>}
+      <div className="upload-section">
+        <label className="upload-btn">
+          + Upload
+          <input
+            type="file"
+            onChange={handleFileUpload}
+            disabled={uploading}
+            style={{ display: "none" }}
+          />
+        </label>
       </div>
 
-      {/* File List */}
       <div className="file-list">
-        <h3>Uploaded Files:</h3>
-        {files.length === 0 ? (
-          <p>No files uploaded yet.</p>
-        ) : (
-          <ul>
-            {files.map((file) => (
-              <li key={file.id}>
-                <a
-                  href={`http://localhost:8081/uploads/${file.file_name}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {file.original_name}
-                </a>
-                <p>
-                  <strong>Uploaded By:</strong>{" "}
-                  {file.uploaded_by_name || "Unknown"}
-                </p>
-                <p>
-                  <strong>Upload Date:</strong>
-                  {new Date(file.upload_date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                <button onClick={() => handleRemoveFile(file.file_name)}>
-                  Remove
-                </button>
-                <button onClick={() => handlePreviewFile(file)}>Preview</button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <CiFileOn className="file-icon" />
+                Name
+              </th>
+              <th>Upload Date</th>
+              <th>Uploaded By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {files.length === 0 ? (
+              <tr>
+                <td colSpan="4" style={{ textAlign: "center" }}>
+                  No files uploaded yet.
+                </td>
+              </tr>
+            ) : (
+              files.map((file) => (
+                <tr key={file.id}>
+                  <td className="truncate-text">
+                    <a
+                      href={`http://localhost:8081/uploads/${file.file_name}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={file.original_name}
+                    >
+                      {getFileIcon(file.original_name)} {file.original_name}
+                    </a>
+                  </td>
+                  <td>
+                    {new Date(file.upload_date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </td>
+                  <td>{file.uploaded_by_name || "Unknown"}</td>
+                  <td>
+                    <button
+                      className={`action-file ${activeFileId === file.id ? "active" : ""}`}
+                      onClick={() => toggleActions(file.id)}
+                    >
+                      <BsThreeDotsVertical />
+                    </button>
+
+                    {activeFileId === file.id && (
+                      <div className="file-actions-popup click-delete-edit">
+                        <button className="edit-btn">Edit</button>
+                        <button className="delete-btn">Delete</button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
