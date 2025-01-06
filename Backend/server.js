@@ -39,12 +39,54 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Get admin data (existing route)
 app.get("/admin", (req, res) => {
   const sql = "SELECT * FROM admin";
   db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+    if (err) {
+      console.error("Error fetching admin data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    res.status(200).json(data);
+  });
+});
+
+app.get("/admin/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM admin WHERE id = ?";
+  db.query(sql, [id], (err, admin) => {
+    if (err) {
+      console.error("Error fetching admin details: ", err);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving admin details", error: err });
+    }
+    if (admin.length === 0) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.status(200).json(admin[0]);
+  });
+});
+
+app.post("/admin/update", (req, res) => {
+  const { id, username, email, password } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ message: "Admin ID is required." });
+  }
+
+  const updates = [];
+  if (username) updates.push(`username = '${username}'`);
+  if (email) updates.push(`email = '${email}'`);
+  if (password) updates.push(`password = '${password}'`);
+
+  if (updates.length === 0) {
+    return res.status(400).json({ message: "No updates provided." });
+  }
+
+  const sql = `UPDATE admin SET ${updates.join(", ")} WHERE id = ${id}`;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    return res.json({ message: "Admin details updated successfully." });
   });
 });
 
@@ -53,7 +95,7 @@ app.post("/Login", (req, res) => {
 
   // Check the client table
   const sqlClient = `
-          SELECT id, firstName, lastName, email_add, passwordChanged 
+          SELECT id, firstName, lastName, email_add, passwordChanged, status 
           FROM client 
           WHERE username = ? AND password = ?
       `;
@@ -67,6 +109,12 @@ app.post("/Login", (req, res) => {
 
     if (clientResults.length > 0) {
       const client = clientResults[0];
+      if (client.status === "inactive") {
+        return res.status(403).json({
+          message: "Your account is inactive. Please contact the admin.",
+        });
+      }
+
       if (!client.passwordChanged) {
         return res.status(200).json({
           message: "Password change required",

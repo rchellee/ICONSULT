@@ -47,7 +47,7 @@ const Topbar = () => {
 
   const handleAccountClick = () => {
     setAnchorEl(null); // Close the menu
-    navigate("/admin-account-settings"); // Navigate to the account settings page
+    navigate("/admin-settings"); // Navigate to the account settings page
   };
 
   const handleMenuOpen = (event) => {

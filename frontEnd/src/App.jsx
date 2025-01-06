@@ -27,6 +27,7 @@ import HelpCentre from "./client/HelpCentre.jsx";
 import OtpVerification from "./Login/OtpVerification.jsx";
 import Reset from "./Login/Reset.jsx";
 import ReportsTab from "./admin/Reports/ReportsTab.jsx";
+import AdminAccount from "./admin/AdminAccount/AdminAccount.jsx";
 
 // for google icons
 const link = document.createElement("link");
@@ -66,6 +67,7 @@ function App() {
         <Route path="/otp-verification" element={<OtpVerification />} />
         <Route path="/reset-password" element={<Reset />} />
         <Route path="/reports" element={<ReportsTab />} />
+        <Route path="/admin-settings" element={<AdminAccount />} />
       </Routes>
     </Router>
   );

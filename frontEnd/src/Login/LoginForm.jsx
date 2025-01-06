@@ -70,9 +70,13 @@ const Login = () => {
         setError(data.message || "Login failed");
       }
     } catch (error) {
-      setError(
-        error.response?.data?.message || "An error occurred. Please try again."
-      );
+      if (error.response?.status === 403) {
+        setError("Your account is inactive. Please contact the admin.");
+      } else {
+        setError(
+          error.response?.data?.message || "An error occurred. Please try again."
+        );
+      }
     }
   };
 
