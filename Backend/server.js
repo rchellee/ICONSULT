@@ -27,6 +27,12 @@ app.get("/", (req, res) => {
   return res.json("From Backend Side");
 });
 
+// SendGrid email example
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
+const verificationCodes = new Map();
+const otpStore = {};
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -39,12 +45,54 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Get admin data (existing route)
 app.get("/admin", (req, res) => {
   const sql = "SELECT * FROM admin";
   db.query(sql, (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+    if (err) {
+      console.error("Error fetching admin data:", err);
+      return res.status(500).json({ message: "Error fetching data" });
+    }
+    res.status(200).json(data);
+  });
+});
+
+app.get("/admins/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "SELECT * FROM admin WHERE id = ?";
+  db.query(sql, [id], (err, admin) => {
+    if (err) {
+      console.error("Error fetching admin details: ", err);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving admin details", error: err });
+    }
+    if (admin.length === 0) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.status(200).json(admin[0]);
+  });
+});
+
+app.post("/admins/update", (req, res) => {
+  const { id, username, email, password } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ message: "Admin ID is required." });
+  }
+
+  const updates = [];
+  if (username) updates.push(`username = '${username}'`);
+  if (email) updates.push(`email = '${email}'`);
+  if (password) updates.push(`password = '${password}'`);
+
+  if (updates.length === 0) {
+    return res.status(400).json({ message: "No updates provided." });
+  }
+
+  const sql = `UPDATE admin SET ${updates.join(", ")} WHERE id = ${id}`;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    return res.json({ message: "Admin details updated successfully." });
   });
 });
 
@@ -53,7 +101,7 @@ app.post("/Login", (req, res) => {
 
   // Check the client table
   const sqlClient = `
-          SELECT id, firstName, lastName, email_add, passwordChanged 
+          SELECT id, firstName, lastName, email_add, passwordChanged, status 
           FROM client 
           WHERE username = ? AND password = ?
       `;
@@ -67,6 +115,12 @@ app.post("/Login", (req, res) => {
 
     if (clientResults.length > 0) {
       const client = clientResults[0];
+      if (client.status === "inactive") {
+        return res.status(403).json({
+          message: "Your account is inactive. Please contact the admin.",
+        });
+      }
+
       if (!client.passwordChanged) {
         return res.status(200).json({
           message: "Password change required",
@@ -160,13 +214,6 @@ app.post("/identifyUser", (req, res) => {
   });
 });
 
-// SendGrid email example
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
-const verificationCodes = new Map();
-const otpStore = {};
-
-// Save the code for an email
 function storeCodeForEmail(email, code) {
   verificationCodes.set(email, code);
   console.log(`Code stored for ${email}: ${code}`);
@@ -186,7 +233,7 @@ app.post("/sendVerificationCode", (req, res) => {
 
   const message = {
     to: email,
-    from: "ritchelle.rueras@tup.edu.ph", // Verified sender email
+    from: "ritchelle.rueras@tup.edu.ph",
     subject: "Your Verification Code",
     text: `Hey there,\n\nHere's the code to verify your email. The code is valid for 30 minutes. We recommend using the code now, as you will need to request a new one if it expires.\n\n${code}\n\nTo keep your account safe, please do not share this verification code. If you didn't try to sign in, you can safely ignore this email.\n\nCheers,\nYour Team`,
   };
@@ -194,7 +241,7 @@ app.post("/sendVerificationCode", (req, res) => {
   sgMail
     .send(message)
     .then(() => {
-      storeCodeForEmail(email, code); // Store the code for later verification
+      storeCodeForEmail(email, code); 
       res.status(200).json({ message: "Code sent successfully" });
     })
     .catch((error) => res.status(500).json({ error: error.message }));
@@ -389,78 +436,6 @@ app.delete("/availability/:date", (req, res) => {
   });
 });
 
-// Save availability data to the database
-app.post("/availability", (req, res) => {
-  const availabilityData = req.body;
-
-  const deleteSql = "DELETE FROM availability WHERE dates = ?";
-  const insertSql =
-    "INSERT INTO availability (start_time, end_time, dates) VALUES ?";
-
-  // First, delete existing availability for the given dates
-  const deletePromises = availabilityData.map((entry) => {
-    return new Promise((resolve, reject) => {
-      db.query(deleteSql, [entry.dates], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  });
-
-  // Once deletions are complete, insert new data
-  Promise.all(deletePromises)
-    .then(() => {
-      const values = availabilityData.map((entry) => [
-        entry.start_time,
-        entry.end_time,
-        entry.dates,
-      ]);
-      db.query(insertSql, [values], (err, result) => {
-        if (err) {
-          console.error("Error saving data to the database:", err);
-          return res.status(500).json({ message: "Error saving data" });
-        }
-        res.status(200).json({
-          message: "Availability saved/updated successfully",
-          data: result,
-        });
-      });
-    })
-    .catch((error) => {
-      console.error("Error during update:", error);
-      res.status(500).json({ message: "Error updating availability" });
-    });
-});
-app.get("/availability", (req, res) => {
-  const sql = "SELECT * FROM availability";
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error("Error fetching availability data:", err);
-      return res.status(500).json({ message: "Error fetching data" });
-    }
-    res.status(200).json(data);
-  });
-});
-// Delete availability for a specific date
-app.delete("/availability/:date", (req, res) => {
-  const { date } = req.params;
-
-  const sql = "DELETE FROM availability WHERE dates = ?";
-  db.query(sql, [date], (err, result) => {
-    if (err) {
-      console.error("Error deleting availability:", err);
-      return res.status(500).json({ message: "Error deleting data" });
-    }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Date not found" });
-    }
-    res.status(200).json({ message: "Availability deleted successfully" });
-  });
-});
-
 // Save payment details to the database
 app.post("/payments", (req, res) => {
   const {
@@ -545,7 +520,6 @@ app.post("/payments", (req, res) => {
     }
   );
 });
-
 // Fetch all payments
 app.get("/payments", (req, res) => {
   const query = "SELECT * FROM payments ORDER BY created_at DESC";
@@ -630,7 +604,6 @@ app.get("/notifications/:clientId", (req, res) => {
     }
   });
 });
-
 // Endpoint to get client notifications
 app.get("/client-notifications/:clientId", (req, res) => {
   const { clientId } = req.params;
@@ -701,7 +674,6 @@ app.post("/client", (req, res) => {
     }
   );
 });
-
 // Add a new endpoint to fetch all clients
 app.get("/clients", (req, res) => {
   const sql = "SELECT * FROM client";
@@ -728,7 +700,6 @@ app.get("/client/:id", (req, res) => {
     }
   });
 });
-
 app.get("/clients/:id", (req, res) => {
   const clientId = req.params.id;
 
@@ -859,7 +830,6 @@ app.post("/employee", (req, res) => {
     }
   );
 });
-
 // Fetch all employees (GET request)
 app.get("/employees", (req, res) => {
   const sql = "SELECT * FROM employee";
@@ -868,7 +838,6 @@ app.get("/employees", (req, res) => {
     return res.json(data);
   });
 });
-
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -896,7 +865,6 @@ app.put("/employees/:id", (req, res) => {
     }
   });
 });
-
 // Update employee's information (PUT request)
 app.put("/employee/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -954,6 +922,34 @@ app.patch("/project/:id", (req, res) => {
       return res.status(500).json({ error: "Failed to update project" });
     }
     return res.status(200).json({ message: "Project deleted successfully" });
+  });
+});
+app.patch("/paymentStat/:id", (req, res) => {
+  const { id } = req.params;
+  const { paymentStatus } = req.body;
+
+  // Update project paymentStatus in the database
+  const query = "UPDATE project SET paymentStatus = ? WHERE id = ?";
+  db.query(query, [paymentStatus, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating project status");
+    }
+    res.status(200).json({ id, paymentStatus });
+  });
+});
+app.patch("/projectStat/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  // Update project status in the database
+  const query = "UPDATE project SET status = ? WHERE id = ?";
+  db.query(query, [status, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating project status");
+    }
+    res.status(200).json({ id, status });
   });
 });
 // Add a new project (POST request)
@@ -1110,7 +1106,6 @@ app.put("/project/update-payment-status/:id", (req, res) => {
     });
   });
 });
-
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
 
@@ -1152,7 +1147,6 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
       .json({ message: "Total payment recalculated successfully" });
   });
 });
-
 // const backfillTotalPayment = () => {
 //   const updateTotalPaymentSql = `
 //     UPDATE project p
@@ -1305,9 +1299,12 @@ app.put("/tasks/:id", (req, res) => {
     }
   );
 });
-
 app.get("/admin/tasks", (req, res) => {
+  console.log(req.query);
   const { projectId } = req.query;
+  if (!projectId) {
+    return res.status(400).json({ message: "Missing projectId query parameter" });
+  }
   const sql = "SELECT * FROM tasks WHERE project_id = ?";
 
   db.query(sql, [projectId], (err, tasks) => {
@@ -1534,7 +1531,6 @@ app.delete("/appointments/:id", (req, res) => {
       .json({ message: "Appointment deleted successfully" });
   });
 });
-
 // const backfillTimeFormat = () => {
 //   const updateTimeFormatSql = `
 //     UPDATE appointments
@@ -1558,6 +1554,7 @@ app.delete("/appointments/:id", (req, res) => {
 // backfillTimeFormat();
 
 // Endpoint to upload a file
+
 app.post("/upload", (req, res) => {
   upload.single("file")(req, res, (err) => {
     if (err) {
@@ -1631,9 +1628,7 @@ app.get("/upload", (req, res) => {
     res.json(results);
   });
 });
-// Serve uploaded files
 app.use("/uploads", express.static("uploads"));
-
 
 app.post("/reviews", (req, res) => {
   const { clientId, projectId, rating, comment, status } = req.body;
@@ -1656,8 +1651,20 @@ app.post("/reviews", (req, res) => {
     }
   );
 });
+app.get("/reviews", (req, res) => {
+  const query = "SELECT * FROM reviews";
 
-// Start the server
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching reviews:", err);
+      res.status(500).json({ message: "Error fetching reviews." });
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");
 });

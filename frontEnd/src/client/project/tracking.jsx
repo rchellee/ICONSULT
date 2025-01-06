@@ -167,9 +167,8 @@ function Tracking() {
                           <th>Fee</th>
                           <th>Miscellaneous</th>
                           <th>Due Date</th>
-                          <th>Employee</th>
                           <th>Status</th>
-                          <th>Total Amount</th>
+                          <th>Amount</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -187,7 +186,6 @@ function Tracking() {
                               <td>{task.task_fee}</td>
                               <td>{miscellaneousDetails || "N/A"}</td>
                               <td>{task.due_date}</td>
-                              <td>{task.employee}</td>
                               <td>{task.status}</td>
                               <td>{task.amount}</td>
                             </tr>
