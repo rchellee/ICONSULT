@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import "./adminCalendar.css";
+import Topbar from "../Topbar";
 import Calendar from "./AdminDynamicCalendar";
 
 
@@ -238,7 +239,7 @@ function AdminAppointment() {
                         disabled={!timePeriod}
                       >
                         <option value="" disabled>
-                          -- Select Time --
+                          Select Time
                         </option>
                         {availableTimes
                           .filter(({ time }) => time.endsWith(timePeriod))
@@ -290,7 +291,7 @@ function AdminAppointment() {
         required
       >
         <option value="" disabled>
-          -- Select Client --
+          Select Client
         </option>
         {clients.map((client) => (
           <option key={client.id} value={client.id}>
@@ -316,7 +317,7 @@ function AdminAppointment() {
         required
       >
         <option value="" disabled>
-          -- Select Consultation Type --
+          Select Consultation Type
         </option>
         <optgroup label="Corporate and Consultancy Services">
           <option value="Strategic Planning Consultation">
@@ -410,7 +411,7 @@ function AdminAppointment() {
         required
       >
         <option value="" disabled>
-          -- Select Platform --
+          Select Platform
         </option>
         <option value="In-Person">In-Person</option>
         <option value="Zoom">Zoom</option>
@@ -430,7 +431,7 @@ function AdminAppointment() {
         required
       >
         <option value="" disabled>
-          -- Select Reminder Time --
+          Select Reminder Time
         </option>
         <option value="At Time of Event">At Time of Event</option>
         <option value="5 minutes before">5 minutes before</option>
@@ -458,7 +459,6 @@ function AdminAppointment() {
     </button>
   </div>
 )}
-        {/** Step 3: Confirmation **/}
 {/** Step 3: Confirmation **/}
 {currentStep === 3 && (
   <div className="confirmation-container">

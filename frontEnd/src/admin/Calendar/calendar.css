@@ -11,7 +11,7 @@
   font-size: 30px;
 }
 
-/* Style for the Box that contains the Button and Menu */
+/********************************** FullCalendar *******************************/
 .menu-container {
   display: flex;
 }
@@ -27,7 +27,7 @@ span:hover {
   transition: margin-left 0.4s ease;
 }
 
-button {
+/* button {
   padding: 10px 20px;
   color: white;
   border: none;
@@ -41,79 +41,7 @@ button:hover {
 
 button + button {
   margin-left: 10px;
-}
-
-.calendar-container {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr); /* 7 days a week */
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.calendar-date {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.calendar-date.available {
-  background-color: #d4edda; /* Green for available */
-  color: #0b1b6c;
-}
-
-
-.calendar-time-container {
-  display: flex;
-  gap: 20px; /* Space between calendar and time slots */
-}
-
-.calendar-time-container .wrapper {
-  flex: 2; /* Calendar takes more space */
-}
-
-.calendar-time-container .time-slots {
-  flex: 1; /* Time slots take less space */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.time-slots h4 {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-}
-
-.time-slot {
-  color: #0f0e0e;
-  width: 100%;
-  margin: 5px;
-  padding: 10px 20px;
-  background-color: #f4f4f4;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.time-slot:hover {
-  background-color: #ddd;
-}
-
-.time-slot.selected {
-  background-color: #007bff;
-  color: #fcf9f9;
-}
-.admin-wrapper {
-  width: 650px;
-  height:500px;
-  overflow: hidden;
-  padding: 28px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-}
+} */
 
 .wrapper-admin {
   width: 1000px;
@@ -127,91 +55,14 @@ button + button {
   padding: 25px 30px 10px;
   justify-content: space-between;
 }
-/* .calendar {
-  padding: 20px;
-}
-.calendar ul {
-  display: flex;
-  flex-wrap: wrap;
-  list-style: none;
-  text-align: center;
-}
-.calendar .days {
-  margin-bottom: 20px;
-}
-.calendar li {
-  color: #333;
-  width: calc(100% / 7);
-}
-.calendar .weeks li {
-  font-weight: 500;
-  cursor: default;
-}
-.calendar .days li {
-  z-index: 1;
-  cursor: pointer;
-  position: relative;
-  margin-top: 20px;
-}
-.calendar .days li.selected-date {
-  border: 2px solid #0f3a68;
-}
-.days li.inactive {
-  color: #aaa;
-}
-.days li.active {
-  color: #fff;
-}
-.days li::before {
-  content: "";
-  left: 50%;
-  top: 50%;
-  height: 40px;
-  width: 40px;
-  z-index: -1;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-.days li.active::before {
-  background: #231f88;
-}
-.days li:not(.active):hover::before {
-  background: #f2f2f2;
-}
-.available {
-  background-color: #85a8ee;
-  color: white;
-  cursor: pointer;
-}
 
-.available:hover {
-  background-color: #062459;
-  color: #f0f0f0;
-}
-
-.selected {
-  background-color: #101f6a; /* kapag sinelect ang availability ng admin */
-  /* color: white;
-} */
-
-/* .fully-booked {
-  background-color: #f44336;
-  color: white;
-}
-
-.inactive {
-  background-color: transparent;
-  color: #ccc;
-  cursor: not-allowed;
-}  */
-
-/* AdminAppointment.css */
+/*********************************AdminAppointment.css ************************************/
 .appointment-form-content {
   flex: 1;
   justify-content: center;
 }
 
-/* Calendar and Time Selection */
+/********Calendar and Time Selection */
 .admin-calendar-time-container {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -232,23 +83,13 @@ select {
   border-radius: 4px;
 }
 
-/* Steps Navigation */
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
 
 button:disabled {
   background-color: #ddd;
   cursor: not-allowed;
 }
 
-/* Step 2: Form Fields */
+/***********Step 2: Form Fields */
 .step2form {
   max-width: 900px;
   width: 100%;
@@ -296,15 +137,13 @@ button:disabled {
   background-color: #0056b3;
 }
 
-/* Step 3: Confirmation Step */
-/* Center the confirmation container */
+/********* Step 3: Confirmation Step */
 .confirmation-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Styling the confirmation form */
 .confirmation-form {
   background-color: white;
   padding: 20px;
@@ -313,21 +152,15 @@ button:disabled {
   max-width: 500px; /* Limit the width */
   width: 100%;
 }
-
-/* Spacing between form fields */
 .confirmation-form p {
   margin-bottom: 15px;
   font-size: 16px;
 }
-
-/* Button container for Back and Submit buttons */
 .confirmation-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
-
-/* Style the buttons */
 .confirmation-buttons button {
   padding: 10px 20px;
   border: none;
@@ -335,216 +168,222 @@ button:disabled {
   cursor: pointer;
   font-size: 16px;
 }
-
 .confirmation-buttons button:hover {
   background-color: #007bff;
   color: white;
 }
-
 .confirmation-buttons button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-/* Calendar sa appointment ng admin and availability */
+/************************Calendar sa appointment ng admin and availability ****************/
 
 .add-button {
-    color: white;
-    border-radius: 50%;
-    min-width: 40px;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 30px;
-    background: #007bff;
-    border: none;
-    cursor: pointer;
+  color: white;
+  border-radius: 50%;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  background: #007bff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .add-button:hover {
-    background: #0056b3;
+  background: #0056b3;
 }
 
 .menu-container {
-    display: flex;
+  display: flex;
 }
 
 span:hover {
-    color: #02121d;
+  color: #02121d;
 }
 
 .content-fullcalendar {
-    margin-top: 10px;
-    margin-left: 85px;
-    padding: 20px;
-    transition: margin-left 0.4s ease;
+  margin-top: 10px;
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
 }
 
 button {
-    padding: 10px 20px;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #007bff;
-    transition: background 0.3s ease;
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #007bff;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .calendar-container {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .calendar-date {
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-date:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .calendar-date.available {
-    background-color: #28a745;
-    color: white;
-    border: 1px solid #218838;
+  background-color: #28a745;
+  color: white;
+  border: 1px solid #218838;
 }
 
 .calendar-date.unavailable {
-    background-color: #e0e0e0;
-    color: #6c757d;
-    border: 1px solid #ccc;
-    cursor: not-allowed;
+  background-color: #e0e0e0;
+  color: #6c757d;
+  border: 1px solid #ccc;
+  cursor: not-allowed;
 }
 
 .calendar-date.selected {
-    background-color: #007bff;
-    color: white;
-    border: 2px solid #0056b3;
+  background-color: #007bff;
+  color: white;
+  border: 2px solid #0056b3;
 }
 
 .calendar-time-container {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
 }
 
 .calendar-time-container .wrapper {
-    flex: 2;
+  flex: 2;
 }
 
 .calendar-time-container .time-slots {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .time-slot {
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .time-slot:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .time-slot.selected {
-    background-color: #007bff;
-    color: white;
+  background-color: #007bff;
+  color: white;
 }
+
 .time-slots-admin {
-  padding: 10px 15px;
-  margin: 0px;
-  background-color: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+padding: 10px 15px;
+margin: 0px;
+background-color: white;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .admin-wrapper {
-    width: 700px;
-    padding: 30px;
-    border-radius: 5px;
-    background: white;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 700px;
+  padding: 30px;
+  border-radius: 5px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 header .icons {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 header .icons button {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #007bff;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #007bff;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 header .icons button:hover {
-    background: #0056b3;
+  background: #0056b3;
 }
 
 header .current-date {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .calendar ul {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    list-style: none;
-    padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  list-style: none;
+  padding: 0;
 }
 
 .calendar li {
-    text-align: center;
-    padding: 15px;
-    border-radius: 20px;
+  text-align: center;
+  padding: 20px;
+  border-radius: 1px;
+  font-weight: 500;
 }
 
 .available {
-    background: rgb(22, 78, 151);
-    color: white;
+  color: rgb(10, 61, 149);
 }
 
 .fully-booked {
-    background: #dc3545;
-    color: white;
+  color: rgb(157, 8, 8);
+  cursor: not-allowed;
 }
 
 .inactive {
-    background: #e9ecef;
-    color: #6c757d;
-    cursor: not-allowed;
+  color: #6c757d;
+  cursor: not-allowed;
 }
-.calendar li.selected{
-  background-color: #163e69;
-  color:white;
+
+.calendar li.selected {
+background-color: #163e69;
+color: white;
+}
+
+.content-availability{  
+  margin-left: 150px;
+  flex: 1;
+  justify-content: center;
 }

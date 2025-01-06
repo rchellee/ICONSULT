@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 03, 2025 at 09:28 AM
+-- Generation Time: Jan 05, 2025 at 07:53 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,6 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `admin` (
   `username` varchar(50) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `password` varchar(50) NOT NULL,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -37,8 +38,8 @@ CREATE TABLE `admin` (
 -- Dumping data for table `admin`
 --
 
-INSERT INTO `admin` (`username`, `password`, `created_at`) VALUES
-('admin', '1234', '2024-09-08 20:54:27');
+INSERT INTO `admin` (`username`, `email`, `password`, `created_at`) VALUES
+('admin', 'ritchelle.rueras@tup.edu.ph', '12345', '2024-09-08 20:54:27');
 
 -- --------------------------------------------------------
 
@@ -89,7 +90,8 @@ INSERT INTO `appointments` (`id`, `date`, `time`, `name`, `email`, `consultation
 (26, '2025-01-03', '12:00 PM', 'Julie Rueras', 'ruerasritchelle07@gmail.com', 'Startup Planning', 'Business StartUp', 'Phone Call', '2024-12-29 17:08:41', 23, '09876543212', 'Table Tennis', '5 minutes before'),
 (27, '2025-01-04', '09:00 AM', 'christ Christopher', 'ritchellerueras@gmail.com', 'Risk Management Consultation', 'for risk management ', 'Microsoft Teams', '2024-12-29 17:30:31', 22, '09876567898', 'Food vlog', '2 days before'),
 (28, '2025-01-08', '09:00 AM', 'claireza Rueras', 'ritchellerueras@gmail.com', 'Payroll System Setup Consultation', 'Payroll for employee', 'Video Call', '2025-01-03 03:55:42', 22, '+639876543212', 'Sports', 'At Time of Event'),
-(29, '2025-01-09', '04:00 PM', 'Kyle Rueras', 'ritchelle.rueras@tup.edu.ph', 'Accounting Consultation', 'Accounting', 'Video Call', '2025-01-03 07:58:52', 5, '+639876543212', 'OPPA', '5 minutes before');
+(29, '2025-01-09', '04:00 PM', 'Kyle Rueras', 'ritchelle.rueras@tup.edu.ph', 'Accounting Consultation', 'Accounting', 'Video Call', '2025-01-03 07:58:52', 5, '+639876543212', 'OPPA', '5 minutes before'),
+(30, '2025-01-10', '08:00 AM', 'mimi mema', 'clarieza@gmail.com', 'Organizational Development Advisory', 'sds', 'Google Meet', '2025-01-04 12:43:48', 6, '09709573613', '', 'At Time of Event');
 
 -- --------------------------------------------------------
 
@@ -110,13 +112,14 @@ CREATE TABLE `availability` (
 --
 
 INSERT INTO `availability` (`id`, `start_time`, `end_time`, `date_created`, `dates`) VALUES
-(12, '07:00 AM', '07:00 PM', '2025-01-02 17:16:37', '2025-01-05'),
 (13, '11:00 AM', '03:00 PM', '2025-01-02 17:16:37', '2025-01-06'),
 (14, '09:00 AM', '04:00 PM', '2025-01-02 17:43:15', '2025-01-07'),
 (15, '08:00 AM', '04:00 PM', '2025-01-02 17:43:15', '2025-01-08'),
 (16, '11:00 AM', '05:00 PM', '2025-01-02 17:43:15', '2025-01-09'),
 (17, '11:00 AM', '06:00 PM', '2025-01-02 17:43:15', '2025-01-10'),
-(18, '11:00 AM', '02:00 PM', '2025-01-03 02:23:22', '2025-01-11');
+(19, '09:00 AM', '12:00 PM', '2025-01-04 13:08:46', '2025-01-17'),
+(20, '01:00 PM', '05:00 PM', '2025-01-04 13:08:46', '2025-01-18'),
+(21, '08:00 AM', '07:00 PM', '2025-01-04 13:09:10', '2025-01-05');
 
 -- --------------------------------------------------------
 
@@ -146,10 +149,10 @@ CREATE TABLE `client` (
 
 INSERT INTO `client` (`id`, `firstName`, `lastName`, `middleInitial`, `birthday`, `mobile_number`, `email_add`, `address`, `password`, `username`, `status`, `companyName`, `passwordChanged`) VALUES
 (1, 'John', 'Doe', 'R', '2024-03-28', '09123456789', 'john.doe@example.com', '1234 Main St, Cityville', 'password1234', '', 'active', NULL, 0),
-(2, 'Jane', 'Smith', 'B', '1985-08-15', '09234567890', 'ruerasritchelle07@gmail.com', '456 Elm St, Townsville', 'Password_12345', 'smith.jane', 'inactive', 'Apple', 1),
-(3, 'Ritchelle', 'Rueras', 'T', '2001-05-20', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', '12345', 'Rueras12345', 'inactive', NULL, 1),
+(2, 'Jane', 'Smith', 'B', '1985-08-15', '09234567890', 'ruerasritchelle07@gmail.com', '456 Elm St, Townsville', 'password1234', 'smith.jane', 'inactive', 'Apple', 1),
+(3, 'Ritchelle', 'Rueras', 'T', '2001-05-20', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', '1234', 'Rueras12345', 'inactive', NULL, 1),
 (4, 'Monique', 'Cabigting', 'h', '2005-06-07', '098765432', 'ritchellerueras@gmail.com', 'df', 'CABIGTING12345', 'Cabigting12345', 'active', NULL, 0),
-(5, 'claireza', 'bautista', 'h', '2024-10-01', '09709573613', 'clarieza@gmail.com', 'pasig city', 'Claire_bautista1', 'bautista.claireza', 'inactive', NULL, 1),
+(5, 'claireza', 'bautista', 'h', '2024-10-01', '09709573613', 'clarieza@gmail.com', 'pasig city', 'Claire_bautista1', 'bautista.claireza', 'active', NULL, 1),
 (6, 'mimi', 'mema', 'm', '2013-06-09', '09709573613', 'clarieza@gmail.com', 'Surigao City', 'MEMA12345', 'mema.mimi', 'active', NULL, 0),
 (7, 'huhu', 'haha', 'h', '2023-12-20', '09709573613', 'clarieza@gmail.com', 'df', 'HAHA12345', 'haha.huhu', 'inactive', NULL, 0),
 (8, 'sbh', 'sdjas', 's', '2024-04-23', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', 'SDJAS12345', 'sdjas.sbh', 'active', NULL, 0),
@@ -202,7 +205,8 @@ INSERT INTO `client_notifications` (`id`, `client_id`, `title`, `description`, `
 (12, 5, 'Payment Received', 'Your payment of 50.00 USD was successful.', '2025-01-02 18:06:57', 0),
 (13, 5, 'Payment Received', 'Your payment of 45.00 USD was successful.', '2025-01-02 18:38:49', 0),
 (14, 22, 'Appointment Scheduled', 'Your appointment on 2025-01-08 at 09:00 AM has been confirmed.', '2025-01-03 11:55:42', 0),
-(15, 5, 'Appointment Scheduled', 'Your appointment on 2025-01-09 at 04:00 PM has been confirmed.', '2025-01-03 15:58:52', 0);
+(15, 5, 'Appointment Scheduled', 'Your appointment on 2025-01-09 at 04:00 PM has been confirmed.', '2025-01-03 15:58:52', 0),
+(16, 6, 'Appointment Scheduled', 'Your appointment on 2025-01-10 at 08:00 AM has been confirmed.', '2025-01-04 20:43:48', 0);
 
 -- --------------------------------------------------------
 
@@ -228,8 +232,8 @@ CREATE TABLE `employee` (
 
 INSERT INTO `employee` (`id`, `lastName`, `middleName`, `firstName`, `address`, `mobile_number`, `email_add`, `status`, `birthday`) VALUES
 (1, 'rueras', 'Eco', 'Monique', 'santa mesa', '09709573613', 'ritchellerueras@gmail.com', 'active', '2011-06-02'),
-(2, 'Cabigting', 'xasd', 'claireza', 'pasig city', '09709573613', 'ritchellerueras@gmail.com', 'active', '2024-11-01'),
-(3, 'mema', 'haha', 'MAMA', 'santa mesa', '09709573613', 'ritchellerueras@gmail.com', 'active', '2024-10-28'),
+(2, 'Cabigting', 'xasd', 'claireza', 'pasig city', '09709573613', 'ritchellerueras@gmail.com', 'inactive', '2024-11-01'),
+(3, 'mema', 'haha', 'MAMA', 'santa mesa', '09709573613', 'ritchellerueras@gmail.com', 'inactive', '2024-10-28'),
 (4, 'charlene', 'Rue', 'Baltazar', 'quezon city', '09876543212', 'char@gmail.com', 'active', '2022-12-11'),
 (5, 'Rueras', 'Taganas', 'Julie Joy', 'Surigao City', '09876543234', 'ritchellerueras@gmail.com', 'active', '2022-10-05'),
 (6, 'Arante', 'Isabelle', 'Julliana', 'quezon city', '09876543234', 'ritchellerueras@gmail.com', 'active', '2002-02-17');
@@ -265,18 +269,19 @@ INSERT INTO `notifications` (`id`, `title`, `description`, `timestamp`, `isRead`
 (9, 'New Payment Received', 'Client John Doe paid 15.00 USD.', '2024-12-19 15:09:46', 0, NULL),
 (10, 'Appointment', 'Appointment with Ritchelle Rueras (ritchellerueras@gmail.com) on 2024-12-19 at 16:00.', '2024-12-19 15:48:06', 0, NULL),
 (11, 'Appointment', 'Appointment with mornik (ritchellerueras@gmail.com) on 2024-12-19 at 16:00.', '2024-12-19 15:57:08', 0, NULL),
-(12, 'Appointment', 'Appointment with mornik (ritchellerueras@gmail.com) on 2024-12-19 at 16:00.', '2024-12-19 16:02:34', 0, NULL),
-(13, 'Appointment', 'Appointment with Julie Joy Rueras (ritchellerueras@gmail.com) on 2024-12-20 at 08:00.', '2024-12-19 16:06:15', 0, NULL),
+(12, 'Appointment', 'Appointment with mornik (ritchellerueras@gmail.com) on 2024-12-19 at 16:00.', '2024-12-19 16:02:34', 1, NULL),
+(13, 'Appointment', 'Appointment with Julie Joy Rueras (ritchellerueras@gmail.com) on 2024-12-20 at 08:00.', '2024-12-19 16:06:15', 1, NULL),
 (14, 'New Client Added', 'Client Julie Rueras has been successfully created.', '2024-12-19 16:21:35', 0, NULL),
-(15, 'Appointment', 'Appointment with Julie Rueras (ruerasritchelle07@gmail.com) on 2025-01-02 at 09:00 AM.', '2024-12-30 00:36:09', 0, NULL),
+(15, 'Appointment', 'Appointment with Julie Rueras (ruerasritchelle07@gmail.com) on 2025-01-02 at 09:00 AM.', '2024-12-30 00:36:09', 1, NULL),
 (16, 'Appointment', 'Appointment with christ Christopher (ritchellerueras@gmail.com) on 2025-01-02 at 03:00 PM.', '2024-12-30 00:52:54', 0, NULL),
 (17, 'Appointment', 'Appointment with Poca Poca (ritchellerueras@gmail.com) on 2025-01-02 at 12:00 PM.', '2024-12-30 01:06:17', 0, NULL),
-(18, 'Appointment', 'Appointment with Julie Rueras (ruerasritchelle07@gmail.com) on 2025-01-03 at 12:00 PM.', '2024-12-30 01:08:41', 0, NULL),
+(18, 'Appointment', 'Appointment with Julie Rueras (ruerasritchelle07@gmail.com) on 2025-01-03 at 12:00 PM.', '2024-12-30 01:08:41', 1, NULL),
 (19, 'Appointment', 'Appointment with christ Christopher (ritchellerueras@gmail.com) on 2025-01-04 at 09:00 AM.', '2024-12-30 01:30:31', 0, NULL),
 (20, 'New Payment Received', 'Client John Doe paid 50.00 USD.', '2025-01-02 10:06:57', 0, NULL),
 (21, 'New Payment Received', 'Client John Doe paid 45.00 USD.', '2025-01-02 10:38:49', 0, NULL),
 (22, 'Appointment', 'Appointment with claireza Rueras (ritchellerueras@gmail.com) on 2025-01-08 at 09:00 AM.', '2025-01-03 11:55:42', 0, NULL),
-(23, 'Appointment', 'Appointment with Kyle Rueras (ritchelle.rueras@tup.edu.ph) on 2025-01-09 at 04:00 PM.', '2025-01-03 15:58:52', 0, NULL);
+(23, 'Appointment', 'Appointment with Kyle Rueras (ritchelle.rueras@tup.edu.ph) on 2025-01-09 at 04:00 PM.', '2025-01-03 15:58:52', 0, NULL),
+(24, 'Appointment', 'Appointment with mimi mema (clarieza@gmail.com) on 2025-01-10 at 08:00 AM.', '2025-01-04 20:43:48', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -339,8 +344,8 @@ CREATE TABLE `project` (
 
 INSERT INTO `project` (`id`, `clientName`, `projectName`, `description`, `startDate`, `endDate`, `status`, `created_at`, `isDeleted`, `clientId`, `contractPrice`, `paymentStatus`, `downpayment`, `totalPayment`) VALUES
 (6, 'John Doe', 'qwqw', 'dnasjdjs', '2024-11-15', '2024-11-22', 'ongoing', '2024-11-14 07:29:16', 1, 5, 0.00, 'Not Paid', NULL, 0.00),
-(7, 'Monique Cabigting', 'Coffee Project', 'kapehan', '2024-11-29', '2025-01-10', 'ongoing', '2024-11-14 09:49:23', 0, 5, 1578.00, 'Not Paid', NULL, 12278.00),
-(8, 'Ritchelle Rueras', 'APT', 'rose blk', '2024-11-15', '2024-12-07', 'ongoing', '2024-11-14 10:06:23', 0, 5, 0.00, 'Not Paid', NULL, 0.00),
+(7, 'Monique Cabigting', 'Coffee Project', 'kapehan', '2024-11-29', '2025-01-10', 'ongoing', '2024-11-14 09:49:23', 0, 5, 1578.00, 'Not Paid', NULL, 14953.00),
+(8, 'Ritchelle Rueras', 'APT', 'rose blk', '2024-11-15', '2024-12-07', 'ongoing', '2024-11-14 10:06:23', 0, 5, 0.00, 'Not Paid', NULL, 5000.00),
 (9, 'John Doe', 'PRMS', 'project management system ', '2024-11-16', '2025-04-15', 'ongoing', '2024-11-14 16:52:07', 0, 0, 0.00, 'Not Paid', NULL, 0.00),
 (10, 'Jane Smith', 'DBMS', 'hahahaha', '2024-11-16', '2024-12-05', 'ongoing', '2024-11-14 17:05:19', 0, 0, 0.00, 'Not Paid', NULL, 0.00),
 (11, 'mimi mema', 'qwer', 'dmsd ,', '2024-11-16', '2024-11-23', 'ongoing', '2024-11-14 17:24:15', 0, 0, 0.00, 'Not Paid', NULL, 0.00),
@@ -409,7 +414,9 @@ INSERT INTO `tasks` (`id`, `task_name`, `task_fee`, `due_date`, `employee`, `mis
 (5, 'Develop Login Page', 800.00, '2024-01-20', '2', '[{\"name\": \"Backend setup\", \"fee\": 100}]', 'in-progress', 18, '2024-12-31 08:21:35', '2025-01-02 07:11:49', 900.00),
 (6, 'Testing and QA', 30.00, '2024-01-25', '3', '[{\"name\": \"Testing tools\", \"fee\": 30}]', 'pending', 17, '2024-12-31 08:21:35', '2025-01-02 09:50:36', 60.00),
 (7, 'Database Optimization', 600.00, '2024-02-01', '4', '[{\"name\": \"Database license\", \"fee\": 80}]', 'pending', 18, '2024-12-31 08:21:35', '2025-01-02 07:12:13', 680.00),
-(8, 'BIR', 1000.00, '2025-01-07', '3', '[{\"name\":\"Food\",\"fee\":\"100\"},{\"name\":\"Gas\",\"fee\":\"500\"},{\"name\":\"Accomodation\",\"fee\":\"2000\"}]', 'pending', 7, '2025-01-03 07:28:10', '2025-01-03 07:28:10', 3600.00);
+(8, 'BIR', 1000.00, '2025-01-07', '3', '[{\"name\":\"Food\",\"fee\":\"100\"},{\"name\":\"Gas\",\"fee\":\"500\"},{\"name\":\"Accomodation\",\"fee\":\"2000\"}]', 'pending', 7, '2025-01-03 07:28:10', '2025-01-03 07:28:10', 3600.00),
+(11, 'Payroll', 500.00, '2025-02-05', '4', '[{\"name\":\"Food\",\"fee\":\"200\"},{\"name\":\"Utility\",\"fee\":\"50\"},{\"name\":\"Papers\",\"fee\":\"25\"}]', 'pending', 7, '2025-01-05 06:13:41', '2025-01-05 06:21:01', 775.00),
+(12, 'Music Production', 2000.00, '2025-01-08', '5', '[{\"name\":\"Studio Rent\",\"fee\":\"3000\"}]', 'pending', 8, '2025-01-05 06:26:19', '2025-01-05 06:26:19', 5000.00);
 
 -- --------------------------------------------------------
 
@@ -440,7 +447,8 @@ INSERT INTO `uploads` (`id`, `project_id`, `file_name`, `original_name`, `file_t
 (17, 8, '1735824351251.pdf', 'reg.cor2.pdf', 'application/pdf', '2025-01-02 13:25:51', '5'),
 (18, 8, '1735825716804.pdf', 'RESUME.pdf', 'application/pdf', '2025-01-02 13:48:36', '5'),
 (19, 8, '1735835066875.png', 'Data Flow Diagram.png', 'image/png', '2025-01-02 16:24:26', 'admin'),
-(20, 8, '1735835084923.docx', '6 Proposal Format.docx', 'application/vnd.openxmlformats-officedocument.word', '2025-01-02 16:24:44', 'admin');
+(20, 8, '1735835084923.docx', '6 Proposal Format.docx', 'application/vnd.openxmlformats-officedocument.word', '2025-01-02 16:24:44', 'admin'),
+(21, 7, '1735963959226.pptx', 'GROUP-4-iConsult.pptx', 'application/vnd.openxmlformats-officedocument.pres', '2025-01-04 04:12:39', '5');
 
 --
 -- Indexes for dumped tables
@@ -523,13 +531,13 @@ ALTER TABLE `uploads`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `availability`
 --
 ALTER TABLE `availability`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `client`
@@ -541,7 +549,7 @@ ALTER TABLE `client`
 -- AUTO_INCREMENT for table `client_notifications`
 --
 ALTER TABLE `client_notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `employee`
@@ -553,7 +561,7 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -577,13 +585,13 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `uploads`
 --
 ALTER TABLE `uploads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables

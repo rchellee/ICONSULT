@@ -12,7 +12,7 @@ body {
 .appointment-form-container {
   max-width: 1100px;
   margin: 40px auto; /* Center horizontally */
-  padding: 20px;
+  padding: 0;
 }
 
 .content-calendar {
@@ -132,7 +132,7 @@ header {
 }
 
 header .current-date {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: #333;
 }
 

@@ -185,19 +185,18 @@ const Availability = () => {
   return (
     <div>
       <Topbar />
-
       <div className="admin-appointment-form-container">
         <Sidebar />
         <div className="content-availability">
           <h3>Set Your Availability</h3>
-          <div style={{ display: "flex", gap: "60px" }}>
+          <div style={{ display: "flex", gap: "10px" }}>
             <AvailableCalendar
               availableDates={{ ...existingDates }}
               onDateSelect={handleDateSelect}
             />
             <Box
               sx={{
-                width: 800,
+                width: 600,
                 padding: 2,
                 border: "1px solid #ccc",
                 borderRadius: 4,
@@ -215,7 +214,7 @@ const Availability = () => {
                     overflowY: "auto", // Enable vertical scrolling
                     backgroundColor: "#ffffff", // Optional: Background color for the scrollable area
                     border: "1px solid #ccc", // Optional: Border for better visual separation
-                    borderRadius: 4,
+                    borderRadius: 2,
                     padding: 1,
                   }}
                 >

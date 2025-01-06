@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
 import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
@@ -16,7 +15,10 @@ const PostsTab = ({
 }) => {
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
-  const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false); // State for showing miscellaneous form
+  const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false);
+  const miscData = selectedTaskDetails?.miscellaneous || [];
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -28,7 +30,6 @@ const PostsTab = ({
           throw new Error("Failed to fetch tasks");
         }
         const data = await response.json();
-        console.log("Fetched tasks:", data.tasks);
 
         setTasks(data.tasks);
       } catch (error) {
@@ -41,8 +42,9 @@ const PostsTab = ({
     }
   }, [projectId]);
 
-  const handleRowClick = (task) => {
+  const handleRowClick = async (task) => {
     console.log("Row clicked:", task);
+    setLoading(true);
     setSelectedTaskName(task.task_name);
     try {
       const response = await fetch(`http://localhost:8081/tasks/${task.id}`);
@@ -71,7 +73,7 @@ const PostsTab = ({
   const calculateTotal = (task) => {
     const task_fee = parseFloat(task.task_fee) || 0;
     const miscellaneousFee =
-      task.miscellaneous && Array.isArray(task.miscellaneous)
+      task.miscellaneous && Array.isArray(selectedTaskDetails?.miscellaneous)
         ? task.miscellaneous.reduce(
             (total, item) => total + (parseFloat(item.fee) || 0),
             0
@@ -91,13 +93,6 @@ const PostsTab = ({
     console.log("Updated selectedTaskDetails:", updatedTask);
   };
 
-  console.log("Tasks passed to PostsTab:", tasks);
-  console.log("Selected Task Details:", selectedTaskDetails);
-  console.log(
-    "Miscellaneous in selected task:",
-    selectedTaskDetails?.miscellaneous
-  );
-
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
@@ -112,7 +107,7 @@ const PostsTab = ({
           </button>
         </div>
 
-        {selectedTaskName ? (
+        {selectedTaskDetails ? (
           <div className="task-details">
             <div className="task-detail-row">
               <div>
@@ -139,20 +134,20 @@ const PostsTab = ({
             </div>
 
             {/* Loop through miscellaneous entries and display them */}
-            {selectedTaskDetails?.miscellaneous &&
-            Array.isArray(selectedTaskDetails.miscellaneous) &&
-            selectedTaskDetails.miscellaneous.length > 0 ? (
-              selectedTaskDetails.miscellaneous.map((misc, index) => (
-                <div className="task-detail-row" key={index}>
-                  <div>{misc.name}</div>
-                  <div className="align-right">{misc.fee}</div>
+            {Array.isArray(selectedTaskDetails?.miscellaneous) ? (
+              selectedTaskDetails.miscellaneous.map((item, index) => (
+                <div key={index}>
+                  <p>Name: {item.name}</p>
+                  <p>Fee: {item.fee}</p>
                 </div>
               ))
             ) : (
-              <div className="task-detail-row">No Miscellaneous added yet</div>
+              <p>
+                Miscellaneous data is not available or not in the expected
+                format.
+              </p>
             )}
 
-            {/* Total Row */}
             <div className="task-detail-row total-row">
               <div>
                 <strong>Total</strong>
@@ -186,9 +181,13 @@ const PostsTab = ({
                   const miscellaneousItems = JSON.parse(
                     task.miscellaneous || "[]"
                   );
-                  const miscellaneousDetails = miscellaneousItems
-                    .map((item) => `${item.name}: ${item.fee}`)
-                    .join(", ");
+                  const miscellaneousDetails =
+                    Array.isArray(miscellaneousItems) &&
+                    miscellaneousItems.length > 0
+                      ? miscellaneousItems
+                          .map((item) => `${item.name}: ${item.fee}`)
+                          .join(", ")
+                      : "N/A";
 
                   return (
                     <tr key={task.id} onClick={() => handleRowClick(task)}>
@@ -227,7 +226,6 @@ const PostsTab = ({
           />
         )}
 
-        {/* Miscellaneous Form */}
         {showMiscellaneousForm && (
           <MiscellaneousForm
             task={selectedTaskDetails}
