@@ -8,6 +8,7 @@
   
   .files-tab-content {
     padding: 20px;
+    
   }
   
   .upload-section {
@@ -23,6 +24,9 @@
     border-radius: 5px;
     cursor: pointer;
     text-align: center;
+    margin-left: -100px;
+    margin-top: -20px;
+    
     
   }
   
@@ -33,12 +37,41 @@
   .file-list {
     width: 100%;
     border-collapse: collapse;
+    margin-top: 20px;
+    margin-left: -100px;
   }
   
+  .file-list::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+  }
+  
+  .file-list::-webkit-scrollbar-thumb {
+    background-color: #888; /* Scrollbar color */
+    border-radius: 5px; /* Round edges */
+  }
+  
+  .file-list::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Hover effect on the scrollbar */
+  }
+  
+  .file-list::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Scrollbar track color */
+  }
+
+  .file-list-scrollable {
+    max-height: 200px; /* Adjust height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+    border: 1px solid #ccc; /* Optional: to visually define the scrollable area */
+    max-height: 450px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 10px;
+  }
+  
+
   .file-list table {
     width: 100%;
     border: none; /* Removed border */
-    
   }
   
   .file-list th,
@@ -59,6 +92,26 @@
   .file-list tr:hover {
     background-color: #c1c1c1;
   }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th {
+    position: sticky;
+    top: 0;
+    background-color: #fff; /* Set a background color to avoid overlapping content */
+    z-index: 1; /* Ensure it's above other content */
+    padding: 10px;
+  }
+  
+  th, td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+
   
   /* Style for the action button */
  /* Action Button (Three Dots) */

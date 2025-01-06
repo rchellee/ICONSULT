@@ -82,6 +82,7 @@
   overflow-y: scroll; /* Enables vertical scrolling */
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch devices */
   padding-right: 10px; /* Adds space between the table and the scrollbar */
+  margin-top: 20px;
 }
 
 /* Inner Container to Separate Table from Scrollbar */
@@ -116,6 +117,7 @@
   border-right: 2px solid #dadada;
   border-radius: 10px;
   background-color: #f0f8ff;
+  
 }
 
 /* Sticky header styles */
