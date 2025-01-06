@@ -1,0 +1,81 @@
+/* Topbar Styles */
+.logo-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .logo-topbar-img {
+    height: 40px;
+    width: auto;
+    margin-right: 10px;
+  }
+  
+  .MuiAppBar-root {
+    box-shadow: none; /* Removes default shadow */
+    height: 90px; /* Expands the height of the top bar */
+  }
+  
+  .MuiToolbar-root {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 90px; /* Matches the new height of the top bar */
+  }
+  
+  .MuiTypography-body1 {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .MuiIconButton-root {
+    padding: 8px;
+  }
+  
+  .MuiAvatar-root {
+    height: 35px;
+    width: 35px;
+    background-color: #0056b3;
+    color: white;
+    font-size: 1.1rem;
+  }
+  
+  .MuiMenu-paper {
+    border: 1px solid #d1d1d1;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .MuiMenuItem-root {
+    font-size: 14px;
+    padding: 8px 16px;
+    color: #143d58;
+  }
+  
+  .MuiMenuItem-root:hover {
+    background-color: #e9f4fb;
+  }
+  
+  /* Custom Styles for Logout and Account Options */
+  .MuiMenuItem-root:first-of-type {
+    font-weight: bold;
+  }
+  
+  .MuiMenuItem-root:last-of-type {
+    color: #ff4d4d;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .logo-topbar-img {
+      height: 30px;
+    }
+  
+    .MuiTypography-body1 {
+      font-size: 14px;
+    }
+  
+    .MuiAvatar-root {
+      height: 30px;
+      width: 30px;
+    }
+  }
