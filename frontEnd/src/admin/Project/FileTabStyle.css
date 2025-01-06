@@ -227,4 +227,10 @@
     background-color: #f0f0f0;
   }
 
+  .no-files-message {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #888;
+  }
   

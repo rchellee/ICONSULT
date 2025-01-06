@@ -37,7 +37,13 @@
 }
 
 .posts-tab-content {
-  margin: 20px;
+  margin-left: 10px;
+  margin-top: 10px;
+  padding: 40px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 .project-posts {
