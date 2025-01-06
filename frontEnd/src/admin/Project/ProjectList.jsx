@@ -8,7 +8,7 @@ const ProjectList = ({
   filteredProjects,
   formatDate,
   handleDelete,
-  onEdit,
+  handleEdit,
   toggleDropdown,
   activeDropdown,
 }) => {
@@ -146,7 +146,7 @@ const ProjectList = ({
     if (action === "delete") {
       handleDelete(selectedProject);
     } else if (action === "edit") {
-      onEdit(selectedProject);
+      handleEdit(selectedProject);
     }
     setShowModal(false);
   };
@@ -240,9 +240,9 @@ const ProjectList = ({
                 </button>
                 {activeDropdown === project.id && (
                   <div className="dropdown-menu">
-                    <button onClick={() => onEdit(project.id)}>Edit</button>
+                    <button onClick={() => handleEdit(project.id)}>Edit</button>
                     <button onClick={() => handleDelete(project.id)}>
-                      Move to Trash
+                      Trash
                     </button>
                   </div>
                 )}
@@ -256,12 +256,8 @@ const ProjectList = ({
               <div className="modal-header">
                 <MdCancel className="cancel-icon" onClick={closeModal} />
               </div>
-              <button onClick={() => handleContextMenuAction("edit")}>
-                Edit
-              </button>
-              <button onClick={() => handleContextMenuAction("delete")}>
-                Delete
-              </button>
+              <button onClick={() => handleEdit(project.id)}>Edit</button>
+              <button onClick={() => handleDelete(project.id)}>Delete</button>
             </div>
           </div>
         )}
