@@ -104,12 +104,6 @@ const PostsTab = ({
     }
   };
 
-  const handleEdit = () => {
-    console.log("Edit task", selectedTaskId);
-    
-    setShowActions(null); 
-  };
-
   const handleEditTask = (task) => {
     setSelectedTaskDetails(task);
     setShowTaskForm(true);
@@ -244,7 +238,7 @@ const PostsTab = ({
                         {/* Floating Action Box */}
                         {showActions === task.id && (
                           <div className="post-click-popup">
-                            <button onClick={handleEdit}>Edit</button>
+                            <button onClick={handleEditTask}>Edit</button>
                             <button onClick={handleDelete}>Delete</button>
                           </div>
                         )}

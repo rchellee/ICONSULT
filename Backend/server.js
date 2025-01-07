@@ -1163,7 +1163,7 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+  const { taskName, taskFee, dueDate, employee, miscellaneous, status, projectId } =
     req.body;
 
   // Calculate total miscellaneous fees
@@ -1178,7 +1178,7 @@ app.put("/tasks/:id", (req, res) => {
 
   const updateTaskSql = `
     UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ? 
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, status = ?, amount = ?
     WHERE id = ?`;
 
   db.query(
@@ -1189,6 +1189,7 @@ app.put("/tasks/:id", (req, res) => {
       dueDate,
       employee,
       JSON.stringify(miscellaneous),
+      status,
       totalAmount,
       id,
     ],
