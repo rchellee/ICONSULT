@@ -962,13 +962,12 @@ app.post("/project", (req, res) => {
     endDate,
     status,
     contractPrice,
-    downpayment = null, // Optional
-    paymentStatus = "Not Paid", // Default to Not Paid
-    totalPayment,
+    downpayment = null,
+    paymentStatus = "Not Paid",
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, totalPayment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -982,7 +981,6 @@ app.post("/project", (req, res) => {
       contractPrice,
       downpayment,
       paymentStatus,
-      totalPayment,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -998,7 +996,6 @@ app.post("/project", (req, res) => {
         contractPrice,
         downpayment,
         paymentStatus,
-        totalPayment,
       });
     }
   );
@@ -1048,11 +1045,10 @@ app.put("/project/:id", (req, res) => {
     contractPrice,
     downpayment,
     paymentStatus,
-    totalPayment,
   } = req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ?, totalPayment = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1066,7 +1062,6 @@ app.put("/project/:id", (req, res) => {
       contractPrice,
       downpayment,
       paymentStatus,
-      totalPayment,
       projectId,
     ],
     (err, result) => {
@@ -1084,7 +1079,6 @@ app.put("/project/:id", (req, res) => {
         contractPrice,
         downpayment,
         paymentStatus,
-        totalPayment,
       });
     }
   );
@@ -1123,57 +1117,6 @@ app.delete("/project/:id", (req, res) => {
     }
   });
 });
-app.patch("/project/recalculate-total/:id", (req, res) => {
-  const { id } = req.params;
-
-  const recalculateSql = `
-    UPDATE project 
-    SET totalPayment = (
-      SELECT COALESCE(SUM(amount), 0) + contractPrice 
-      FROM tasks 
-      WHERE project_id = ?
-    ) 
-    WHERE id = ?`;
-
-  db.query(recalculateSql, [id, id], (err, result) => {
-    if (err) {
-      console.error("Error recalculating totalPayment: ", err);
-      return res.status(500).json({
-        message: "Error recalculating totalPayment",
-        error: err.message,
-      });
-    }
-
-    res
-      .status(200)
-      .json({ message: "Total payment recalculated successfully" });
-  });
-});
-
-// const backfillTotalPayment = () => {
-//   const updateTotalPaymentSql = `
-//     UPDATE project p
-//     SET p.totalPayment = (
-//       SELECT COALESCE(SUM(t.amount), 0) + p.contractPrice
-//       FROM tasks t
-//       WHERE t.project_id = p.id
-//     )
-//   `;
-
-//   db.query(updateTotalPaymentSql, (err, result) => {
-//     if (err) {
-//       console.error("Error updating totalPayment:", err);
-//       db.end();
-//       return;
-//     }
-
-//     console.log(
-//       `TotalPayment backfilled successfully for ${result.affectedRows} projects`
-//     );
-//     db.end();
-//   });
-// };
-// backfillTotalPayment();
 
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
@@ -1211,29 +1154,9 @@ app.post("/tasks", (req, res) => {
           .json({ message: "Error creating task", error: err.message });
       }
 
-      // Update totalPayment in the project table
-      const updateProjectSql = `
-        UPDATE project 
-        SET totalPayment = (
-          SELECT COALESCE(SUM(amount), 0) + contractPrice 
-          FROM tasks 
-          WHERE project_id = ?
-        ) 
-        WHERE id = ?`;
-
-      db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
-        if (updateErr) {
-          console.error("Error updating totalPayment: ", updateErr);
-          return res.status(500).json({
-            message: "Error updating totalPayment",
-            error: updateErr.message,
-          });
-        }
-
-        res.status(201).json({
-          message: "Task created successfully and totalPayment updated",
-          taskId: result.insertId,
-        });
+      res.status(201).json({
+        message: "Task created successfully",
+        taskId: result.insertId,
       });
     }
   );
@@ -1277,27 +1200,8 @@ app.put("/tasks/:id", (req, res) => {
           .json({ message: "Error updating task", error: err.message });
       }
 
-      const updateProjectSql = `
-        UPDATE project 
-        SET totalPayment = (
-          SELECT COALESCE(SUM(amount), 0) + contractPrice 
-          FROM tasks 
-          WHERE project_id = ?
-        ) 
-        WHERE id = ?`;
-
-      db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
-        if (updateErr) {
-          console.error("Error updating totalPayment:", updateErr);
-          return res.status(500).json({
-            message: "Error updating totalPayment",
-            error: updateErr.message,
-          });
-        }
-
-        res.status(200).json({
-          message: "Task updated successfully and totalPayment updated",
-        });
+      res.status(200).json({
+        message: "Task updated successfully",
       });
     }
   );
@@ -1735,7 +1639,8 @@ app.get("/tasksDashboard/count", (req, res) => {
   if (filter === "weekly") {
     timeCondition = "YEARWEEK(due_date, 1) = YEARWEEK(CURDATE(), 1)";
   } else if (filter === "monthly") {
-    timeCondition = "MONTH(due_date) = MONTH(CURDATE()) AND YEAR(due_date) = YEAR(CURDATE())";
+    timeCondition =
+      "MONTH(due_date) = MONTH(CURDATE()) AND YEAR(due_date) = YEAR(CURDATE())";
   } else if (filter === "yearly") {
     timeCondition = "YEAR(due_date) = YEAR(CURDATE())";
   }
@@ -1746,7 +1651,9 @@ app.get("/tasksDashboard/count", (req, res) => {
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching tasks count:", err);
-      return res.status(500).json({ message: "Error retrieving tasks count", error: err });
+      return res
+        .status(500)
+        .json({ message: "Error retrieving tasks count", error: err });
     }
     res.status(200).json({ total: result[0].total });
   });

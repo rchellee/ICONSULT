@@ -5,11 +5,12 @@ import "./overview.css";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
-  return date.toISOString().split("T")[0]; // Returns YYYY-MM-DD
+  return date.toISOString().split("T")[0];
 }
 
 function ProjectOverview({ projectId }) {
   const [project, setProject] = useState(null);
+  const [tasksTotal, setTasksTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -23,10 +24,22 @@ function ProjectOverview({ projectId }) {
         } else {
           setProject(null);
         }
-        setIsLoading(false);
       })
       .catch((err) => {
         setError("Error fetching project details. Please try again later.");
+      });
+
+      axios
+      .get(`http://localhost:8081/admin/tasks?projectId=${projectId}`)
+      .then((response) => {
+        const tasks = response.data.tasks || [];
+        const totalAmount = tasks.reduce((sum, task) => sum + task.amount, 0);
+        setTasksTotal(totalAmount);
+      })
+      .catch((err) => {
+        console.error("Error fetching tasks:", err);
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   }, [projectId]);
@@ -34,7 +47,8 @@ function ProjectOverview({ projectId }) {
   if (isLoading) return <p>Loading project overview...</p>;
   if (error) return <p className="error">{error}</p>;
 
-  const remainingPayment = project ? project.totalPayment - project.downpayment : 0;
+  const totalPayment = (project?.contractPrice || 0) + tasksTotal;
+  const remainingPayment = totalPayment - (project?.downpayment || 0);
 
   const handlePaymentClick = () => {
     navigate("/payment", { state: { projectId, amount: remainingPayment } });
@@ -74,14 +88,18 @@ function ProjectOverview({ projectId }) {
           <table className="payment-table">
             <thead>
               <tr>
-                <th>Contract Price</th>
+                <th>Contract Fee</th>
+                <th>Tasks</th>
+                <th>Total</th>
                 <th>Downpayment</th>
-                <th>To be Paid</th>
+                <th>Balance</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>₱ {project.contractPrice}.00</td>
+                <td>₱ {tasksTotal}.00</td>
+                <td>₱ {totalPayment}.00</td>
                 <td>₱ {project.downpayment}.00</td>
                 <td>₱ {remainingPayment}.00</td>
               </tr>
