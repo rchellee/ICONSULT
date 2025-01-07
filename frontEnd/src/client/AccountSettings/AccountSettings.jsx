@@ -157,118 +157,121 @@ const AccountSettings = () => {
   };
 
   return (
-    <div className="account-settings">
+    <div>
       <Topbar />
       <Sidebar />
-      <div className="content">
-        <h2>Account Settings</h2>
 
-        {isUpdatingPassword ? (
-          <form onSubmit={(e) => e.preventDefault()}>
-            {!codeSent && (
-              <>
-                <div>
-                  <label>New Password:</label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label>Confirm New Password:</label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            {!codeSent ? (
-              <button type="button" onClick={sendVerificationCode}>
-                Submit
-              </button>
-            ) : (
-              <>
-                <div>
-                  <label>Enter Verification Code:</label>
-                  <input
-                    type="text"
-                    value={enteredCode}
-                    onChange={(e) => setEnteredCode(e.target.value)}
-                  />
-                </div>
-                <button type="button" onClick={verifyCodeAndProceed}>
+      <div className="account-settings">
+        <div className="content">
+          <h2>Account Settings</h2>
+
+          {isUpdatingPassword ? (
+            <form onSubmit={(e) => e.preventDefault()}>
+              {!codeSent && (
+                <>
+                  <div>
+                    <label>New Password:</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label>Confirm New Password:</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                </>
+              )}
+              {!codeSent ? (
+                <button type="button" onClick={sendVerificationCode}>
                   Submit
                 </button>
+              ) : (
+                <>
+                  <div>
+                    <label>Enter Verification Code:</label>
+                    <input
+                      type="text"
+                      value={enteredCode}
+                      onChange={(e) => setEnteredCode(e.target.value)}
+                    />
+                  </div>
+                  <button type="button" onClick={verifyCodeAndProceed}>
+                    Submit
+                  </button>
+                </>
+              )}
+              {isVerified && (
+                <button type="button" onClick={(e) => handlePasswordChange(e)}>
+                  Confirm Changes
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdatingPassword(false);
+                  setMessage("");
+                  setCodeSent(false);
+                  setIsVerified(false);
+                  setNewPassword(""); // Clear password fields
+                  setConfirmPassword(""); // Clear confirm password fields
+                }}
+              >
+                Cancel
+              </button>
+              {message && <div className="message">{message}</div>}
+            </form>
+          ) : (
+            clientDetails && (
+              <>
+                <div>
+                  <p>
+                    <strong>Name:</strong> {clientDetails.firstName}{" "}
+                    {clientDetails.middleInitial} {clientDetails.lastName}
+                  </p>
+                  <p>
+                    <strong>Username:</strong> {clientDetails.username}
+                  </p>
+                  <p>
+                    <strong>Phone number:</strong> {clientDetails.mobile_number}
+                  </p>
+                  <p>
+                    <strong>Email Address:</strong> {clientDetails.email_add}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {clientDetails.address}
+                  </p>
+                  <p>
+                    <strong>Company:</strong> {clientDetails.companyName}
+                  </p>
+                </div>
+                <button onClick={() => setIsUpdatingPassword(true)}>
+                  Update Password
+                </button>
               </>
-            )}
-            {isVerified && (
-              <button type="button" onClick={(e) => handlePasswordChange(e)}>
-                Confirm Changes
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                setIsUpdatingPassword(false);
-                setMessage("");
-                setCodeSent(false);
-                setIsVerified(false);
-                setNewPassword(""); // Clear password fields
-                setConfirmPassword(""); // Clear confirm password fields
-              }}
-            >
+            )
+          )}
+        </div>
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Confirm Changes</DialogTitle>
+          <DialogContent>
+            <Typography>{confirmationMessage}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => handleDialogClose(false)} color="primary">
               Cancel
-            </button>
-            {message && <div className="message">{message}</div>}
-          </form>
-        ) : (
-          clientDetails && (
-            <>
-              <div>
-                <p>
-                  <strong>Name:</strong> {clientDetails.firstName}{" "}
-                  {clientDetails.middleInitial} {clientDetails.lastName}
-                </p>
-                <p>
-                  <strong>Username:</strong> {clientDetails.username}
-                </p>
-                <p>
-                  <strong>Phone number:</strong> {clientDetails.mobile_number}
-                </p>
-                <p>
-                  <strong>Email Address:</strong> {clientDetails.email_add}
-                </p>
-                <p>
-                  <strong>Address:</strong> {clientDetails.address}
-                </p>
-                <p>
-                  <strong>Company:</strong> {clientDetails.companyName}
-                </p>
-              </div>
-              <button onClick={() => setIsUpdatingPassword(true)}>
-                Update Password
-              </button>
-            </>
-          )
-        )}
+            </Button>
+            <Button onClick={() => handleDialogClose(true)} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Confirm Changes</DialogTitle>
-        <DialogContent>
-          <Typography>{confirmationMessage}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => handleDialogClose(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => handleDialogClose(true)} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };

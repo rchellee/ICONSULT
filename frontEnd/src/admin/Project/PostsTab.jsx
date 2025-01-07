@@ -12,7 +12,7 @@ const PostsTab = ({
   showTaskForm,
   handleCreateTask,
   handleCancelForm,
-  setTasks, 
+  setTasks,
 }) => {
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
@@ -94,7 +94,7 @@ const PostsTab = ({
   };
 
   const handleActionClick = (event, taskId) => {
-    event.stopPropagation();  // Prevent the click event from bubbling up
+    event.stopPropagation(); // Prevent the click event from bubbling up
     if (showActions === taskId) {
       setShowActions(null); // Close if the same task's action button is clicked
     } else {
@@ -133,7 +133,7 @@ const PostsTab = ({
           <div className="task-details">
             <div className="task-detail-row">
               <div>
-                <strong>Task Name</strong>
+                <strong>Task</strong>
               </div>
               <div className="align-right amount-label">
                 <strong>Amount</strong>
@@ -153,17 +153,28 @@ const PostsTab = ({
                   +
                 </button>
               </div>
+              <div className="align-right amount-label">
+                <strong>Fee</strong>
+              </div>
             </div>
-            {/* Loop through miscellaneous entries and display them */}
             {Array.isArray(selectedTaskDetails?.miscellaneous) ? (
               selectedTaskDetails.miscellaneous.map((item, index) => (
                 <div key={index}>
-                  <p>Name: {item.name}</p>
-                  <p>Fee: {item.fee}</p>
+                  <div className="task-detail-row">
+                    <div>
+                      <p> {item.name}</p>
+                    </div>
+                    <div className="align-right amount-label">
+                      <p> {item.fee}</p>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
-              <p>Miscellaneous data is not available or not in the expected format.</p>
+              <p>
+                Miscellaneous data is not available or not in the expected
+                format.
+              </p>
             )}
 
             <div className="task-detail-row total-row">
@@ -197,9 +208,12 @@ const PostsTab = ({
               </thead>
               <tbody>
                 {tasks.map((task) => {
-                  const miscellaneousItems = JSON.parse(task.miscellaneous || "[]");
+                  const miscellaneousItems = JSON.parse(
+                    task.miscellaneous || "[]"
+                  );
                   const miscellaneousDetails =
-                    Array.isArray(miscellaneousItems) && miscellaneousItems.length > 0
+                    Array.isArray(miscellaneousItems) &&
+                    miscellaneousItems.length > 0
                       ? miscellaneousItems
                           .map((item) => `${item.name}: ${item.fee}`)
                           .join(", ")
