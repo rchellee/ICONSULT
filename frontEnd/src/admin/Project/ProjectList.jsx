@@ -75,7 +75,7 @@ const ProjectList = ({
           }
           const data = await response.json();
           const completedTasks = data.tasks.filter(
-            (task) => task.status === "completed"
+            (task) => task.status === "Completed"
           ).length;
           info[project.id] = {
             total: data.tasks.length,

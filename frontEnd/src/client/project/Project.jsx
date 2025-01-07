@@ -50,7 +50,7 @@ function Project() {
     if (totalTasks === 0) return "N/A";
 
     const completedTasks = projectTasks.filter(
-      (task) => task.status === "completed"
+      (task) => task.status === "Completed"
     ).length;
     return Math.round((completedTasks / totalTasks) * 100);
   };
