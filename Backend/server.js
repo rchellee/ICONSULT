@@ -746,7 +746,6 @@ app.put("/clients/:id", (req, res) => {
     }
   });
 });
-
 // Endpoint to update client details
 app.put("/client/:id", (req, res) => {
   const clientId = req.params.id;
@@ -1150,6 +1149,7 @@ app.patch("/project/recalculate-total/:id", (req, res) => {
       .json({ message: "Total payment recalculated successfully" });
   });
 });
+
 // const backfillTotalPayment = () => {
 //   const updateTotalPaymentSql = `
 //     UPDATE project p
@@ -1190,7 +1190,7 @@ app.post("/tasks", (req, res) => {
   }
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
   const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
-             VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
+             VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)`;
 
   db.query(
     tasksSql,
@@ -1552,6 +1552,7 @@ app.delete("/appointments/:id", (req, res) => {
       .json({ message: "Appointment deleted successfully" });
   });
 });
+
 // const backfillTimeFormat = () => {
 //   const updateTimeFormatSql = `
 //     UPDATE appointments
@@ -1682,6 +1683,100 @@ app.get("/reviews", (req, res) => {
     } else {
       res.status(200).json(results);
     }
+  });
+});
+
+//for dashboard
+app.get("/clientsDashboard/count", (req, res) => {
+  const { filter } = req.query; // e.g., 'weekly', 'monthly', 'yearly'
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  const sql = `SELECT COUNT(*) AS total FROM client ${dateCondition}`;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]); // Respond with the count
+  });
+});
+app.get("/projectsDashboard/count", (req, res) => {
+  const { filter, status } = req.query;
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  let statusCondition = "";
+  if (status) {
+    statusCondition = `AND status = '${status}'`;
+  }
+
+  const sql = `SELECT COUNT(*) AS total FROM project WHERE isDeleted = 0 ${dateCondition} ${statusCondition}`;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]);
+  });
+});
+app.get("/tasksDashboard/count", (req, res) => {
+  const { filter, status } = req.query;
+
+  let timeCondition = "";
+  if (filter === "weekly") {
+    timeCondition = "YEARWEEK(due_date, 1) = YEARWEEK(CURDATE(), 1)";
+  } else if (filter === "monthly") {
+    timeCondition = "MONTH(due_date) = MONTH(CURDATE()) AND YEAR(due_date) = YEAR(CURDATE())";
+  } else if (filter === "yearly") {
+    timeCondition = "YEAR(due_date) = YEAR(CURDATE())";
+  }
+
+  const statusCondition = status ? `AND status = '${status}'` : "";
+  const sql = `SELECT COUNT(*) AS total FROM tasks WHERE ${timeCondition} ${statusCondition}`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching tasks count:", err);
+      return res.status(500).json({ message: "Error retrieving tasks count", error: err });
+    }
+    res.status(200).json({ total: result[0].total });
+  });
+});
+
+app.get("/appointmentsDashboard/count", (req, res) => {
+  const { filter, status } = req.query;
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  let statusCondition = "";
+  if (status === "upcoming") {
+    statusCondition = "AND DATE(date) >= CURDATE()";
+  }
+  const sql = `
+  SELECT COUNT(*) AS total 
+  FROM appointments 
+  WHERE 1=1 ${dateCondition} ${statusCondition}
+`;
+
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]); // Respond with the count
   });
 });
 

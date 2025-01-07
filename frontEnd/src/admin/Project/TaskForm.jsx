@@ -33,6 +33,19 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
   }, [projectId]);
 
   useEffect(() => {
+    if (existingTask) {
+      setTaskName(existingTask.task_name || "");
+      setTaskFee(existingTask.task_fee || "");
+      setDueDate(existingTask.due_date || "");
+      setEmployee(existingTask.employee || "");
+      setMiscellaneousList(
+        Array.isArray(existingTask.miscellaneous) ? existingTask.miscellaneous : []
+      );
+    }
+  }, [existingTask]);
+  
+
+  useEffect(() => {
     const taskFeeValue = parseFloat(taskFee) || 0;
     const miscellaneousTotal = miscellaneousList.reduce((sum, item) => {
       return sum + (parseFloat(item.fee) || 0);
