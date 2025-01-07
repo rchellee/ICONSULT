@@ -4,7 +4,7 @@ import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
 import { BsThreeDotsVertical } from "react-icons/bs"; // Import BsThreeDotsVertical icon
 import TaskForm from "./Taskform";
 import MiscellaneousForm from "./MiscellaneousForm ";
- 
+
 const PostsTab = ({
   projectId,
   tasks,
@@ -12,7 +12,7 @@ const PostsTab = ({
   showTaskForm,
   handleCreateTask,
   handleCancelForm,
-  setTasks, 
+  setTasks,
 }) => {
   const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
@@ -20,9 +20,9 @@ const PostsTab = ({
   const [loading, setLoading] = useState(false);
   const [showActions, setShowActions] = useState(null); // State for controlling visibility of action buttons
   const [selectedTaskId, setSelectedTaskId] = useState(null); // To track which task is selected for actions
- 
+
   const miscData = selectedTaskDetails?.miscellaneous || [];
- 
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -38,12 +38,12 @@ const PostsTab = ({
         console.error("Error fetching tasks:", error);
       }
     };
- 
+
     if (projectId) {
       fetchTasks();
     }
   }, [projectId]);
- 
+
   const handleRowClick = async (task) => {
     console.log("Row clicked:", task);
     setLoading(true);
@@ -60,7 +60,7 @@ const PostsTab = ({
       setLoading(false);
     }
   };
- 
+
   const parseMiscellaneous = (miscellaneous) => {
     try {
       return JSON.parse(miscellaneous || "[]");
@@ -69,7 +69,7 @@ const PostsTab = ({
       return [];
     }
   };
- 
+
   const calculateTotal = (task) => {
     const task_fee = parseFloat(task.task_fee) || 0;
     const miscellaneousFee =
@@ -81,7 +81,7 @@ const PostsTab = ({
         : 0;
     return task_fee + miscellaneousFee;
   };
- 
+
   const updateTaskWithMiscellaneous = (updatedTask) => {
     setSelectedTaskDetails(updatedTask);
     setShowMiscellaneousForm(false);
@@ -91,9 +91,9 @@ const PostsTab = ({
     setTasks(updatedTasks);
     console.log("Updated selectedTaskDetails:", updatedTask);
   };
- 
+
   const handleActionClick = (event, taskId) => {
-    event.stopPropagation();  // Prevent the click event from bubbling up
+    event.stopPropagation(); // Prevent the click event from bubbling up
     if (showActions === taskId) {
       setShowActions(null); // Close if the same task's action button is clicked
     } else {
@@ -101,19 +101,19 @@ const PostsTab = ({
       setSelectedTaskId(taskId); // Store the taskId for action
     }
   };
- 
+
   const handleEdit = () => {
     console.log("Edit task", selectedTaskId);
     // Implement your edit logic
     setShowActions(null); // Close the action box after editing
   };
- 
+
   const handleDelete = () => {
     console.log("Delete task", selectedTaskId);
     // Implement your delete logic (e.g., API call)
     setShowActions(null); // Close the action box after deleting
   };
- 
+
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
@@ -127,12 +127,12 @@ const PostsTab = ({
             <FaChevronRight />
           </button>
         </div>
- 
+
         {selectedTaskDetails ? (
           <div className="task-details">
             <div className="task-detail-row">
               <div>
-                <strong>Task Name</strong>
+                <strong>Task</strong>
               </div>
               <div className="align-right amount-label">
                 <strong>Amount</strong>
@@ -152,19 +152,30 @@ const PostsTab = ({
                   +
                 </button>
               </div>
+              <div className="align-right amount-label">
+                <strong>Fee</strong>
+              </div>
             </div>
-            {/* Loop through miscellaneous entries and display them */}
             {Array.isArray(selectedTaskDetails?.miscellaneous) ? (
               selectedTaskDetails.miscellaneous.map((item, index) => (
                 <div key={index}>
-                  <p>Name: {item.name}</p>
-                  <p>Fee: {item.fee}</p>
+                  <div className="task-detail-row">
+                    <div>
+                      <p> {item.name}</p>
+                    </div>
+                    <div className="align-right amount-label">
+                      <p> {item.fee}</p>
+                    </div>
+                  </div>
                 </div>
               ))
             ) : (
-              <p>Miscellaneous data is not available or not in the expected format.</p>
+              <p>
+                Miscellaneous data is not available or not in the expected
+                format.
+              </p>
             )}
- 
+
             <div className="task-detail-row total-row">
               <div>
                 <strong>Total</strong>
@@ -196,14 +207,17 @@ const PostsTab = ({
               </thead>
               <tbody>
                 {tasks.map((task) => {
-                  const miscellaneousItems = JSON.parse(task.miscellaneous || "[]");
+                  const miscellaneousItems = JSON.parse(
+                    task.miscellaneous || "[]"
+                  );
                   const miscellaneousDetails =
-                    Array.isArray(miscellaneousItems) && miscellaneousItems.length > 0
+                    Array.isArray(miscellaneousItems) &&
+                    miscellaneousItems.length > 0
                       ? miscellaneousItems
                           .map((item) => `${item.name}: ${item.fee}`)
                           .join(", ")
                       : "N/A";
- 
+
                   return (
                     <tr key={task.id} onClick={() => handleRowClick(task)}>
                       <td>{task.task_name}</td>
@@ -234,7 +248,7 @@ const PostsTab = ({
             </table>
           </div>
         )}
- 
+
         {/* Create Button */}
         <div className="create-button-container">
           <button
@@ -244,7 +258,7 @@ const PostsTab = ({
             +
           </button>
         </div>
- 
+
         {/* Task Form */}
         {showTaskForm && (
           <TaskForm
@@ -266,5 +280,5 @@ const PostsTab = ({
     </div>
   );
 };
- 
+
 export default PostsTab;

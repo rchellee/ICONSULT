@@ -75,7 +75,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending",
+      status: "Ongoing",
       contractPrice,
       downpayment,
       totalPayment:

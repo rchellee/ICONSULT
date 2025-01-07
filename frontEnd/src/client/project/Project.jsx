@@ -87,7 +87,7 @@ function Project() {
         {isProjectsVisible && (
           <div className="project-grid-container">
             {projects
-              .filter((project) => project.status !== "completed")
+              .filter((project) => project.status !== "Completed")
               .map((project) => (
                 <div
                   className="project-grid"
@@ -122,7 +122,7 @@ function Project() {
         {isCompletedVisible && (
           <div className="project-grid-container">
             {projects
-              .filter((project) => project.status === "completed")
+              .filter((project) => project.status === "Completed")
               .map((project) => (
                 <div
                   className="project-grid"
