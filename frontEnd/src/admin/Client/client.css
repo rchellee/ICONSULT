@@ -123,43 +123,230 @@ table td a {
   width: 100%;
   animation: progress 5s linear;
 }
+/***************************** Client form ******************/
+h2::before {
+  content: "";
+  display: block;
+  width: 70px; /* Line width */
+  height: 2px; /* Line height */
+  background-color: #052240; /* Line color */
+  margin: 10px auto; /* Center the line horizontally */
+}
 
-/* client form row */
 .client-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr)  ;
   gap: 20px;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  width: 70%;
-  margin-top: 8px;
-  margin-left: 160px;
+  border-radius: 4px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 75%;
+  box-sizing: border-box;
+  position:relative;
 }
-.client-form-row {
+
+/* Single-column layout for specific fields */
+.client-form-row.full-width {
+  grid-column: span 2; /* Make the row span across both columns */
+}
+
+/* Adjusting the submit button for better alignment */
+
+
+/* Global Styles */
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+/* Input Fields and Select Styling */
+input,
+input[type="radio"] + label,
+input[type="checkbox"] + label:before,
+select option,
+select {
+    width: 100%;
+    padding: 1em;
+    line-height: 1.4;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    transition: all 0.35s ease-in-out;
+}
+input:focus {
+    outline: none;
+    border-color: #576cab;
+}
+input:focus + .input-icon i {
+    color: #114672;
+}
+input:focus + .input-icon:after {
+    border-right-color: #214789;
+}
+
+/* Radio Button Styling */
+input[type="radio"] {
+    display: none;
+}
+input[type="radio"] + label {
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+    float: left;
+    border-radius: 0;
+    padding: 1em;
+    cursor: pointer;
+}
+input[type="radio"] + label:first-of-type {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+input[type="radio"] + label:last-of-type {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+input[type="radio"]:checked + label {
+    background-color: #103879;
+    color: white;
+    border-color: #255c7b;
+}
+.input-group {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #888;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+/* Checkbox Styling */
+input[type="checkbox"] {
+    display: none;
+}
+input[type="checkbox"] + label {
+    position: relative;
+    padding-left: 1.6em;
+    cursor: pointer;
+}
+input[type="checkbox"] + label:before {
+    content: "";
+    position: absolute;
+    top: 0.2em;
+    left: 0;
+    width: 1em;
+    height: 1em;
+    border: 1px solid #e5e5e5;
+    background-color: #f9f9f9;
+    border-radius: 3px;
+}
+input[type="checkbox"]:checked + label:after {
+    content: "\f00c";
+    font-family: FontAwesome;
+    position: absolute;
+    top: 0.45em;
+    left: 0.2em;
+    font-size: 0.8em;
+    color: white;
+    opacity: 1;
+}
+
+/* Select Styling */
+select {
+    height: 3.4em;
+    line-height: 2;
+}
+select:focus {
+    outline: none;
+}
+select option {
+    background-color: #f0a500;
+    color: white;
+}
+
+/* Input Group Styling */
+.input-group {
+    margin-bottom: 1em;
+}
+.input-group-icon {
+    position: relative;
+}
+.input-group-icon input {
+    padding-left: 4.4em;
+}
+.input-group-icon .input-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.4em;
+    height: 3.4em;
+    line-height: 3.4em;
+    text-align: center;
+    pointer-events: none;
+}
+.input-group-icon .input-icon:after {
+    content: "";
+    position: absolute;
+    top: 0.6em;
+    bottom: 0.6em;
+    left: 3.4em;
+    border-right: 1px solid #e5e5e5;
+    transition: all 0.35s ease-in-out;
+}
+
+/* Container and Layout */
+.container {
+    max-width: 38em;
+    padding: 1em 3em 2em;
+    margin: auto;
+    background-color: white;
+    border-radius: 4.2px;
+    box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.2);
+}
+
+.col-half {
+    width: 100%;
+    float: left;
+    padding-right: 10px;
+    
+}
+.col-half:last-of-type {
+    padding-right: 0;
+}
+.col-third {
+    width: 33.333%;
+    float: left;
+    padding-right: 10px;
+}
+.col-third:last-of-type {
+    padding-right: 0;
+}
+
+/* Side-by-side layout for username and password */
+.side-by-side {
+  display: flex;
+  flex-direction: row; /* Horizontal alignment */
+  gap: 20px; /* Space between the fields */
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.side-by-side .input-group {
+  flex: 1; /* Equal width for both input fields */
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.client-form-row input,
-.client-form-row select {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 2px;
-  width: 100%;
-}
-.client-form-row input[type="date"] {
-  padding: 8px;
-}
-.client-form-row select {
-  background-color: #f0f0f0;
-}
-.client-form-row label {
-  font-size: 14px;
-  color: #555;
-}
+
+
 /**************Client Details *******************/
 .tabs-container {
   display: flex;
@@ -249,13 +436,6 @@ table td a {
   border-radius: 4px;
   font-size: 14px;
   transition: border-color 0.3s ease;
-}
-
-/* Form spacing and input styles */
-.client-details-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
 }
 
 .client-form-label {
