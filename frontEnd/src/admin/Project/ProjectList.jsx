@@ -75,7 +75,7 @@ const ProjectList = ({
           }
           const data = await response.json();
           const completedTasks = data.tasks.filter(
-            (task) => task.status === "completed"
+            (task) => task.status === "Completed"
           ).length;
           info[project.id] = {
             total: data.tasks.length,
@@ -90,6 +90,38 @@ const ProjectList = ({
     };
 
     fetchTasksInfo();
+  }, [filteredProjects]);
+
+  useEffect(() => {
+    const fetchTotalPayments = async () => {
+      const totalPayments = {};
+      for (const project of filteredProjects) {
+        try {
+          const response = await fetch(
+            `http://localhost:8081/admin/tasks?projectId=${project.id}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch tasks");
+          }
+          const data = await response.json();
+
+          // Calculate the total amount of tasks for the project
+          const totalTaskAmount = data.tasks.reduce(
+            (sum, task) => sum + (parseFloat(task.amount) || 0),
+            0
+          );
+
+          // Combine contractPrice and totalTaskAmount
+          totalPayments[project.id] = project.contractPrice + totalTaskAmount;
+        } catch (error) {
+          console.error("Error fetching total payment for project:", error);
+          totalPayments[project.id] = project.contractPrice || 0;
+        }
+      }
+      setTotalTasks(totalPayments);
+    };
+
+    fetchTotalPayments();
   }, [filteredProjects]);
 
   const handlePaymentStatusChange = (projectId, newpaymentStatus) => {
@@ -172,6 +204,8 @@ const ProjectList = ({
           const { total = 0, completed = 0 } = tasksInfo[project.id] || {};
           const progress =
             total > 0 ? Math.round((completed / total) * 100) : 0;
+          const totalPayment =
+            totalTasks[project.id] || project.contractPrice || 0;
 
           return (
             <div
@@ -208,7 +242,7 @@ const ProjectList = ({
                 <option value="Completed">Completed</option>
               </select>
               <p>{project.downpayment || "N/A"}</p>
-              <p>{project.totalPayment}</p>
+              <p>{totalPayment}</p>
               <select
                 value={paymentstatuses[project.id] || "Not Paid"}
                 onChange={(e) =>

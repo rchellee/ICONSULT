@@ -54,6 +54,7 @@ const PostsTab = ({
       if (!response.ok) throw new Error("Failed to fetch task details");
       const taskDetails = await response.json();
       taskDetails.miscellaneous = parseMiscellaneous(taskDetails.miscellaneous);
+      handleEditTask(taskDetails);
       setSelectedTaskDetails(taskDetails);
     } catch (error) {
       console.error("Error fetching task details:", error);
@@ -103,11 +104,11 @@ const PostsTab = ({
     }
   };
 
-  const handleEdit = () => {
-    console.log("Edit task", selectedTaskId);
-    
-    setShowActions(null); 
+  const handleEditTask = (task) => {
+    setSelectedTaskDetails(task);
+    setShowTaskForm(true);
   };
+  
 
   const handleDelete = () => {
     console.log("Delete task", selectedTaskId);
@@ -237,7 +238,7 @@ const PostsTab = ({
                         {/* Floating Action Box */}
                         {showActions === task.id && (
                           <div className="post-click-popup">
-                            <button onClick={handleEdit}>Edit</button>
+                            <button onClick={handleEditTask}>Edit</button>
                             <button onClick={handleDelete}>Delete</button>
                           </div>
                         )}
@@ -265,8 +266,9 @@ const PostsTab = ({
           <TaskForm
             projectId={projectId}
             tasks={tasks}
-            handleCreateTask={handleCreateTask}
-            handleCancelForm={handleCancelForm}
+            existingTask={selectedTaskDetails}
+            onCreate={handleCreateTask}
+            onCancel={handleCancelForm}
           />
         )}
 

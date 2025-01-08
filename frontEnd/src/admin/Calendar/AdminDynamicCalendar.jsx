@@ -47,12 +47,15 @@ const AdminDynamicCalendar = ({ availableDates, onDateSelect }) => {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
         i
       ).padStart(2, "0")}`;
-      const status = availableDates[dateStr] || null; // Get status if defined
+      const status = availableDates[dateStr] || null;
+  
+      // Disable past and current dates
+      const isPastOrCurrent = dateObj <= today;
+  
       calendarDays.push({
         date: i,
         currentMonth: true,
-        available:
-          dateObj > today && status !== "fullyBooked",
+        available: !isPastOrCurrent && status !== "fullyBooked",
         fullyBooked: status === "fullyBooked",
         dateStr,
       });

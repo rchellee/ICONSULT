@@ -1,15 +1,112 @@
-import React from "react";
-import { Link } from "react-router-dom"; // Import Link from React Router
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "../admin/sidebar";
 import Topbar from "./Topbar";
-import "./admin.css"; // CSS for the admin dashboard
+import "./admin.css";
 
 function AdminHomePage() {
+  const [totalClients, setTotalClients] = useState(0);
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [totalTasks, setTotalTasks] = useState(0);
+  const [upcomingAppointments, setUpcomingAppointments] = useState(0);
+  const [filter, setFilter] = useState("weekly");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchTotalClients = async (filter) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8081/clientsDashboard/count?filter=${filter}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTotalClients(data.total);
+    } catch (error) {
+      console.error("Error fetching total clients:", error);
+    }
+  };
+
+  const fetchTotalProjects = async (filter, status) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8081/projectsDashboard/count?filter=${filter}&status=${status}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTotalProjects(data.total);
+    } catch (error) {
+      console.error("Error fetching total projects:", error);
+    }
+  };
+
+  const fetchTotalTasks = async (filter, status) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8081/tasksDashboard/count?filter=${filter}&status=${status}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTotalTasks(data.total);
+    } catch (error) {
+      console.error("Error fetching total tasks:", error);
+    }
+  };
+
+  const fetchUpcomingAppointments = async (filter, status) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `http://localhost:8081/appointmentsDashboard/count?filter=${filter}&status=${status}`
+      );
+      if (!response.ok) throw new Error(`Error: ${response.status}`);
+      const data = await response.json();
+      setUpcomingAppointments(data.total);
+    } catch (error) {
+      setError("Failed to load data. Please try again.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Trigger fetching with both filter and status
+  useEffect(() => {
+    fetchTotalClients(filter);
+    fetchTotalProjects(filter, statusFilter);
+    fetchTotalTasks(filter, statusFilter);
+    fetchUpcomingAppointments(filter, "upcoming");
+  }, [filter, statusFilter]);
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setStatusFilter(newStatus);
+  };
+
+  const handleAppointmentStatusChange = (newAppointmentStatus) => {
+    setStatusAppointmentFilter(newAppointmentStatus);
+  };
+
   const overviewMetrics = [
-    { title: "Total Users", value: "150", link: "/admin/users" },
-    { title: "Total Projects", value: "45", link: "/admin/projects" },
+    { title: "Total Clients", value: totalClients, link: "/admin/clients" },
+    { title: "Total Projects", value: totalProjects, link: "/admin/projects" },
+    { title: "Total Tasks", value: totalTasks, link: "/admin/tasks" },
+    {
+      title: "Upcoming Appointments",
+      value: upcomingAppointments,
+      link: "/admin/appointments",
+    },
     { title: "Total Revenue", value: "$120,000", link: "/admin/revenue" },
-    { title: "Open Issues", value: "8", link: "/admin/issues" },
   ];
 
   const recentActivities = [
@@ -32,9 +129,31 @@ function AdminHomePage() {
       <Sidebar />
       <div className="admin-home-page">
         <div className="dashboard-content-admin">
-          {/* Dashboard Overview Section */}
           <div className="overview-section">
             <h2>Dashboard Overview</h2>
+            <div className="filter-buttons">
+              <button onClick={() => handleFilterChange("weekly")}>
+                Weekly
+              </button>
+              <button onClick={() => handleFilterChange("monthly")}>
+                Monthly
+              </button>
+              <button onClick={() => handleFilterChange("yearly")}>
+                Yearly
+              </button>
+            </div>
+            <div className="status-buttons">
+              <button onClick={() => handleStatusChange("")}>All</button>
+              <button onClick={() => handleStatusChange("Ongoing")}>
+                Ongoing Projects
+              </button>
+              <button onClick={() => handleStatusChange("Pending" || "pending")}>
+                Pending Projects
+              </button>
+              <button onClick={() => handleStatusChange("Completed" || "completed")}>
+                Completed Projects
+              </button>
+            </div>
             <div className="metrics-container">
               {overviewMetrics.map((metric, index) => (
                 <div key={index} className="metric-card">

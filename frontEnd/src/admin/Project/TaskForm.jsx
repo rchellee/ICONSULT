@@ -27,10 +27,27 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
     Array.isArray(existingTask?.miscellaneous) ? existingTask.miscellaneous : []
   );
   const [totalAmount, setTotalAmount] = useState(0);
+  const [status, setStatus] = useState(
+    existingTask ? existingTask.status : "Pending"
+  );
 
   useEffect(() => {
     console.log("Received projectId in TaskForm:", projectId);
   }, [projectId]);
+
+  useEffect(() => {
+    if (existingTask) {
+      setTaskName(existingTask.task_name || "");
+      setTaskFee(existingTask.task_fee || "");
+      setDueDate(existingTask.due_date || "");
+      setEmployee(existingTask.employee || "");
+      setMiscellaneousList(
+        Array.isArray(existingTask.miscellaneous)
+          ? existingTask.miscellaneous
+          : []
+      );
+    }
+  }, [existingTask]);
 
   useEffect(() => {
     const taskFeeValue = parseFloat(taskFee) || 0;
@@ -103,6 +120,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       employee,
       miscellaneous: miscellaneousList,
       projectId,
+      status,
     };
 
     try {
@@ -211,6 +229,19 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 required
               />
             </div>
+          </div>
+          <div className={formStyles.status}>
+            <label htmlFor="status">Status</label>
+            <select
+              id="status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+            >
+              <option value="Pending">Pending</option>
+              <option value="Ongoing">Ongoing</option>
+              <option value="Completed">Completed</option>
+            </select>
           </div>
 
           {/* Miscellaneous Items */}

@@ -78,8 +78,6 @@ const ProjectManagement = () => {
       status: "Ongoing",
       contractPrice,
       downpayment,
-      totalPayment:
-        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
       paymentStatus,
     };
 
@@ -245,6 +243,7 @@ const ProjectManagement = () => {
             setDescription={setDescription}
             contractPrice={contractPrice}
             setContractPrice={setContractPrice}
+            downpayment={downpayment}
             setDownpayment={setDownpayment}
             clients={clients}
             onCancel={closeModal}

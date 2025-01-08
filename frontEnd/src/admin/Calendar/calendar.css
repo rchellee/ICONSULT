@@ -382,3 +382,22 @@ color: white;
   flex: 1;
   justify-content: center;
 }
+
+.appointments-tooltip {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.appointment-item {
+  margin: 5px 0;
+  font-size: 12px;
+}
+
+.days li:hover .appointments-tooltip {
+  display: block;
+}
