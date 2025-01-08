@@ -22,7 +22,7 @@
 }
 /* Scroll */
 .scrollable-table-container {
-    max-height: 600px;
+    max-height: 750px;
     overflow-y: auto;
     border-radius: 8px;
 }

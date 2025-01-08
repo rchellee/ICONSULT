@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./client.css";
 
 const ClientDetails = ({ client, goBack }) => {
@@ -6,20 +7,37 @@ const ClientDetails = ({ client, goBack }) => {
   const [formData, setFormData] = useState({ ...client });
   const [activeTab, setActiveTab] = useState("overview");
   const [showToast, setShowToast] = useState(false);
+  const navigate = useNavigate();
+
+  const editableFields = Object.keys(formData).filter(
+    (key) =>
+      ![
+        "id",
+        "password",
+        "username",
+        "status",
+        "passwordChanged",
+        "created_at",
+      ].includes(key)
+  );
 
   const updateClient = async (updatedClient) => {
     try {
-      const response = await fetch(`http://localhost:8081/client/${updatedClient.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedClient),
-      });
+      const response = await fetch(
+        `http://localhost:8081/client/${updatedClient.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedClient),
+        }
+      );
 
       if (response.ok) {
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
+        navigate("/clients");
       } else {
         console.error("Failed to update client");
       }
@@ -38,12 +56,12 @@ const ClientDetails = ({ client, goBack }) => {
   const handleSave = (e) => {
     e.preventDefault();
     updateClient(formData);
-    setIsEditing(false); 
+    setIsEditing(false);
   };
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (isEditing) setIsEditing(false); 
+    if (isEditing) setIsEditing(false);
   };
 
   const renderTabContent = () => {
@@ -62,19 +80,23 @@ const ClientDetails = ({ client, goBack }) => {
   };
 
   const renderOverview = () => {
+    const formatDate = (date) => {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(date).toLocaleDateString("en-US", options);
+    };
+    const fullName = `${client.firstName} ${
+      client.middleInitial ? client.middleInitial + " " : ""
+    }${client.lastName}`;
     const details = [
-      { label: "Prefix", value: client.prefix },
-      { label: "Last Name", value: client.lastName },
-      { label: "Middle Initial", value: client.middleInitial },
-      { label: "First Name", value: client.firstName },
+      { label: "Name", value: fullName },
       { label: "Address", value: client.address },
       { label: "Mobile Number", value: client.mobile_number },
       { label: "Email", value: client.email_add },
-      { label: "Status", value: client.status === "active" ? "Active" : "Inactive" },
-      { label: "Birthday", value: client.birthday },
+      {
+        label: "Birthday",
+        value: client.birthday ? formatDate(client.birthday) : "",
+      },
       { label: "Company Name", value: client.companyName },
-      { label: "City", value: client.city },
-      { label: "Postal Code", value: client.postalCode },
     ];
     return (
       <div className="tab-content">
@@ -100,16 +122,29 @@ const ClientDetails = ({ client, goBack }) => {
         <h4>{section.charAt(0).toUpperCase() + section.slice(1)} Details</h4>
         <table>
           <thead>
-            <tr>{headers[section].map((header) => <th key={header}>{header}</th>)}</tr>
+            <tr>
+              {headers[section].map((header) => (
+                <th key={header}>{header}</th>
+              ))}
+            </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index}>
                 {Object.values(item).map((value, idx) => (
                   <td key={idx}>
-                    {section === "documents" && idx === Object.values(item).length - 1 ? (
-                      <a href={item.url} target="_blank" rel="noopener noreferrer">View</a>
-                    ) : value}
+                    {section === "documents" &&
+                    idx === Object.values(item).length - 1 ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View
+                      </a>
+                    ) : (
+                      value
+                    )}
                   </td>
                 ))}
               </tr>
@@ -122,7 +157,9 @@ const ClientDetails = ({ client, goBack }) => {
 
   return (
     <div className="client-details">
-      {showToast && <div className="toast">Client information updated successfully!</div>}
+      {showToast && (
+        <div className="toast">Client information updated successfully!</div>
+      )}
 
       <div className="tabs">
         <button
@@ -154,7 +191,7 @@ const ClientDetails = ({ client, goBack }) => {
       <div className="client-tab-container">
         {isEditing ? (
           <form onSubmit={handleSave} className="client-details-form">
-            {Object.keys(formData).map((key) => (
+            {editableFields.map((key) => (
               <label key={key} className="client-form-label">
                 {key.replace(/_/g, " ")}:
                 <input

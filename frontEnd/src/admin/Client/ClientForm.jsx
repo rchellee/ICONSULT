@@ -6,7 +6,6 @@ import axios from "axios";
 
 const ClientForm = ({ clients, setClients, showToast }) => {
   const [formData, setFormData] = useState({
-    prefix: "Mr.",
     lastName: "",
     middleInitial: "",
     firstName: "",
@@ -16,8 +15,6 @@ const ClientForm = ({ clients, setClients, showToast }) => {
     status: "active",
     birthday: "",
     companyName: "",
-    city: "",
-    postalCode: "",
   });
 
   const handleChange = (e) => {
@@ -85,12 +82,6 @@ const ClientForm = ({ clients, setClients, showToast }) => {
       <div className="client-content">
         <form onSubmit={handleSubmit} className="client-form-grid">
           <div className="client-form-row">
-            <select name="prefix" value={formData.prefix} onChange={handleChange}>
-              <option value="Mr.">Mr.</option>
-              <option value="Mrs.">Mrs.</option>
-              <option value="Ms.">Ms.</option>
-              <option value="Dr.">Dr.</option>
-            </select>
             <input
               type="text"
               name="lastName"
@@ -174,22 +165,6 @@ const ClientForm = ({ clients, setClients, showToast }) => {
             />
           </div>
 
-          <div className="client-form-row">
-            <input
-              type="text"
-              name="city"
-              placeholder="City"
-              value={formData.city}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="postalCode"
-              placeholder="Postal Code"
-              value={formData.postalCode}
-              onChange={handleChange}
-            />
-          </div>
 
           <div className="client-form-row">
             <select

@@ -106,10 +106,9 @@ const ClientManagement = () => {
                         <th>Email Address</th>
                         <th>Contact Number</th>
                         <th>Status</th>
-                        <th>City</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody >
                       {filteredClients.map((client) => {
                         const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
                         const color = `#${Math.floor(
@@ -128,8 +127,8 @@ const ClientManagement = () => {
                               {`${client.firstName} ${client.lastName}`}
                             </td>
                             <td>{client.companyName}</td>
-                            <td>{client.email}</td>
-                            <td>{client.contactNumber}</td>
+                            <td>{client.email_add}</td>
+                            <td>{client.mobile_number}</td>
                             <td>
                               <label className="toggle-btn">
                                 <input
@@ -142,7 +141,6 @@ const ClientManagement = () => {
                                 <span className="slider"></span>
                               </label>
                             </td>
-                            <td>{client.city}</td>
                           </tr>
                         );
                       })}

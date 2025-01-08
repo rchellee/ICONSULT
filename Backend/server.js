@@ -757,8 +757,9 @@ app.put("/client/:id", (req, res) => {
     mobile_number,
     email_add,
     address,
+    companyName,
   } = req.body;
-  const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ? WHERE id = ?`;
+  const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ?, companyName = ? WHERE id = ?`;
 
   db.query(
     sql,
@@ -770,6 +771,7 @@ app.put("/client/:id", (req, res) => {
       mobile_number,
       email_add,
       address,
+      companyName,
       clientId,
     ],
     (err, result) => {
@@ -870,7 +872,7 @@ app.put("/employee/:id", (req, res) => {
   const {
     firstName,
     lastName,
-    middleName,
+    middleInitial,
     address,
     mobile_number,
     email_add,
@@ -878,13 +880,13 @@ app.put("/employee/:id", (req, res) => {
   } = req.body;
 
   const sql =
-    "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
+    "UPDATE employee SET firstName = ?, lastName = ?, middleInitial = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleName,
+      middleInitial,
       address,
       mobile_number,
       email_add,
