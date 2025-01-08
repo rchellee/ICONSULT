@@ -13,15 +13,12 @@ function AppointmentForm() {
   const [formData, setFormData] = useState({
     date: "",
     time: "",
-    name: "",
-    email: "",
-    contact: "",
-    companyName: "",
     consultationType: "",
     otherDetails: "",
     additionalInfo: "",
     platform: "",
     reminder: "",
+    client: "",
   });
   const [availableDates, setAvailableDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState([]);
@@ -140,14 +137,13 @@ function AppointmentForm() {
 
   const handleTimePeriodChange = (e) => {
     setTimePeriod(e.target.value);
-    setFormData({ ...formData, time: "" }); // Reset time when period changes
+    setFormData({ ...formData, time: "" });
   };
 
   const handleTimeSelect = (time) => {
     setFormData({ ...formData, time });
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -156,8 +152,7 @@ function AppointmentForm() {
   const nextStep = () => {
     const stepFields = {
       1: ["date", "time"],
-      2: ["firstName", "lastName", "email", "contact", "companyName"],
-      3: ["consultationType"],
+      2: ["consultationType"],
     };
 
     const missingFields = stepFields[currentStep].filter((field) => {
@@ -178,16 +173,6 @@ function AppointmentForm() {
               return "Date";
             case "time":
               return "Time";
-            case "firstName":
-              return "First Name";
-            case "lastName":
-              return "Last Name";
-            case "email":
-              return "Email";
-            case "contact":
-              return "Contact Number";
-            case "companyName":
-              return "Company Name";
             case "consultationType":
               return "Consultation Type";
             case "otherDetails":
@@ -202,34 +187,27 @@ function AppointmentForm() {
       return;
     }
 
-    if (currentStep === 2) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        alert("Please enter a valid email address.");
-        return;
-      }
-
-      const contactRegex = /^[0-9]{10}$/;
-      if (!contactRegex.test(formData.contact)) {
-        alert("Please enter a valid phone number.");
-        return;
-      }
-    }
-
     setCurrentStep((prevStep) => prevStep + 1);
   };
-
   const prevStep = () => setCurrentStep((prevStep) => prevStep - 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const clientId = localStorage.getItem("clientId");
 
-    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
-    const fullContact = `+63${formData.contact}`;
-
     if (!clientId) {
       alert("Client ID not found. Please log in.");
+      return;
+    }
+
+    const selectedClient = clients.find(
+      (client) => client.id === parseInt(clientId)
+    );
+
+    if (!selectedClient) {
+      alert(
+        "Client not found. Please ensure your account is linked to a valid client record."
+      );
       return;
     }
 
@@ -238,19 +216,14 @@ function AppointmentForm() {
         ? formData.otherDetails
         : formData.consultationType;
 
-    const formDataWithUpdates = {
-      ...formData,
-      name: fullName,
-      contact: fullContact,
-      consultationType,
-      clientId,
-    };
-
-    const formDataWithClientId = {
+    const formDataWithClientDetails = {
       ...formData,
       consultationType,
       clientId,
-      contact: formData.contact,
+      name: `${selectedClient.firstName} ${selectedClient.lastName}`,
+      email: selectedClient.email_add,
+      contact: selectedClient.mobile_number,
+      companyName: selectedClient.companyName,
     };
 
     try {
@@ -259,7 +232,7 @@ function AppointmentForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formDataWithUpdates),
+        body: JSON.stringify(formDataWithClientDetails),
       });
 
       if (!response.ok) {
@@ -269,17 +242,12 @@ function AppointmentForm() {
       const result = await response.json();
       console.log("Appointment Submitted:", result);
       alert("Appointment Confirmed!");
-      navigate("/clientdashboard");
+      navigate("/consultations");
 
-      // Reset the form
       setCurrentStep(1);
       setFormData({
         date: "",
         time: "",
-        name: "",
-        email: "",
-        contact: "",
-        companyName: "",
         consultationType: "",
         otherDetails: "",
         additionalInfo: "",
@@ -287,6 +255,7 @@ function AppointmentForm() {
         reminder: "",
       });
     } catch (error) {
+      console.error("Error submitting appointment:", error);
       alert("Error submitting appointment. Please try again.");
     }
   };
@@ -295,368 +264,272 @@ function AppointmentForm() {
     <div>
       <Topbar />
       <Sidebar />
-    <div className="appointment-form-container">
-      <div className="content-calendar">
-        {currentStep === 1 && (
-          <div>
-            <h3>Step 1: Date and Time</h3>
-            <div className="calendar-time-container">
-              <DynamicCalendar
-                availableDates={availableDates}
-                onDateSelect={handleDateSelect}
-              />
-              {selectedDate && (
-                <div className="time-slots">
-                  <h4>Available Times for {selectedDate}</h4>
-                  <div className="time-dropdowns">
-                    <label htmlFor="timePeriod" className="required-label">
-                      Choose Time Format *
-                    </label>
-                    <select
-                      id="timePeriod"
-                      value={timePeriod}
-                      onChange={handleTimePeriodChange}
-                    >
-                      <option value="" disabled>
-                        -- Select --
-                      </option>
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
-                  </div>
-                  {timePeriod && (
+      <div className="appointment-form-container">
+        <div className="content-calendar">
+          {currentStep === 1 && (
+            <div>
+              <h3>Step 1: Date and Time</h3>
+              <div className="calendar-time-container">
+                <DynamicCalendar
+                  availableDates={availableDates}
+                  onDateSelect={handleDateSelect}
+                />
+                {selectedDate && (
+                  <div className="time-slots">
+                    <h4>Available Times for {selectedDate}</h4>
                     <div className="time-dropdowns">
-                      <label htmlFor="time" className="required-label">
-                        Select Time *
+                      <label htmlFor="timePeriod" className="required-label">
+                        Choose Time Format *
                       </label>
                       <select
-                        id="time"
-                        value={formData.time}
-                        onChange={(e) => handleTimeSelect(e.target.value)}
-                        disabled={!timePeriod}
+                        id="timePeriod"
+                        value={timePeriod}
+                        onChange={handleTimePeriodChange}
                       >
                         <option value="" disabled>
-                          -- Select Time --
+                          -- Select --
                         </option>
-                        {availableTimes
-                          .filter(({ time }) => time.endsWith(timePeriod))
-                          .map(({ time, isBooked }) => (
-                            <option
-                              key={time}
-                              value={time}
-                              disabled={isBooked}
-                              className={isBooked ? "booked" : ""}
-                            >
-                              {time} {isBooked ? "(Booked)" : ""}
-                            </option>
-                          ))}
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
                       </select>
                     </div>
-                  )}
+                    {timePeriod && (
+                      <div className="time-dropdowns">
+                        <label htmlFor="time" className="required-label">
+                          Select Time *
+                        </label>
+                        <select
+                          id="time"
+                          value={formData.time}
+                          onChange={(e) => handleTimeSelect(e.target.value)}
+                          disabled={!timePeriod}
+                        >
+                          <option value="" disabled>
+                            -- Select Time --
+                          </option>
+                          {availableTimes
+                            .filter(({ time }) => time.endsWith(timePeriod))
+                            .map(({ time, isBooked }) => (
+                              <option
+                                key={time}
+                                value={time}
+                                disabled={isBooked}
+                                className={isBooked ? "booked" : ""}
+                              >
+                                {time} {isBooked ? "(Booked)" : ""}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={nextStep}
+                disabled={!formData.date || !formData.time}
+              >
+                Next
+              </button>
+            </div>
+          )}
+          {currentStep === 2 && (
+            <div>
+              <h3>Step 2: Consultation Details</h3>
+              <div className="form-group">
+                <label htmlFor="consultationType" className="required-label">
+                  Consultation Type *
+                </label>
+                <select
+                  id="consultationType"
+                  name="consultationType"
+                  value={formData.consultationType}
+                  onChange={(e) => {
+                    const selectedValue = e.target.value;
+                    setFormData({
+                      ...formData,
+                      consultationType: selectedValue,
+                      otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
+                    });
+                  }}
+                  required
+                >
+                  <option value="" disabled>
+                    -- Select Consultation Type --
+                  </option>
+                  <optgroup label="Corporate and Consultancy Services">
+                    <option value="Strategic Planning Consultation">
+                      Strategic Planning Consultation
+                    </option>
+                    <option value="Corporate Governance Review">
+                      Corporate Governance Review
+                    </option>
+                    <option value="Business Process Improvement">
+                      Business Process Improvement
+                    </option>
+                  </optgroup>
+                  <optgroup label="Management Advisory Services">
+                    <option value="Risk Management Consultation">
+                      Risk Management Consultation
+                    </option>
+                    <option value="Organizational Development Advisory">
+                      Organizational Development Advisory
+                    </option>
+                    <option value="Financial Advisory">
+                      Financial Advisory
+                    </option>
+                  </optgroup>
+                  <optgroup label="Professional Services">
+                    <option value="Accounting Consultation">
+                      Accounting Consultation
+                    </option>
+                    <option value="Legal Advisory">Legal Advisory</option>
+                    <option value="Tax Advisory">Tax Advisory</option>
+                  </optgroup>
+                  <optgroup label="Payroll Services">
+                    <option value="Payroll System Setup Consultation">
+                      Payroll System Setup Consultation
+                    </option>
+                    <option value="Employee Benefits and Compliance Advisory">
+                      Employee Benefits and Compliance Advisory
+                    </option>
+                  </optgroup>
+                  <optgroup label="Business Set-up">
+                    <option value="Startup Planning">Startup Planning</option>
+                    <option value="Business Structuring and Licensing Advisory">
+                      Business Structuring and Licensing Advisory
+                    </option>
+                  </optgroup>
+                  <optgroup label="Registrations">
+                    <option value="Business Name Registration">
+                      Business Name Registration
+                    </option>
+                    <option value="SEC/DTI/Mayor’s Permit Assistance">
+                      SEC/DTI/Mayor’s Permit Assistance
+                    </option>
+                    <option value="Compliance Consultation">
+                      Compliance Consultation
+                    </option>
+                  </optgroup>
+                  <option value="Follow up">Follow up</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+
+              {formData.consultationType === "Others" && (
+                <div className="form-group">
+                  <label htmlFor="otherDetails">Please specify:</label>
+                  <textarea
+                    id="otherDetails"
+                    name="otherDetails"
+                    value={formData.otherDetails || ""}
+                    onChange={(e) =>
+                      setFormData({ ...formData, otherDetails: e.target.value })
+                    }
+                    required
+                  />
                 </div>
               )}
-            </div>
-            <button
-              onClick={nextStep}
-              disabled={!formData.date || !formData.time}
-            >
-              Next
-            </button>
-          </div>
-        )}
 
-        {currentStep === 2 && (
-          <div>
-            <h3>Step 2: Personal Information</h3>
-            <div className="form-group">
-              <label htmlFor="firstName" className="required-label">
-                First Name *
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName || ""}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="lastName" className="required-label">
-                Last Name *
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName || ""}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email" className="required-label">
-                Email *
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="contact" className="required-label">
-                Contact Number *
-              </label>
-              <div className="phone-number-input">
-                <span>+63</span>
-                <input
-                  type="tel"
-                  id="contact"
-                  name="contact"
-                  value={formData.contact}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
               <div className="form-group">
-                <label htmlFor="companyName">Company Name:</label>
-                <input
-                  type="text"
-                  id="companyName"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-            <button onClick={prevStep}>Back</button>
-            <button
-              onClick={nextStep}
-              disabled={
-                !formData.firstName ||
-                !formData.lastName ||
-                !formData.email ||
-                !formData.contact ||
-                !formData.email ||
-                !formData.contact ||
-                !formData.companyName
-              }
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {/** Step 3: Consultation Details **/}
-        {currentStep === 3 && (
-          <div>
-            <h3>Step 3: Consultation Details</h3>
-            <div className="form-group">
-              <label htmlFor="consultationType" className="required-label">
-                Consultation Type *
-              </label>
-              <select
-                id="consultationType"
-                name="consultationType"
-                value={formData.consultationType}
-                onChange={(e) => {
-                  const selectedValue = e.target.value;
-                  setFormData({
-                    ...formData,
-                    consultationType: selectedValue,
-                    otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
-                  });
-                }}
-                required
-              >
-                <option value="" disabled>
-                  -- Select Consultation Type --
-                </option>
-                <optgroup label="Corporate and Consultancy Services">
-                  <option value="Strategic Planning Consultation">
-                    Strategic Planning Consultation
-                  </option>
-                  <option value="Corporate Governance Review">
-                    Corporate Governance Review
-                  </option>
-                  <option value="Business Process Improvement">
-                    Business Process Improvement
-                  </option>
-                </optgroup>
-                <optgroup label="Management Advisory Services">
-                  <option value="Risk Management Consultation">
-                    Risk Management Consultation
-                  </option>
-                  <option value="Organizational Development Advisory">
-                    Organizational Development Advisory
-                  </option>
-                  <option value="Financial Advisory">Financial Advisory</option>
-                </optgroup>
-                <optgroup label="Professional Services">
-                  <option value="Accounting Consultation">
-                    Accounting Consultation
-                  </option>
-                  <option value="Legal Advisory">Legal Advisory</option>
-                  <option value="Tax Advisory">Tax Advisory</option>
-                </optgroup>
-                <optgroup label="Payroll Services">
-                  <option value="Payroll System Setup Consultation">
-                    Payroll System Setup Consultation
-                  </option>
-                  <option value="Employee Benefits and Compliance Advisory">
-                    Employee Benefits and Compliance Advisory
-                  </option>
-                </optgroup>
-                <optgroup label="Business Set-up">
-                  <option value="Startup Planning">Startup Planning</option>
-                  <option value="Business Structuring and Licensing Advisory">
-                    Business Structuring and Licensing Advisory
-                  </option>
-                </optgroup>
-                <optgroup label="Registrations">
-                  <option value="Business Name Registration">
-                    Business Name Registration
-                  </option>
-                  <option value="SEC/DTI/Mayor’s Permit Assistance">
-                    SEC/DTI/Mayor’s Permit Assistance
-                  </option>
-                  <option value="Compliance Consultation">
-                    Compliance Consultation
-                  </option>
-                </optgroup>
-                <option value="Follow up">Follow up</option>
-                <option value="Others">Others</option>
-              </select>
-            </div>
-
-            {formData.consultationType === "Others" && (
-              <div className="form-group">
-                <label htmlFor="otherDetails">Please specify:</label>
+                <label htmlFor="additionalInfo">Purpose:</label>
                 <textarea
-                  id="otherDetails"
-                  name="otherDetails"
-                  value={formData.otherDetails || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, otherDetails: e.target.value })
-                  }
-                  required
+                  id="additionalInfo"
+                  name="additionalInfo"
+                  value={formData.additionalInfo}
+                  onChange={handleChange}
                 />
               </div>
-            )}
 
-            <div className="form-group">
-              <label htmlFor="additionalInfo">Purpose:</label>
-              <textarea
-                id="additionalInfo"
-                name="additionalInfo"
-                value={formData.additionalInfo}
-                onChange={handleChange}
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="platform">
+                  Preferred Communication Platform:
+                </label>
+                <select
+                  id="platform"
+                  name="platform"
+                  value={formData.platform || ""}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="" disabled>
+                    -- Select Platform --
+                  </option>
+                  <option value="In-Person">In-Person</option>
+                  <option value="Video Call">Zoom</option>
+                  <option value="Video Call">Google Meet</option>
+                  <option value="Phone Call">Phone Call</option>
+                  <option value="Phone Call">Microsoft Teams</option>
+                </select>
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="platform">
-                Preferred Communication Platform:
-              </label>
-              <select
-                id="platform"
-                name="platform"
-                value={formData.platform || ""}
-                onChange={handleChange}
-                required
+              <div className="form-group">
+                <label htmlFor="reminder">Remind Me:</label>
+                <select
+                  id="reminder"
+                  name="reminder"
+                  value={formData.reminder || ""}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="" disabled>
+                    -- Select Reminder Time --
+                  </option>
+                  <option value="At Time of Event">At Time of Event</option>
+                  <option value="5 minutes before">5 minutes before</option>
+                  <option value="10 minutes before">10 minutes before</option>
+                  <option value="15 minutes before">15 minutes before</option>
+                  <option value="30 minutes before">30 minutes before</option>
+                  <option value="1 hour before">1 hour before</option>
+                  <option value="2 hours before">2 hours before</option>
+                  <option value="1 day before">1 day before</option>
+                  <option value="2 days before">2 days before</option>
+                  <option value="1 week before">1 week before</option>
+                </select>
+              </div>
+
+              <button onClick={prevStep}>Back</button>
+              <button
+                onClick={nextStep}
+                disabled={
+                  !formData.consultationType ||
+                  (formData.consultationType === "Others" &&
+                    !formData.otherDetails)
+                }
               >
-                <option value="" disabled>
-                  -- Select Platform --
-                </option>
-                <option value="In-Person">In-Person</option>
-                <option value="Video Call">Zoom</option>
-                <option value="Video Call">Google Meet</option>
-                <option value="Phone Call">Phone Call</option>
-                <option value="Phone Call">Microsoft Teams</option>
-              </select>
+                Next
+              </button>
             </div>
+          )}
 
-            <div className="form-group">
-              <label htmlFor="reminder">Remind Me:</label>
-              <select
-                id="reminder"
-                name="reminder"
-                value={formData.reminder || ""}
-                onChange={handleChange}
-                required
-              >
-                <option value="" disabled>
-                  -- Select Reminder Time --
-                </option>
-                <option value="At Time of Event">At Time of Event</option>
-                <option value="5 minutes before">5 minutes before</option>
-                <option value="10 minutes before">10 minutes before</option>
-                <option value="15 minutes before">15 minutes before</option>
-                <option value="30 minutes before">30 minutes before</option>
-                <option value="1 hour before">1 hour before</option>
-                <option value="2 hours before">2 hours before</option>
-                <option value="1 day before">1 day before</option>
-                <option value="2 days before">2 days before</option>
-                <option value="1 week before">1 week before</option>
-              </select>
+          {/** Step 4: Confirmation **/}
+          {currentStep === 3 && (
+            <div>
+              <h3>Step 3: Confirmation</h3>
+              <p>
+                <strong>Date:</strong> {formData.date}
+              </p>
+              <p>
+                <strong>Time:</strong> {formData.time}
+              </p>
+              <p>
+                <strong>Consultation Type:</strong> {formData.consultationType}
+              </p>
+              <p>
+                <strong>Additional Info:</strong> {formData.additionalInfo}
+              </p>
+              <p>
+                <strong>Consultation Mode:</strong> {formData.platform}
+              </p>
+              <p>
+                <strong>Reminder:</strong> {formData.reminder}
+              </p>
+              <button onClick={prevStep}>Back</button>
+              <button onClick={handleSubmit}>Submit</button>
             </div>
-
-            <button onClick={prevStep}>Back</button>
-            <button
-              onClick={nextStep}
-              disabled={
-                !formData.consultationType ||
-                (formData.consultationType === "Others" &&
-                  !formData.otherDetails)
-              }
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {/** Step 4: Confirmation **/}
-        {currentStep === 4 && (
-          <div>
-            <h3>Step 4: Confirmation</h3>
-            <p>
-              <strong>Date:</strong> {formData.date}
-            </p>
-            <p>
-              <strong>Time:</strong> {formData.time}
-            </p>
-            <p>
-              <strong>Name:</strong> {formData.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {formData.email}
-            </p>
-            <p>
-              <strong>Phone Number:</strong> {formData.contact}
-            </p>
-            <p>
-              <strong>Consultation Type:</strong> {formData.consultationType}
-            </p>
-            <p>
-              <strong>Additional Info:</strong> {formData.additionalInfo}
-            </p>
-            <p>
-              <strong>Consultation Mode:</strong> {formData.platform}
-            </p>
-            <p>
-              <strong>Reminder:</strong> {formData.reminder}
-            </p>
-            <button onClick={prevStep}>Back</button>
-            <button onClick={handleSubmit}>Submit</button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 }
