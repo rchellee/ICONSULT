@@ -193,6 +193,13 @@ const Availability = () => {
       });
   };
 
+  const getFilteredDates = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return Object.entries(existingDates).filter(([date]) => {
+      return new Date(date) > new Date(today);
+    });
+  };
+
   // Return loading state or render the availability component
   if (loading) {
     return <Typography variant="h6">Loading...</Typography>;
@@ -311,7 +318,7 @@ const Availability = () => {
                   padding: 1,
                 }}
               >
-                {Object.entries(existingDates)
+                {getFilteredDates()
                   .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // Sort by date
                   .map(([date, { start_time, end_time }]) => (
                     <ListItem
