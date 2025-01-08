@@ -2,7 +2,7 @@
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && npm start",
-    "frontend": "cd frontend && npm run dev"
+    "frontend": "cd frontend && npm run build && serve -s build"
   },
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.17.0",
