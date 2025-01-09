@@ -9,9 +9,9 @@
 
 .client-content {
   flex-grow: 2;
-  padding-left: 100px;
+  margin-left: 85px
 }
-
+/************************** Client Management **************/
 /* Search Bar */
 .search-bar {
   width: 300px;
@@ -28,14 +28,11 @@
 }
 /* Table Styles for client and employee */
 table {
-  width: 100%;
+  width: 90%;
   border-collapse: collapse;
-  border: 1px solid #ddd;
   border-radius: 3px; 
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  border-radius: 7px;
-  
+  margin: 0px auto;
 }
 thead th {
   position: sticky;
@@ -87,16 +84,18 @@ table td a {
   transition: color 0.3s ease-in-out;
 }
 
-/* Toast notif  */
+/* Toast Notification */
 .toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
   background-color: #28a745;
-  color: white;
-  padding: 15px;
+  color: #fff;
+  padding: 10px;
   border-radius: 5px;
-  display: none;
+  text-align: center;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeInOut 3s ease-in-out;
 }
 
 .toast.active {
@@ -124,14 +123,6 @@ table td a {
   animation: progress 5s linear;
 }
 /***************************** Client form ******************/
-h2::before {
-  content: "";
-  display: block;
-  width: 70px; /* Line width */
-  height: 2px; /* Line height */
-  background-color: #052240; /* Line color */
-  margin: 10px auto; /* Center the line horizontally */
-}
 
 .client-form-grid {
   display: grid;
@@ -141,25 +132,51 @@ h2::before {
   border-radius: 4px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   padding: 40px;
-  width: 75%;
+  width: 70%;
   box-sizing: border-box;
   position:relative;
+  margin-left:10%;
+}
+/* Role Dropdown Styling with Icon */
+.input-group {
+  margin-bottom: 1rem;
+  flex-direction: column;
 }
 
-/* Single-column layout for specific fields */
-.client-form-row.full-width {
-  grid-column: span 2; /* Make the row span across both columns */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-/* Adjusting the submit button for better alignment */
-
-
-/* Global Styles */
-*,
-*:before,
-*:after {
-    box-sizing: border-box;
+.input-group select {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
 }
+
+.input-icon {
+  position: absolute;
+  right: 10px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.input-group-icon .input-icon i {
+  color: #136bc9;
+}
+
+.input-group select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+
 /* Input Fields and Select Styling */
 input,
 input[type="radio"] + label,
@@ -211,10 +228,6 @@ input[type="radio"]:checked + label {
     color: white;
     border-color: #255c7b;
 }
-.input-group {
-  position: relative;
-  margin-bottom: 15px;
-}
 
 .input-label {
   position: absolute;
@@ -226,38 +239,6 @@ input[type="radio"]:checked + label {
   pointer-events: none;
   transition: 0.3s;
 }
-
-/* Checkbox Styling */
-input[type="checkbox"] {
-    display: none;
-}
-input[type="checkbox"] + label {
-    position: relative;
-    padding-left: 1.6em;
-    cursor: pointer;
-}
-input[type="checkbox"] + label:before {
-    content: "";
-    position: absolute;
-    top: 0.2em;
-    left: 0;
-    width: 1em;
-    height: 1em;
-    border: 1px solid #e5e5e5;
-    background-color: #f9f9f9;
-    border-radius: 3px;
-}
-input[type="checkbox"]:checked + label:after {
-    content: "\f00c";
-    font-family: FontAwesome;
-    position: absolute;
-    top: 0.45em;
-    left: 0.2em;
-    font-size: 0.8em;
-    color: white;
-    opacity: 1;
-}
-
 /* Select Styling */
 select {
     height: 3.4em;
@@ -265,10 +246,6 @@ select {
 }
 select:focus {
     outline: none;
-}
-select option {
-    background-color: #f0a500;
-    color: white;
 }
 
 /* Input Group Styling */
@@ -280,6 +257,7 @@ select option {
 }
 .input-group-icon input {
     padding-left: 4.4em;
+    
 }
 .input-group-icon .input-icon {
     position: absolute;
@@ -302,14 +280,6 @@ select option {
 }
 
 /* Container and Layout */
-.container {
-    max-width: 38em;
-    padding: 1em 3em 2em;
-    margin: auto;
-    background-color: white;
-    border-radius: 4.2px;
-    box-shadow: 0px 3px 10px -2px rgba(0, 0, 0, 0.2);
-}
 
 .col-half {
     width: 100%;
@@ -329,25 +299,15 @@ select option {
     padding-right: 0;
 }
 
-/* Side-by-side layout for username and password */
-.side-by-side {
+/* Flex container to align Status and Role side by side */
+.status-role-group {
   display: flex;
-  flex-direction: row; /* Horizontal alignment */
-  gap: 20px; /* Space between the fields */
   justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.side-by-side .input-group {
-  flex: 1; /* Equal width for both input fields */
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 20px; /* Adds spacing between the dropdowns */
 }
 
 
-/**************Client Details *******************/
+/***********************Client Details *******************/
 .tabs-container {
   display: flex;
   justify-content: flex-start;
@@ -372,6 +332,7 @@ select option {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   margin-top: 20px;
 }
+
 
 .tabs button {
   padding: 10px 15px;
@@ -403,80 +364,110 @@ select option {
   font-weight: bold;
 }
 
-.button-row {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.btn-edit, .btn-save, .btn-cancel, .btn-back {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.toast {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-}
-
-
-.client-details-form-input {
-  width: 50%;
-  padding: 10px;
-  border: 1px solid #ddd;
+/*********** Overview ***********/
+.overview-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr)  ;
+  gap: 20px;
+  background-color: #fff;
   border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 55%;
+  box-sizing: border-box;
+  position:relative;
+  margin: 20px auto;
 }
 
-.client-form-label {
-  font-weight: 600;
-  margin-bottom: 5px;
+/*************Client read only******** */
+.client-readonly {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  justify-content: center;
+  align-items: start;
+  width: 60%;
+  padding: 30px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin: 20px auto;
 }
-.form-input:focus {
-  border-color: #007bff;
-}
-/* Button Row Styling */
-.button-row {
-  margin-top: 20px;
+
+.client-readonly p {
+  font-size: 18px;
+  margin: 12px 0;
+  color: #333;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
 }
 
-.btn-edit,
-.btn-save,
-.btn-back {
+.client-readonly i {
+  font-size: 14px;
+  color: #136bc9;
+}
+
+.client-readonly strong {
+  font-weight: 600;
+  color: #000;
+}
+
+
+/*********** Button Group ******/
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 10px;
+}
+
+button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
-  transition: transform 0.2s ease, background-color 0.3s ease;
-}
-/* Toast Notification */
-.toast {
-  background-color: #28a745;
-  color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  animation: fadeInOut 3s ease-in-out;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+button i {
+  font-size: 18px;
+}
+
+.btn-save {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-back {
+  background-color: #FFC107;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Toast */
 .toast-progress {
   height: 5px;
   background-color: #155724;

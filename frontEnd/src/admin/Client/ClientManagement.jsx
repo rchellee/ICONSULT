@@ -108,7 +108,7 @@ const ClientManagement = () => {
                         <th>Email Address</th>
                         <th>Contact Number</th>
                         <th>Status</th>
-                        <th>City</th>
+                       
                       </tr>
                     </thead>
                     <tbody>
@@ -144,7 +144,6 @@ const ClientManagement = () => {
                                 <span className="slider"></span>
                               </label>
                             </td>
-                            <td>{client.city}</td>
                           </tr>
                         );
                       })}
