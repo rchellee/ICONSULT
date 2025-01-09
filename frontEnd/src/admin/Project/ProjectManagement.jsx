@@ -8,7 +8,7 @@ import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
-import FormSelector from "./FormSelector";
+
 import Topbar from "../Topbar";
 
 const ProjectManagement = () => {
@@ -117,10 +117,10 @@ const ProjectManagement = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
+    return date.toLocaleDateString("en-US", { 
+      year: "numeric",  // Full year (e.g., "2024")
+      month: "long",    // Full month name (e.g., "January")
+      day: "numeric",   // Day of the month (e.g., "6")
     });
   };
 

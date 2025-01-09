@@ -1,0 +1,326 @@
+.project-list-wrapper {
+    display: flex;
+    position: relative;
+    overflow: hidden; 
+    max-width: 100%; 
+    padding-right: 80px; 
+    margin-right: 50px;
+  }
+  
+  .project-list {
+    width: 100%; 
+    margin: 3px 0 0 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow-x: hidden;
+    max-height: 900px;
+    margin-left: 300px;
+    padding-bottom: 50px;
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 600px;
+  }
+  
+  .project-list-header {
+    display: table-row;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 1;
+    font-weight: bold;
+    max-height: 754px;
+  }
+  
+  .project-list-header h3 {
+    font-size: 18px;
+    padding: 20px;
+    font-weight: bold;
+  }
+  
+  .project-item {
+    display: table-row;
+  }
+  
+  .project-item:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  .project-list-header h3,
+  .project-item p {
+    display: table-cell;
+    padding: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  .project-item p {
+    font-size: 16px;
+    padding: 15px;
+  }
+  
+  .status-dropdown {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    appearance: none;
+    outline: none;
+    background-color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .status-dropdown:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .status-dropdown:active {
+    transform: scale(1.1);
+  }
+  
+  .status-pending {
+    background-color: rgb(117, 224, 117) !important;
+  }
+  
+  .status-completed {
+    background-color: rgb(244, 146, 182) !important;
+  }
+  
+  .project-list-header h3:nth-child(2),
+  .project-item p:nth-child(2) {
+    width: 20px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(3),
+  .project-item p:nth-child(3) {
+    width: 200px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(1),
+  .project-item p:nth-child(1) {
+    width: 100px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(4),
+  .project-item p:nth-child(4) {
+    width: 150px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(5),
+  .project-item p:nth-child(5) {
+    width: 200px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(6),
+  .project-item p:nth-child(6) {
+    width: 150px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(8),
+  .project-item p:nth-child(8) {
+    width: 150px;
+    font-size: 16px;
+  }
+  
+  .project-list-header h3:nth-child(9),
+  .project-item p:nth-child(9) {
+    width: 150px;
+    font-size: 16px;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .modal button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    background: none;
+  }
+  
+  .modal {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(12, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease;
+    text-align: center;
+    width: 300px;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-header h3 {
+    margin: 0;
+  }
+  
+  .cancel-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #dc3545;
+  }
+  
+  .modal button {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    width: 100%;
+  }
+  
+  .modal button:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .modal button:last-child {
+    background-color: transparent;
+  }
+  
+  .modal button:last-child:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .action-project {
+    position: relative;
+    background-color: transparent;
+  }
+  
+  .action-menu-button {
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .action-menu-button:hover {
+    background-color: transparent;
+    color: #333;
+    transform: rotate(90deg);
+    color: #9d9e9f;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    z-index: 10;
+    display: block;
+    border-radius: 4px;
+    padding: 5px 0;
+  }
+  
+  .dropdown-menu button {
+    background-color: transparent;
+    border: none;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dropdown-menu button:hover {
+    color: #9d9e9f;
+  }
+  
+  .actual-start-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .date-picker-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  .react-datepicker__input-container input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent;
+  }
+
+  .truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 122px; /* Adjust width as needed */
+    display: inline-block; /* Necessary for text-overflow to work */
+  }
+
+  .clickable-row {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .clickable-row:hover {
+    background-color: #f9f9f9;
+  }
+  
+  

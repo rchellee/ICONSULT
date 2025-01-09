@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
-import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
-import { BsThreeDotsVertical } from "react-icons/bs"; // Import BsThreeDotsVertical icon
-import TaskForm from "./Taskform";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; 
+import { IoAddCircle } from "react-icons/io5"; 
+import { BsThreeDotsVertical } from "react-icons/bs"; 
+import TaskForm from "./TaskForm";
 import MiscellaneousForm from "./MiscellaneousForm ";
 
 const PostsTab = ({
@@ -14,15 +14,28 @@ const PostsTab = ({
   handleCancelForm,
   setTasks,
 }) => {
-  const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
+  const [selectedTaskName, setSelectedTaskName] = useState(null);
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); 
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [showActions, setShowActions] = useState(null); // State for controlling visibility of action buttons
-  const [selectedTaskId, setSelectedTaskId] = useState(null); // To track which task is selected for actions
+  const [showActions, setShowActions] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState(null); 
 
   const miscData = selectedTaskDetails?.miscellaneous || [];
+
+  const formatCurrency = (amount) => {
+    return `₱ ${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -45,8 +58,7 @@ const PostsTab = ({
     }
   }, [projectId]);
 
-  const handleRowClick = async (task) => {
-    console.log("Row clicked:", task);
+  const handleRowDoubleClick = async (task) => {
     setLoading(true);
     setSelectedTaskName(task.task_name);
     try {
@@ -90,45 +102,37 @@ const PostsTab = ({
       task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
-    console.log("Updated selectedTaskDetails:", updatedTask);
   };
 
   const handleActionClick = (event, taskId) => {
-    event.stopPropagation(); // Prevent the click event from bubbling up
+    event.stopPropagation();
     if (showActions === taskId) {
-      setShowActions(null); // Close if the same task's action button is clicked
+      setShowActions(null);
     } else {
-      setShowActions(taskId); // Show the action menu for the clicked task
-      setSelectedTaskId(taskId); // Store the taskId for action
+      setShowActions(taskId);
+      setSelectedTaskId(taskId);
     }
   };
 
   const handleEdit = () => {
-    console.log("Edit task", selectedTaskId);
-    
     setShowActions(null); 
   };
 
   const handleDelete = () => {
-    console.log("Delete task", selectedTaskId);
-    
     setShowActions(null); 
+  };
+
+  const handleStatusChange = (taskId, newStatus) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, status: newStatus } : task
+    );
+    setTasks(updatedTasks);
+    // Optionally, you could update the status in the backend here.
   };
 
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-         
-        <div className="top-button">
-           {/*<button className="nav-button">
-            <FaChevronLeft />
-            <span className="tooltip">Go back</span>
-          </button>
-          <button className="nav-button">
-            <FaChevronRight />
-          </button>*/}
-        </div>   
-
         {selectedTaskDetails ? (
           <div className="task-details">
             <div className="task-detail-row">
@@ -141,7 +145,7 @@ const PostsTab = ({
             </div>
             <div className="task-detail-row">
               <div>{selectedTaskDetails.task_name}</div>
-              <div className="align-right">{selectedTaskDetails.task_fee}</div>
+              <div className="align-right">{formatCurrency(selectedTaskDetails.task_fee)}</div>
             </div>
             <div className="task-detail-row">
               <div>
@@ -165,7 +169,7 @@ const PostsTab = ({
                       <p> {item.name}</p>
                     </div>
                     <div className="align-right amount-label">
-                      <p> {item.fee}</p>
+                      <p>{formatCurrency(parseFloat(item.fee) || 0)}</p>
                     </div>
                   </div>
                 </div>
@@ -182,12 +186,13 @@ const PostsTab = ({
                 <strong>Total</strong>
               </div>
               <div className="align-right">
-                {calculateTotal(selectedTaskDetails)}
+                {calculateTotal(selectedTaskDetails) === 0
+                  ? '--'
+                  : formatCurrency(calculateTotal(selectedTaskDetails))}
               </div>
             </div>
           </div>
-        ) : // Task Table is displayed when no task is selected
-        tasks.length === 0 ? (
+        ) : tasks.length === 0 ? (
           <div className="no-task-container">
             <h2>No Task Created</h2>
           </div>
@@ -211,30 +216,41 @@ const PostsTab = ({
                   const miscellaneousItems = JSON.parse(
                     task.miscellaneous || "[]"
                   );
-                  const miscellaneousDetails =
-                    Array.isArray(miscellaneousItems) &&
-                    miscellaneousItems.length > 0
-                      ? miscellaneousItems
-                          .map((item) => `${item.name}: ${item.fee}`)
-                          .join(", ")
-                      : "N/A";
+                  const totalMiscellaneousFee = miscellaneousItems.reduce(
+                    (total, item) => total + (parseFloat(item.fee) || 0),
+                    0
+                  );
 
                   return (
-                    <tr key={task.id} onClick={() => handleRowClick(task)}>
+                    <tr
+                      key={task.id}
+                      onDoubleClick={() => handleRowDoubleClick(task)} // Double-click event
+                    >
                       <td>{task.task_name}</td>
                       <td>{task.employee}</td>
-                      <td>{task.status}</td>
-                      <td>{task.due_date}</td>
-                      <td>{task.task_fee}</td>
-                      <td>{miscellaneousDetails || "N/A"}</td>
-                      <td>{task.amount}</td>
-                      {/* Action Button */}
+                      <td>
+                      <select
+                        value={task.status || "Pending"} // Default status is "Pending"
+                        onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                    >
+                        
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                      </td>
+                      <td>{formatDate(task.due_date)}</td> {/* Updated Due Date formatting */}
+                      <td>{formatCurrency(task.task_fee)}</td>
+                      <td>
+                        {totalMiscellaneousFee === 0
+                          ? '--'
+                          : formatCurrency(totalMiscellaneousFee)}
+                      </td>
+                      <td>{formatCurrency(task.amount)}</td>
                       <td
                         className="click-post-action"
-                        onClick={(e) => handleActionClick(e, task.id)} // Pass the event and task id
+                        onClick={(e) => handleActionClick(e, task.id)}
                       >
                         <BsThreeDotsVertical />
-                        {/* Floating Action Box */}
                         {showActions === task.id && (
                           <div className="post-click-popup">
                             <button onClick={handleEdit}>Edit</button>
@@ -250,32 +266,26 @@ const PostsTab = ({
           </div>
         )}
 
-        {/* Create Button */}
         <div className="create-button-container">
           <button
             className="create-task-button"
             onClick={() => setShowTaskForm(true)}
           >
-            +
+            <IoAddCircle className="create-task-icon" /> +
           </button>
         </div>
-
-        {/* Task Form */}
         {showTaskForm && (
           <TaskForm
             projectId={projectId}
-            tasks={tasks}
             handleCreateTask={handleCreateTask}
             handleCancelForm={handleCancelForm}
           />
         )}
 
-        {/* Miscellaneous Form */}
-        {showMiscellaneousForm && (
+        {showMiscellaneousForm && selectedTaskDetails && (
           <MiscellaneousForm
-            taskDetails={selectedTaskDetails}
-            onSave={updateTaskWithMiscellaneous}
-            onCancel={() => setShowMiscellaneousForm(false)}
+            taskId={selectedTaskDetails.id}
+            updateTaskWithMiscellaneous={updateTaskWithMiscellaneous}
           />
         )}
       </div>

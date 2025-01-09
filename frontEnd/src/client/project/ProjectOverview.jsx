@@ -76,7 +76,7 @@ function ProjectOverview({ projectId }) {
               <tr>
                 <th>Contract Price</th>
                 <th>Downpayment</th>
-                <th>To be Paid</th>
+                <th>Balance</th>
               </tr>
             </thead>
             <tbody>

@@ -1,263 +1,151 @@
-import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useState } from "react";
 import { MdCancel } from "react-icons/md"; // Import cancel icon
-import "./project.css";
-import { Pending } from "@mui/icons-material";
+import { LuLayoutGrid } from "react-icons/lu"; // Import Grid icon
+import { FaList } from "react-icons/fa"; // Import List icon
+import GridView from "./GridView"; // Import GridView component
+import ListView from "./ListView"; // Import ListView component
+import "./ListView.css";
 
 const ProjectList = ({
   filteredProjects,
   formatDate,
   handleDelete,
-  handleEdit,
+  onEdit,
   toggleDropdown,
   activeDropdown,
 }) => {
   const [statuses, setStatuses] = useState(
     filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.status;
+      acc[project.id] = project.status; // Initialize the status from filteredProjects
       return acc;
     }, {})
   );
 
-  const [paymentstatuses, setpaymentStatuses] = useState(
-    filteredProjects.reduce((ass, project) => {
-      ass[project.id] = project.paymentStatus;
-      return ass;
+  const [startDates, setStartDates] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualStartDate || null; // Initialize with existing actual start date
+      return acc;
     }, {})
   );
-  const [totalTasks, setTotalTasks] = useState({});
-  const [tasksInfo, setTasksInfo] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [finishDates, setFinishDates] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualFinishDate || null; // Initialize with existing actual finish date
+      return acc;
+    }, {})
+  );
+
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [selectedProject, setSelectedProject] = useState(null); // Selected project for actions
+  const [isGridView, setIsGridView] = useState(false); // State to control grid or list view
 
   const handleStatusChange = (projectId, newStatus) => {
-    // Update status locally
     setStatuses((prevStatuses) => ({
       ...prevStatuses,
-      [projectId]: newStatus,
+      [projectId]: newStatus, // Update the status when changed
     }));
-
-    // Send update to the database
-    fetch(`http://localhost:8081/projectStat/${projectId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update status");
-        }
-        return response.json();
-      })
-      .then((updatedProject) => {
-        console.log("Status updated successfully:", updatedProject);
-      })
-      .catch((error) => {
-        console.error("Error updating status:", error);
-        // Revert the status locally if the update fails
-        setStatuses((prevStatuses) => ({
-          ...prevStatuses,
-          [projectId]: filteredProjects.find((p) => p.id === projectId).status,
-        }));
-      });
   };
 
-  useEffect(() => {
-    const fetchTasksInfo = async () => {
-      const info = {};
-      for (const project of filteredProjects) {
-        try {
-          const response = await fetch(
-            `http://localhost:8081/admin/tasks?projectId=${project.id}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch tasks");
-          }
-          const data = await response.json();
-          const completedTasks = data.tasks.filter(
-            (task) => task.status === "completed"
-          ).length;
-          info[project.id] = {
-            total: data.tasks.length,
-            completed: completedTasks,
-          };
-        } catch (error) {
-          console.error("Error fetching tasks for project:", error);
-          info[project.id] = { total: 0, completed: 0 };
-        }
-      }
-      setTasksInfo(info);
-    };
-
-    fetchTasksInfo();
-  }, [filteredProjects]);
-
-  const handlePaymentStatusChange = (projectId, newpaymentStatus) => {
-    // Update paymentstatus locally
-    setpaymentStatuses((prevpaymentStatuses) => ({
-      ...prevpaymentStatuses,
-      [projectId]: newpaymentStatus,
+  const handleStartDateChange = (projectId, date) => {
+    setStartDates((prevStartDates) => ({
+      ...prevStartDates,
+      [projectId]: date, // Update the start date for the specific project
     }));
+  };
 
-    // Send update to the database
-    fetch(`http://localhost:8081/paymentStat/${projectId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentStatus: newpaymentStatus }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update status");
-        }
-        return response.json();
-      })
-      .then((updatedProject) => {
-        console.log("Payment Status updated successfully:", updatedProject);
-      })
-      .catch((error) => {
-        console.error("Error updating status:", error);
-        // Revert the status locally if the update fails
-        setpaymentStatuses((prevpaymentStatuses) => ({
-          ...prevpaymentStatuses,
-          [projectId]: filteredProjects.find((p) => p.id === projectId)
-            .paymentStatus,
-        }));
-      });
+  const handleFinishDateChange = (projectId, date) => {
+    setFinishDates((prevFinishDates) => ({
+      ...prevFinishDates,
+      [projectId]: date, // Update the finish date for the specific project
+    }));
   };
 
   const statusColors = {
     Ongoing: "pink",
     Pending: "red",
-    Completed: "#FFCD90",
-  };
-  const paymentstatusColors = {
-    Paid: "green",
-    "Not Paid": "gray",
-    "Partial Payment": "yellow",
+    Completed: "#FFCD90", // Default color for Ongoing
   };
 
   const handleRightClick = (e, projectId) => {
-    e.preventDefault();
-    setSelectedProject(projectId);
-    setShowModal(true);
+    e.preventDefault(); // Prevent the default context menu
+    setSelectedProject(projectId); // Store the selected project ID
+    setShowModal(true); // Show the confirmation modal
   };
 
   const handleContextMenuAction = (action) => {
     if (action === "delete") {
-      handleDelete(selectedProject);
+      handleDelete(selectedProject); // Trigger delete action
     } else if (action === "edit") {
-      handleEdit(selectedProject);
+      onEdit(selectedProject); // Trigger edit action
     }
-    setShowModal(false);
+    setShowModal(false); // Close the modal after action
   };
 
   const closeModal = () => {
-    setShowModal(false);
+    setShowModal(false); // Close the modal without any action
   };
+
+  // Toggle between grid and list view
+  const toggleLayout = (layout) => {
+    if (layout === "grid") {
+      setIsGridView(true);
+    } else {
+      setIsGridView(false);
+    }
+  };
+
+  const handleProjectClick = (projectId) => {
+    console.log("Project clicked:", projectId);
+    // Add your logic here, such as navigating to a project details page or displaying a modal
+  };
+  
 
   return (
     <div className="project-list-wrapper">
+      <div className="layout-toggle-icons">
+        <LuLayoutGrid onClick={() => toggleLayout("list")} /> {/* grid */}
+        <FaList  onClick={() => toggleLayout("grid")} /> {/* list Icon */}
+      </div>
+
       <div className="project-list">
-        <div className="project-list-header">
-          <h3>Project</h3>
-          <h3>Client</h3>
-          <h3>Progress</h3>
-          <h3>Timeline</h3>
-          <h3>Status</h3>
-          <h3>Downpayment</h3>
-          <h3>Total</h3>
-          <h3>Payment Status</h3>
-        </div>
-        {filteredProjects.map((project) => {
-          const { total = 0, completed = 0 } = tasksInfo[project.id] || {};
-          const progress =
-            total > 0 ? Math.round((completed / total) * 100) : 0;
+        {/* Conditionally render grid or table layout */}
+        {isGridView ? (
+          <GridView
+            filteredProjects={filteredProjects}
+            formatDate={formatDate}
+            statuses={statuses}
+            statusColors={statusColors}
+            handleStatusChange={handleStatusChange}
+            startDates={startDates}
+            finishDates={finishDates}
+            handleStartDateChange={handleStartDateChange}
+            handleFinishDateChange={handleFinishDateChange}
+          />
+        ) : (
+          <ListView
+            filteredProjects={filteredProjects}
+            formatDate={formatDate}
+            statuses={statuses}
+            statusColors={statusColors}
+            handleStatusChange={handleStatusChange}
+            startDates={startDates}
+            finishDates={finishDates}
+            handleStartDateChange={handleStartDateChange}
+            handleFinishDateChange={handleFinishDateChange}
+            handleRightClick={handleRightClick}
+            onProjectClick={handleProjectClick} 
+            
+          />
+        )}
 
-          return (
-            <div
-              key={project.id}
-              className="project-item"
-              onContextMenu={(e) => handleRightClick(e, project.id)}
-            >
-              <p className="truncate" title={project.projectName}>
-                {project.projectName}
-              </p>
-              <p className="truncate" title={project.clientName}>
-                {project.clientName}
-              </p>
-              <p>{`${progress}%`}</p>
-              <p>
-                {formatDate(project.startDate)} - {formatDate(project.endDate)}
-              </p>
-              <select
-                value={statuses[project.id] || "Pending"}
-                onChange={(e) => handleStatusChange(project.id, e.target.value)}
-                className={`status-dropdown $(
-                statuses[project.id] === "Pending"
-                  ? "status-pending"
-                  : statuses[project.id] === "Completed"
-                  ? "status-completed"
-                  : ""
-              )`}
-                style={{
-                  backgroundColor: statusColors[statuses[project.id]] || "pink",
-                }}
-              >
-                <option value="Pending">Pending</option>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Completed">Completed</option>
-              </select>
-              <p>{project.downpayment || "N/A"}</p>
-              <p>{project.totalPayment}</p>
-              <select
-                value={paymentstatuses[project.id] || "Not Paid"}
-                onChange={(e) =>
-                  handlePaymentStatusChange(project.id, e.target.value)
-                }
-                className={`paymentstatus-dropdown $(
-                paymentstatuses[project.id] === "Partial Payment"
-                  ? "paymentstatus-partialPayment"
-                  : paymentstatuses[project.id] === "Paid"
-                  ? "paymentstatus-paid"
-                  : ""
-              )`}
-                style={{
-                  backgroundColor:
-                    paymentstatusColors[paymentstatuses[project.id]] || "pink",
-                }}
-              >
-                <option value="Not Paid">Not Paid</option>
-                <option value="Partial Payment">Partial Payment</option>
-                <option value="Paid">Paid</option>
-              </select>
-
-              <div className="action-project">
-                <button
-                  className="action-menu-button"
-                  onClick={() => toggleDropdown(project.id)}
-                >
-                  &#x22EE;
-                </button>
-                {activeDropdown === project.id && (
-                  <div className="dropdown-menu">
-                    <button onClick={() => handleEdit(project.id)}>Edit</button>
-                    <button onClick={() => handleDelete(project.id)}>
-                      Trash
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+        {/* Confirmation Modal */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal">
               <div className="modal-header">
                 <MdCancel className="cancel-icon" onClick={closeModal} />
               </div>
-              <button onClick={() => handleEdit(project.id)}>Edit</button>
-              <button onClick={() => handleDelete(project.id)}>Delete</button>
+              <button onClick={() => handleContextMenuAction("edit")}>Edit</button>
+              <button onClick={() => handleContextMenuAction("delete")}>Delete</button>
             </div>
           </div>
         )}
