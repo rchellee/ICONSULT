@@ -47,7 +47,7 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
     <div className="employee-details">
       <div className="employee-info">
         {isEditing ? (
-          <form onSubmit={handleSave} className="employee-form-grid">
+          <form onSubmit={handleSave} className="employee-editing-form-grid">
             {/* Name Section */}
             <div className="row">
               <div className="input-group input-group-icon">

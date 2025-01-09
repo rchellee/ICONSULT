@@ -1,6 +1,7 @@
 
 /* Google Font Import - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .client-home-page {
   display: flex;
   background-color: #f4f4f9;
@@ -368,7 +369,7 @@ select:focus {
 .overview-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr)  ;
-  gap: 20px;
+  gap: 10px;
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
@@ -376,7 +377,7 @@ select:focus {
   width: 55%;
   box-sizing: border-box;
   position:relative;
-  margin: 20px auto;
+  margin: 40px auto;
 }
 
 /*************Client read only******** */

@@ -123,7 +123,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                       <div className="input-icon"><i className="fa fa-phone"></i></div>
                   </div>
                 </div>
-
                 {/* Contact Section */}
                 <div className="row">
                   <div className="input-group input-group-icon">
@@ -179,7 +178,7 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                 <p><i className="fas fa-user"></i> <strong>First Name:</strong> {client.firstName}</p>
                 <p><i className="fas fa-user"></i> <strong>Last Name:</strong> {client.lastName}</p>
                 <p><i className="fas fa-envelope"></i> <strong>Email Address:</strong> {client.email}</p>
-                <p><i className="fas fa-briefcase"></i> <strong>Occupation:</strong> {client.occupation}</p>
+                <p><i className="fa fa-calendar"></i><strong>Age:</strong> {client.age}</p>
                 <p><i className="fas fa-flag"></i> <strong>Nationality:</strong> {client.nationality}</p>
                 <p><i className="fas fa-phone"></i> <strong>Mobile Number:</strong> {client.mobileNumber}</p>
                 <p><i className="fas fa-map-marker-alt"></i> <strong>Address:</strong> {client.address}</p>

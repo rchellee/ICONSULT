@@ -102,6 +102,7 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
               <input type="date" name="birthday" value={formData.birthday} onChange={handleChange} />
               <div className="input-icon"><i className="fa fa-calendar"></i></div>
             </div>
+            <button type="submit">{editingEmployee ? "Update Employee" : "Add Employee"}</button>
           </div>
 
           {/* Status Section */}
@@ -116,11 +117,8 @@ const EmployeeForm = ({ employees, setEmployees, toggleForm, editingEmployee }) 
                 <option value="role1">Role 1</option>
                 <option value="role2">Role 2</option>
               </select>
-      
           </div>
-
-          <button type="submit">{editingEmployee ? "Update Employee" : "Add Employee"}</button>
-        </form>
+                  </form>
       </div>
     </div>
   );

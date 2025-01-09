@@ -16,7 +16,7 @@ const ClientForm = ({ clients, setClients, showToast }) => {
     companyName: "",
     city: "",
     postalCode: "",
-    occupation: "",
+    age: "",
     nationality: "",
     emergencyContact: "",
     emergencyNumber: "",
@@ -128,12 +128,13 @@ const ClientForm = ({ clients, setClients, showToast }) => {
             <div className="input-group input-group-icon">
               <input
                 type="text"
-                name="occupation"
-                placeholder="Occupation"
-                value={formData.occupation}
+                name="age"
+                placeholder="Age"
+                value={formData.age}
                 onChange={handleChange}
               />
-              <div className="input-icon"><i className="fa fa-briefcase"></i></div>
+              <div className="input-icon"><i className="fa fa-calendar"></i>
+              </div>
             </div>
             <div className="input-group input-group-icon">
               <input
