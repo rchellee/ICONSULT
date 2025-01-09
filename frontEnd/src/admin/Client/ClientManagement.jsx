@@ -75,11 +75,13 @@ const ClientManagement = () => {
         <Sidebar />
         <div className="client-content">
           {isAddingClient ? (
-            <ClientForm
-              clients={clients}
-              setClients={setClients}
-              showToast={() => setToastVisible(true)}
-            />
+            <>
+              <ClientForm
+                clients={clients}
+                setClients={setClients}
+                showToast={() => setToastVisible(true)}
+              />
+            </>
           ) : selectedClient ? (
             <ClientDetails client={selectedClient} goBack={goBackToList} />
           ) : (
@@ -106,6 +108,7 @@ const ClientManagement = () => {
                         <th>Email Address</th>
                         <th>Contact Number</th>
                         <th>Status</th>
+                       
                       </tr>
                     </thead>
                     <tbody >

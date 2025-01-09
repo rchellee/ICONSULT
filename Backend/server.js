@@ -696,6 +696,26 @@ app.put("/client/:id", (req, res) => {
     }
   );
 });
+//for dashboard
+app.get("/clients/count", (req, res) => {
+  const { filter } = req.query; // e.g., 'weekly', 'monthly', 'yearly'
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  const sql = `SELECT COUNT(*) AS total FROM client ${dateCondition}`;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]);
+  });
+});
+
 
 // Save a new employee (POST request)
 app.post("/employee", (req, res) => {
