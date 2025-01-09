@@ -93,6 +93,7 @@ const Payment = () => {
           },
           onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
+              console.log("PayPal Transaction Details:", details);
               const clientId = localStorage.getItem("clientId");
               const payeeDetails = details.purchase_units[0].payee;
               const payeeEmail =
@@ -100,7 +101,9 @@ const Payment = () => {
               const payeeMerchantId =
                 payeeDetails?.merchant_id || "Unknown Merchant ID";
               const payeeName =
-                payeeDetails?.business_name || "Unknown Merchant Name";
+                payeeDetails?.business_name ||
+                payeeDetails?.email_address ||
+                "Unknown Merchant Name";
 
               const transactionDetails = {
                 transactionId: details.id,

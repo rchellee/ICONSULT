@@ -5,16 +5,17 @@ import Topbar from "../Topbar";
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
+  const [projectMap, setProjectMap] = useState({});
 
   useEffect(() => {
+    const clientId = localStorage.getItem("clientId"); 
+
+    if (!clientId) {
+      console.error("No client ID found.");
+      return;
+    }
+
     const fetchTransactions = async () => {
-      const clientId = localStorage.getItem("clientId"); // Retrieve clientId from localStorage
-
-      if (!clientId) {
-        console.error("No client ID found.");
-        return;
-      }
-
       try {
         const response = await fetch(
           `http://localhost:8081/payments/${clientId}`
@@ -27,8 +28,30 @@ const Transaction = () => {
         }
         const data = await response.json();
         setTransactions(data);
+        await fetchProjects(data);
       } catch (error) {
         console.error("Error fetching transactions:", error.message);
+      }
+    };
+
+    const fetchProjects = async (transactions) => {
+      try {
+        const projectIds = [...new Set(transactions.map((t) => t.project_id))]; 
+        const projectData = {};
+        for (const projectId of projectIds) {
+          if (projectId) {
+            const response = await fetch(
+              `http://localhost:8081/projects/${projectId}` 
+            );
+            if (response.ok) {
+              const result = await response.json();
+              projectData[projectId] = result.project.projectName;
+            }
+          }
+        }
+        setProjectMap(projectData);
+      } catch (error) {
+        console.error("Error fetching project details:", error.message);
       }
     };
 
@@ -56,7 +79,7 @@ const Transaction = () => {
     <div className="transactions-page">
       <Topbar />
       <Sidebar />
-      <div className="content">
+      <div className="content-transactions">
         <h4>Transactions</h4>
         {transactions.length > 0 ? (
           <table className="transactions-table">
@@ -64,11 +87,10 @@ const Transaction = () => {
               <tr>
                 <th>Transaction ID</th>
                 <th>Description</th>
-                <th>Name</th>
-                <th>Payer Email</th>
+                <th>Email</th>
                 <th>Amount</th>
                 <th>Currency</th>
-                <th>Payed To Email</th>
+                <th>Project Name</th>
                 <th>Date</th>
               </tr>
             </thead>
@@ -77,11 +99,12 @@ const Transaction = () => {
                 <tr key={transaction.transaction_id}>
                   <td>{transaction.transaction_id}</td>
                   <td>{getDescription(transaction)}</td>
-                  <td>{transaction.payer_name}</td>
-                  <td>{transaction.payer_email}</td>
+                  <td>{transaction.payed_to_email}</td>
                   <td>{formatAmount(transaction.amount)}</td>
                   <td>{transaction.currency}</td>
-                  <td>{transaction.payed_to_email}</td>
+                  <td>
+                    {projectMap[transaction.project_id] || "Unknown Project"}
+                  </td>
                   <td>{formatDate(transaction.created_at)}</td>
                 </tr>
               ))}

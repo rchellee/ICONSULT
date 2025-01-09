@@ -590,6 +590,25 @@ app.get("/client/:id", (req, res) => {
     }
   });
 });
+app.get("/client-transactions/:id", (req, res) => {
+  const clientId = req.params.id;
+
+  const sql = "SELECT firstName, lastName FROM client WHERE id = ?";
+  db.query(sql, [clientId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching client details" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json({ client: result[0] }); // Wrap the response
+    } else {
+      return res.status(404).json({ message: "Client not found" });
+    }
+  });
+});
+
 app.get("/clients/:id", (req, res) => {
   const clientId = req.params.id;
 
@@ -973,7 +992,6 @@ app.put("/project/:id", (req, res) => {
     }
   );
 });
-
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
 
