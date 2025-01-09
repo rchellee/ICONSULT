@@ -436,116 +436,6 @@ app.delete("/availability/:date", (req, res) => {
   });
 });
 
-// Save payment details to the database
-app.post("/payments", (req, res) => {
-  const {
-    transactionId,
-    payerName,
-    payerEmail,
-    amount,
-    currency,
-    payedToEmail,
-    clientId,
-    projectId,
-  } = req.body;
-
-  const query = `
-    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id, project_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-  db.query(
-    query,
-    [
-      transactionId,
-      payerName,
-      payerEmail,
-      amount,
-      currency,
-      payedToEmail,
-      clientId,
-      projectId,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error saving payment:", err);
-        return res.status(500).send("Error saving payment.");
-      }
-
-      // Save notification for the admin
-      const notificationQuery = `
-      INSERT INTO notifications (title, description, timestamp, isRead) 
-      VALUES (?, ?, ?, ?)
-    `;
-
-      const notificationTitle = "New Payment Received";
-      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
-      const timestamp = new Date();
-
-      db.query(
-        notificationQuery,
-        [notificationTitle, notificationDescription, timestamp, false],
-        (err, notificationResult) => {
-          if (err) {
-            console.error("Error creating notification:", err);
-            return res.status(500).send("Error saving notification.");
-          }
-
-          // Save client notification
-          const clientNotificationQuery = `
-            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
-            VALUES (?, ?, ?, NOW(), FALSE)
-          `;
-
-          const clientNotificationTitle = "Payment Received";
-          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
-
-          db.query(
-            clientNotificationQuery,
-            [clientId, clientNotificationTitle, clientNotificationDescription],
-            (err) => {
-              if (err) {
-                console.error("Error saving client notification:", err);
-                return res
-                  .status(500)
-                  .send("Error saving client notification.");
-              }
-
-              res
-                .status(200)
-                .send("Payment and client notification saved successfully.");
-            }
-          );
-        }
-      );
-    }
-  );
-});
-// Fetch all payments
-app.get("/payments", (req, res) => {
-  const query = "SELECT * FROM payments ORDER BY created_at DESC";
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching payments:", err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(200).json(results);
-  });
-});
-// Fetch payments for a specific client
-app.get("/payments/:clientId", (req, res) => {
-  const { clientId } = req.params;
-
-  const query =
-    "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
-  db.query(query, [clientId], (err, results) => {
-    if (err) {
-      console.error("Error fetching payments:", err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(200).json(results);
-  });
-});
-
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
   const { title, description } = req.body;
@@ -700,6 +590,25 @@ app.get("/client/:id", (req, res) => {
     }
   });
 });
+app.get("/client-transactions/:id", (req, res) => {
+  const clientId = req.params.id;
+
+  const sql = "SELECT firstName, lastName FROM client WHERE id = ?";
+  db.query(sql, [clientId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching client details" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json({ client: result[0] }); // Wrap the response
+    } else {
+      return res.status(404).json({ message: "Client not found" });
+    }
+  });
+});
+
 app.get("/clients/:id", (req, res) => {
   const clientId = req.params.id;
 
@@ -1085,25 +994,6 @@ app.put("/project/:id", (req, res) => {
     }
   );
 });
-app.put("/project/update-payment-status/:id", (req, res) => {
-  const projectId = req.params.id;
-  const { paymentStatus } = req.body;
-
-  if (!paymentStatus) {
-    return res.status(400).json({ error: "Payment status is required" });
-  }
-
-  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
-  db.query(sql, [paymentStatus, projectId], (err, result) => {
-    if (err) return res.status(500).json(err);
-
-    return res.json({
-      id: projectId,
-      paymentStatus,
-      message: "Payment status updated successfully",
-    });
-  });
-});
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
 
@@ -1483,6 +1373,158 @@ app.delete("/appointments/:id", (req, res) => {
 // backfillTimeFormat();
 
 // Endpoint to upload a file
+
+// Save payment details to the database
+app.post("/payments", (req, res) => {
+  const {
+    transactionId,
+    payerName,
+    payerEmail,
+    amount,
+    currency,
+    payedToEmail,
+    payeeMerchantId,
+    payeeName,
+    clientId,
+    projectId,
+  } = req.body;
+
+  const query = `
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, payee_merchant_id, payee_name, client_id, project_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.query(
+    query,
+    [
+      transactionId,
+      payerName,
+      payerEmail,
+      amount,
+      currency,
+      payedToEmail,
+      payeeMerchantId,
+      payeeName,
+      clientId,
+      projectId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error saving payment:", err);
+        return res.status(500).send("Error saving payment.");
+      }
+
+      // Save notification for the admin
+      const notificationQuery = `
+      INSERT INTO notifications (title, description, timestamp, isRead) 
+      VALUES (?, ?, ?, ?)
+    `;
+
+      const notificationTitle = "New Payment Received";
+      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
+      const timestamp = new Date();
+
+      db.query(
+        notificationQuery,
+        [notificationTitle, notificationDescription, timestamp, false],
+        (err, notificationResult) => {
+          if (err) {
+            console.error("Error creating notification:", err);
+            return res.status(500).send("Error saving notification.");
+          }
+
+          // Save client notification
+          const clientNotificationQuery = `
+            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
+            VALUES (?, ?, ?, NOW(), FALSE)
+          `;
+
+          const clientNotificationTitle = "Payment Received";
+          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
+
+          db.query(
+            clientNotificationQuery,
+            [clientId, clientNotificationTitle, clientNotificationDescription],
+            (err) => {
+              if (err) {
+                console.error("Error saving client notification:", err);
+                return res
+                  .status(500)
+                  .send("Error saving client notification.");
+              }
+
+              res
+                .status(200)
+                .send("Payment and client notification saved successfully.");
+            }
+          );
+        }
+      );
+    }
+  );
+});
+// Fetch all payments
+app.get("/payments", (req, res) => {
+  const query = "SELECT * FROM payments ORDER BY created_at DESC";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+// Fetch payments for a specific client
+app.get("/payments/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query =
+    "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+app.put("/project/update-payment-status/:id", (req, res) => {
+  const projectId = req.params.id;
+  const { paymentStatus } = req.body;
+
+  if (!paymentStatus) {
+    return res.status(400).json({ error: "Payment status is required" });
+  }
+
+  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
+  db.query(sql, [paymentStatus, projectId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    return res.json({
+      id: projectId,
+      paymentStatus,
+      message: "Payment status updated successfully",
+    });
+  });
+});
+app.put("/project/update-downpayment/:id", (req, res) => {
+  const projectId = req.params.id;
+  const { amount } = req.body;
+
+  const query = `
+    UPDATE project
+    SET downpayment = downpayment + ?
+    WHERE id = ?
+  `;
+
+  db.query(query, [amount, projectId], (err, result) => {
+    if (err) {
+      console.error("Error updating downpayment:", err);
+      return res.status(500).send("Error updating downpayment.");
+    }
+
+    res.status(200).send("Downpayment updated successfully.");
+  });
+});
 
 app.post("/upload", (req, res) => {
   upload.single("file")(req, res, (err) => {

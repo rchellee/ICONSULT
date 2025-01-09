@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,15 +8,15 @@ import {
   Avatar,
   Typography,
 } from "@mui/material";
-import { FaUserCircle } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { SearchContext } from "../components/SearchProvider"; // Import the context
 import logo from "../assets/logo2.png";
 
 const Topbar = () => {
   const [adminUsername, setAdminUsername] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState("");
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,6 +79,17 @@ const Topbar = () => {
             <img src={logo} alt="Logo" className="logo-topbar-img" />
           </div>
         </Typography>
+
+        <div className="search-box-container">
+          <input
+            type="text"
+            className="search-box-topbar"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)} // Update global search term
+          />
+        </div>
+
         <Typography variant="body1" sx={{ marginRight: 2 }} color="#143d58">
           {adminUsername}
         </Typography>
