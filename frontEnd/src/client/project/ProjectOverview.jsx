@@ -106,7 +106,7 @@ function ProjectOverview({ projectId }) {
             </tbody>
           </table>
           <div className="payment-button-container">
-          {project.paymentStatus !== "Paid" && (
+          {project.paymentStatus !== "Paid" && remainingPayment > 0 && (
             <button
               onClick={handlePaymentClick}
               className="pay-now-button"
@@ -117,7 +117,7 @@ function ProjectOverview({ projectId }) {
           )}
           </div>
 
-          {project.paymentStatus === "Paid" && project.status === "completed" && (
+          {project.paymentStatus === "Paid" && project.status === "Completed" && (
             <button
               onClick={handleReviewClick}
               style={{
