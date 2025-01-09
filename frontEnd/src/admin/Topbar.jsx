@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import {
   AppBar,
   Toolbar,
@@ -86,11 +87,11 @@ const Topbar = () => {
             className="search-box-topbar"
             placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} // Update global search term
+            onChange={(e) => setSearchTerm(e.target.value)} 
           />
         </div>
 
-        <Typography variant="body1" sx={{ marginRight: 2 }} color="#143d58">
+        <Typography variant="body1"  color="#143d58">
           {adminUsername}
         </Typography>
         <IconButton onClick={handleMenuOpen} color="#0056b3">
