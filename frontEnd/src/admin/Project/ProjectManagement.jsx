@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./project.css";
 import { FaPlus, FaBell } from "react-icons/fa";
 import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
@@ -8,8 +7,8 @@ import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
-import FormSelector from "./FormSelector";
 import Topbar from "../Topbar";
+import "./project.css";
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -75,9 +74,11 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Ongoing",
+      status: "Pending",
       contractPrice,
       downpayment,
+      totalPayment:
+        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
       paymentStatus,
     };
 
@@ -115,10 +116,10 @@ const ProjectManagement = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
+    return date.toLocaleDateString("en-US", {
+      year: "numeric", // Full year (e.g., "2024")
+      month: "long", // Full month name (e.g., "January")
+      day: "numeric", // Day of the month (e.g., "6")
     });
   };
 
@@ -192,7 +193,7 @@ const ProjectManagement = () => {
       return (
         <ProjectTask
           projectId={selectedProjectId}
-          onBack={() => setSelectedProjectId(null)}
+          onBack={() => setSelectedProjectId(null)} // Provide a way to go back
         />
       );
     }
@@ -243,7 +244,6 @@ const ProjectManagement = () => {
             setDescription={setDescription}
             contractPrice={contractPrice}
             setContractPrice={setContractPrice}
-            downpayment={downpayment}
             setDownpayment={setDownpayment}
             clients={clients}
             onCancel={closeModal}
@@ -251,14 +251,6 @@ const ProjectManagement = () => {
             editingProjectId={editingProjectId}
           />
         )}
-        <div className="search-box-container">
-          <input
-            type="text"
-            className="search-box"
-            placeholder="Search project"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
         {projects.length === 0 ? (
           <div style={{ textAlign: "center" }}>
             <img src={pic4} alt="No projects created" />
