@@ -168,7 +168,7 @@ const AccountSettings = () => {
       <Topbar />
       <Sidebar />
       <div className="account-settings">
-        <div className="content">
+        <div className="account">
           <h2>Account Setting</h2>
           
 

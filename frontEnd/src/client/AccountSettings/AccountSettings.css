@@ -1,9 +1,8 @@
-.content {
+.account {
   width: 60%; /* Adjust the width of the content to be 60% of the screen width */
   max-width: 800px; /* Optional: limits the width to a maximum value */
   box-sizing: border-box; /* Ensures padding doesn't affect the total width */
-  scroll-behavior: smooth;
-  overflow-y: auto;
+
 }
 
 
@@ -25,15 +24,6 @@
   display: flex;
   justify-content: flex-start; 
 }
-
-.Client Details p{
-  display: flex;
-  justify-content: flex-start;
-  font-size: 50px;
-  
-
-}
-
 
 /* Info-box styles */
 .info-box table {
@@ -112,7 +102,7 @@ table tr {
   width: 200px;
   height: 150px;
   margin-left: 600px;
-  margin-top: -110px;
+  margin-top: -80px;
   padding: 16px;
 }
 
