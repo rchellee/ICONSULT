@@ -278,8 +278,10 @@ function AdminAppointment() {
           )}
           {currentStep === 2 && (
             <div className="step2form">
-               <p>Choose a client and the type of consultation for this appointment.</p>
-              <div className="form-group">
+              <p className="form-description">
+  Choose a client and the type of consultation for this appointment.
+</p>                
+                    <div className="form-group">
                 <label htmlFor="client">Select Client:</label>
                 <select
                   id="client"
@@ -473,59 +475,66 @@ function AdminAppointment() {
   
 </button>
 </div>
-              {!formData.client && (
-  <p style={{ color: "red" }}>Please select a client to proceed.</p>
-)}
 
-{!formData.consultationType && (
-  <p style={{ color: "red" }}>Please select a consultation type.</p>
-)}
-
-{formData.consultationType === "Others" && !formData.otherDetails && (
-  <p style={{ color: "red" }}>Please specify the consultation type.</p>
-)}
-
-{!formData.platform && (
-  <p style={{ color: "red" }}>Please choose a communication platform.</p>
-)}
             </div>
           )}
-          {/** Step 3: Confirmation **/}
-          {currentStep === 3 && (
-            <div className="confirmation-container">
-              <div className="confirmation-form">
-              <p>Review and confirm your appointment details before submitting.</p>
-                <p>
-                  <strong>Client:</strong> {formData.clientName}
-                </p>
-                <p>
-                  <strong>Date:</strong> {formData.date}
-                </p>
-                <p>
-                  <strong>Time:</strong> {formData.time}
-                </p>
-                <p>
-                  <strong>Consultation Type:</strong>{" "}
-                  {formData.consultationType}
-                </p>
-                <p>
-                  <strong>Additional Info:</strong> {formData.additionalInfo}
-                </p>
-                <p>
-                  <strong>Consultation Mode:</strong> {formData.platform}
-                </p>
-                <p>
-                  <strong>Reminder:</strong> {formData.reminder}
-                </p>
+{/** Step 3: Confirmation **/}
+{currentStep === 3 && (
+  <div className="confirmation-container">
+    <div className="confirmation-form">
+      <p className="confirmation-header">
+        <span>Review</span> and <span>Confirm</span> your appointment details before submitting.
+      </p>
+      
+      <div className="icon-line">
+        <i className="bx bxs-user"></i>
+        <p><strong>Client:</strong> {formData.clientName}</p>
+      </div>
+      <div className="divider"></div>
 
-                <div className="confirmation-buttons">
-                  <button onClick={prevStep}>Back</button>
-                  <button onClick={handleSubmit}>Submit</button>
-                </div>
-                
-              </div>
-            </div>
-          )}
+      <div className="icon-line">
+        <i className="bx bxs-calendar"></i>
+        <p><strong>Date:</strong> {formData.date}</p>
+      </div>
+      <div className="divider"></div>
+
+      <div className="icon-line">
+        <i className="bx bxs-time"></i>
+        <p><strong>Time:</strong> {formData.time}</p>
+      </div>
+      <div className="divider"></div>
+
+      <div className="icon-line">
+        <i className="bx bxs-category"></i>
+        <p><strong>Consultation Type:</strong> {formData.consultationType}</p>
+      </div>
+      <div className="divider"></div>
+
+      <div className="icon-line">
+        <i className="bx bxs-info-circle"></i>
+        <p><strong>Additional Info:</strong> {formData.additionalInfo}</p>
+      </div>
+      <div className="divider"></div>
+
+      <div className="icon-line">
+        <i className="bx bxs-platform"></i>
+        <p><strong>Consultation Mode:</strong> {formData.platform}</p>
+      </div>
+      <div className="divider"></div>
+
+      <div className="icon-line">
+        <i className="bx bxs-bell"></i>
+        <p><strong>Reminder:</strong> {formData.reminder}</p>
+      </div>
+      <div className="divider"></div>
+
+      <div className="confirmation-buttons">
+        <button onClick={prevStep}>Back</button>
+        <button onClick={handleSubmit}>Submit</button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </div>
     </div>
