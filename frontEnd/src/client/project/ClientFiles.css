@@ -1,0 +1,139 @@
+table {
+    position: relative;
+    overflow: visible; /* Allow content to overflow the table boundaries */
+  }
+  
+  tbody {
+    overflow: visible; /* Ensure rows do not clip floating content */
+  }
+
+.ClientFiles .file-table th {
+    background-color: #f4f4f4; /* Light background for headers */
+    font-weight: bold;
+    color: #333; /* Change text color (dark gray or any color of your choice) */
+  }
+
+
+.ClientFiles .file-table {
+    width: 80%; /* Adjust the table width */
+    margin: 0 auto; /* Center the table */
+    font-size: 0.9rem; /* Reduce the font size */
+    border-collapse: collapse; /* Collapse table borders */
+  }
+  
+  .ClientFiles .file-table th,
+  .ClientFiles .file-table td {
+    padding: 8px 12px; /* Adjust padding for smaller cells */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .ClientFiles .file-table th {
+    background-color: #e4e4e4; /* Light background for headers */
+    font-weight: bold;
+  }
+  
+  .ClientFiles .file-table td {
+    border-bottom: 1px solid #ddd; /* Add a border between rows */
+  }
+  
+  .ClientFiles .file-table tr:hover {
+    background-color: #f1f1f1; /* Highlight row on hover */
+  }
+ 
+  
+  .ClientFiles .top-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out left and right sections */
+    margin-top: -65px; /* Adjust as necessary */
+    margin-left: 180px;
+  }
+  
+  .ClientFiles .left-section {
+    display: flex;
+    gap: 15px; /* Adjust space between the left buttons */
+  }
+  
+  .ClientFiles .right-section {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between the buttons */
+    margin-right: 200px; /* Decrease the margin-left to move them closer to the center */
+    padding-left: 10px; /* Optional: Add padding to adjust the position further */
+  }
+  
+  .ClientFiles .left-section button {
+    padding: 8px 15px;
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    border: 2px solid #758add; /* Border color */
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .ClientFiles .left-section button:hover {
+    background-color: #bbc8ff;
+    border-color: #758add; /* Keep the same border color */
+    outline: none; /* Remove any outline */
+  }
+  
+  .ClientFiles svg {
+    font-size: 30px;
+    cursor: pointer;
+  }
+
+  
+  .ClientFiles .action-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .ClientFiles .action-options {
+    position: absolute;
+    top: -45px; /* Move it above the row */
+    right: 0;
+    background-color: #fff;
+    border: 2px solid #758add;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    visibility: hidden; /* Initially hidden */
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+  }
+  
+  .ClientFiles .action-container:hover .action-options {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0s 0s;
+  }
+  
+  .ClientFiles .action-options button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .ClientFiles .action-options button:hover {
+    background-color: #bbc8ff;
+  }
+
+  .action-options button:hover {
+    background-color: #f0f0f0; /* Hover background color */
+    color: #007bff; /* Change font color on hover (e.g., blue) */
+  }
+  
+  /* Specific colors for Edit and Delete */
+  .action-options button:nth-child(1) { /* Edit button */
+    color: #2c2c2c; /* Green font color */
+  }
+  
+  .action-options button:nth-child(2) { /* Delete button */
+    color: #dc3545; /* Red font color */
+  }
+  
