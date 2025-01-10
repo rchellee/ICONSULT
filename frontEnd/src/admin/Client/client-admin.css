@@ -1,4 +1,3 @@
-
 /* Google Font Import - Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
@@ -10,7 +9,8 @@
 
 .client-content {
   flex-grow: 2;
-  margin-left: 85px
+  margin-left: 85px;
+  height: 600px;
 }
 /************************** Client Management **************/
 /* Search Bar */
@@ -23,7 +23,7 @@
 }
 /* Scroll */
 .scrollable-table-container {
-    max-height: 750px;
+    max-height: 600px;
     overflow-y: auto;
     border-radius: 8px;
 }
@@ -87,7 +87,7 @@ table td a {
 
 /* Toast Notification */
 .toast {
-  background-color: #28a745;
+  background-color: #136bc9;
   color: #fff;
   padding: 10px;
   border-radius: 5px;
@@ -211,7 +211,6 @@ input[type="radio"] + label {
     display: inline-block;
     width: 50%;
     text-align: center;
-    float: left;
     border-radius: 0;
     padding: 1em;
     cursor: pointer;
@@ -414,7 +413,36 @@ select:focus {
   font-weight: 600;
   color: #000;
 }
+/******************* Tabs **************/
+.client-details-table {
+  margin-top: 20px;
+}
 
+.client-details-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+}
+
+.client-details-table th, .client-details-tablee td {
+  padding: 12px;
+  text-align: left;
+}
+
+.client-details-table th {
+  background-color: #092f57;
+  color: #fefdfd;
+  
+}
+
+.client-details-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.client-details-table tr:hover {
+  background-color: #f1f1f1;
+}
 
 /*********** Button Group ******/
 .button-group {
@@ -471,7 +499,7 @@ button:hover {
 /* Toast */
 .toast-progress {
   height: 5px;
-  background-color: #155724;
+  background-color: #136bc9;
   animation: progressBar 3s linear;
 }
 
@@ -498,4 +526,31 @@ button:hover {
     width: 100%;
     margin-bottom: 10px;
   }
+}
+
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.pagination-buttons button {
+  padding: 5px 10px;
+  margin: 0 5px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pagination-buttons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-buttons span {
+  margin: 0 10px;
+  font-size: 14px;
 }

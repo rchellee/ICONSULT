@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeDetails from "./EmployeeDetails";
 import "./employee.css";
@@ -6,11 +7,12 @@ import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 
 const EmployeeManagement = () => {
+  const { searchTerm } = useContext(SearchContext);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [toastVisible, setToastVisible] = useState(false); // State for toast visibility
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
 
   // Fetch employees from the database when the component mounts
   useEffect(() => {
@@ -27,6 +29,10 @@ const EmployeeManagement = () => {
     fetchEmployees();
   }, []);
 
+  useEffect(() => {
+    setSearchQuery(searchTerm.toLowerCase());
+  }, [searchTerm]);
+
   const viewEmployeeDetails = (employee) => {
     setSelectedEmployee(employee);
   };
@@ -34,6 +40,15 @@ const EmployeeManagement = () => {
   const goBackToList = () => {
     setSelectedEmployee(null);
     setShowForm(false);
+  };
+
+  const updateEmployee = (updatedEmployee) => {
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((employee) =>
+        employee.id === updatedEmployee.id ? updatedEmployee : employee
+      )
+    );
+    setSelectedEmployee(updatedEmployee);
   };
 
   const toggleStatus = async (employeeId, currentStatus) => {
@@ -84,9 +99,9 @@ const EmployeeManagement = () => {
 
   // Filter employees based on search term
   const filteredEmployees = employees.filter((employee) =>
-    `${employee.firstName} ${employee.lastName}`
+    `${employee.firstName} ${employee.lastName} ${employee.middleName} ${employee.address} ${employee.mobile_number} ${employee.email_add} ${employee.status} ${employee.birthday} ${employee.age} ${employee.gender} ${employee.role}`
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+      .includes(searchQuery)
   );
 
   const handleEmployeeAdded = () => {
@@ -94,22 +109,33 @@ const EmployeeManagement = () => {
     setTimeout(() => setToastVisible(false), 3000); // Auto-hide after 3 seconds
   };
 
+  const showToast = () => {
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+      setShowForm(false);
+    }, 5000);
+  };
+
   return (
     <div>
       <Topbar />
+      <Sidebar />
       <div className="employee-home-page">
-        <Sidebar />
         <div className="employee-content">
           {showForm ? (
             <EmployeeForm
               employees={employees}
               setEmployees={setEmployees}
               toggleForm={() => setShowForm(false)}
-              onEmployeeAdded={handleEmployeeAdded} // Callback for adding employee
+              onEmployeeAdded={handleEmployeeAdded}
             />
           ) : selectedEmployee ? (
             <EmployeeDetails
               employee={selectedEmployee}
+              updateEmployee={updateEmployee}
+              showToast={() => setToastVisible(true)}
+              hideToast={() => setToastVisible(false)}
               goBack={goBackToList}
             />
           ) : (
@@ -120,13 +146,6 @@ const EmployeeManagement = () => {
               >
                 Add Employee
               </button>
-              <input
-                type="text"
-                placeholder="Search employee"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-bar"
-              />
               {filteredEmployees.length === 0 ? (
                 <p>No matching employees found.</p>
               ) : (
@@ -134,8 +153,9 @@ const EmployeeManagement = () => {
                   <thead>
                     <tr>
                       <th>Name</th>
+                      <th>Email</th>
+                      <th>Position</th>
                       <th>Status</th>
-                      <th>Role</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -150,6 +170,8 @@ const EmployeeManagement = () => {
                           </div>
                           {employee.firstName} {employee.lastName}
                         </td>
+                        <td>{employee.email_add}</td>
+                        <td>{employee.role}</td>
                         <td>
                           <label className="toggle-btn">
                             <input
@@ -162,7 +184,6 @@ const EmployeeManagement = () => {
                             <span className="slider"></span>
                           </label>
                         </td>
-                        <td>{employee.role || "role 1"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -177,14 +198,10 @@ const EmployeeManagement = () => {
                 <i className="fas fa-solid fa-check check"></i>
                 <div className="message">
                   <div className="text text-2">
-                    Success, your employee has been added.
+                    Success, employee details has been saved.
                   </div>
                 </div>
               </div>
-              <i
-                className="fa-solid fa-xmark close"
-                onClick={() => setToastVisible(false)}
-              ></i>
               <div className="progress active"></div>
             </div>
           )}

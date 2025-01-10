@@ -226,6 +226,21 @@ function getStoredCodeForEmail(email) {
   console.log(`Fetching code for ${email}`);
   return verificationCodes.get(email);
 }
+app.post("/send-email", (req, res) => {
+  const { to, from, subject, html } = req.body;
+
+  const message = {
+    to,
+    from,
+    subject,
+    html,
+  };
+
+  sgMail
+    .send(message)
+    .then(() => res.status(200).json({ message: "Email sent successfully" }))
+    .catch((error) => res.status(500).json({ error: error.message }));
+});
 //clientchange of password
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
@@ -518,7 +533,6 @@ app.post("/client", (req, res) => {
   const {
     firstName,
     lastName,
-    middleInitial,
     birthday,
     mobile_number,
     email_add,
@@ -527,16 +541,26 @@ app.post("/client", (req, res) => {
     username,
     status,
     companyName,
+    age,
+    nationality,
+    city,
+    postalCode,
+    gender,
+    companyPosition,
+    companyContact,
   } = req.body;
 
-  const sql =
-    "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const sql = `INSERT INTO client (
+    firstName, lastName, birthday, mobile_number, email_add, address, password, 
+    username, status, companyName, age, nationality, city, postalCode, gender, 
+    companyPosition, companyContact
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
       birthday,
       mobile_number,
       email_add,
@@ -545,6 +569,13 @@ app.post("/client", (req, res) => {
       username,
       status,
       companyName,
+      age,
+      nationality,
+      city,
+      postalCode,
+      gender,
+      companyPosition,
+      companyContact,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -552,7 +583,6 @@ app.post("/client", (req, res) => {
         id: result.insertId,
         firstName,
         lastName,
-        middleInitial,
         birthday,
         mobile_number,
         email_add,
@@ -560,6 +590,13 @@ app.post("/client", (req, res) => {
         username,
         status,
         companyName,
+        age,
+        nationality,
+        city,
+        postalCode,
+        gender,
+        companyPosition,
+        companyContact,
       });
     }
   );
@@ -661,26 +698,26 @@ app.put("/client/:id", (req, res) => {
   const {
     firstName,
     lastName,
-    middleInitial,
-    birthday,
     mobile_number,
     email_add,
-    address,
     companyName,
+    address,
+    companyContact,
+    companyPosition,
   } = req.body;
-  const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ?, companyName = ? WHERE id = ?`;
+  const sql = `UPDATE client SET firstName = ?, lastName = ?, mobile_number = ?, email_add = ?, companyName = ?, address = ?, companyContact = ?, companyPosition = ? WHERE id = ?`;
 
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
-      birthday,
       mobile_number,
       email_add,
-      address,
       companyName,
+      address,
+      companyContact,
+      companyPosition,
       clientId,
     ],
     (err, result) => {
@@ -696,26 +733,6 @@ app.put("/client/:id", (req, res) => {
     }
   );
 });
-//for dashboard
-app.get("/clients/count", (req, res) => {
-  const { filter } = req.query; // e.g., 'weekly', 'monthly', 'yearly'
-
-  let dateCondition = "";
-  if (filter === "weekly") {
-    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
-  } else if (filter === "monthly") {
-    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
-  } else if (filter === "yearly") {
-    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
-  }
-
-  const sql = `SELECT COUNT(*) AS total FROM client ${dateCondition}`;
-  db.query(sql, (err, data) => {
-    if (err) return res.status(500).json(err);
-    return res.json(data[0]);
-  });
-});
-
 
 // Save a new employee (POST request)
 app.post("/employee", (req, res) => {
@@ -728,10 +745,13 @@ app.post("/employee", (req, res) => {
     email_add,
     status,
     birthday,
+    age,
+    gender,
+    role,
   } = req.body;
 
   const sql =
-    "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday, age, gender, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -743,6 +763,9 @@ app.post("/employee", (req, res) => {
       email_add,
       status,
       birthday,
+      age,
+      gender,
+      role,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -756,6 +779,9 @@ app.post("/employee", (req, res) => {
         email_add,
         status,
         birthday,
+        age,
+        gender,
+        role,
       });
     }
   );
@@ -801,25 +827,31 @@ app.put("/employee/:id", (req, res) => {
   const {
     firstName,
     lastName,
-    middleInitial,
+    middleName,
     address,
     mobile_number,
     email_add,
     birthday,
+    age,
+    gender,
+    role,
   } = req.body;
 
   const sql =
-    "UPDATE employee SET firstName = ?, lastName = ?, middleInitial = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
+    "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ?, age = ?, gender = ?, role = ? WHERE id = ?";
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
+      middleName,
       address,
       mobile_number,
       email_add,
       birthday,
+      age,
+      gender,
+      role,
       employeeId,
     ],
     (err, result) => {
@@ -1075,8 +1107,15 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, status, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    status,
+    projectId,
+  } = req.body;
 
   // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
@@ -1171,6 +1210,14 @@ app.get("/tasks/:id", (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(tasks[0]);
+  });
+});
+app.get("/task/:employee", (req, res) => {
+  const { employee } = req.params;
+  const sql = "SELECT * FROM tasks WHERE employee = ? ";
+  db.query(sql, [employee], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
   });
 });
 
@@ -1298,6 +1345,19 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/appointments/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const sql = `SELECT * FROM appointments WHERE client_id = ?`;
+  db.query(sql, [clientId], (err, results) => {
+    if (err) {
+      console.error("SQL Error:", err);
+      return res.status(500).json({ message: "Failed to fetch appointments" });
+    }
+    return res.status(200).json(results);
+  });
+});
+
 app.get("/appointments/count", (req, res) => {
   const sql = `
     SELECT date, COUNT(*) as appointmentCount
@@ -1619,6 +1679,15 @@ app.get("/upload", (req, res) => {
     res.json(results);
   });
 });
+app.get("/upload/:clientId", (req, res) => {
+  const { clientId } = req.params;
+  const sql = "SELECT * FROM uploads WHERE uploaded_by = ?";
+  db.query(sql, [clientId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
 app.use("/uploads", express.static("uploads"));
 
 app.post("/reviews", (req, res) => {

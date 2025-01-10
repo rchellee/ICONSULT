@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import ClientForm from "./ClientForm";
 import ClientDetails from "./ClientDetails";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
-import "./client.css";
+import "./client-admin.css";
 
 const ClientManagement = () => {
+  const { searchTerm } = useContext(SearchContext);
   const [clients, setClients] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +27,10 @@ const ClientManagement = () => {
 
     fetchClients();
   }, []);
+
+  useEffect(() => {
+    setSearchQuery(searchTerm.toLowerCase());
+  }, [searchTerm]);
 
   const toggleStatus = async (clientId, currentStatus) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
@@ -51,6 +57,22 @@ const ClientManagement = () => {
     }
   };
 
+  const updateClient = (updatedClient) => {
+    setClients((prevClients) =>
+      prevClients.map((client) =>
+        client.id === updatedClient.id ? updatedClient : client
+      )
+    );
+  };
+
+  const showToast = () => {
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+      setIsAddingClient(false); // Navigate back after 5 seconds
+    }, 5000);
+  };
+
   const viewClientDetails = (client) => {
     setSelectedClient(client);
   };
@@ -64,8 +86,16 @@ const ClientManagement = () => {
     setSearchQuery(e.target.value.toLowerCase());
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
   const filteredClients = clients.filter((client) =>
-    `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchQuery)
+    `${client.firstName} ${client.lastName} ${client.companyName} ${
+      client.email_add
+    } ${client.mobile_number} ${formatDate(client.created_at)}`
+      .toLowerCase()
+      .includes(searchQuery)
   );
 
   return (
@@ -80,22 +110,23 @@ const ClientManagement = () => {
                 clients={clients}
                 setClients={setClients}
                 showToast={() => setToastVisible(true)}
+                hideToast={() => setToastVisible(false)}
+                goBack={goBackToList}
               />
             </>
           ) : selectedClient ? (
-            <ClientDetails client={selectedClient} goBack={goBackToList} />
+            <ClientDetails
+              client={selectedClient}
+              updateClient={updateClient}
+              showToast={() => setToastVisible(true)}
+              hideToast={() => setToastVisible(false)}
+              goBack={goBackToList}
+            />
           ) : (
             <>
               <button onClick={() => setIsAddingClient(true)}>
                 Add Client
               </button>
-              <input
-                type="text"
-                className="search-bar"
-                placeholder="Search client"
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
               {filteredClients.length === 0 ? (
                 <p>No matching clients found.</p>
               ) : (
@@ -107,13 +138,14 @@ const ClientManagement = () => {
                         <th>Company</th>
                         <th>Email Address</th>
                         <th>Contact Number</th>
+                        <th>Date Added</th>
                         <th>Status</th>
-                       
                       </tr>
                     </thead>
-                    <tbody >
+                    <tbody>
                       {filteredClients.map((client) => {
-                        const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
+                        const initials =
+                          `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
                         const color = `#${Math.floor(
                           Math.random() * 16777215
                         ).toString(16)}`;
@@ -132,6 +164,7 @@ const ClientManagement = () => {
                             <td>{client.companyName}</td>
                             <td>{client.email_add}</td>
                             <td>{client.mobile_number}</td>
+                            <td>{formatDate(client.created_at)}</td>
                             <td>
                               <label className="toggle-btn">
                                 <input
@@ -163,11 +196,6 @@ const ClientManagement = () => {
                   </div>
                 </div>
               </div>
-              <i
-                className="fa-solid fa-xmark close"
-                onClick={() => setToastVisible(false)}
-              ></i>
-              <div className="progress active"></div>
             </div>
           )}
         </div>
