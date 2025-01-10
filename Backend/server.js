@@ -745,10 +745,13 @@ app.post("/employee", (req, res) => {
     email_add,
     status,
     birthday,
+    age,
+    gender,
+    role,
   } = req.body;
 
   const sql =
-    "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday, age, gender, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -760,6 +763,9 @@ app.post("/employee", (req, res) => {
       email_add,
       status,
       birthday,
+      age,
+      gender,
+      role,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -773,6 +779,9 @@ app.post("/employee", (req, res) => {
         email_add,
         status,
         birthday,
+        age,
+        gender,
+        role,
       });
     }
   );
@@ -823,10 +832,13 @@ app.put("/employee/:id", (req, res) => {
     mobile_number,
     email_add,
     birthday,
+    age,
+    gender,
+    role,
   } = req.body;
 
   const sql =
-    "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
+    "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ?, age = ?, gender = ?, role = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -837,6 +849,9 @@ app.put("/employee/:id", (req, res) => {
       mobile_number,
       email_add,
       birthday,
+      age,
+      gender,
+      role,
       employeeId,
     ],
     (err, result) => {
@@ -1197,6 +1212,14 @@ app.get("/tasks/:id", (req, res) => {
     res.status(200).json(tasks[0]);
   });
 });
+app.get("/task/:employee", (req, res) => {
+  const { employee } = req.params;
+  const sql = "SELECT * FROM tasks WHERE employee = ? ";
+  db.query(sql, [employee], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
 
 app.post("/appointments", (req, res) => {
   const {
@@ -1322,6 +1345,19 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/appointments/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const sql = `SELECT * FROM appointments WHERE client_id = ?`;
+  db.query(sql, [clientId], (err, results) => {
+    if (err) {
+      console.error("SQL Error:", err);
+      return res.status(500).json({ message: "Failed to fetch appointments" });
+    }
+    return res.status(200).json(results);
+  });
+});
+
 app.get("/appointments/count", (req, res) => {
   const sql = `
     SELECT date, COUNT(*) as appointmentCount
@@ -1643,6 +1679,15 @@ app.get("/upload", (req, res) => {
     res.json(results);
   });
 });
+app.get("/upload/:clientId", (req, res) => {
+  const { clientId } = req.params;
+  const sql = "SELECT * FROM uploads WHERE uploaded_by = ?";
+  db.query(sql, [clientId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
 app.use("/uploads", express.static("uploads"));
 
 app.post("/reviews", (req, res) => {

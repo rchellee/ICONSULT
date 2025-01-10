@@ -15,60 +15,62 @@ const ClientDetails = ({
   const [appointments, setAppointments] = useState([]);
   const [projects, setProjects] = useState([]);
   const [files, setFiles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  // Example data
-  const sampleAppointments = [
-    {
-      date: "2025-01-05",
-      details: "Initial consultation",
-      status: "Completed",
-      type: "Consultation",
-    },
-    {
-      date: "2025-01-12",
-      details: "Follow-up meeting",
-      status: "Scheduled",
-      type: "Meeting",
-    },
-  ];
-
-  const sampleProjects = [
-    {
-      projectName: "Project A",
-      startDate: "2025-01-01",
-      endDate: "2025-06-01",
-      status: "In Progress",
-    },
-    {
-      projectName: "Project B",
-      startDate: "2025-02-01",
-      endDate: "2025-07-01",
-      status: "Completed",
-    },
-  ];
-
-  const sampleFiles = [
-    {
-      documentName: "Contract.pdf",
-      uploadedDate: "2025-01-01",
-      type: "PDF",
-      action: "View",
-    },
-    {
-      documentName: "Invoice.xlsx",
-      uploadedDate: "2025-01-05",
-      type: "Excel",
-      action: "Download",
-    },
-  ];
-
-  // Simulate an API call to get appointments, projects, and files
   useEffect(() => {
-    console.log("Loading data...");
-    setAppointments(sampleAppointments);
-    setProjects(sampleProjects);
-    setFiles(sampleFiles);
-  }, []);
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/appointments/${client.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setAppointments(data);
+        } else {
+          console.error("Failed to fetch appointments");
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/project/${client.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        } else {
+          console.error("Failed to fetch projects");
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    const fetchUploads = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/upload/${client.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setFiles(data);
+        } else {
+          console.error("Failed to fetch upload");
+        }
+      } catch (error) {
+        console.error("Error fetching upload:", error);
+      }
+    };
+
+    fetchAppointments();
+    fetchProjects();
+    fetchUploads();
+  }, [client.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -341,29 +343,79 @@ const ClientDetails = ({
 
         {activeTab === "appointments" && (
           <div className="client-details-table">
-            {appointments.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Details</th>
-                    <th>Status</th>
-                    <th>Type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {appointments.map((appointment, index) => (
-                    <tr key={index}>
-                      <td>{appointment.date}</td>
-                      <td>{appointment.details}</td>
-                      <td>{appointment.status}</td>
-                      <td>{appointment.type}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No appointments available.</p>
+            {activeTab === "appointments" && (
+              <div className="client-details-table">
+                {activeTab === "appointments" && (
+                  <div className="client-details-table">
+                    {appointments && appointments.length > 0 ? (
+                      <>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Time</th>
+                              <th>Consultation Type</th>
+                              <th>Additional Info</th>
+                              <th>Platform</th>
+                              <th>Modified</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {appointments
+                              .slice(
+                                (currentPage - 1) * pageSize,
+                                currentPage * pageSize
+                              )
+                              .map((appointment, index) => (
+                                <tr key={index}>
+                                  <td>{appointment.date}</td>
+                                  <td>{appointment.time}</td>
+                                  <td>{appointment.consultationType}</td>
+                                  <td>{appointment.additionalInfo}</td>
+                                  <td>{appointment.platform}</td>
+                                  <td>{appointment.created_at}</td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+
+                        <div className="pagination-buttons">
+                          <button
+                            onClick={() =>
+                              setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
+                            disabled={currentPage === 1}
+                          >
+                            &lt;
+                          </button>
+                          <span>
+                            Page {currentPage} of{" "}
+                            {Math.ceil(appointments.length / pageSize)}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setCurrentPage((prev) =>
+                                Math.min(
+                                  prev + 1,
+                                  Math.ceil(appointments.length / pageSize)
+                                )
+                              )
+                            }
+                            disabled={
+                              currentPage ===
+                              Math.ceil(appointments.length / pageSize)
+                            }
+                          >
+                            &gt;
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p>No appointments available.</p>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -371,26 +423,69 @@ const ClientDetails = ({
         {activeTab === "projects" && (
           <div className="client-details-table">
             {projects.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Project Name</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.map((project, index) => (
-                    <tr key={index}>
-                      <td>{project.projectName}</td>
-                      <td>{project.startDate}</td>
-                      <td>{project.endDate}</td>
-                      <td>{project.status}</td>
+              <>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Project Name</th>
+                      <th>Description</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Status</th>
+                      <th>Modified</th>
+                      <th>Contract Price</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {projects
+                      .slice(
+                        (currentPage - 1) * pageSize,
+                        currentPage * pageSize
+                      )
+                      .map((project, index) => (
+                        <tr key={index}>
+                          <td>{project.projectName}</td>
+                          <td>{project.description}</td>
+                          <td>{project.startDate}</td>
+                          <td>{project.endDate}</td>
+                          <td>{project.status}</td>
+                          <td>{project.created_at}</td>
+                          <td>{project.contractPrice}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+
+                <div className="pagination-buttons">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                  >
+                    &lt;
+                  </button>
+                  <span>
+                    Page {currentPage} of{" "}
+                    {Math.ceil(projects.length / pageSize)}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(
+                          prev + 1,
+                          Math.ceil(projects.length / pageSize)
+                        )
+                      )
+                    }
+                    disabled={
+                      currentPage === Math.ceil(projects.length / pageSize)
+                    }
+                  >
+                    &gt;
+                  </button>
+                </div>
+              </>
             ) : (
               <p>No projects available.</p>
             )}
@@ -400,26 +495,63 @@ const ClientDetails = ({
         {activeTab === "files" && (
           <div className="client-details-table">
             {files.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Document Name</th>
-                    <th>Uploaded Date</th>
-                    <th>Type</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {files.map((file, index) => (
-                    <tr key={index}>
-                      <td>{file.documentName}</td>
-                      <td>{file.uploadedDate}</td>
-                      <td>{file.type}</td>
-                      <td>{file.action}</td>
+              <>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Upload Date</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {files
+                      .slice(
+                        (currentPage - 1) * pageSize,
+                        currentPage * pageSize
+                      )
+                      .map((file, index) => (
+                        <tr key={index}>
+                          <td>
+                            <a
+                              href={`http://localhost:8081/uploads/${file.file_name}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {file.original_name}
+                            </a>
+                          </td>
+                          <td>{file.upload_date}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+
+                <div className="pagination-buttons">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                  >
+                    &lt;
+                  </button>
+                  <span>
+                    Page {currentPage} of {Math.ceil(files.length / pageSize)}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(prev + 1, Math.ceil(files.length / pageSize))
+                      )
+                    }
+                    disabled={
+                      currentPage === Math.ceil(files.length / pageSize)
+                    }
+                  >
+                    &gt;
+                  </button>
+                </div>
+              </>
             ) : (
               <p>No files available.</p>
             )}
