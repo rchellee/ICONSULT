@@ -107,3 +107,26 @@ table tr {
 }
 
 
+.update-profile-button {
+  background-color: #00aae8; /* Custom primary color */
+  color: #ffffff; /* Text color */
+  font-size: 16px; /* Adjust font size */
+  padding: 10px 20px; /* Adjust padding */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow */
+  text-transform: uppercase; /* Make text uppercase */
+  transition: background-color 0.3s, transform 0.2s; /* Add hover effects */
+  margin-top: 20px;
+}
+
+.update-profile-button:hover {
+  background-color: #007add; /* Darker shade on hover */
+  transform: translateY(-2px); /* Slight lift effect */
+}
+
+.update-profile-button:active {
+  background-color: #0d47a1; /* Even darker shade on click */
+  transform: translateY(0); /* Reset lift effect */
+}
+
+

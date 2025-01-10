@@ -226,6 +226,21 @@ function getStoredCodeForEmail(email) {
   console.log(`Fetching code for ${email}`);
   return verificationCodes.get(email);
 }
+app.post("/send-email", (req, res) => {
+  const { to, from, subject, html } = req.body;
+
+  const message = {
+    to,
+    from,
+    subject,
+    html,
+  };
+
+  sgMail
+    .send(message)
+    .then(() => res.status(200).json({ message: "Email sent successfully" }))
+    .catch((error) => res.status(500).json({ error: error.message }));
+});
 //clientchange of password
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
@@ -436,116 +451,6 @@ app.delete("/availability/:date", (req, res) => {
   });
 });
 
-// Save payment details to the database
-app.post("/payments", (req, res) => {
-  const {
-    transactionId,
-    payerName,
-    payerEmail,
-    amount,
-    currency,
-    payedToEmail,
-    clientId,
-    projectId,
-  } = req.body;
-
-  const query = `
-    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, client_id, project_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-  db.query(
-    query,
-    [
-      transactionId,
-      payerName,
-      payerEmail,
-      amount,
-      currency,
-      payedToEmail,
-      clientId,
-      projectId,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error saving payment:", err);
-        return res.status(500).send("Error saving payment.");
-      }
-
-      // Save notification for the admin
-      const notificationQuery = `
-      INSERT INTO notifications (title, description, timestamp, isRead) 
-      VALUES (?, ?, ?, ?)
-    `;
-
-      const notificationTitle = "New Payment Received";
-      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
-      const timestamp = new Date();
-
-      db.query(
-        notificationQuery,
-        [notificationTitle, notificationDescription, timestamp, false],
-        (err, notificationResult) => {
-          if (err) {
-            console.error("Error creating notification:", err);
-            return res.status(500).send("Error saving notification.");
-          }
-
-          // Save client notification
-          const clientNotificationQuery = `
-            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
-            VALUES (?, ?, ?, NOW(), FALSE)
-          `;
-
-          const clientNotificationTitle = "Payment Received";
-          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
-
-          db.query(
-            clientNotificationQuery,
-            [clientId, clientNotificationTitle, clientNotificationDescription],
-            (err) => {
-              if (err) {
-                console.error("Error saving client notification:", err);
-                return res
-                  .status(500)
-                  .send("Error saving client notification.");
-              }
-
-              res
-                .status(200)
-                .send("Payment and client notification saved successfully.");
-            }
-          );
-        }
-      );
-    }
-  );
-});
-// Fetch all payments
-app.get("/payments", (req, res) => {
-  const query = "SELECT * FROM payments ORDER BY created_at DESC";
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Error fetching payments:", err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(200).json(results);
-  });
-});
-// Fetch payments for a specific client
-app.get("/payments/:clientId", (req, res) => {
-  const { clientId } = req.params;
-
-  const query =
-    "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
-  db.query(query, [clientId], (err, results) => {
-    if (err) {
-      console.error("Error fetching payments:", err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(200).json(results);
-  });
-});
-
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
   const { title, description } = req.body;
@@ -628,7 +533,6 @@ app.post("/client", (req, res) => {
   const {
     firstName,
     lastName,
-    middleInitial,
     birthday,
     mobile_number,
     email_add,
@@ -637,16 +541,26 @@ app.post("/client", (req, res) => {
     username,
     status,
     companyName,
+    age,
+    nationality,
+    city,
+    postalCode,
+    gender,
+    companyPosition,
+    companyContact,
   } = req.body;
 
-  const sql =
-    "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const sql = `INSERT INTO client (
+    firstName, lastName, birthday, mobile_number, email_add, address, password, 
+    username, status, companyName, age, nationality, city, postalCode, gender, 
+    companyPosition, companyContact
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
       birthday,
       mobile_number,
       email_add,
@@ -655,6 +569,13 @@ app.post("/client", (req, res) => {
       username,
       status,
       companyName,
+      age,
+      nationality,
+      city,
+      postalCode,
+      gender,
+      companyPosition,
+      companyContact,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -662,7 +583,6 @@ app.post("/client", (req, res) => {
         id: result.insertId,
         firstName,
         lastName,
-        middleInitial,
         birthday,
         mobile_number,
         email_add,
@@ -670,6 +590,13 @@ app.post("/client", (req, res) => {
         username,
         status,
         companyName,
+        age,
+        nationality,
+        city,
+        postalCode,
+        gender,
+        companyPosition,
+        companyContact,
       });
     }
   );
@@ -700,11 +627,30 @@ app.get("/client/:id", (req, res) => {
     }
   });
 });
-app.get("/clients/:id", (req, res) => {
+app.get("/client-transactions/:id", (req, res) => {
+  const clientId = req.params.id;
+
+  const sql = "SELECT firstName, lastName FROM client WHERE id = ?";
+  db.query(sql, [clientId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching client details" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json({ client: result[0] }); // Wrap the response
+    } else {
+      return res.status(404).json({ message: "Client not found" });
+    }
+  });
+});
+
+app.get("/clients-account/:id", (req, res) => {
   const clientId = req.params.id;
 
   const sql =
-    "SELECT firstName, lastName, middleInitial, mobile_number, email_add, address, username, companyName FROM client WHERE id = ?";
+    "SELECT * FROM client WHERE id = ?";
   db.query(sql, [clientId], (err, result) => {
     if (err) {
       return res
@@ -746,31 +692,32 @@ app.put("/clients/:id", (req, res) => {
     }
   });
 });
-
 // Endpoint to update client details
 app.put("/client/:id", (req, res) => {
   const clientId = req.params.id;
   const {
     firstName,
     lastName,
-    middleInitial,
-    birthday,
     mobile_number,
     email_add,
+    companyName,
     address,
+    companyContact,
+    companyPosition,
   } = req.body;
-  const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ? WHERE id = ?`;
+  const sql = `UPDATE client SET firstName = ?, lastName = ?, mobile_number = ?, email_add = ?, companyName = ?, address = ?, companyContact = ?, companyPosition = ? WHERE id = ?`;
 
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
-      birthday,
       mobile_number,
       email_add,
+      companyName,
       address,
+      companyContact,
+      companyPosition,
       clientId,
     ],
     (err, result) => {
@@ -798,10 +745,13 @@ app.post("/employee", (req, res) => {
     email_add,
     status,
     birthday,
+    age,
+    gender,
+    role,
   } = req.body;
 
   const sql =
-    "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO employee (firstName, lastName, middleName, address, mobile_number, email_add, status, birthday, age, gender, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -813,6 +763,9 @@ app.post("/employee", (req, res) => {
       email_add,
       status,
       birthday,
+      age,
+      gender,
+      role,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -826,6 +779,9 @@ app.post("/employee", (req, res) => {
         email_add,
         status,
         birthday,
+        age,
+        gender,
+        role,
       });
     }
   );
@@ -876,10 +832,13 @@ app.put("/employee/:id", (req, res) => {
     mobile_number,
     email_add,
     birthday,
+    age,
+    gender,
+    role,
   } = req.body;
 
   const sql =
-    "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ? WHERE id = ?";
+    "UPDATE employee SET firstName = ?, lastName = ?, middleName = ?, address = ?, mobile_number = ?, email_add = ?, birthday = ?, age = ?, gender = ?, role = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -890,6 +849,9 @@ app.put("/employee/:id", (req, res) => {
       mobile_number,
       email_add,
       birthday,
+      age,
+      gender,
+      role,
       employeeId,
     ],
     (err, result) => {
@@ -963,13 +925,12 @@ app.post("/project", (req, res) => {
     endDate,
     status,
     contractPrice,
-    downpayment = null, // Optional
-    paymentStatus = "Not Paid", // Default to Not Paid
-    totalPayment,
+    downpayment = null,
+    paymentStatus = "Not Paid",
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, totalPayment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -983,7 +944,6 @@ app.post("/project", (req, res) => {
       contractPrice,
       downpayment,
       paymentStatus,
-      totalPayment,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -999,7 +959,6 @@ app.post("/project", (req, res) => {
         contractPrice,
         downpayment,
         paymentStatus,
-        totalPayment,
       });
     }
   );
@@ -1049,11 +1008,10 @@ app.put("/project/:id", (req, res) => {
     contractPrice,
     downpayment,
     paymentStatus,
-    totalPayment,
   } = req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ?, totalPayment = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1067,7 +1025,6 @@ app.put("/project/:id", (req, res) => {
       contractPrice,
       downpayment,
       paymentStatus,
-      totalPayment,
       projectId,
     ],
     (err, result) => {
@@ -1085,29 +1042,9 @@ app.put("/project/:id", (req, res) => {
         contractPrice,
         downpayment,
         paymentStatus,
-        totalPayment,
       });
     }
   );
-});
-app.put("/project/update-payment-status/:id", (req, res) => {
-  const projectId = req.params.id;
-  const { paymentStatus } = req.body;
-
-  if (!paymentStatus) {
-    return res.status(400).json({ error: "Payment status is required" });
-  }
-
-  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
-  db.query(sql, [paymentStatus, projectId], (err, result) => {
-    if (err) return res.status(500).json(err);
-
-    return res.json({
-      id: projectId,
-      paymentStatus,
-      message: "Payment status updated successfully",
-    });
-  });
 });
 app.delete("/project/:id", (req, res) => {
   const projectId = req.params.id;
@@ -1124,56 +1061,6 @@ app.delete("/project/:id", (req, res) => {
     }
   });
 });
-app.patch("/project/recalculate-total/:id", (req, res) => {
-  const { id } = req.params;
-
-  const recalculateSql = `
-    UPDATE project 
-    SET totalPayment = (
-      SELECT COALESCE(SUM(amount), 0) + contractPrice 
-      FROM tasks 
-      WHERE project_id = ?
-    ) 
-    WHERE id = ?`;
-
-  db.query(recalculateSql, [id, id], (err, result) => {
-    if (err) {
-      console.error("Error recalculating totalPayment: ", err);
-      return res.status(500).json({
-        message: "Error recalculating totalPayment",
-        error: err.message,
-      });
-    }
-
-    res
-      .status(200)
-      .json({ message: "Total payment recalculated successfully" });
-  });
-});
-// const backfillTotalPayment = () => {
-//   const updateTotalPaymentSql = `
-//     UPDATE project p
-//     SET p.totalPayment = (
-//       SELECT COALESCE(SUM(t.amount), 0) + p.contractPrice
-//       FROM tasks t
-//       WHERE t.project_id = p.id
-//     )
-//   `;
-
-//   db.query(updateTotalPaymentSql, (err, result) => {
-//     if (err) {
-//       console.error("Error updating totalPayment:", err);
-//       db.end();
-//       return;
-//     }
-
-//     console.log(
-//       `TotalPayment backfilled successfully for ${result.affectedRows} projects`
-//     );
-//     db.end();
-//   });
-// };
-// backfillTotalPayment();
 
 app.post("/tasks", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
@@ -1190,7 +1077,7 @@ app.post("/tasks", (req, res) => {
   }
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
   const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
-             VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`;
+             VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)`;
 
   db.query(
     tasksSql,
@@ -1211,37 +1098,24 @@ app.post("/tasks", (req, res) => {
           .json({ message: "Error creating task", error: err.message });
       }
 
-      // Update totalPayment in the project table
-      const updateProjectSql = `
-        UPDATE project 
-        SET totalPayment = (
-          SELECT COALESCE(SUM(amount), 0) + contractPrice 
-          FROM tasks 
-          WHERE project_id = ?
-        ) 
-        WHERE id = ?`;
-
-      db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
-        if (updateErr) {
-          console.error("Error updating totalPayment: ", updateErr);
-          return res.status(500).json({
-            message: "Error updating totalPayment",
-            error: updateErr.message,
-          });
-        }
-
-        res.status(201).json({
-          message: "Task created successfully and totalPayment updated",
-          taskId: result.insertId,
-        });
+      res.status(201).json({
+        message: "Task created successfully",
+        taskId: result.insertId,
       });
     }
   );
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    status,
+    projectId,
+  } = req.body;
 
   // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
@@ -1255,7 +1129,7 @@ app.put("/tasks/:id", (req, res) => {
 
   const updateTaskSql = `
     UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ? 
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, status = ?, amount = ?
     WHERE id = ?`;
 
   db.query(
@@ -1266,6 +1140,7 @@ app.put("/tasks/:id", (req, res) => {
       dueDate,
       employee,
       JSON.stringify(miscellaneous),
+      status,
       totalAmount,
       id,
     ],
@@ -1277,27 +1152,8 @@ app.put("/tasks/:id", (req, res) => {
           .json({ message: "Error updating task", error: err.message });
       }
 
-      const updateProjectSql = `
-        UPDATE project 
-        SET totalPayment = (
-          SELECT COALESCE(SUM(amount), 0) + contractPrice 
-          FROM tasks 
-          WHERE project_id = ?
-        ) 
-        WHERE id = ?`;
-
-      db.query(updateProjectSql, [projectId, projectId], (updateErr) => {
-        if (updateErr) {
-          console.error("Error updating totalPayment:", updateErr);
-          return res.status(500).json({
-            message: "Error updating totalPayment",
-            error: updateErr.message,
-          });
-        }
-
-        res.status(200).json({
-          message: "Task updated successfully and totalPayment updated",
-        });
+      res.status(200).json({
+        message: "Task updated successfully",
       });
     }
   );
@@ -1354,6 +1210,14 @@ app.get("/tasks/:id", (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(tasks[0]);
+  });
+});
+app.get("/task/:employee", (req, res) => {
+  const { employee } = req.params;
+  const sql = "SELECT * FROM tasks WHERE employee = ? ";
+  db.query(sql, [employee], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
   });
 });
 
@@ -1481,6 +1345,19 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/appointments/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const sql = `SELECT * FROM appointments WHERE client_id = ?`;
+  db.query(sql, [clientId], (err, results) => {
+    if (err) {
+      console.error("SQL Error:", err);
+      return res.status(500).json({ message: "Failed to fetch appointments" });
+    }
+    return res.status(200).json(results);
+  });
+});
+
 app.get("/appointments/count", (req, res) => {
   const sql = `
     SELECT date, COUNT(*) as appointmentCount
@@ -1552,6 +1429,7 @@ app.delete("/appointments/:id", (req, res) => {
       .json({ message: "Appointment deleted successfully" });
   });
 });
+
 // const backfillTimeFormat = () => {
 //   const updateTimeFormatSql = `
 //     UPDATE appointments
@@ -1575,6 +1453,158 @@ app.delete("/appointments/:id", (req, res) => {
 // backfillTimeFormat();
 
 // Endpoint to upload a file
+
+// Save payment details to the database
+app.post("/payments", (req, res) => {
+  const {
+    transactionId,
+    payerName,
+    payerEmail,
+    amount,
+    currency,
+    payedToEmail,
+    payeeMerchantId,
+    payeeName,
+    clientId,
+    projectId,
+  } = req.body;
+
+  const query = `
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, payee_merchant_id, payee_name, client_id, project_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.query(
+    query,
+    [
+      transactionId,
+      payerName,
+      payerEmail,
+      amount,
+      currency,
+      payedToEmail,
+      payeeMerchantId,
+      payeeName,
+      clientId,
+      projectId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error saving payment:", err);
+        return res.status(500).send("Error saving payment.");
+      }
+
+      // Save notification for the admin
+      const notificationQuery = `
+      INSERT INTO notifications (title, description, timestamp, isRead) 
+      VALUES (?, ?, ?, ?)
+    `;
+
+      const notificationTitle = "New Payment Received";
+      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
+      const timestamp = new Date();
+
+      db.query(
+        notificationQuery,
+        [notificationTitle, notificationDescription, timestamp, false],
+        (err, notificationResult) => {
+          if (err) {
+            console.error("Error creating notification:", err);
+            return res.status(500).send("Error saving notification.");
+          }
+
+          // Save client notification
+          const clientNotificationQuery = `
+            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
+            VALUES (?, ?, ?, NOW(), FALSE)
+          `;
+
+          const clientNotificationTitle = "Payment Received";
+          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
+
+          db.query(
+            clientNotificationQuery,
+            [clientId, clientNotificationTitle, clientNotificationDescription],
+            (err) => {
+              if (err) {
+                console.error("Error saving client notification:", err);
+                return res
+                  .status(500)
+                  .send("Error saving client notification.");
+              }
+
+              res
+                .status(200)
+                .send("Payment and client notification saved successfully.");
+            }
+          );
+        }
+      );
+    }
+  );
+});
+// Fetch all payments
+app.get("/payments", (req, res) => {
+  const query = "SELECT * FROM payments ORDER BY created_at DESC";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+// Fetch payments for a specific client
+app.get("/payments/:clientId", (req, res) => {
+  const { clientId } = req.params;
+
+  const query =
+    "SELECT * FROM payments WHERE client_id = ? ORDER BY created_at DESC";
+  db.query(query, [clientId], (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+app.put("/project/update-payment-status/:id", (req, res) => {
+  const projectId = req.params.id;
+  const { paymentStatus } = req.body;
+
+  if (!paymentStatus) {
+    return res.status(400).json({ error: "Payment status is required" });
+  }
+
+  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
+  db.query(sql, [paymentStatus, projectId], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    return res.json({
+      id: projectId,
+      paymentStatus,
+      message: "Payment status updated successfully",
+    });
+  });
+});
+app.put("/project/update-downpayment/:id", (req, res) => {
+  const projectId = req.params.id;
+  const { amount } = req.body;
+
+  const query = `
+    UPDATE project
+    SET downpayment = downpayment + ?
+    WHERE id = ?
+  `;
+
+  db.query(query, [amount, projectId], (err, result) => {
+    if (err) {
+      console.error("Error updating downpayment:", err);
+      return res.status(500).send("Error updating downpayment.");
+    }
+
+    res.status(200).send("Downpayment updated successfully.");
+  });
+});
 
 app.post("/upload", (req, res) => {
   upload.single("file")(req, res, (err) => {
@@ -1649,6 +1679,15 @@ app.get("/upload", (req, res) => {
     res.json(results);
   });
 });
+app.get("/upload/:clientId", (req, res) => {
+  const { clientId } = req.params;
+  const sql = "SELECT * FROM uploads WHERE uploaded_by = ?";
+  db.query(sql, [clientId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data);
+  });
+});
+
 app.use("/uploads", express.static("uploads"));
 
 app.post("/reviews", (req, res) => {
@@ -1682,6 +1721,103 @@ app.get("/reviews", (req, res) => {
     } else {
       res.status(200).json(results);
     }
+  });
+});
+
+//for dashboard
+app.get("/clientsDashboard/count", (req, res) => {
+  const { filter } = req.query; // e.g., 'weekly', 'monthly', 'yearly'
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  const sql = `SELECT COUNT(*) AS total FROM client ${dateCondition}`;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]); // Respond with the count
+  });
+});
+app.get("/projectsDashboard/count", (req, res) => {
+  const { filter, status } = req.query;
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  let statusCondition = "";
+  if (status) {
+    statusCondition = `AND status = '${status}'`;
+  }
+
+  const sql = `SELECT COUNT(*) AS total FROM project WHERE isDeleted = 0 ${dateCondition} ${statusCondition}`;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]);
+  });
+});
+app.get("/tasksDashboard/count", (req, res) => {
+  const { filter, status } = req.query;
+
+  let timeCondition = "";
+  if (filter === "weekly") {
+    timeCondition = "YEARWEEK(due_date, 1) = YEARWEEK(CURDATE(), 1)";
+  } else if (filter === "monthly") {
+    timeCondition =
+      "MONTH(due_date) = MONTH(CURDATE()) AND YEAR(due_date) = YEAR(CURDATE())";
+  } else if (filter === "yearly") {
+    timeCondition = "YEAR(due_date) = YEAR(CURDATE())";
+  }
+
+  const statusCondition = status ? `AND status = '${status}'` : "";
+  const sql = `SELECT COUNT(*) AS total FROM tasks WHERE ${timeCondition} ${statusCondition}`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching tasks count:", err);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving tasks count", error: err });
+    }
+    res.status(200).json({ total: result[0].total });
+  });
+});
+
+app.get("/appointmentsDashboard/count", (req, res) => {
+  const { filter, status } = req.query;
+
+  let dateCondition = "";
+  if (filter === "weekly") {
+    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 7 DAY)";
+  } else if (filter === "monthly") {
+    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 1 MONTH)";
+  } else if (filter === "yearly") {
+    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  }
+
+  let statusCondition = "";
+  if (status === "upcoming") {
+    statusCondition = "AND DATE(date) >= CURDATE()";
+  }
+  const sql = `
+  SELECT COUNT(*) AS total 
+  FROM appointments 
+  WHERE 1=1 ${dateCondition} ${statusCondition}
+`;
+
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json(data[0]); // Respond with the count
   });
 });
 
