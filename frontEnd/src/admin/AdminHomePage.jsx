@@ -9,118 +9,33 @@ function AdminHomePage() {
   const [totalProjects, setTotalProjects] = useState(0);
   const [totalTasks, setTotalTasks] = useState(0);
   const [upcomingAppointments, setUpcomingAppointments] = useState(0);
-  const [filter, setFilter] = useState("weekly");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [totalRevenue, setTotalRevenue] = useState("$0");
 
-  const fetchTotalClients = async (filter) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8081/clientsDashboard/count?filter=${filter}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setTotalClients(data.total);
-    } catch (error) {
-      console.error("Error fetching total clients:", error);
-    }
+  // Mock function to simulate fetching data
+  const fetchData = () => {
+    setTimeout(() => {
+      setTotalClients(120); // Example mock data
+      setTotalProjects(45); // Example mock data
+      setTotalTasks(80); // Example mock data
+      setUpcomingAppointments(15); // Example mock data
+      setTotalRevenue("$120,000"); // Example mock data
+    }, 1000);
   };
 
-  const fetchTotalProjects = async (filter, status) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8081/projectsDashboard/count?filter=${filter}&status=${status}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setTotalProjects(data.total);
-    } catch (error) {
-      console.error("Error fetching total projects:", error);
-    }
-  };
-
-  const fetchTotalTasks = async (filter, status) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8081/tasksDashboard/count?filter=${filter}&status=${status}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setTotalTasks(data.total);
-    } catch (error) {
-      console.error("Error fetching total tasks:", error);
-    }
-  };
-
-  const fetchUpcomingAppointments = async (filter, status) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `http://localhost:8081/appointmentsDashboard/count?filter=${filter}&status=${status}`
-      );
-      if (!response.ok) throw new Error(`Error: ${response.status}`);
-      const data = await response.json();
-      setUpcomingAppointments(data.total);
-    } catch (error) {
-      setError("Failed to load data. Please try again.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Trigger fetching with both filter and status
   useEffect(() => {
-    fetchTotalClients(filter);
-    fetchTotalProjects(filter, statusFilter);
-    fetchTotalTasks(filter, statusFilter);
-    fetchUpcomingAppointments(filter, "upcoming");
-  }, [filter, statusFilter]);
+    fetchData();
+  }, []);
 
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
-
-  const handleStatusChange = (newStatus) => {
-    setStatusFilter(newStatus);
-  };
-
-  const handleAppointmentStatusChange = (newAppointmentStatus) => {
-    setStatusAppointmentFilter(newAppointmentStatus);
-  };
-
-  const overviewMetrics = [
-    { title: "Total Clients", value: totalClients, link: "/admin/clients" },
-    { title: "Total Projects", value: totalProjects, link: "/admin/projects" },
-    { title: "Total Tasks", value: totalTasks, link: "/admin/tasks" },
-    {
-      title: "Upcoming Appointments",
-      value: upcomingAppointments,
-      link: "/admin/appointments",
-    },
-    { title: "Total Revenue", value: "$120,000", link: "/admin/revenue" },
-  ];
-
+  // Example recent activities
   const recentActivities = [
-    { action: "User John Doe signed up", time: "2 hours ago" },
-    { action: "New project created by Client A", time: "4 hours ago" },
-    { action: "Revenue report exported", time: "Yesterday" },
-    { action: "Issue #123 marked as resolved", time: "2 days ago" },
-  ];
-
-  const quickLinks = [
-    { label: "Manage Users", path: "/admin/users" },
-    { label: "Manage Projects", path: "/admin/projects" },
-    { label: "View Reports", path: "/admin/reports" },
-    { label: "Settings", path: "/admin/settings" },
+    { action: "New client added: Client A", time: "2 hours ago" },
+    { action: "Task 'Finish Project X' updated to 'Completed'", time: "4 hours ago" },
+    { action: "New project 'Project Alpha' initiated", time: "Yesterday" },
+    { action: "Employee 'John Doe' completed training", time: "2 days ago" },
+    { action: "New invoice generated for Client B", time: "3 days ago" },
+    { action: "Revenue report for Q1 finalized", time: "5 days ago" },
+    { action: "Upcoming meeting scheduled with Client C", time: "1 week ago" },
+    { action: "Employee 'Jane Doe' promoted to Manager", time: "2 weeks ago" },
   ];
 
   return (
@@ -129,41 +44,62 @@ function AdminHomePage() {
       <Sidebar />
       <div className="admin-home-page">
         <div className="dashboard-content-admin">
+          {/* Dashboard Overview Section */}
           <div className="overview-section">
             <h2>Dashboard Overview</h2>
-            <div className="filter-buttons">
-              <button onClick={() => handleFilterChange("weekly")}>
-                Weekly
-              </button>
-              <button onClick={() => handleFilterChange("monthly")}>
-                Monthly
-              </button>
-              <button onClick={() => handleFilterChange("yearly")}>
-                Yearly
-              </button>
-            </div>
-            <div className="status-buttons">
-              <button onClick={() => handleStatusChange("")}>All</button>
-              <button onClick={() => handleStatusChange("Ongoing")}>
-                Ongoing Projects
-              </button>
-              <button onClick={() => handleStatusChange("Pending" || "pending")}>
-                Pending Projects
-              </button>
-              <button onClick={() => handleStatusChange("Completed" || "completed")}>
-                Completed Projects
-              </button>
-            </div>
             <div className="metrics-container">
-              {overviewMetrics.map((metric, index) => (
-                <div key={index} className="metric-card">
-                  <h3>{metric.title}</h3>
-                  <p>{metric.value}</p>
-                  <Link to={metric.link} className="view-details">
-                    View Details
-                  </Link>
-                </div>
-              ))}
+              <div className="metric-card">
+                <h3>Total Clients</h3>
+                <p>{totalClients}</p>
+                <Link to="/admin/clients" className="see-more-link">
+                  See More
+                </Link>
+              </div>
+              <div className="metric-card">
+                <h3>Total Projects</h3>
+                <p>{totalProjects}</p>
+                <Link to="/admin/projects" className="see-more-link">
+                  See More
+                </Link>
+              </div>
+              <div className="metric-card">
+                <h3>Total Tasks</h3>
+                <p>{totalTasks}</p>
+                <Link to="/admin/tasks" className="see-more-link">
+                  See More
+                </Link>
+              </div>
+              <div className="metric-card">
+                <h3>Upcoming Appointments</h3>
+                <p>{upcomingAppointments}</p>
+                <Link to="/admin/appointments" className="see-more-link">
+                  See More
+                </Link>
+              </div>
+              <div className="metric-card">
+                <h3>Total Revenue</h3>
+                <p>{totalRevenue}</p>
+                <Link to="/admin/revenue" className="see-more-link">
+                  See More
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Filters for Activity */}
+          <div className="filters-section">
+            <h2>Filters</h2>
+            <div className="filter-buttons">
+              <button>All</button>
+              <button>Weekly</button>
+              <button>Monthly</button>
+              <button>Yearly</button>
+            </div>
+            <div className="filter-buttons">
+              <button>All Projects</button>
+              <button>Ongoing Projects</button>
+              <button>Pending Tasks</button>
+              <button>Completed</button>
             </div>
           </div>
 
@@ -178,18 +114,6 @@ function AdminHomePage() {
                 </li>
               ))}
             </ul>
-          </div>
-
-          {/* Quick Links Section */}
-          <div className="quick-links-section">
-            <h2>Quick Links</h2>
-            <div className="quick-links-container">
-              {quickLinks.map((link, index) => (
-                <Link key={index} to={link.path} className="quick-link">
-                  {link.label}
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
       </div>

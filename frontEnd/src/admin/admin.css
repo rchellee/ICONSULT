@@ -152,6 +152,40 @@ h2 {
   border-right: 1px solid #d1d1d1;
   transition: width 0.3s ease;
 }
+.box-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.box-info li {
+  flex: 1;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.box-info li .bx {
+  font-size: 40px;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+.box-info li .text {
+  margin-bottom: 10px;
+}
+
+.box-info li .see-more-link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.box-info li .see-more-link:hover {
+  text-decoration: underline;
+}
+
 
 /* Sidebar Links */
 .sidebar-links {
