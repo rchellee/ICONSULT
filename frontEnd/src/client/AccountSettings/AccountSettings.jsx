@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
+import "./AccountSettings.css";
 
 const AccountSettings = () => {
   const [clientDetails, setClientDetails] = useState(null);
@@ -161,8 +162,8 @@ const AccountSettings = () => {
       <Topbar />
       <Sidebar />
 
-      <div className="account-settings">
-        <div className="content">
+      <div className="account-settings-container">
+        <div className="account-settings">
           <h2>Account Settings</h2>
 
           {isUpdatingPassword ? (

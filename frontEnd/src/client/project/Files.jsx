@@ -49,7 +49,7 @@ function Files({ projectId, clientId }) {
     axios
       .post("http://localhost:8081/upload", formData)
       .then((response) => {
-        alert("File uploaded successfully!");
+        console.log("File uploaded successfully!");
         setFiles((prevFiles) => [...prevFiles, response.data]);
         setSelectedFile(null);
       })
@@ -77,6 +77,10 @@ function Files({ projectId, clientId }) {
     console.log("Delete file with id:", fileId);
   };
 
+  const openFileDialog = () => {
+    document.getElementById("file-input").click();
+  };
+
   if (loading) {
     return <p>Loading files...</p>;
   }
@@ -90,11 +94,26 @@ function Files({ projectId, clientId }) {
       {/* Top section with buttons */}
       <div className="top-buttons">
         <div className="left-section">
-          <button onClick={() => document.getElementById("file-input").click()} disabled={uploading}>
-            {uploading ? "Uploading..." : "Upload"}
-          </button>
-          <button>New</button>
+          {!selectedFile ? (
+            // Show "New" button when no file is selected
+            <button onClick={openFileDialog} disabled={uploading}>
+              {uploading ? "Uploading..." : "New"}
+            </button>
+          ) : (
+            // Show "Upload" button when a file is selected
+            <button
+              onClick={handleUpload}
+              disabled={uploading || !selectedFile}
+            >
+              {uploading ? "Uploading..." : "Upload"}
+            </button>
+          )}
         </div>
+        {selectedFile && (
+          <div className="file-info">
+            <p>Selected File: {selectedFile.name}</p>
+          </div>
+        )}
 
         <div className="right-section">
           <button>Sort</button>
@@ -114,56 +133,61 @@ function Files({ projectId, clientId }) {
       {files.length === 0 ? (
         <p>No files uploaded for this project.</p>
       ) : (
-        <>
-          {/* Display files in a table */}
-          <table className="file-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Upload Date</th>
-                <th>Uploaded By</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.map((file) => (
-                <tr key={file.id}>
-                  <td>
-                    <a
-                      href={`http://localhost:8081/uploads/${file.file_name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {file.original_name}
-                    </a>
-                  </td>
-                  <td>
-                    {new Date(file.upload_date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </td>
-                  <td>{file.uploaded_by_name || "Unknown"}</td>
-                  <td>
-                    <div className="action-container">
-                      <BiDotsVerticalRounded
-                        onClick={() => handleActionClick(file.id)}
-                        style={{ cursor: "pointer" }}
-                      />
-                      {actionVisible === file.id && (
-                        <div className="action-options">
-                          <button onClick={() => handleEdit(file.id)}>Edit</button>
-                          <button onClick={() => handleDelete(file.id)}>Delete</button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
+        <div className="table-upload-container">
+          <div className="file-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Upload Date</th>
+                  <th>Uploaded By</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+              </thead>
+              <tbody>
+                {files.map((file) => (
+                  <tr key={file.id}>
+                    <td>
+                      <a
+                        href={`http://localhost:8081/uploads/${file.file_name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {file.original_name}
+                      </a>
+                    </td>
+                    <td>
+                      {new Date(file.upload_date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </td>
+                    <td>{file.uploaded_by_name || "Unknown"}</td>
+                    <td>
+                      <div className="action-container">
+                        <BiDotsVerticalRounded
+                          onClick={() => handleActionClick(file.id)}
+                          style={{ cursor: "pointer" }}
+                        />
+                        {actionVisible === file.id && (
+                          <div className="action-options">
+                            <button onClick={() => handleEdit(file.id)}>
+                              Edit
+                            </button>
+                            <button onClick={() => handleDelete(file.id)}>
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
     </div>
   );

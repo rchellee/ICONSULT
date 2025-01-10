@@ -6,8 +6,33 @@
     border-radius: 30px;
     -webkit-overflow-scrolling: touch;
     overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: auto; 
   }
+
+  .table-scroll-wrapper {
+    max-height: 400px; /* Set a height limit */
+    overflow-y: auto; /* Enable vertical scrolling */
+    -webkit-overflow-scrolling: touch;
+  }
+
+
+/* Custom Scrollbar for WebKit Browsers */
+.table-scroll-wrapper::-webkit-scrollbar {
+  width: 12px; /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #a6a6a6; /* Thumb color */
+  border-radius: 10px; /* Rounded corners for the scrollbar */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Thumb hover color */
+}
 
 .layout-toggle-icons{
     display: flex;
@@ -47,7 +72,7 @@
   }
   
   .project-list-table th, .project-list-table td {
-    padding: 10px;
+    padding: 3px 10px;
     border: 1px solid #ddd;
     border: none;
   }

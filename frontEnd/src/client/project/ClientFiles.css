@@ -1,3 +1,25 @@
+table {
+    position: relative;
+    overflow: visible; /* Allow content to overflow the table boundaries */
+  }
+  
+  tbody {
+    overflow: visible; /* Ensure rows do not clip floating content */
+  }
+
+
+  .file-table{
+    max-height: 200px;
+    overflow-y: auto; 
+    border: 1px solid #ccc; 
+    max-height: 450px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 10px;
+  }
+
+
+
 .ClientFiles .file-table th {
     background-color: #f4f4f4; /* Light background for headers */
     font-weight: bold;
@@ -19,7 +41,7 @@
   }
   
   .ClientFiles .file-table th {
-    background-color: #f4f4f4; /* Light background for headers */
+    background-color: #e4e4e4; /* Light background for headers */
     font-weight: bold;
   }
   
@@ -113,4 +135,20 @@
   .ClientFiles .action-options button:hover {
     background-color: #bbc8ff;
   }
+
+  .action-options button:hover {
+    background-color: #f0f0f0; /* Hover background color */
+    color: #007bff; /* Change font color on hover (e.g., blue) */
+  }
+  
+  /* Specific colors for Edit and Delete */
+  .action-options button:nth-child(1) { /* Edit button */
+    color: #2c2c2c; /* Green font color */
+  }
+  
+  .action-options button:nth-child(2) { /* Delete button */
+    color: #dc3545; /* Red font color */
+  }
+
+  
   

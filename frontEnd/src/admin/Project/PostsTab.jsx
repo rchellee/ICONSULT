@@ -127,7 +127,7 @@ const PostsTab = ({
       task.id === taskId ? { ...task, status: newStatus } : task
     );
     setTasks(updatedTasks);
-    // Optionally, you could update the status in the backend here.
+    
   };
 
   return (
@@ -233,7 +233,7 @@ const PostsTab = ({
                         value={task.status || "Pending"} // Default status is "Pending"
                         onChange={(e) => handleStatusChange(task.id, e.target.value)}
                     >
-                        
+                      
                         <option value="Ongoing">Ongoing</option>
                         <option value="Completed">Completed</option>
                       </select>
