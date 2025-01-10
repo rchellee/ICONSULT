@@ -1,0 +1,530 @@
+/* Google Font Import - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+.client-home-page {
+  display: flex;
+  background-color: #f4f4f9;
+  /* overflow: hidden; */
+}
+
+.client-content {
+  flex-grow: 2;
+  margin-left: 85px;
+  height: 600px;
+}
+/************************** Client Management **************/
+/* Search Bar */
+.search-bar {
+  width: 300px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+/* Scroll */
+.scrollable-table-container {
+    max-height: 600px;
+    overflow-y: auto;
+    border-radius: 8px;
+}
+/* Table Styles for client and employee */
+table {
+  width: 90%;
+  border-collapse: collapse;
+  border-radius: 3px; 
+  overflow: hidden;
+  margin: 0px auto;
+}
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 2;
+}
+
+table th, table td {
+  padding: 15px 15px; 
+  text-align: left;
+  border-bottom: 1px solid #f1f1f1; 
+}
+
+table th {
+  background-color: #092b70; 
+  color: white;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9; 
+}
+
+table tr:hover {
+  background-color: #f1f1f1; 
+  cursor: pointer;
+  transition: background 0.3s ease-in-out; 
+}
+
+table td {
+  color: #555; 
+}
+.initials-circle {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff; /* Default background for initials */
+}
+
+table td a {
+  text-decoration: none; /* Remove underline from links */
+  transition: color 0.3s ease-in-out;
+}
+
+/* Toast Notification */
+.toast {
+  background-color: #136bc9;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: fadeInOut 3s ease-in-out;
+}
+
+.toast.active {
+  display: block;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+}
+
+.message {
+  margin-left: 10px;
+}
+
+.progress {
+  width: 100%;
+  height: 5px;
+  background-color: #ddd;
+  margin-top: 10px;
+}
+
+.progress.active {
+  width: 100%;
+  animation: progress 5s linear;
+}
+/***************************** Client form ******************/
+
+.client-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr)  ;
+  gap: 20px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 70%;
+  box-sizing: border-box;
+  position:relative;
+  margin-left:10%;
+}
+/* Role Dropdown Styling with Icon */
+.input-group {
+  margin-bottom: 1rem;
+  flex-direction: column;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-group select {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+}
+
+.input-icon {
+  position: absolute;
+  right: 10px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.input-group-icon .input-icon i {
+  color: #136bc9;
+}
+
+.input-group select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+
+/* Input Fields and Select Styling */
+input,
+input[type="radio"] + label,
+input[type="checkbox"] + label:before,
+select option,
+select {
+    width: 100%;
+    padding: 1em;
+    line-height: 1.4;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    transition: all 0.35s ease-in-out;
+}
+input:focus {
+    outline: none;
+    border-color: #576cab;
+}
+input:focus + .input-icon i {
+    color: #114672;
+}
+input:focus + .input-icon:after {
+    border-right-color: #214789;
+}
+
+/* Radio Button Styling */
+input[type="radio"] {
+    display: none;
+}
+input[type="radio"] + label {
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+    border-radius: 0;
+    padding: 1em;
+    cursor: pointer;
+}
+input[type="radio"] + label:first-of-type {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+input[type="radio"] + label:last-of-type {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+input[type="radio"]:checked + label {
+    background-color: #103879;
+    color: white;
+    border-color: #255c7b;
+}
+
+.input-label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #888;
+  pointer-events: none;
+  transition: 0.3s;
+}
+/* Select Styling */
+select {
+    height: 3.4em;
+    line-height: 2;
+}
+select:focus {
+    outline: none;
+}
+
+/* Input Group Styling */
+.input-group {
+    margin-bottom: 1em;
+}
+.input-group-icon {
+    position: relative;
+}
+.input-group-icon input {
+    padding-left: 4.4em;
+    
+}
+.input-group-icon .input-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.4em;
+    height: 3.4em;
+    line-height: 3.4em;
+    text-align: center;
+    pointer-events: none;
+}
+.input-group-icon .input-icon:after {
+    content: "";
+    position: absolute;
+    top: 0.6em;
+    bottom: 0.6em;
+    left: 3.4em;
+    border-right: 1px solid #e5e5e5;
+    transition: all 0.35s ease-in-out;
+}
+
+/* Container and Layout */
+
+.col-half {
+    width: 100%;
+    float: left;
+    padding-right: 10px;
+    
+}
+.col-half:last-of-type {
+    padding-right: 0;
+}
+.col-third {
+    width: 33.333%;
+    float: left;
+    padding-right: 10px;
+}
+.col-third:last-of-type {
+    padding-right: 0;
+}
+
+/* Flex container to align Status and Role side by side */
+.status-role-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Adds spacing between the dropdowns */
+}
+
+
+/***********************Client Details *******************/
+.tabs-container {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 20px;
+  gap: 20px;
+  margin-top: -20px;
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.client-details {
+  flex-direction: column;
+  padding: 20px;
+}
+
+.client-tab-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-top: 20px;
+}
+
+
+.tabs button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  transition: background-color 0.3s;
+}
+
+
+.section-details {
+  margin-top: 20px;
+}
+
+.section-details table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.section-details th, .section-details td {
+  padding: 10px;
+  text-align: left;
+}
+
+.section-details th {
+  background-color: dark rgb(7, 7, 65);
+  font-weight: bold;
+}
+
+/*********** Overview ***********/
+.overview-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr)  ;
+  gap: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 55%;
+  box-sizing: border-box;
+  position:relative;
+  margin: 40px auto;
+}
+
+/*************Client read only******** */
+.client-readonly {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  justify-content: center;
+  align-items: start;
+  width: 60%;
+  padding: 30px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin: 20px auto;
+}
+
+.client-readonly p {
+  font-size: 18px;
+  margin: 12px 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.client-readonly i {
+  font-size: 14px;
+  color: #136bc9;
+}
+
+.client-readonly strong {
+  font-weight: 600;
+  color: #000;
+}
+/******************* Tabs **************/
+.client-details-table {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.client-details-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+}
+
+.client-details-table th, .client-details-tablee td {
+  padding: 12px;
+  text-align: left;
+}
+
+.client-details-table th {
+  background-color: #092f57;
+  color: #fefdfd;
+  
+}
+
+.client-details-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.client-details-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/*********** Button Group ******/
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  font-size: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button i {
+  font-size: 18px;
+}
+
+.btn-save {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-back {
+  background-color: #FFC107;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Toast */
+.toast-progress {
+  height: 5px;
+  background-color: #136bc9;
+  animation: progressBar 3s linear;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .client-details {
+    padding: 15px;
+  }
+
+  form {
+    padding: 15px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  .btn-edit,
+  .btn-back {
+    width: 100%;
+  }
+
+  .search-bar {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

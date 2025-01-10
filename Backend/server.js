@@ -226,6 +226,21 @@ function getStoredCodeForEmail(email) {
   console.log(`Fetching code for ${email}`);
   return verificationCodes.get(email);
 }
+app.post("/send-email", (req, res) => {
+  const { to, from, subject, html } = req.body;
+
+  const message = {
+    to,
+    from,
+    subject,
+    html,
+  };
+
+  sgMail
+    .send(message)
+    .then(() => res.status(200).json({ message: "Email sent successfully" }))
+    .catch((error) => res.status(500).json({ error: error.message }));
+});
 //clientchange of password
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
@@ -518,7 +533,6 @@ app.post("/client", (req, res) => {
   const {
     firstName,
     lastName,
-    middleInitial,
     birthday,
     mobile_number,
     email_add,
@@ -527,16 +541,26 @@ app.post("/client", (req, res) => {
     username,
     status,
     companyName,
+    age,
+    nationality,
+    city,
+    postalCode,
+    gender,
+    companyPosition,
+    companyContact,
   } = req.body;
 
-  const sql =
-    "INSERT INTO client (firstName, lastName, middleInitial, birthday, mobile_number, email_add, address, password, username, status, companyName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  const sql = `INSERT INTO client (
+    firstName, lastName, birthday, mobile_number, email_add, address, password, 
+    username, status, companyName, age, nationality, city, postalCode, gender, 
+    companyPosition, companyContact
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
       birthday,
       mobile_number,
       email_add,
@@ -545,6 +569,13 @@ app.post("/client", (req, res) => {
       username,
       status,
       companyName,
+      age,
+      nationality,
+      city,
+      postalCode,
+      gender,
+      companyPosition,
+      companyContact,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -552,7 +583,6 @@ app.post("/client", (req, res) => {
         id: result.insertId,
         firstName,
         lastName,
-        middleInitial,
         birthday,
         mobile_number,
         email_add,
@@ -560,6 +590,13 @@ app.post("/client", (req, res) => {
         username,
         status,
         companyName,
+        age,
+        nationality,
+        city,
+        postalCode,
+        gender,
+        companyPosition,
+        companyContact,
       });
     }
   );
@@ -661,24 +698,26 @@ app.put("/client/:id", (req, res) => {
   const {
     firstName,
     lastName,
-    middleInitial,
-    birthday,
     mobile_number,
     email_add,
+    companyName,
     address,
+    companyContact,
+    companyPosition,
   } = req.body;
-  const sql = `UPDATE client SET firstName = ?, lastName = ?, middleInitial = ?, birthday = ?, mobile_number = ?, email_add = ?, address = ? WHERE id = ?`;
+  const sql = `UPDATE client SET firstName = ?, lastName = ?, mobile_number = ?, email_add = ?, companyName = ?, address = ?, companyContact = ?, companyPosition = ? WHERE id = ?`;
 
   db.query(
     sql,
     [
       firstName,
       lastName,
-      middleInitial,
-      birthday,
       mobile_number,
       email_add,
+      companyName,
       address,
+      companyContact,
+      companyPosition,
       clientId,
     ],
     (err, result) => {
@@ -1053,8 +1092,15 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, status, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    status,
+    projectId,
+  } = req.body;
 
   // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
