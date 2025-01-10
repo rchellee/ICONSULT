@@ -1,61 +1,119 @@
-.account-settings {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-}
-
-.account-settings h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
 .content {
+  width: 60%; /* Adjust the width of the content to be 60% of the screen width */
+  max-width: 800px; /* Optional: limits the width to a maximum value */
+  box-sizing: border-box; /* Ensures padding doesn't affect the total width */
+  scroll-behavior: smooth;
+  overflow-y: auto;
+}
+
+
+/*to make it progressive margin is flex start then add yung padding*/
+
+.account-settings .content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 20px;
+  padding-left: 10px; 
+  width: calc(100% - 250px); 
+  margin-left: flex-start;
+  margin-top: 1px;
+  height: 100vh; 
+  overflow: hidden;
 }
 
-.info-section {
-  width: 100%;
-  max-width: 600px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.info-section h3 {
-  margin-top: 0;
-  font-size: 18px;
-  color: #333;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-}
-
-.info-section p {
-  margin: 10px 0;
+.account-settings h2{
   display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-  color: #555;
+  justify-content: flex-start; 
 }
 
-.info-section p strong {
-  font-weight: bold;
-  color: #000;
+.Client Details p{
+  display: flex;
+  justify-content: flex-start;
+  font-size: 50px;
+  
+
 }
 
-button {
-  background-color: #007bff;
-  color: #fff;
+
+/* Info-box styles */
+.info-box table {
+  width: 10;
+  border-collapse: collapse;
   border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 4px;
+  box-shadow: none; 
+  background-color: transparent;
+}
+
+.info-box table td {
+  padding: 8px 12px;
+  vertical-align: middle;
+  font-size: 17px;
+  border: none; 
+  background-color: transparent;
+}
+
+.info-box table td:first-child {
+  width: 25%; /* Adjust this value to resize the label column */
+  font-weight: normal;
+  background-color: transparent;
+}
+
+
+.info-box table td:last-child {
+  width: 100%; /* Adjust this value to resize the value column */
+  text-align: left;
+  font-weight: normal;
+}
+
+.info-box {
+  border: 1px solid #ddd; /* Add border to create a box */
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: transparent; /* Light background color */
+  border-radius: 8px; /* Rounded corners */
+}
+
+
+/* Remove alternate row background color */
+table tr:nth-child(even), table tr:nth-child(odd) {
+  background-color: transparent; /* Set to transparent to remove any color */
+}
+
+/* Alternatively, you can target the table rows more specifically */
+table tr {
+  background-color: transparent; /* Ensures all rows have no background color */
+}
+
+.create-password-text {
+  margin-bottom: 10px; /* Add space below the text */
+}
+
+.password-section {
+  display: flex;
+  justify-content: space-between; /* Move the icon to the far right */
+  align-items: center;
+  width: 100%; /* Ensure the container takes the full width of the parent */
   cursor: pointer;
+}
+
+.password-field {
+  flex-grow: 1; /* Take up the available space for password text */
   margin-top: 10px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.password-icon {
+  cursor: pointer;
+  font-size: 30px; /* Adjust size as needed */
+  margin-left: 10px; /* Add some space between the text and the icon */
+  margin-top: -10px;
 }
+
+.account-settings-icon {
+  width: 200px;
+  height: 150px;
+  margin-left: 600px;
+  margin-top: -110px;
+  padding: 16px;
+}
+
+

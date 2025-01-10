@@ -9,9 +9,13 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AccountSettings.css";
+import { IoMdArrowDropright } from "react-icons/io";
+import image from "../../assets/image.png";
+
 
 const AccountSettings = () => {
   const [clientDetails, setClientDetails] = useState(null);
@@ -156,15 +160,85 @@ const AccountSettings = () => {
       alert("An unexpected error occurred.");
     }
   };
+  
+  
 
   return (
     <div>
       <Topbar />
       <Sidebar />
+      <div className="account-settings">
+        <div className="content">
+          <h2>Account Setting</h2>
+          
 
-      <div className="account-settings-container">
-        <div className="account-settings">
-          <h2>Account Settings</h2>
+                    <div className="imagee">
+                      <img src={image} alt="image" className="account-settings-icon" />
+                    </div>
+          <div className="info-box">
+            <h3>Basic Information</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Name</td>
+                  <td>
+                    {clientDetails?.firstName} {clientDetails?.middleInitial}{" "}
+                    {clientDetails?.lastName}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Username</td>
+                  <td className="no-bg">{clientDetails?.username}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="info-box">
+            <h3>Contact Information</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Phone number</td>
+                  <td>{clientDetails?.mobile_number}</td>
+                </tr>
+                <tr>
+                  <td>Email Address</td>
+                  <td>{clientDetails?.email_add}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="info-box">
+            <h3>Addresses</h3>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Home</td>
+                  <td>{clientDetails?.address}</td>
+                </tr>
+                <tr>
+                  <td>Company</td>
+                  <td>Not Set</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="info-box">
+  <h3>Password</h3>
+  <p>Create Strong Password</p>
+  <div
+    className="password-section"
+    onClick={() => setIsUpdatingPassword(true)} // Trigger password update form
+  >
+    <span className="password-field">*************************</span>
+    <IoMdArrowDropright className="password-icon" />
+  </div>
+</div>
+
+
 
           {isUpdatingPassword ? (
             <form onSubmit={(e) => e.preventDefault()}>
@@ -208,7 +282,7 @@ const AccountSettings = () => {
                 </>
               )}
               {isVerified && (
-                <button type="button" onClick={(e) => handlePasswordChange(e)}>
+                <button type="button" onClick={handlePasswordChange}>
                   Confirm Changes
                 </button>
               )}
@@ -228,50 +302,24 @@ const AccountSettings = () => {
               {message && <div className="message">{message}</div>}
             </form>
           ) : (
-            clientDetails && (
-              <>
-                <div>
-                  <p>
-                    <strong>Name:</strong> {clientDetails.firstName}{" "}
-                    {clientDetails.middleInitial} {clientDetails.lastName}
-                  </p>
-                  <p>
-                    <strong>Username:</strong> {clientDetails.username}
-                  </p>
-                  <p>
-                    <strong>Phone number:</strong> {clientDetails.mobile_number}
-                  </p>
-                  <p>
-                    <strong>Email Address:</strong> {clientDetails.email_add}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {clientDetails.address}
-                  </p>
-                  <p>
-                    <strong>Company:</strong> {clientDetails.companyName}
-                  </p>
-                </div>
-                <button onClick={() => setIsUpdatingPassword(true)}>
-                  Update Password
-                </button>
-              </>
-            )
+            <></> // Removed the Update Password button
           )}
+
+          <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+            <DialogTitle>Confirm Changes</DialogTitle>
+            <DialogContent>
+              <Typography>{confirmationMessage}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => handleDialogClose(false)} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={() => handleDialogClose(true)} color="primary">
+                Confirm
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
-        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-          <DialogTitle>Confirm Changes</DialogTitle>
-          <DialogContent>
-            <Typography>{confirmationMessage}</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => handleDialogClose(false)} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={() => handleDialogClose(true)} color="primary">
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     </div>
   );
