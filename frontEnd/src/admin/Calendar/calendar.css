@@ -1,4 +1,4 @@
-
+/* admin appointment */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 .add-button {
   color: white;
@@ -10,7 +10,6 @@
   justify-content: center;
   font-size: 30px;
 }
-
 /********************************** FullCalendar *******************************/
 .menu-container {
   display: flex;
@@ -89,10 +88,9 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/***********Step 2: Form Fields */
+/***********Step 2: Form Fields **************/
 .step2form {
-  max-width: 900px;
-  width: 100%;
+  width: 70%;
   margin: 0 auto;
   padding: 30px;
   background-color: #fff;
@@ -101,7 +99,7 @@ button:disabled {
 }
 
 .step2form .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 .step2form label {
@@ -117,26 +115,21 @@ button:disabled {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+.step2form-button{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 
-.step2form button {
-  padding: 10px 20px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
 }
-
-.step2form button:disabled {
-  background-color: #ddd;
-  cursor: not-allowed;
-}
-
-.step2form button:not(:disabled):hover {
+.step2form button:hover {
   background-color: #0056b3;
 }
 
+.step2form .button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
 /********* Step 3: Confirmation Step */
 .confirmation-container {
   display: flex;
@@ -149,8 +142,7 @@ button:disabled {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 500px; /* Limit the width */
-  width: 100%;
+  width: 60%;
 }
 .confirmation-form p {
   margin-bottom: 15px;
@@ -176,6 +168,7 @@ button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
 
 /************************Calendar sa appointment ng admin and availability ****************/
 
@@ -224,7 +217,7 @@ button:hover {
 
 button:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
+
 }
 
 .calendar-container {
@@ -363,8 +356,9 @@ header .current-date {
 }
 
 .fully-booked {
-  color: rgb(157, 8, 8);
   cursor: not-allowed;
+  background: rgb(157, 8, 8);
+  color: white;
 }
 
 .inactive {

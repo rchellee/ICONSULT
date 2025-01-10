@@ -414,7 +414,37 @@ select:focus {
   font-weight: 600;
   color: #000;
 }
+/******************* Tabs **************/
+.client-details-table {
+  margin-top: 20px;
+  overflow-x: auto;
+}
 
+.client-details-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+}
+
+.client-details-table th, .client-details-tablee td {
+  padding: 12px;
+  text-align: left;
+}
+
+.client-details-table th {
+  background-color: #092f57;
+  color: #fefdfd;
+  
+}
+
+.client-details-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.client-details-table tr:hover {
+  background-color: #f1f1f1;
+}
 
 /*********** Button Group ******/
 .button-group {

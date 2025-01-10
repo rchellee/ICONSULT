@@ -31,7 +31,7 @@ const Transactions = () => {
     <div className="transactions-page">
     <Topbar />
       <Sidebar />
-      <div className="content">
+      <div className="transaction-content">
         <h3>Transactions</h3>
         {transactions.length > 0 ? (
           <table className="transactions-table">

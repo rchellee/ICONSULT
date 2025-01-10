@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
-import "./adminCalendar.css";
+import "./calendar.css";
 import Topbar from "../Topbar";
 import Calendar from "./AdminDynamicCalendar";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function AdminAppointment() {
   const navigate = useNavigate();
@@ -208,11 +209,13 @@ function AdminAppointment() {
       <Topbar />
       <Sidebar />
 
-      <div className="appointment-form-container">
+      <div className="step1-container">
         <div className="appointment-form-content">
           {currentStep === 1 && (
             <div>
+              <p>Please select a date and time for the appointment.</p>
               <div className="admin-calendar-time-container">
+                
                 <Calendar
                   availableDates={availableDates}
                   onDateSelect={handleDateSelect}
@@ -275,6 +278,7 @@ function AdminAppointment() {
           )}
           {currentStep === 2 && (
             <div className="step2form">
+               <p>Choose a client and the type of consultation for this appointment.</p>
               <div className="form-group">
                 <label htmlFor="client">Select Client:</label>
                 <select
@@ -455,24 +459,42 @@ function AdminAppointment() {
                   <option value="1 week before">1 week before</option>
                 </select>
               </div>
-
+              <div  className="step2form-button">
               <button onClick={prevStep}>Back</button>
-              <button
-                onClick={nextStep}
-                disabled={
-                  !formData.consultationType ||
-                  (formData.consultationType === "Others" &&
-                    !formData.otherDetails)
-                }
-              >
-                Next
-              </button>
+              <button 
+              
+  onClick={nextStep}
+  disabled={
+    !formData.consultationType ||
+    (formData.consultationType === "Others" && !formData.otherDetails)
+  }
+>
+  Next
+  
+</button>
+</div>
+              {!formData.client && (
+  <p style={{ color: "red" }}>Please select a client to proceed.</p>
+)}
+
+{!formData.consultationType && (
+  <p style={{ color: "red" }}>Please select a consultation type.</p>
+)}
+
+{formData.consultationType === "Others" && !formData.otherDetails && (
+  <p style={{ color: "red" }}>Please specify the consultation type.</p>
+)}
+
+{!formData.platform && (
+  <p style={{ color: "red" }}>Please choose a communication platform.</p>
+)}
             </div>
           )}
           {/** Step 3: Confirmation **/}
           {currentStep === 3 && (
             <div className="confirmation-container">
               <div className="confirmation-form">
+              <p>Review and confirm your appointment details before submitting.</p>
                 <p>
                   <strong>Client:</strong> {formData.clientName}
                 </p>
@@ -500,6 +522,7 @@ function AdminAppointment() {
                   <button onClick={prevStep}>Back</button>
                   <button onClick={handleSubmit}>Submit</button>
                 </div>
+                
               </div>
             </div>
           )}

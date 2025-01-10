@@ -42,8 +42,6 @@ button + button {
   margin-left: 10px;
 }
 
-@ -61,163 +51,163 @@
-}
 
 .calendar-date.available {
   background-color: #d4edda; 

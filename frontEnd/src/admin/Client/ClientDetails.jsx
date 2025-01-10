@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './client.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -6,6 +6,33 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...client });
+  const [appointments, setAppointments] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [files, setFiles] = useState([]);
+
+  // Example data
+  const sampleAppointments = [
+    { date: "2025-01-05", details: "Initial consultation", status: "Completed", type: "Consultation" },
+    { date: "2025-01-12", details: "Follow-up meeting", status: "Scheduled", type: "Meeting" },
+  ];
+
+  const sampleProjects = [
+    { projectName: "Project A", startDate: "2025-01-01", endDate: "2025-06-01", status: "In Progress" },
+    { projectName: "Project B", startDate: "2025-02-01", endDate: "2025-07-01", status: "Completed" },
+  ];
+
+  const sampleFiles = [
+    { documentName: "Contract.pdf", uploadedDate: "2025-01-01", type: "PDF", action: "View" },
+    { documentName: "Invoice.xlsx", uploadedDate: "2025-01-05", type: "Excel", action: "Download" },
+  ];
+
+  // Simulate an API call to get appointments, projects, and files
+  useEffect(() => {
+    console.log("Loading data...");
+    setAppointments(sampleAppointments);
+    setProjects(sampleProjects);
+    setFiles(sampleFiles);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,7 +85,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
       }
     }
   };
-
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -113,14 +139,14 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                     <div className="input-icon"><i className="fa fa-phone"></i></div>
                   </div>
                   <div className="input-group input-group-icon">
-                      <input
-                          type="text"
-                          name="companyContact"
-                          placeholder="Company Contact Number"
-                          value={formData.companyContact || ""}
-                          onChange={handleChange}
-                      />
-                      <div className="input-icon"><i className="fa fa-phone"></i></div>
+                    <input
+                        type="text"
+                        name="companyContact"
+                        placeholder="Company Contact Number"
+                        value={formData.companyContact || ""}
+                        onChange={handleChange}
+                    />
+                    <div className="input-icon"><i className="fa fa-phone"></i></div>
                   </div>
                 </div>
                 {/* Contact Section */}
@@ -199,9 +225,93 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
             )}
           </>
         )}
-        {activeTab === "appointments" && <div>Appointments Content</div>}
-        {activeTab === "projects" && <div>Projects Content</div>}
-        {activeTab === "files" && <div>Files Content</div>}
+
+        {activeTab === "appointments" && (
+          <div className="client-details-table">
+            {appointments.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.map((appointment, index) => (
+                    <tr key={index}>
+                      <td>{appointment.date}</td>
+                      <td>{appointment.details}</td>
+                      <td>{appointment.status}</td>
+                      <td>{appointment.type}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No appointments available.</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === "projects" && (
+          <div className="client-details-table">
+            {projects.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {projects.map((project, index) => (
+                    <tr key={index}>
+                      <td>{project.projectName}</td>
+                      <td>{project.startDate}</td>
+                      <td>{project.endDate}</td>
+                      <td>{project.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No projects available.</p>
+            )}
+          </div>
+        )}
+
+        {activeTab === "files" && (
+          <div className="client-details-table">
+            {files.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Document Name</th>
+                    <th>Uploaded Date</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {files.map((file, index) => (
+                    <tr key={index}>
+                      <td>{file.documentName}</td>
+                      <td>{file.uploadedDate}</td>
+                      <td>{file.type}</td>
+                      <td>{file.action}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No files available.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
