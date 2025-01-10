@@ -646,11 +646,11 @@ app.get("/client-transactions/:id", (req, res) => {
   });
 });
 
-app.get("/clients/:id", (req, res) => {
+app.get("/clients-account/:id", (req, res) => {
   const clientId = req.params.id;
 
   const sql =
-    "SELECT firstName, lastName, middleInitial, mobile_number, email_add, address, username, companyName FROM client WHERE id = ?";
+    "SELECT * FROM client WHERE id = ?";
   db.query(sql, [clientId], (err, result) => {
     if (err) {
       return res

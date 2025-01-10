@@ -1,111 +1,109 @@
-/* AccountSettings.css */
-.account-settings {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    background-color: #f4f4f4;
-    min-height: 100vh;
-  }
-  
-  .settings-content {
-    width: 100%;
-    max-width: 600px;
-    padding: 30px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  .update-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .update-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .message {
-    margin-top: 20px;
-    padding: 12px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-  }
-  
-  .profile-form,
-  .password-form {
-    margin-bottom: 30px;
-  }
-  
-  .profile-form button,
-  .password-form button {
-    width: 100%;
-    margin: 0 auto;
-    padding: 12px;
-    background-color: #28a745;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .profile-form button:hover,
-  .password-form button:hover {
-    background-color: #218838;
-  }
-  
-  @media (max-width: 768px) {
-    .content {
-      padding: 20px;
-      width: 90%;
-      max-width: 100%;
-    }
-  
-    .form-group input {
-      font-size: 14px;
-    }
-  
-    h2 {
-      font-size: 20px;
-    }
-  }
-  
+.account {
+  width: 60%; /* Adjust the width of the content to be 60% of the screen width */
+  max-width: 800px; /* Optional: limits the width to a maximum value */
+  box-sizing: border-box; /* Ensures padding doesn't affect the total width */
+
+}
+
+
+/*to make it progressive margin is flex start then add yung padding*/
+
+.account-settings .content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-left: 10px; 
+  width: calc(100% - 250px); 
+  margin-left: flex-start;
+  margin-top: 1px;
+  height: 100vh; 
+  overflow: hidden;
+}
+
+.account-settings h2{
+  display: flex;
+  justify-content: flex-start; 
+}
+
+/* Info-box styles */
+.info-box table {
+  width: 10;
+  border-collapse: collapse;
+  border: none;
+  box-shadow: none; 
+  background-color: transparent;
+}
+
+.info-box table td {
+  padding: 8px 12px;
+  vertical-align: middle;
+  font-size: 17px;
+  border: none; 
+  background-color: transparent;
+}
+
+.info-box table td:first-child {
+  width: 25%; /* Adjust this value to resize the label column */
+  font-weight: normal;
+  background-color: transparent;
+}
+
+
+.info-box table td:last-child {
+  width: 100%; /* Adjust this value to resize the value column */
+  text-align: left;
+  font-weight: normal;
+}
+
+.info-box {
+  border: 1px solid #ddd; /* Add border to create a box */
+  padding: 16px;
+  margin-bottom: 20px;
+  background-color: transparent; /* Light background color */
+  border-radius: 8px; /* Rounded corners */
+}
+
+
+/* Remove alternate row background color */
+table tr:nth-child(even), table tr:nth-child(odd) {
+  background-color: transparent; /* Set to transparent to remove any color */
+}
+
+/* Alternatively, you can target the table rows more specifically */
+table tr {
+  background-color: transparent; /* Ensures all rows have no background color */
+}
+
+.create-password-text {
+  margin-bottom: 10px; /* Add space below the text */
+}
+
+.password-section {
+  display: flex;
+  justify-content: space-between; /* Move the icon to the far right */
+  align-items: center;
+  width: 100%; /* Ensure the container takes the full width of the parent */
+  cursor: pointer;
+}
+
+.password-field {
+  flex-grow: 1; /* Take up the available space for password text */
+  margin-top: 10px;
+}
+
+.password-icon {
+  cursor: pointer;
+  font-size: 30px; /* Adjust size as needed */
+  margin-left: 10px; /* Add some space between the text and the icon */
+  margin-top: -10px;
+}
+
+.account-settings-icon {
+  width: 200px;
+  height: 150px;
+  margin-left: 600px;
+  margin-top: -80px;
+  padding: 16px;
+}
+
+

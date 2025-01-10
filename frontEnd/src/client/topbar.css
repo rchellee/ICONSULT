@@ -4,10 +4,9 @@
   height: 100px; /* Increased height */
 }
 
-/* AppBar customizations */
 .MuiAppBar-root {
   background-color: #ffffff !important; /* Ensure the background color is applied */
-  height: 100px !important; /* Override the default height */
+  height: 70px !important; /* Override the default height */
   border-bottom: 1px solid #d1d1d1 !important; /* Add a 10px solid border with a light gray color */
   box-shadow: none !important; /* Remove any shadow effect */
 }
