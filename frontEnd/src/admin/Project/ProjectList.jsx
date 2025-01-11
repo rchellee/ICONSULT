@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { MdCancel } from "react-icons/md"; 
-import { LuLayoutGrid } from "react-icons/lu"; 
-import { FaList } from "react-icons/fa"; 
-import GridView from "./GridView"; 
-import ListView from "./ListView"; 
+import { MdCancel } from "react-icons/md"; // Import cancel icon
+import { LuLayoutGrid } from "react-icons/lu"; // Import Grid icon
+import { FaList } from "react-icons/fa"; // Import List icon
+import GridView from "./GridView"; // Import GridView component
+import ListView from "./ListView"; // Import ListView component
 import "./ListView.css";
 
 const ProjectList = ({

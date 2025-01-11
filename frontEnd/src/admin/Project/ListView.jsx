@@ -4,10 +4,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ListView.css";
 
-// Utility function to format numbers
+// Utility function to format numbers with ₱ symbol
 const formatCurrency = (amount) => {
-  if (amount === undefined || amount === null) return "0.00";
-  return new Intl.NumberFormat("en-US", {
+  if (amount === undefined || amount === null) return "₱ 0.00";
+  return "₱ " + new Intl.NumberFormat("en-US", {
     style: "decimal",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -31,8 +31,8 @@ const ListView = ({
   // Prevent navigation if the clicked target is the date picker or status dropdown
   const handleRowClick = (e, projectId) => {
     const targetTag = e.target.tagName.toLowerCase();
-    if (!["select", "option", "input", "div", "textarea"].includes(targetTag)) {
-      navigate(`/project/${projectId}`);
+    if (!["select", "option", "input", "div"].includes(targetTag)) {
+      navigate(`/project/${projectId}`); // Navigate to ProjectTask page with projectId
     }
   };
 
@@ -44,21 +44,13 @@ const ListView = ({
             <th>Project</th>
             <th>Client</th>
             <th>Progress</th>
-            <th>
-              Planned <br /> Duration
-            </th>
+            <th>Planned <br /> Duration</th>
             <th>Status</th>
             <th>Downpayment</th>
             <th>Total</th>
-            <th>
-              Payment <br /> Status
-            </th>
-            <th>
-              Actual <br /> Start
-            </th>
-            <th>
-              Actual <br /> Finish
-            </th>
+            <th>Payment <br /> Status</th>
+            <th>Actual <br /> Start</th>
+            <th>Actual <br /> Finish</th>
           </tr>
         </thead>
         <tbody>
@@ -81,15 +73,13 @@ const ListView = ({
                 <td>{project.clientName}</td>
                 <td>0%</td> {/* Progress column with 0% */}
                 <td>
-                  <div>{formatDate(project.startDate)}</div> -
+                  <div>{formatDate(project.startDate)}</div> - 
                   <div>{formatDate(project.endDate)}</div>
                 </td>
                 <td>
                   <select
                     value={statuses[project.id]}
-                    onChange={(e) =>
-                      handleStatusChange(project.id, e.target.value)
-                    }
+                    onChange={(e) => handleStatusChange(project.id, e.target.value)}
                     className={`status-dropdown ${
                       statuses[project.id] === "Pending"
                         ? "status-pending"
@@ -98,8 +88,7 @@ const ListView = ({
                         : ""
                     }`}
                     style={{
-                      backgroundColor:
-                        statusColors[statuses[project.id]] || "pink",
+                      backgroundColor: statusColors[statuses[project.id]] || "pink",
                     }}
                   >
                     <option value="Ongoing">Ongoing</option>
@@ -122,9 +111,7 @@ const ListView = ({
                 <td>
                   <DatePicker
                     selected={finishDate}
-                    onChange={(date) =>
-                      handleFinishDateChange(project.id, date)
-                    }
+                    onChange={(date) => handleFinishDateChange(project.id, date)}
                     className="date-picker-input"
                     placeholderText="--"
                     dateFormat="MMMM d, yyyy"

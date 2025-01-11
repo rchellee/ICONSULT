@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaPlus,
-  FaArrowUp,
-  FaFolder,
-  FaFile,
-  FaHome,
-} from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import axios from "axios";
@@ -16,6 +8,7 @@ import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
 import Files from "./Files";
 import Topbar from "../Topbar";
+import Task from "./Task";  
 
 function Tracking() {
   const { projectId } = useParams();
@@ -27,7 +20,6 @@ function Tracking() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [folderName, setFolderName] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [folders, setFolders] = useState([]);
@@ -58,32 +50,6 @@ function Tracking() {
     }
   };
 
-  const handleNewFolderClick = () => {
-    setShowNewFolderInput(true);
-  };
-
-  const handleFolderNameChange = (e) => {
-    setFolderName(e.target.value);
-  };
-
-  const handleCancelCreate = () => {
-    setFolderName("");
-    setShowNewFolderInput(false);
-  };
-
-  const handleCreateFolder = () => {
-    if (folderName) {
-      const newFolder = {
-        name: folderName,
-        modifiedDate: new Date().toLocaleDateString(),
-        modifiedBy: "Client",
-        duedate: new Date().toLocaleDateString(), // Added a default due date for each folder
-      };
-      setFolders([...folders, newFolder]); // Add new folder to the list
-      handleCancelCreate();
-    }
-  };
-
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -105,13 +71,6 @@ function Tracking() {
             <FaHome className="home-icon" />
             <span className="tooltip">All Project</span>
           </div>
-
-          {/* <div className="navigation-buttons">
-          <button className="nav-button" onClick={handleGoback}>
-            <FaChevronLeft />
-            <span className="tooltip">Go back</span>
-          </button>
-        </div> */}
 
           {/* Search Box */}
           <div className="search-box-container">
@@ -142,66 +101,19 @@ function Tracking() {
               className={activeTab === "files" ? "active" : ""}
               onClick={() => handleTabClick("files")}
             >
-              Files
+              Documents
             </button>
           </div>
 
           {/* Content Area */}
           <div className="content-area">
-            {activeTab === "overview" && (
-              <ProjectOverview projectId={projectId} />
-            )}
+            {activeTab === "overview" && <ProjectOverview projectId={projectId} />}
             {activeTab === "tasks" && (
-              <>
-                {isLoading && <p>Loading tasks...</p>}
-                {error && <p className="error">{error}</p>}
-                {!isLoading && !error && tasks.length === 0 && (
-                  <p>No tasks found.</p>
-                )}
-                {!isLoading && !error && tasks.length > 0 && (
-                  <div className="task-list">
-                    <table className="task-table">
-                      <thead>
-                        <tr>
-                          <th>Task</th>
-                          <th>Fee</th>
-                          <th>Miscellaneous</th>
-                          <th>Due Date</th>
-                          <th>Status</th>
-                          <th>Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tasks.map((task) => {
-                          const miscellaneousItems = JSON.parse(
-                            task.miscellaneous || "[]"
-                          );
-                          const miscellaneousDetails = miscellaneousItems
-                            .map((item) => `${item.name}: ${item.fee}`)
-                            .join(", ");
-
-                          return (
-                            <tr key={task.id}>
-                              <td>{task.task_name}</td>
-                              <td>{task.task_fee}</td>
-                              <td>{miscellaneousDetails || "N/A"}</td>
-                              <td>{task.due_date}</td>
-                              <td>{task.status}</td>
-                              <td>{task.amount}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </>
+              <Task tasks={tasks} isLoading={isLoading} error={error} />
             )}
           </div>
         </div>
-        {activeTab === "files" && (
-          <Files projectId={projectId} clientId={clientId} />
-        )}
+        {activeTab === "files" && <Files projectId={projectId} clientId={clientId} />}
       </div>
     </div>
   );

@@ -1,0 +1,188 @@
+.project-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4f7fb;
+  }
+  
+  .task-form-container {
+    width: 100%;
+    max-width: 600px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-top: 20px;
+  }
+  
+  .task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .task-input-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .task-input,
+  .task-fee,
+  .employee,
+  .due-date,
+  .miscellaneous,
+  .miscellaneous-fee {
+    width: 48%;
+  }
+  
+  label {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+  }
+  
+  input[type="date"] {
+    padding: 10px;
+  }
+  
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: #4e92b6;
+    background-color: #fff;
+  }
+  
+  .add-miscellaneous-button {
+    background-color: #4e92b6;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .add-miscellaneous-button:hover {
+    background-color: #397c9f;
+  }
+  
+  .scrollable-miscellaneous-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .miscellaneous-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .remove-miscellaneous {
+    cursor: pointer;
+    color: #e74c3c;
+  }
+  
+  .remove-miscellaneous:hover {
+    color: #c0392b;
+  }
+  
+  .total-amount {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 5px;
+  }
+  
+  .total-amount-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #27ae60;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .cancel-button,
+  .submit-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .cancel-button {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .cancel-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .submit-button {
+    background-color: #4e92b6;
+    color: white;
+  }
+  
+  .submit-button:hover {
+    background-color: #397c9f;
+  }
+  
+
+
+
+
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Make it appear on top of other content */
+  }
+
+  .modal-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+  }

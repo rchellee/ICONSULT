@@ -7,6 +7,19 @@ table {
     overflow: visible; /* Ensure rows do not clip floating content */
   }
 
+
+  .file-table{
+    max-height: 200px;
+    overflow-y: auto; 
+    border: 1px solid #ccc; 
+    max-height: 450px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 10px;
+  }
+
+
+
 .ClientFiles .file-table th {
     background-color: #f4f4f4; /* Light background for headers */
     font-weight: bold;
@@ -136,4 +149,6 @@ table {
   .action-options button:nth-child(2) { /* Delete button */
     color: #dc3545; /* Red font color */
   }
+
+  
   

@@ -116,10 +116,10 @@ const ProjectManagement = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric", // Full year (e.g., "2024")
-      month: "long", // Full month name (e.g., "January")
-      day: "numeric", // Day of the month (e.g., "6")
+    return date.toLocaleDateString("en-US", { 
+      year: "numeric",  // Full year (e.g., "2024")
+      month: "long",    // Full month name (e.g., "January")
+      day: "numeric",   // Day of the month (e.g., "6")
     });
   };
 

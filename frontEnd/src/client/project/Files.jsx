@@ -132,60 +132,61 @@ function Files({ projectId, clientId }) {
       {files.length === 0 ? (
         <p>No files uploaded for this project.</p>
       ) : (
-        <>
-          {/* Display files in a table */}
-          <table className="file-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Upload Date</th>
-                <th>Uploaded By</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.map((file) => (
-                <tr key={file.id}>
-                  <td>
-                    <a
-                      href={`http://localhost:8081/uploads/${file.file_name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {file.original_name}
-                    </a>
-                  </td>
-                  <td>
-                    {new Date(file.upload_date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </td>
-                  <td>{file.uploaded_by_name || "Unknown"}</td>
-                  <td>
-                    <div className="action-container">
-                      <BiDotsVerticalRounded
-                        onClick={() => handleActionClick(file.id)}
-                        style={{ cursor: "pointer" }}
-                      />
-                      {actionVisible === file.id && (
-                        <div className="action-options">
-                          <button onClick={() => handleEdit(file.id)}>
-                            Edit
-                          </button>
-                          <button onClick={() => handleDelete(file.id)}>
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
+        <div className="table-upload-container">
+          <div className="file-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Upload Date</th>
+                  <th>Uploaded By</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+              </thead>
+              <tbody>
+                {files.map((file) => (
+                  <tr key={file.id}>
+                    <td>
+                      <a
+                        href={`http://localhost:8081/uploads/${file.file_name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {file.original_name}
+                      </a>
+                    </td>
+                    <td>
+                      {new Date(file.upload_date).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </td>
+                    <td>{file.uploaded_by_name || "Unknown"}</td>
+                    <td>
+                      <div className="action-container">
+                        <BiDotsVerticalRounded
+                          onClick={() => handleActionClick(file.id)}
+                          style={{ cursor: "pointer" }}
+                        />
+                        {actionVisible === file.id && (
+                          <div className="action-options">
+                            <button onClick={() => handleEdit(file.id)}>
+                              Edit
+                            </button>
+                            <button onClick={() => handleDelete(file.id)}>
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
     </div>
   );

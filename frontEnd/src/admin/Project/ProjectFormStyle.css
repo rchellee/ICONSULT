@@ -104,4 +104,25 @@
     border: 1px solid #ccc;
     box-sizing: border-box;
   }
+
+  
+
+
+
+
+
+
+  .date-picker {
+    display: none; /* Hide the default date picker */
+  }
+  
+  .custom-date-input {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px;
+    cursor: pointer;
+  }
+  
   
