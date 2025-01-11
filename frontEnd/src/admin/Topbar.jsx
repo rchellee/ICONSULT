@@ -21,28 +21,21 @@ const Topbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        // Fetch admin username from the server
-        const { data } = await axios.get("http://localhost:8081/admin");
+    const adminId = localStorage.getItem("adminId");
+    const username = localStorage.getItem("username");
 
-        // Assuming the admin username is in the first entry of the data array
-        if (data.length > 0) {
-          setAdminUsername(data[0].username);
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching admin data:",
-          error.response?.data?.message || error.message
-        );
-      }
-    };
-
-    fetchAdminData();
+    if (adminId && username) {
+      setUserName(`${username}`);
+    } else {
+      console.warn(
+        "No adminId, or username found in localStorage."
+      );
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
     navigate("/");
   };
 

@@ -140,7 +140,8 @@ app.post("/Login", (req, res) => {
     }
 
     // If no match in client table, check admin table
-    const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
+    const sqlAdmin =
+      "SELECT id, username FROM admin WHERE username = ? AND password = ?";
     db.query(sqlAdmin, [username, password], (err, adminResults) => {
       if (err) {
         return res.status(500).json({
@@ -149,9 +150,13 @@ app.post("/Login", (req, res) => {
       }
 
       if (adminResults.length > 0) {
-        return res
-          .status(200)
-          .json({ message: "Login successful", role: "admin" });
+        const admin = adminResults[0];
+        return res.status(200).json({
+          message: "Login successful",
+          role: "admin",
+          username: admin.username,
+          adminId: admin.id,
+        });
       }
 
       // If no match in both tables
@@ -453,11 +458,11 @@ app.delete("/availability/:date", (req, res) => {
 
 // Endpoint to insert a new notification
 app.post("/notifications", (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, postedBy } = req.body;
 
   const query =
-    "INSERT INTO notifications (title, description, timestamp, isRead) VALUES (?, ?, NOW(), FALSE)";
-  db.query(query, [title, description], (err, result) => {
+    "INSERT INTO notifications (title, description, timestamp, postedBy, isRead) VALUES (?, ?, NOW(), FALSE)";
+  db.query(query, [title, description, postedBy], (err, result) => {
     if (err) {
       console.error("Error inserting notification:", err.stack);
       res.status(500).send("Error inserting notification");
@@ -649,8 +654,7 @@ app.get("/client-transactions/:id", (req, res) => {
 app.get("/clients/:id", (req, res) => {
   const clientId = req.params.id;
 
-  const sql =
-    "SELECT * FROM client WHERE id = ?";
+  const sql = "SELECT * FROM client WHERE id = ?";
   db.query(sql, [clientId], (err, result) => {
     if (err) {
       return res
@@ -1234,6 +1238,7 @@ app.post("/appointments", (req, res) => {
     clientId,
     companyName,
     reminder,
+    postedBy,
   } = req.body;
 
   if (!clientId || clientId === 0) {
@@ -1271,59 +1276,37 @@ app.post("/appointments", (req, res) => {
 
       const appointmentId = result.insertId;
       // Parse date and time
+      const formattedDate = moment(date, "YYYY-MM-DD").format("MMMM DD, YYYY");
       const formattedDateTime = moment(`${date} ${time}`, "YYYY-MM-DD hh:mm A");
       if (!formattedDateTime.isValid()) {
         return res.status(400).json({ message: "Invalid date or time format" });
       }
 
       const notificationSql = `
-                INSERT INTO notifications (title, description, timestamp, isRead)
-                VALUES (?, ?, NOW(), 0)
-            `;
+        INSERT INTO notifications (title, description, timestamp, isRead, postedBy, client_id)
+        VALUES (?, ?, NOW(), 0, ?, ?)
+      `;
 
-      const notificationTitle = "Appointment";
-      const notificationDescription = `Appointment with ${name} (${email}) on ${date} at ${time}.`;
+      const notificationTitle = "Appointment Scheduled";
+      const notificationDescription = `Consultation scheduled for ${name.toUpperCase()} on ${formattedDate} at ${time}.`;
 
       db.query(
         notificationSql,
-        [notificationTitle, notificationDescription],
+        [notificationTitle, notificationDescription, postedBy, clientId],
         (notificationErr) => {
           if (notificationErr) {
             console.error("Error creating notification:", notificationErr);
             return res.status(500).json({
               message: "Failed to create notification",
-              error: notificationErr,
+              error: notificationErr.sqlMessage,
             });
           }
-
-          // Save notification for the client
-          const clientNotificationQuery = `
-      INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
-      VALUES (?, ?, ?, NOW(), 0)
-      `;
-
-          const clientNotificationTitle = "Appointment Scheduled";
-          const clientNotificationDescription = `Your appointment on ${date} at ${time} has been confirmed.`;
-
-          db.query(
-            clientNotificationQuery,
-            [clientId, clientNotificationTitle, clientNotificationDescription],
-            (err, clientNotificationResult) => {
-              if (err) {
-                console.error("Error saving client notification:", err);
-                return res
-                  .status(500)
-                  .json({ message: "Failed to save client notification" });
-              }
-
-              // Send the final response after both operations (appointment and notification) are complete
-              return res.status(201).json({
-                message: "Appointment saved successfully, notification created",
-                appointmentId: appointmentId,
-                id: result.insertId,
-              });
-            }
-          );
+          // Send the final response after both operations (appointment and notification) are complete
+          return res.status(201).json({
+            message: "Appointment saved successfully, notification created",
+            appointmentId: appointmentId,
+            id: result.insertId,
+          });
         }
       );
     }

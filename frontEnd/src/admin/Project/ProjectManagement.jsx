@@ -259,12 +259,12 @@ const ProjectManagement = () => {
         ) : (
           renderProjectContent()
         )}
-        {projects.length > 0 && (
+        {/* {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
             onProjectClick={(projectId) => setSelectedProjectId(projectId)}
           />
-        )}
+        )} */}
       </div>
     </div>
   );

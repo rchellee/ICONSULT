@@ -59,6 +59,8 @@ const Login = () => {
 
       // Navigate based on the role
       if (data.role === "admin") {
+        localStorage.setItem("adminId", data.adminId);
+        localStorage.setItem("username", data.username);
         navigate("/admin");
       } else if (data.role === "client") {
         // After a successful login as a client, store firstName and lastName in localStorage
@@ -142,7 +144,7 @@ const Login = () => {
           </a>{" "}
           | <a href="#contact">Contact</a>
         </p>
-        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2024</p>
+        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2025</p>
       </footer>
     </div>
   );
