@@ -876,48 +876,6 @@ app.put("/employee/:id", (req, res) => {
   );
 });
 
-// Mark a project as deleted (PATCH request - Soft Delete)
-app.patch("/project/:id", (req, res) => {
-  const { id } = req.params;
-  const { isDeleted } = req.body;
-
-  const query = "UPDATE project SET isDeleted = ? WHERE id = ?";
-  db.query(query, [isDeleted, id], (error, results) => {
-    if (error) {
-      console.error("Error updating project:", error);
-      return res.status(500).json({ error: "Failed to update project" });
-    }
-    return res.status(200).json({ message: "Project deleted successfully" });
-  });
-});
-app.patch("/paymentStat/:id", (req, res) => {
-  const { id } = req.params;
-  const { paymentStatus } = req.body;
-
-  // Update project paymentStatus in the database
-  const query = "UPDATE project SET paymentStatus = ? WHERE id = ?";
-  db.query(query, [paymentStatus, id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error updating project status");
-    }
-    res.status(200).json({ id, paymentStatus });
-  });
-});
-app.patch("/projectStat/:id", (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-
-  // Update project status in the database
-  const query = "UPDATE project SET status = ? WHERE id = ?";
-  db.query(query, [status, id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error updating project status");
-    }
-    res.status(200).json({ id, status });
-  });
-});
 // Add a new project (POST request)
 app.post("/project", (req, res) => {
   const {
@@ -931,10 +889,12 @@ app.post("/project", (req, res) => {
     contractPrice,
     downpayment = null,
     paymentStatus = "Not Paid",
+    actualStart = null,
+    actualFinish = null,
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, actualStart, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -948,6 +908,8 @@ app.post("/project", (req, res) => {
       contractPrice,
       downpayment,
       paymentStatus,
+      actualStart,
+      actualFinish,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -963,10 +925,97 @@ app.post("/project", (req, res) => {
         contractPrice,
         downpayment,
         paymentStatus,
+        actualStart,
+        actualFinish,
       });
     }
   );
 });
+// Mark a project as deleted (PATCH request - Soft Delete)
+app.patch("/project/:id", (req, res) => {
+  const { id } = req.params;
+  const { isDeleted } = req.body;
+
+  const query = "UPDATE project SET isDeleted = ? WHERE id = ?";
+  db.query(query, [isDeleted, id], (error, results) => {
+    if (error) {
+      console.error("Error updating project:", error);
+      return res.status(500).json({ error: "Failed to update project" });
+    }
+    return res.status(200).json({ message: "Project deleted successfully" });
+  });
+});
+app.patch("/projectStat/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  let query = "UPDATE project SET status = ?";
+  let params = [status, id];
+
+  if (status === "Ongoing") {
+    query += ", actualStart = ?";
+    params = [status, new Date(), id];
+  } else if (status === "Completed") {
+    query += ", actualFinish = ?";
+    params = [status, new Date(), id];
+  }
+
+  query += " WHERE id = ?";
+
+  db.query(query, params, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating project status");
+    }
+    res.status(200).json({ id, status });
+  });
+});
+app.patch("/paymentStat/:projectId", (req, res) => {
+  const { projectId } = req.params;
+  const { paymentStatus } = req.body;
+
+  if (!paymentStatus) {
+    return res.status(400).json({ message: "Missing paymentStatus" });
+  }
+
+  // Query the current status
+  db.query(
+    "SELECT paymentStatus FROM project WHERE id = ?",
+    [projectId],
+    (err, rows) => {
+      if (err) {
+        console.error("Error querying payment status: ", err);
+        return res.status(500).json({ message: "Server error" });
+      }
+
+      const currentStatus = rows[0]?.paymentStatus;
+      if (
+        currentStatus === "Paid" || // Prevent changes from Paid
+        (currentStatus === "Partial Payment" && paymentStatus === "Not Paid") // Invalid transition
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Invalid payment status transition" });
+      }
+
+      // Update payment status
+      db.query(
+        "UPDATE project SET paymentStatus = ? WHERE id = ?",
+        [paymentStatus, projectId],
+        (updateErr) => {
+          if (updateErr) {
+            console.error("Error updating payment status: ", updateErr);
+            return res.status(500).json({ message: "Error updating status" });
+          }
+          res
+            .status(200)
+            .json({ message: "Payment status updated successfully" });
+        }
+      );
+    }
+  );
+});
+
 // Get all active (not deleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = "SELECT * FROM project WHERE isDeleted = 0";
