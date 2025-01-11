@@ -31,8 +31,8 @@ const ListView = ({
   // Prevent navigation if the clicked target is the date picker or status dropdown
   const handleRowClick = (e, projectId) => {
     const targetTag = e.target.tagName.toLowerCase();
-    if (!["select", "option", "input", "div"].includes(targetTag)) {
-      navigate(`/project/${projectId}`); // Navigate to ProjectTask page with projectId
+    if (!["select", "option", "input", "div", "textarea"].includes(targetTag)) {
+      navigate(`/project/${projectId}`);
     }
   };
 
@@ -95,14 +95,7 @@ const ListView = ({
                 <td>{formatCurrency(project.totalPayment)}</td>
                 <td>{project.paymentStatus}</td>
                 <td>
-                  <DatePicker
-                    selected={startDate}
-                    onChange={(date) => handleStartDateChange(project.id, date)}
-                    className="date-picker-input"
-                    placeholderText="--"
-                    dateFormat="MMMM d, yyyy"
-                    showPopperArrow={false}
-                  />
+                {startDate ? formatDate(startDate) : "--"}
                 </td>
                 <td>
                   <DatePicker
@@ -113,6 +106,7 @@ const ListView = ({
                     dateFormat="MMMM d, yyyy"
                     showPopperArrow={false}
                     minDate={startDate} // Disable dates before actual start date
+                    style={{ visibility: "hidden" }} // Make the input box invisible
                   />
                 </td>
               </tr>

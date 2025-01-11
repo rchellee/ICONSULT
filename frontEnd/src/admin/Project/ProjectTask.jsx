@@ -6,13 +6,20 @@ import "./task.css";
 import "./PostTab.css";
 import PostsTab from "./PostsTab";
 import FilesTab from "./FilesTab";
+import Sidebar from "../sidebar";
+import Topbar from "../Topbar";
 
-const ProjectTask = ({ projectId, onBack }) => {
+const ProjectTask = ({ onBack }) => {
+  const { projectId } = useParams(); 
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("posts");
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    console.log("Project ID in ProjectTask:", projectId);
+  }, [projectId]);
 
   // Handle tab switching
   const handleTabClick = (tab) => setActiveTab(tab);
@@ -34,6 +41,8 @@ const ProjectTask = ({ projectId, onBack }) => {
 
   return (
     <div className="project-task-container">
+      <Topbar />
+      <Sidebar />
       <div className="home-button-container">
         {/*<button className="home-button" onClick={() => navigate("/admin")}>
           <FontAwesomeIcon icon={faHome} size="lg" />

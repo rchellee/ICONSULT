@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import {
   AppBar,
   Toolbar,
@@ -8,40 +9,34 @@ import {
   Avatar,
   Typography,
 } from "@mui/material";
-import { FaUserCircle } from "react-icons/fa";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { SearchContext } from "../components/SearchProvider"; // Import the context
 import logo from "../assets/logo2.png";
 
 const Topbar = () => {
   const [adminUsername, setAdminUsername] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState("");
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const adminId = localStorage.getItem("adminId");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        // Fetch admin username from the server
-        const { data } = await axios.get("http://localhost:8081/admin");
+    const adminId = localStorage.getItem("adminId");
+    const username = localStorage.getItem("username");
 
-        // Assuming the admin username is in the first entry of the data array
-        if (data.length > 0) {
-          setAdminUsername(data[0].username);
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching admin data:",
-          error.response?.data?.message || error.message
-        );
-      }
-    };
-
-    fetchAdminData();
+    if (adminId && username) {
+      setUserName(`${username}`);
+    } else {
+      console.warn(
+        "No adminId, or username found in localStorage."
+      );
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
     navigate("/");
   };
 
@@ -79,8 +74,19 @@ const Topbar = () => {
             <img src={logo} alt="Logo" className="logo-topbar-img" />
           </div>
         </Typography>
-        <Typography variant="body1" sx={{ marginRight: 2 }} color="#143d58">
-          {adminUsername}
+
+        <div className="search-box-container">
+          <input
+            type="text"
+            className="search-box-topbar"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <Typography variant="body1" color="#143d58">
+          {userName}
         </Typography>
         <IconButton onClick={handleMenuOpen} color="#0056b3">
           <Avatar alt={userName} src="/path/to/your/profile-pic.jpg" />

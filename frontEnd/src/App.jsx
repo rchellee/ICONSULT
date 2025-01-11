@@ -63,7 +63,7 @@ function App() {
         <Route path="/transact" element={<Transaction />} />
         <Route path="/client-notif" element={<ClientNotification />} />
         <Route path="/tracking/:projectId" element={<Tracking />} />
-        <Route path="/projecttask" element={<ProjectTask />} />
+        <Route path="/project/:projectId" element={<ProjectTask />} />
         <Route path="/review" element={<Review />} />
         <Route path="/help-centre" element={<HelpCentre />} />
         <Route path="/otp-verification" element={<OtpVerification />} />

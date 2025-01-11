@@ -8,7 +8,6 @@ import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
-
 import Topbar from "../Topbar";
 
 const ProjectManagement = () => {
@@ -75,7 +74,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Ongoing",
+      status: "Pending",
       contractPrice,
       downpayment,
       totalPayment:
@@ -252,14 +251,6 @@ const ProjectManagement = () => {
             editingProjectId={editingProjectId}
           />
         )}
-        <div className="search-box-container">
-          <input
-            type="text"
-            className="search-box"
-            placeholder="Search project"
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
         {projects.length === 0 ? (
           <div style={{ textAlign: "center" }}>
             <img src={pic4} alt="No projects created" />
@@ -268,12 +259,12 @@ const ProjectManagement = () => {
         ) : (
           renderProjectContent()
         )}
-        {projects.length > 0 && (
+        {/* {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
             onProjectClick={(projectId) => setSelectedProjectId(projectId)}
           />
-        )}
+        )} */}
       </div>
     </div>
   );

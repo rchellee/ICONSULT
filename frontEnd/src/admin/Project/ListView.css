@@ -170,3 +170,23 @@
   .modal button:last-child:hover {
     background-color: #f0f0f0;
   }
+
+/*css for actual finish date picker*/
+
+.date-picker-input {
+  border: none; /* Removes the border */
+  background: transparent; /* Makes the background transparent */
+  outline: none; /* Removes focus outline */
+  padding: 0; /* Removes padding to eliminate box appearance */
+  width: auto; /* Prevents unnecessary stretching */
+ /* Centers the placeholder */
+  font-size: inherit; /* Keeps text styling consistent with the table */
+  cursor: auto; /* Indicates interactivity */
+}
+
+.date-picker-input::placeholder {
+  color: inherit; /* Matches the text color of the table */
+  opacity: 0.7; /* Makes placeholder text slightly dimmer */
+}
+
+
