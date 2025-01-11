@@ -80,6 +80,8 @@ const Calendar = () => {
                 end: endDate,
                 extendedProps: {
                   email: appointment.email,
+                  date: appointment.date,
+                  time: appointment.time,
                   contact: appointment.contact,
                   consultationType: appointment.consultationType,
                   additionalInfo: appointment.additionalInfo,
@@ -114,13 +116,16 @@ const Calendar = () => {
   };
 
   const handleMouseEnter = (selected) => {
-    const { title, start, id } = selected.event;
+    const { title, start, extendedProps, id } = selected.event;
     setPopup({
       id,
       title,
       start,
       x: selected.jsEvent.clientX,
       y: selected.jsEvent.clientY,
+      extendedProps: {
+        ...extendedProps,
+      },
     });
   };
 
@@ -253,14 +258,22 @@ const Calendar = () => {
                                 sx={{ color: "black", fontSize: "0.9rem" }}
                               >
                                 <strong>Date:</strong>{" "}
-                                {new Date(event.start).toLocaleDateString()}
+                                {new Date(event.start).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}
                               </Typography>
                               <Typography
                                 variant="body2"
                                 sx={{ color: "black", fontSize: "0.9rem" }}
                               >
                                 <strong>Time:</strong>{" "}
-                                {new Date(event.start).toLocaleTimeString()}
+                                {event.extendedProps.time}
                               </Typography>
                               <Typography
                                 variant="body2"
@@ -384,11 +397,7 @@ const Calendar = () => {
                       variant="body2"
                       sx={{ fontSize: "14px", color: "#666" }}
                     >
-                      ⏰{" "}
-                      {new Date(popup.start).toLocaleTimeString("en-US", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      ⏰{popup.extendedProps.time}
                     </Typography>
                   </Box>
 

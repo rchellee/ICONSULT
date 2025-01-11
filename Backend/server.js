@@ -798,6 +798,20 @@ app.get("/employees", (req, res) => {
     return res.json(data);
   });
 });
+// Fetch all employees with full name (GET request)
+app.get("/employees/id", (req, res) => {
+  const sql = `
+    SELECT 
+      id,
+      CONCAT(firstName, ' ', middleName, ' ', lastName) AS fullName
+    FROM employee
+  `;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.status(200).json(data);
+  });
+});
+
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -990,15 +1004,13 @@ app.patch("/paymentStat/:projectId", (req, res) => {
 
       const currentStatus = rows[0]?.paymentStatus;
       if (
-        currentStatus === "Paid" || // Prevent changes from Paid
-        (currentStatus === "Partial Payment" && paymentStatus === "Not Paid") // Invalid transition
+        currentStatus === "Paid" ||
+        (currentStatus === "Partial Payment" && paymentStatus === "Not Paid")
       ) {
         return res
           .status(400)
           .json({ message: "Invalid payment status transition" });
       }
-
-      // Update payment status
       db.query(
         "UPDATE project SET paymentStatus = ? WHERE id = ?",
         [paymentStatus, projectId],
@@ -1015,8 +1027,7 @@ app.patch("/paymentStat/:projectId", (req, res) => {
     }
   );
 });
-
-// Get all active (not deleted) projects (GET request)
+// Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = "SELECT * FROM project WHERE isDeleted = 0";
   db.query(sql, (err, data) => {
@@ -1024,7 +1035,25 @@ app.get("/project", (req, res) => {
     return res.json(data);
   });
 });
-app.get("/project/:clientId", (req, res) => {
+app.get("/project/:id", (req, res) => {
+  const projectId = req.params.id;
+
+  const sql = "SELECT projectName FROM project WHERE id = ? AND isDeleted = 0";
+  db.query(sql, [projectId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching project name" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json(result[0]);
+    } else {
+      return res.status(404).json({ message: "Project name not found" });
+    }
+  });
+});
+app.get("/project-client/:clientId", (req, res) => {
   const { clientId } = req.params;
   const sql = "SELECT * FROM project WHERE clientId = ? AND isDeleted = 0";
   db.query(sql, [clientId], (err, data) => {
@@ -1129,8 +1158,8 @@ app.post("/tasks", (req, res) => {
     }, 0);
   }
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
-             VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)`;
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish)
+                    VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, NULL)`;
 
   db.query(
     tasksSql,
@@ -1160,15 +1189,8 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const {
-    taskName,
-    taskFee,
-    dueDate,
-    employee,
-    miscellaneous,
-    status,
-    projectId,
-  } = req.body;
+  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+    req.body;
 
   // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
@@ -1182,7 +1204,7 @@ app.put("/tasks/:id", (req, res) => {
 
   const updateTaskSql = `
     UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, status = ?, amount = ?
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?
     WHERE id = ?`;
 
   db.query(
@@ -1193,7 +1215,6 @@ app.put("/tasks/:id", (req, res) => {
       dueDate,
       employee,
       JSON.stringify(miscellaneous),
-      status,
       totalAmount,
       id,
     ],
@@ -1210,6 +1231,51 @@ app.put("/tasks/:id", (req, res) => {
       });
     }
   );
+});
+app.put("/task/:id/status", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  let query = "UPDATE tasks SET status = ?";
+  const queryParams = [status, id];
+  if (status === "Completed") {
+    query += ", actual_finish = ?";
+    queryParams.splice(1, 0, new Date()); // Insert the current date as the second parameter
+  } else {
+    query += ", actual_finish = NULL"; // Reset actual_finish for non-completed statuses
+  }
+
+  query += " WHERE id = ?";
+  db.query(query, queryParams, (err, result) => {
+    if (err) {
+      console.error("Error updating task status:", err);
+      return res.status(500).send("Failed to update task status");
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Task not found");
+    }
+
+    res.status(200).send("Task status updated successfully");
+  });
+});
+app.delete("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+
+  const deleteTaskSql = `DELETE FROM tasks WHERE id = ?`;
+
+  db.query(deleteTaskSql, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting task:", err);
+      return res.status(500).json({ message: "Failed to delete task" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  });
 });
 app.get("/admin/tasks", (req, res) => {
   console.log(req.query);
@@ -1719,7 +1785,25 @@ app.get("/upload/:clientId", (req, res) => {
     return res.json(data);
   });
 });
+app.delete("/upload/:fileId", (req, res) => {
+  const { fileId } = req.params;
 
+  // SQL to delete the file record from the database
+  const deleteSql = "DELETE FROM uploads WHERE id = ?";
+  db.query(deleteSql, [fileId], (err, result) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+      return res.status(500).json({ message: "Error deleting file" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    console.log("File deleted successfully.");
+    res.status(200).json({ message: "File deleted successfully" });
+  });
+});
 app.use("/uploads", express.static("uploads"));
 
 app.post("/reviews", (req, res) => {

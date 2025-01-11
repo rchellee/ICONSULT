@@ -49,9 +49,10 @@ h1 {
   align-items: center;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  margin-top: 20px; /*position ng new button*/
-  margin-left: 20px;
+  font-size: 20px;
+  margin-top: 30px; /*position ng new button*/
+  margin-left: auto;
+  margin-bottom: auto;
 }
 
 .create-button:hover {
@@ -86,7 +87,7 @@ h1 {
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 600px; /* Set the max height of the scrollable area */
+  max-height: 700px; /* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;

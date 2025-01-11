@@ -14,15 +14,20 @@
 
 .form-modal-content {
   background-color: white;
-  padding: 20px;
+  padding: 40px;
   border-radius: 8px;
-  width: 400px;
+  width: 800px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 900px; /* Adjust as needed */
 }
 
 .form-modal-title {
-  text-align: center;
-  margin-bottom: 20px;
+  text-align: left; /* Aligns the title to the left */
+  margin-bottom: 30px; /* Keeps the space below the title */
+  margin-left: 0; /* Optional: Adjusts the left margin */
+  font-weight: bold; /* Optional: Keeps the title bold */
+  color: #5d6d90;
 }
 
 .form-modal-field {
@@ -33,6 +38,9 @@
   font-weight: bold;
   display: block;
   margin-bottom: 5px;
+  font-style: normal;
+  font-weight: normal;
+  color: #5d6d90;
 }
 
 .form-modal-field input,
@@ -40,9 +48,23 @@
   width: 100%;
   padding: 8px;
   font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.form-modal-field select {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
   border-radius: 4px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  appearance: none; /* Removes the dropdown icon */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  background: none; /* Optional: Removes any background */
+  margin-top: -1px;
 }
 
 .form-modal-actions {
@@ -105,6 +127,20 @@
   box-sizing: border-box;
 }
 
+.description-input {
+  width: 205%; /* Full width of the parent container */
+  height: 100px; /* Adjust height as needed */
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+.form-project-details .description-input {
+  grid-column: span 2; /* Make it span across both columns */
+}
+
 .date-picker {
   display: none; /* Hide the default date picker */
 }
@@ -116,4 +152,73 @@
   border: 1px solid #ccc;
   padding: 8px;
   cursor: pointer;
+}
+
+.warning-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.validation-error {
+  color: red;
+  font-weight: normal;
+  margin-top: 10px;
+}
+
+/*css pag active yung input box*/
+.form-modal-field input:focus {
+  border-color: #b9cbf2;
+  box-shadow: 0 0 5px #d3e1ff;
+  outline: none;
+}
+
+.form-modal-field select:focus {
+  border-color: #b9cbf2;
+  box-shadow: 0 0 5px #d3e1ff;
+  outline: none;
+}
+
+.description-input:focus {
+  border-color: #b9cbf2;
+  box-shadow: 0 0 5px #d3e1ff;
+  outline: none;
+}
+
+/*create and cance button*/
+
+.form-create-cancel {
+  display: flex;
+  justify-content: center;
+  gap: 500px; /* Space between the buttons */
+  margin-top: 20px; /* Add space above the button group */
+}
+
+.form-cancel-project-button,
+.form-create-project-button {
+  width: 150px;
+  height: 50px;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+}
+
+.form-cancel-project-button {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.form-create-project-button {
+  background-color: #d3deff;
+  color: #000;
+}
+
+.form-cancel-project-button:hover {
+  background-color: #e0e0e0; /* Slightly darker gray on hover */
+}
+
+.form-create-project-button:hover {
+  background-color: #b0c2f8; /* Slightly darker green on hover */
 }

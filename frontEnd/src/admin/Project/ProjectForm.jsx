@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ProjectFormStyle.css";
 
 const ProjectForm = ({
@@ -23,6 +23,50 @@ const ProjectForm = ({
   onSave,
   editingProjectId,
 }) => {
+  const [downpaymentWarning, setDownpaymentWarning] = useState(false);
+  const [feeWarning, setFeeWarning] = useState(false);
+  const [validationError, setValidationError] = useState("");
+
+  // Handle downpayment input change (only numeric input allowed)
+  const handleDownpaymentChange = (e) => {
+    const value = e.target.value;
+    if (isNaN(value) && value !== "") {
+      setDownpaymentWarning(true);
+    } else {
+      setDownpaymentWarning(false);
+      setDownpayment(value);
+    }
+  };
+
+  // Handle professional fee input change (only numeric input allowed)
+  const handleFeeChange = (e) => {
+    const value = e.target.value;
+    if (isNaN(value) && value !== "") {
+      setFeeWarning(true);
+    } else {
+      setFeeWarning(false);
+      setContractPrice(value);
+    }
+  };
+
+  // Handle save action with validation
+  const handleSave = () => {
+    if (
+      !projectName ||
+      !clientId ||
+      !startDate ||
+      !endDate ||
+      !description ||
+      !contractPrice
+    ) {
+      setValidationError("All fields except Downpayment are required.");
+      return;
+    }
+
+    setValidationError(""); // Clear error if all fields are valid
+    onSave(); // Call the original onSave function
+  };
+
   return (
     <div className="form-modal-overlay">
       <div className="form-modal-content">
@@ -35,7 +79,7 @@ const ProjectForm = ({
             <label>Project Name:</label>
             <input
               type="text"
-              placeholder="Enter project name"
+              placeholder="Untitled"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
             />
@@ -88,39 +132,47 @@ const ProjectForm = ({
           <div className="form-modal-field">
             <label>Downpayment (Optional):</label>
             <input
-              type="number"
-              placeholder="Enter downpayment (if applicable)"
+              type="text"
+              placeholder="₱"
               value={downpayment}
-              onChange={(e) => setDownpayment(e.target.value)}
+              onChange={handleDownpaymentChange}
             />
+            {downpaymentWarning && (
+              <span className="warning-message">Invalid</span>
+            )}
           </div>
 
           <div className="form-modal-field">
-            <label>Contract Price:</label>
+            <label>Professional Fee:</label>
             <input
-              type="number"
-              placeholder="Enter contract price"
+              type="text"
+              placeholder="₱"
               value={contractPrice}
-              onChange={(e) => setContractPrice(e.target.value)}
+              onChange={handleFeeChange}
             />
+            {feeWarning && <span className="warning-message">Invalid</span>}
           </div>
 
           <div className="form-modal-field">
             <label>Description:</label>
-            <input
-              type="text"
-              placeholder="Enter project description"
+            <textarea
+              placeholder="Describe your project"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              className="description-input"
             />
           </div>
         </div>
+
+        {validationError && (
+          <div className="validation-error">{validationError}</div>
+        )}
 
         <div className="form-create-cancel">
           <button className="form-cancel-project-button" onClick={onCancel}>
             Cancel
           </button>
-          <button className="form-create-project-button" onClick={onSave}>
+          <button className="form-create-project-button" onClick={handleSave}>
             {editingProjectId ? "Update" : "Create"}
           </button>
         </div>

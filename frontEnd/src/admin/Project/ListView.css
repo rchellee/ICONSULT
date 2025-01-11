@@ -6,7 +6,31 @@
   border-radius: 30px;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto; /* Enable vertical scrolling */
-  overflow-x: auto;
+}
+
+.table-scroll-wrapper {
+  max-height: 600px; /* Set a height limit */
+  overflow-y: auto; /* Enable vertical scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar for WebKit Browsers */
+.table-scroll-wrapper::-webkit-scrollbar {
+  width: 12px; /* Width of the vertical scrollbar */
+  height: 12px; /* Height of the horizontal scrollbar */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #a6a6a6; /* Thumb color */
+  border-radius: 10px; /* Rounded corners for the scrollbar */
+}
+
+.table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Thumb hover color */
 }
 
 .layout-toggle-icons {
@@ -43,25 +67,29 @@
   width: 100%;
   border-collapse: collapse;
   border: none;
+  font-size: 18px;
 }
 
 .project-list-table th,
 .project-list-table td {
-  padding: 10px;
+  padding: 3px 10px;
   border: 1px solid #ddd;
   border: none;
+  overflow: hidden;
+  font-size: 15px;
 }
 
 .project-list-table th {
   background-color: #eeecec;
   color: rgb(71, 70, 70);
+  overflow: hidden;
 }
 
 /*status ongoing and completed css*/
 .status-dropdown {
   border-radius: 50px; /* Keep the button oval */
   padding: 5px 15px; /* Smaller padding for a more compact size */
-  font-size: 12px; /* Smaller font size */
+  font-size: 15px; /* Smaller font size */
   border: 1px solid #ccc; /* Optional: add a border */
   background-color: #fff; /* Optional: set background color */
   cursor: pointer; /* Optional: change cursor to pointer */
@@ -85,7 +113,7 @@
 }
 
 .modal button {
-  background-color: #007bff;
+  background-color: #afd0f3;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -141,35 +169,96 @@
   background-color: #f0f0f0;
 }
 
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  gap: 10px;
+/*css for actual finish date picker*/
+
+.date-picker-input {
+  border: none; /* Removes the border */
+  background: transparent; /* Makes the background transparent */
+  outline: none; /* Removes focus outline */
+  padding: 0; /* Removes padding to eliminate box appearance */
+  width: auto; /* Prevents unnecessary stretching */
+  /* Centers the placeholder */
+  font-size: inherit; /* Keeps text styling consistent with the table */
+  cursor: auto; /* Indicates interactivity */
 }
 
-.pagination-controls button {
-  padding: 5px 15px;
-  border: 1px solid #ddd;
-  background-color: #f9f9f9;
+.date-picker-input::placeholder {
+  color: inherit; /* Matches the text color of the table */
+  opacity: 0.7; /* Makes placeholder text slightly dimmer */
+}
+
+.project-list-table td:nth-child(1), /* Project column */
+.project-list-table td:nth-child(2) {
+  /* Client column */
+  max-width: 200px; /* Adjust this value to fit your design */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Style the payment status dropdown */
+.payment-status-dropdown {
+  width: 100%; /* Make it fit the container */
+  padding: 8px;
   border-radius: 4px;
+  font-size: 14px;
+  border: 1px solid #ccc; /* Light border for better visibility */
+  background-color: white; /* Set background to white */
   cursor: pointer;
-  font-size: 14px;
+  outline: none;
+  width: 130px;
+  color: #4a4a4a;
+  /*text-align: center;*/
+  height: 35px;
 }
 
-.pagination-controls button:disabled {
-  background-color: #eaeaea;
-  cursor: not-allowed;
+/* Style the options inside the dropdown */
+.payment-status-dropdown option {
+  padding: 10px;
+  background-color: white;
+  color: #333;
+  border: none;
 }
 
-.pagination-controls span {
-  font-size: 14px;
-  font-weight: bold;
+/* Remove the dropdown arrow icon */
+.payment-status-dropdown::-ms-expand {
+  display: none; /* For Internet Explorer */
 }
 
-/* para ma hide yung ibang status */
-.status-dropdown:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+.payment-status-dropdown {
+  -webkit-appearance: none; /* Remove the arrow for Safari */
+  -moz-appearance: none; /* Remove the arrow for Firefox */
+  appearance: none; /* Remove the arrow for other browsers */
+  background-image: none; /* Remove background image */
+  border-radius: 100px;
+}
+
+/* Custom arrow icon (optional) */
+.payment-status-dropdown:after {
+  content: " ▼"; /* Optional, to create a custom arrow */
+  font-size: 12px;
+  color: #333;
+  padding-left: 5px;
+  pointer-events: none;
+}
+
+/* Add a custom color for different payment statuses */
+.payment-status-dropdown:focus {
+  border-color: #ffffff; /* Highlight the border on focus */
+}
+
+.payment-status-dropdown:disabled {
+  background-color: #f5f5f5; /* Gray out the dropdown when disabled */
+}
+
+/* Optional: Set the width of the dropdown's options dynamically */
+.payment-status-dropdown option {
+  padding: 10px;
+  background-color: rgb(255, 255, 255);
+  color: #333;
+  border: none;
+}
+
+/* Style for Paid status to manually set width */
+.payment-status-dropdown.paid-status {
+  width: 90px; /* Set a fixed width for the Paid dropdown */
 }

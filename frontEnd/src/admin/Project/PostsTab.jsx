@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; 
-import { IoAddCircle } from "react-icons/io5"; 
-import { BsThreeDotsVertical } from "react-icons/bs"; 
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { IoAddCircle } from "react-icons/io5";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiSortAlt2 } from "react-icons/bi";
 import TaskForm from "./TaskForm";
 import MiscellaneousForm from "./MiscellaneousForm ";
@@ -16,25 +16,28 @@ const PostsTab = ({
   setTasks,
 }) => {
   const [selectedTaskName, setSelectedTaskName] = useState(null);
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); 
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [employeeMap, setEmployeeMap] = useState({});
   const [showActions, setShowActions] = useState(null);
-  const [selectedTaskId, setSelectedTaskId] = useState(null); 
-
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [projectName, setProjectName] = useState("");
   const miscData = selectedTaskDetails?.miscellaneous || [];
 
   const formatCurrency = (amount) => {
-    return `₱ ${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `₱ ${amount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -56,6 +59,51 @@ const PostsTab = ({
 
     if (projectId) {
       fetchTasks();
+    }
+  }, [projectId]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/employees/id");
+        if (!response.ok) throw new Error("Failed to fetch employee names");
+        const data = await response.json();
+
+        // Create a map of employee IDs to full names
+        const map = data.reduce((acc, curr) => {
+          acc[curr.id] = curr.fullName;
+          return acc;
+        }, {});
+        setEmployeeMap(map);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/project/${projectId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch project details");
+        }
+        const data = await response.json();
+        console.log("Project Data:", data); // Add this log to inspect the response
+
+        // Adjust based on the response structure
+        setProjectName(data.projectName || "Unknown Project");
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+    };
+
+    if (projectId) {
+      fetchProjectDetails();
     }
   }, [projectId]);
 
@@ -112,23 +160,88 @@ const PostsTab = ({
     } else {
       setShowActions(taskId);
       setSelectedTaskId(taskId);
+      setShowActions(taskId === showActions ? null : taskId);
     }
   };
 
   const handleEdit = () => {
-    setShowActions(null); 
+    const taskToEdit = tasks.find((task) => task.id === selectedTaskId);
+    if (taskToEdit) {
+      setSelectedTaskDetails({
+        ...taskToEdit,
+        miscellaneous: parseMiscellaneous(taskToEdit.miscellaneous),
+      });
+      setShowTaskForm(true);
+    }
+    setShowActions(null);
   };
 
-  const handleDelete = () => {
-    setShowActions(null); 
+  const handleDelete = async () => {
+    if (!selectedTaskId) return;
+
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/tasks/${selectedTaskId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to delete task");
+        }
+
+        // Remove the deleted task from the state
+        const updatedTasks = tasks.filter((task) => task.id !== selectedTaskId);
+        setTasks(updatedTasks);
+        console.log("Task deleted successfully");
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
+    }
+
+    setShowActions(null);
   };
 
-  const handleStatusChange = (taskId, newStatus) => {
+  const handleStatusChange = async (taskId, newStatus) => {
     const updatedTasks = tasks.map((task) =>
       task.id === taskId ? { ...task, status: newStatus } : task
     );
     setTasks(updatedTasks);
-    
+
+    try {
+      const response = await fetch(
+        `http://localhost:8081/task/${taskId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update task status");
+      }
+      if (newStatus === "Completed") {
+        const updatedTask = updatedTasks.find((task) => task.id === taskId);
+        updatedTask.actual_finish = new Date().toISOString();
+        setTasks([...updatedTasks]);
+      }
+      console.log("Task status  and actual finish updated successfully");
+    } catch (error) {
+      console.error("Error updating task status:", error);
+
+      // Revert the status in the UI in case of an error
+      const revertedTasks = tasks.map((task) =>
+        task.id === taskId
+          ? { ...task, status: tasks.find((t) => t.id === taskId).status }
+          : task
+      );
+      setTasks(revertedTasks);
+    }
   };
 
   // Calculate the total amount of all tasks
@@ -142,16 +255,19 @@ const PostsTab = ({
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-   
-      <div className="total-amount-container">
+        <div className="project-name-container">
+          <h2>{projectName}</h2>{" "}
+          
+        </div>
+        <div className="total-amount-container">
           <h3>
             {/*<span className="total-amount-text">Total Task:</span>*/}
             <span className="total-amount-number">
-              {formatCurrency(calculateTotalAmount())}</span>
+              {formatCurrency(calculateTotalAmount())}
+            </span>
           </h3>
         </div>
-      
-        
+
         {selectedTaskDetails ? (
           <div className="task-details">
             <div className="task-detail-row">
@@ -164,7 +280,9 @@ const PostsTab = ({
             </div>
             <div className="task-detail-row">
               <div>{selectedTaskDetails.task_name}</div>
-              <div className="align-right">{formatCurrency(selectedTaskDetails.task_fee)}</div>
+              <div className="align-right">
+                {formatCurrency(selectedTaskDetails.task_fee)}
+              </div>
             </div>
             <div className="task-detail-row">
               <div>
@@ -206,7 +324,7 @@ const PostsTab = ({
               </div>
               <div className="align-right">
                 {calculateTotal(selectedTaskDetails) === 0
-                  ? '--'
+                  ? "--"
                   : formatCurrency(calculateTotal(selectedTaskDetails))}
               </div>
             </div>
@@ -247,28 +365,44 @@ const PostsTab = ({
                       onDoubleClick={() => handleRowDoubleClick(task)} // Double-click event
                     >
                       <td>{task.task_name}</td>
-                      <td>{task.employee}</td>
+                      <td>{employeeMap[task.employee] || "Unknown"}</td>
                       <td>
-  <select
-    className={`status-dropdown ${task.status.toLowerCase()}`} // Add a class based on the task's status
-    value={task.status || "Pending"} // Default status is "Pending"
-    onChange={(e) => handleStatusChange(task.id, e.target.value)}
-  >
-    <option value="Pending" disabled={task.status === "Ongoing" || task.status === "Completed"}>
-      Pending
-    </option>
-    <option value="Ongoing" disabled={task.status === "Completed"}>
-      Ongoing
-    </option>
-    <option value="Completed">Completed</option>
-  </select>
-</td>
-                      <td>{formatDate(task.due_date)}</td> {/* Updated Due Date formatting */}
-                      <td>--</td>
+                        <select
+                          className={`status-dropdown ${task.status.toLowerCase()}`} // Add a class based on the task's status
+                          value={task.status || "Pending"} // Default status is "Pending"
+                          onChange={(e) =>
+                            handleStatusChange(task.id, e.target.value)
+                          }
+                        >
+                          <option
+                            value="Pending"
+                            disabled={
+                              task.status === "Ongoing" ||
+                              task.status === "Completed"
+                            }
+                          >
+                            Pending
+                          </option>
+                          <option
+                            value="Ongoing"
+                            disabled={task.status === "Completed"}
+                          >
+                            Ongoing
+                          </option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </td>
+                      <td>{formatDate(task.due_date)}</td>{" "}
+                      {/* Updated Due Date formatting */}
+                      <td>
+                        {task.actual_finish
+                          ? formatDate(task.actual_finish)
+                          : "--"}
+                      </td>
                       <td>{formatCurrency(task.task_fee)}</td>
                       <td>
                         {totalMiscellaneousFee === 0
-                          ? '--'
+                          ? "--"
                           : formatCurrency(totalMiscellaneousFee)}
                       </td>
                       <td>{formatCurrency(task.amount)}</td>
@@ -303,8 +437,10 @@ const PostsTab = ({
         {showTaskForm && (
           <TaskForm
             projectId={projectId}
-            handleCreateTask={handleCreateTask}
-            handleCancelForm={handleCancelForm}
+            tasks={tasks}
+            existingTask={selectedTaskDetails}
+            onCreate={handleCreateTask}
+            onCancel={handleCancelForm}
           />
         )}
 

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ListView.css";
 
@@ -28,40 +27,17 @@ const ListView = ({
   handlePaymentStatusChange,
   startDates,
   finishDates,
-  handleStartDateChange,
-  handleFinishDateChange,
   tasksInfo,
   totalTasks,
-  handleDelete,
-  handleEdit,
   handleRightClick,
-  toggleDropdown,
-  activeDropdown,
 }) => {
   const navigate = useNavigate();
-  const rowsPerPage = 5;
-  const [currentPage, setCurrentPage] = useState(1);
 
   const handleRowClick = (e, projectId) => {
     const targetTag = e.target.tagName.toLowerCase();
     if (!["select", "option", "input", "div", "textarea"].includes(targetTag)) {
       navigate(`/project/${projectId}`);
     }
-  };
-
-  const totalPages = Math.ceil(filteredProjects.length / rowsPerPage);
-
-  const currentProjects = filteredProjects.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-
-  const nextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
   return (
@@ -90,11 +66,10 @@ const ListView = ({
             <th>
               Actual <br /> Finish
             </th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {currentProjects.map((project) => {
+          {filteredProjects.map((project) => {
             const startDate = startDates[project.id]
               ? new Date(startDates[project.id])
               : null;
@@ -109,8 +84,8 @@ const ListView = ({
                 onContextMenu={(e) => handleRightClick(e, project.id)}
                 className="clickable-row"
               >
-                <td>{project.projectName}</td>
-                <td>{project.clientName}</td>
+                <td title={project.projectName}>{project.projectName}</td>
+                <td title={project.clientName}>{project.clientName}</td>
                 <td>
                   {(() => {
                     const { total = 0, completed = 0 } =
@@ -122,12 +97,17 @@ const ListView = ({
                 </td>
 
                 <td>
-                  <div>{formatDate(project.startDate)}</div> -
-                  <div>{formatDate(project.endDate)}</div>
+                  <div title={formatDate(project.startDate)}>
+                    {formatDate(project.startDate)}
+                  </div>{" "}
+                  -
+                  <div title={formatDate(project.endDate)}>
+                    {formatDate(project.endDate)}
+                  </div>
                 </td>
                 <td>
                   <select
-                    value={statuses[project.id]}
+                    value={statuses[project.id] || "Pending"}
                     onChange={(e) =>
                       handleStatusChange(project.id, e.target.value)
                     }
@@ -161,20 +141,31 @@ const ListView = ({
                     )}
                   </select>
                 </td>
-                <td>{formatCurrency(project.contractPrice)}</td>
-                <td>{formatCurrency(project.downpayment)}</td>
-                <td>{formatCurrency(totalTasks[project.id])}</td>
+                <td title={formatCurrency(project.contractPrice)}>
+                  {formatCurrency(project.contractPrice)}
+                </td>
+                <td title={formatCurrency(project.downpayment)}>
+                  {formatCurrency(project.downpayment)}
+                </td>
+                <td title={formatCurrency(totalTasks[project.id])}>
+                  {formatCurrency(totalTasks[project.id])}
+                </td>
+
                 <td>
                   <select
-                    value={paymentstatuses[project.id]}
+                    value={paymentstatuses[project.id] || "Not Paid"}
                     onChange={(e) =>
                       handlePaymentStatusChange(project.id, e.target.value)
                     }
-                    className={`payment-status-dropdown`}
+                    className={`payment-status-dropdown ${
+                      paymentstatuses[project.id] === "Paid"
+                        ? "paid-status"
+                        : ""
+                    }`}
                     style={{
                       backgroundColor:
                         paymentstatusColors[paymentstatuses[project.id]] ||
-                        "gray",
+                        "blue",
                     }}
                     disabled={paymentstatuses[project.id] === "Paid"}
                   >
@@ -188,65 +179,27 @@ const ListView = ({
                     {paymentstatuses[project.id] === "Partial Payment" && (
                       <>
                         <option value="Partial Payment">Partial Payment</option>
-                        <option value="Paid">Paid</option>
+                        <option value="Paid">Settled</option>
                       </>
                     )}
                     {paymentstatuses[project.id] === "Paid" && (
-                      <option value="Paid">Paid</option>
+                      <option value="Paid">Settled</option>
                     )}
                   </select>
                 </td>
 
-                <td>{startDate ? formatDate(startDate) : "--"}</td>
-                <td>{finishDate ? formatDate(finishDate) : "--"}</td>
-                <div className="action-project">
-                  <button
-                    className="action-menu-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleDropdown(project.id);
-                    }}
-                  >
-                    &#x22EE;
-                  </button>
-                  {activeDropdown === project.id && (
-                    <div className="dropdown-menu">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(project.id);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(project.id);
-                        }}
-                      >
-                        Trash
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <td title={startDate ? formatDate(startDate) : "--"}>
+                  {startDate ? formatDate(startDate) : "--"}
+                </td>
+
+                <td title={finishDate ? formatDate(finishDate) : "--"}>
+                  {finishDate ? formatDate(finishDate) : "--"}
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      {/* Pagination controls */}
-      <div className="pagination-controls">
-        <button onClick={prevPage} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button onClick={nextPage} disabled={currentPage === totalPages}>
-          Next
-        </button>
-      </div>
     </div>
   );
 };
