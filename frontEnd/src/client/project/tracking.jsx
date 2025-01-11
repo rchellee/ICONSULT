@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import axios from "axios";
@@ -68,7 +68,6 @@ function Tracking() {
             className="home-icon-container"
             onClick={() => navigate("/clientproject")}
           >
-            <FaHome className="home-icon" />
             <span className="tooltip">All Project</span>
           </div>
 

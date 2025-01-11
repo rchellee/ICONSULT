@@ -1,12 +1,12 @@
 /* Topbar styles */
 .topbar {
     background-color: #d1bfbf;
-    height: 100px; /* Increased height */
+    height: 300px !important; /* Increased height */
   }
   
   .MuiAppBar-root {
     background-color: #ffffff !important; /* Ensure the background color is applied */
-    height: 70px !important; /* Override the default height */
+    height: 100px !important; /* Override the default height */
     border-bottom: 1px solid #d1d1d1 !important; /* Add a 10px solid border with a light gray color */
     box-shadow: none !important; /* Remove any shadow effect */
   }
@@ -24,10 +24,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100px;
+    margin-left: 10px;
   }
   
   .logo-topbar-img {
-    height: 50px; /* Adjust logo size */
+    height: 100px; /* Adjust logo size */
     width: auto;
   }
   
@@ -65,7 +67,7 @@
     height: 60px !important; /* Set height */
     padding: 20px; /* Adjust padding for larger space inside */
     font-size: 20px; /* Increase font size */
-    border: 3px solid #6eb9fb !important; /* Set initial border color */
+    border: 3px solid #1e88e5 !important; /* Set initial border color */
     border-radius: 25px !important; /* Apply rounded corners */
     outline: none;
     box-sizing: border-box;

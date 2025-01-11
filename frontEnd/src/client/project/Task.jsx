@@ -1,5 +1,6 @@
 import React from "react";
 
+
 const Task = ({ tasks, isLoading, error }) => {
   const formatCurrency = (value) => {
     return Number(value).toLocaleString("en-US", {

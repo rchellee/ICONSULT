@@ -69,8 +69,7 @@ const Topbar = () => {
 >
   <Toolbar sx={{ minHeight: "60px" }}>
 
-    {/* Home Icon */}
-    <AiFillHome className="home-topbar-icon" />
+   
 
     {/* Logo */}
     <Typography variant="h7" sx={{ flexGrow: 1 }}>
