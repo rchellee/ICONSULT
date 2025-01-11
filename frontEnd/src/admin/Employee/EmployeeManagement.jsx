@@ -9,7 +9,6 @@ const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [toastVisible, setToastVisible] = useState(false); // State for toast visibility
 
   // Fetch employees from the database when the component mounts
@@ -82,13 +81,6 @@ const EmployeeManagement = () => {
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
-  // Filter employees based on search term
-  const filteredEmployees = employees.filter((employee) =>
-    `${employee.firstName} ${employee.lastName}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
   const handleEmployeeAdded = () => {
     setToastVisible(true);
     setTimeout(() => setToastVisible(false), 3000); // Auto-hide after 3 seconds
@@ -120,15 +112,8 @@ const EmployeeManagement = () => {
               >
                 Add Employee
               </button>
-              <input
-                type="text"
-                placeholder="Search employee"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-bar"
-              />
-              {filteredEmployees.length === 0 ? (
-                <p>No matching employees found.</p>
+              {employees.length === 0 ? (
+                <p>No employees found.</p>
               ) : (
                 <table>
                   <thead>
@@ -139,7 +124,7 @@ const EmployeeManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredEmployees.map((employee, index) => (
+                    {employees.map((employee, index) => (
                       <tr key={index}>
                         <td onClick={() => viewEmployeeDetails(employee)}>
                           <div

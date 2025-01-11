@@ -25,14 +25,32 @@ span:hover {
   padding: 20px;
   transition: margin-left 0.4s ease;
 }
+/* List styling */
+.MuiList-root {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.MuiListItem-root {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.MuiListItem-root:last-child {
+  border-bottom: none;
+}
+
 
 /********** Availability ************/
 
 .wrapper-admin {
-  width: 800px;
   background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  width: 70%;
+  width: 600px;
 }
 .wrapper header {
   display: flex;
@@ -89,7 +107,7 @@ button:disabled {
   cursor: not-allowed;
 }
 .appointment-form-content p {
-  font-size: 20px;
+  font-size: 28px;
   color: #444;
   font-weight: 600;
   text-align: center;
@@ -112,22 +130,23 @@ button:disabled {
 .appointment-form-content p::after {
   border-top-right-radius: 5px;
 }
+
+
 /***********Step 2: Form Fields **************/
 /* Overall form container styling */
 .step2form {
-  width: 50%;
-  margin: 10px auto;
-  padding: 50px;
+  width:45%;
+  margin: 5px auto;
+  padding: 45px;
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   height: fit-content;
   transition: transform 0.3s ease;
 }
 
 /* Form header */
 .step2form h2 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   color: #2c3e50;
   text-align: center;
@@ -141,7 +160,6 @@ button:disabled {
   display: block;
   font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
   color: #333;
 }
 
@@ -151,7 +169,6 @@ button:disabled {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid #ccc;
-  border-radius: 6px;
   font-size: 14px;
   color: #555;
   background-color: #f9f9f9;
@@ -180,7 +197,6 @@ button:disabled {
   color: white;
   font-weight: 600;
   font-size: 16px;
-  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
   width: 15%; /* Button width adjustment */
@@ -192,8 +208,8 @@ button:disabled {
 }
 
 /* Description text styling */
-.form-description {
-  font-size: 18px;
+.step2-form-description p {
+  font-size: 30px;
   color: #555;
   font-weight: 500;
   line-height: 1.8;
@@ -202,8 +218,8 @@ button:disabled {
 }
 
 /* Decorative lines before and after description */
-.form-description::before,
-.form-description::after {
+.step2-form-description::before,
+.step2-form-description::after {
   content: "";
   position: absolute;
   bottom: 0;
@@ -213,13 +229,16 @@ button:disabled {
   transition: width 0.3s ease;
 }
 
-.form-description::before {
+.step2-form-description::before {
   left: 0;
 }
 
-.form-description::after {
+.step2-form-description::after {
   right: 0;
 }
+.admin-app-form-group{
+  margin-bottom:20px;
+  }
 
 /* Responsive design for mobile */
 @media (max-width: 768px) {
@@ -254,16 +273,14 @@ button:disabled {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Full viewport height */
   background-color: #f4f7fc; /* Light background for contrast */
-  padding: 10px;
+  padding: 5px;
 }
 
 .confirmation-form {
   background-color: #ffffff;
-  padding: 30px;
-  border-radius: 4px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  padding: 50px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Subtle shadow */
   width: 100%;
   max-width: 800px; /* Limit width for large screens */
   transition: transform 0.3s ease; /* Smooth transition effect */
@@ -291,7 +308,7 @@ button:disabled {
 
 .icon-line i {
   color: #007bff;
-  font-size: 10px;
+  font-size: 16px;
   transition: color 0.3s ease;
 }
 
@@ -300,7 +317,7 @@ button:disabled {
 }
 
 .confirmation-form p {
-  font-size: 16px;
+  font-size: 18px;
   color: #4f5d73; /* Softer text color */
 }
 
@@ -313,7 +330,7 @@ button:disabled {
   width: 100%;
   height: 2px;
   background-color: #e0e4e9;
-  margin: 20px 0;
+  margin: 15px 0;
 }
 
 .confirmation-buttons {
@@ -375,8 +392,8 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30px;
-  background: #007bff;
+  font-size: 20px;
+  background: #052a51;
   border: none;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -434,12 +451,6 @@ button:disabled {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.calendar-date.available {
-  background-color: #28a745;
-  color: white;
-  border: 1px solid #218838;
-}
-
 .calendar-date.unavailable {
   background-color: #e0e0e0;
   color: #6c757d;
@@ -447,7 +458,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.calendar-date.selected {
+.available.selected {
   background-color: #007bff;
   color: white;
   border: 2px solid #0056b3;
@@ -489,16 +500,9 @@ button:disabled {
 padding: 10px 15px;
 margin: 0px;
 background-color: white;
-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.admin-wrapper {
-  width: 700px;
-  padding: 30px;
-  border-radius: 5px;
-  background: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
 
 header .icons {
   display: flex;
@@ -543,7 +547,7 @@ header .current-date {
   font-weight: 500;
 }
 
-.available {
+.calendar.available {
   color: rgb(10, 61, 149);
 }
 
@@ -564,7 +568,7 @@ color: white;
 }
 
 .content-availability{  
-    margin-left: 130px;
+  margin-left: 100px;
   flex: 1;
   justify-content: center;
 }
@@ -586,4 +590,15 @@ color: white;
 
 .days li:hover .appointments-tooltip {
   display: block;
+}
+.date-cell.multiple-selected {
+  background-color: #2e7d32; /* Darker green for multiple selection */
+  color: white;
+}
+.admin-wrapper {
+  width: 700px;
+  padding: 30px;
+  border-radius: 5px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1)
 }

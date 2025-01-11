@@ -1,11 +1,29 @@
 import React, { useState } from 'react';
-import "./employee.css";
+import './employee.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
 
 const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit modes
   const [formData, setFormData] = useState({ ...employee }); // Initialize form data with employee details
+  const [isHistoryVisible, setHistoryVisible] = useState(false); // History visibility toggle
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility toggle
+  
+  // Example history data
+  const exampleHistory = [
+    { title: 'Project X Assigned', description: 'Assigned to Project X for development.' },
+    { title: 'Task Y Completed', description: 'Completed the documentation for Task Y.' },
+    { title: 'Team Meeting', description: 'Participated in a team meeting for Q1 planning.' },
+  ];
+
+  // Function to toggle the history visibility
+  const handleHistoryClick = () => {
+    setIsModalOpen(true);  // Open the modal when history is clicked
+  };
+
+  // Close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   // Handle input changes
   const handleChange = (e) => {
@@ -26,8 +44,8 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
     e.preventDefault();
     try {
       const response = await fetch(`http://localhost:8081/employee/${employee.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -36,10 +54,10 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
         updateEmployee(updatedEmployee); // Update employee data in parent component
         setIsEditing(false); // Exit edit mode
       } else {
-        console.error("Error updating employee:", await response.text());
+        console.error('Error updating employee:', await response.text());
       }
     } catch (error) {
-      console.error("An error occurred:", error);
+      console.error('An error occurred:', error);
     }
   };
 
@@ -137,7 +155,7 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
               </div>
             </div>
 
-            {/* Status Section and Role*/}
+            {/* Status Section and Role */}
             <div className="row">
               <h4>Status</h4>
               <select name="status" value={formData.status} onChange={handleChange}>
@@ -150,30 +168,48 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
                 <option value="role2">Role 2</option>
               </select>
             </div>
-
           </form>
         ) : (
-// Display Section (Read-only mode with icons and centered form)
-<div className="employee-readonly">
-    <p><i className="fas fa-user"></i> <strong>Last Name:</strong> {employee.lastName}</p>
-    <p><i className="fas fa-user"></i> <strong>First Name:</strong> {employee.firstName}</p>
-    <p><i className="fas fa-user"></i> <strong>Middle Name:</strong> {employee.middleInitial}</p>
-    <p><i className="fas fa-envelope"></i> <strong>Email:</strong> {employee.email_add}</p>
-    <p><i className="fas fa-map-marker-alt"></i> <strong>Address:</strong> {employee.address}</p>
-    <p><i className="fas fa-phone"></i> <strong>Contact Number:</strong> {employee.mobile_number}</p>
-    <p><i className="fas fa-birthday-cake"></i> <strong>Birthday:</strong> {employee.birthday}</p>
-    <p><i className="fas fa-user-tag"></i> <strong>Role:</strong> {employee.role}</p>
-    <p><i className="fas fa-user-check"></i> <strong>Status:</strong> {employee.status}</p>
-     <div className="button-group">
-        {!isEditing && <button className="btn-edit" onClick={toggleEdit}>Edit</button>}
-        <button className="btn-back" onClick={goBack}>Back</button>
-      </div>
-</div>
-
+          // Display Section (Read-only mode with icons and centered form)
+          <div className="employee-readonly">
+            <p><i className="fas fa-user"></i> <strong>Last Name:</strong> {employee.lastName}</p>
+            <p><i className="fas fa-user"></i> <strong>First Name:</strong> {employee.firstName}</p>
+            <p><i className="fas fa-user"></i> <strong>Middle Name:</strong> {employee.middleInitial}</p>
+            <p><i className="fas fa-envelope"></i> <strong>Email:</strong> {employee.email_add}</p>
+            <p><i className="fas fa-map-marker-alt"></i> <strong>Address:</strong> {employee.address}</p>
+            <p><i className="fas fa-phone"></i> <strong>Contact Number:</strong> {employee.mobile_number}</p>
+            <p><i className="fas fa-birthday-cake"></i> <strong>Birthday:</strong> {employee.birthday}</p>
+            <p><i className="fas fa-user-tag"></i> <strong>Role:</strong> {employee.role}</p>
+            <p><i className="fas fa-user-check"></i> <strong>Status:</strong> {employee.status}</p>
+            <div className="button-group">
+              {!isEditing && <button className="btn-edit" onClick={toggleEdit}>Edit</button>}
+              <button className="button-history" onClick={handleHistoryClick}><i className="fas fa-history"></i></button>
+              <button className="btn-back" onClick={goBack}>Back</button>
+            </div>
+          </div>
         )}
       </div>
 
-
+      {/* Modal for history */}
+      {isModalOpen && (
+        <div className="history-modal">
+          <div className="history-modal-content">
+            <span className="close-btn" onClick={closeModal}>&times;</span>
+            <h4>History</h4>
+            {exampleHistory.length > 0 ? (
+              <ul>
+                {exampleHistory.map((task, index) => (
+                  <li key={index}>
+                    <strong>{task.title}</strong>: {task.description}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No history available for this employee.</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -117,6 +117,7 @@ function AdminAppointment() {
       setAvailableTimes(times.map((time) => ({ time, isBooked: false }))); // Default to all available
     }
   };
+  
 
   const handleTimePeriodChange = (e) => {
     setTimePeriod(e.target.value);
@@ -202,6 +203,12 @@ function AdminAppointment() {
       console.error("Error submitting appointment:", error);
       alert("An error occurred. Please try again.");
     }
+    const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', {
+      weekday: 'long',  // "Monday"
+      year: 'numeric',  // "2025"
+      month: 'long',    // "January"
+      day: 'numeric'    // "11"
+    });
   };
 
   return (
@@ -213,7 +220,7 @@ function AdminAppointment() {
         <div className="appointment-form-content">
           {currentStep === 1 && (
             <div>
-              <p>Please select a date and time for the appointment.</p>
+              <p>Select a date and time for the appointment.</p>
               <div className="admin-calendar-time-container">
                 
                 <Calendar
@@ -222,7 +229,7 @@ function AdminAppointment() {
                 />
                 {selectedDate && (
                   <div className="time-slots-admin">
-                    <h4>Available Times for {selectedDate}</h4>
+                    <h4>Available Options for Scheduling on{selectedDate}</h4>
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod">Choose Time Format:</label>
                       <select
@@ -278,10 +285,9 @@ function AdminAppointment() {
           )}
           {currentStep === 2 && (
             <div className="step2form">
-              <p className="form-description">
-  Choose a client and the type of consultation for this appointment.
-</p>                
-                    <div className="form-group">
+              <p className="step2-form-description">
+              Select client and consultation type</p>                
+                    <div className="admin-app-form-group">
                 <label htmlFor="client">Select Client:</label>
                 <select
                   id="client"
@@ -312,7 +318,7 @@ function AdminAppointment() {
                   ))}
                 </select>
               </div>
-              <div className="form-group">
+              <div className="admin-app-form-group">
                 <label htmlFor="consultationType">Consultation Type:</label>
                 <select
                   id="consultationType"
@@ -391,7 +397,7 @@ function AdminAppointment() {
               </div>
 
               {formData.consultationType === "Others" && (
-                <div className="form-group">
+                <div className="admin-app-form-groupp">
                   <label htmlFor="otherDetails">Please specify:</label>
                   <textarea
                     id="otherDetails"
@@ -405,7 +411,7 @@ function AdminAppointment() {
                 </div>
               )}
 
-              <div className="form-group">
+              <div className="admin-app-form-group">
                 <label htmlFor="additionalInfo">Purpose:</label>
                 <textarea
                   id="additionalInfo"
@@ -415,7 +421,7 @@ function AdminAppointment() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="admin-app-form-group">
                 <label htmlFor="platform">
                   Preferred Communication Platform:
                 </label>
@@ -437,8 +443,8 @@ function AdminAppointment() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="reminder">Reminder Me:</label>
+              <div className="admin-app-form-group">
+                <label htmlFor="reminder">Remind me:</label>
                 <select
                   id="reminder"
                   name="reminder"

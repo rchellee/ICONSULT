@@ -9,6 +9,11 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
   const [appointments, setAppointments] = useState([]);
   const [projects, setProjects] = useState([]);
   const [files, setFiles] = useState([]);
+  
+  // Sorting state
+  const [appointmentSortOrder, setAppointmentSortOrder] = useState('asc');
+  const [projectSortOrder, setProjectSortOrder] = useState('asc');
+  const [fileSortOrder, setFileSortOrder] = useState('asc');
 
   // Example data
   const sampleAppointments = [
@@ -88,6 +93,46 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Sorting functions
+  const sortAppointments = (column) => {
+    const sortedAppointments = [...appointments].sort((a, b) => {
+      if (appointmentSortOrder === 'asc') {
+        return a[column] > b[column] ? 1 : -1;
+      } else {
+        return a[column] < b[column] ? 1 : -1;
+      }
+    });
+
+    setAppointments(sortedAppointments);
+    setAppointmentSortOrder(appointmentSortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const sortProjects = (column) => {
+    const sortedProjects = [...projects].sort((a, b) => {
+      if (projectSortOrder === 'asc') {
+        return a[column] > b[column] ? 1 : -1;
+      } else {
+        return a[column] < b[column] ? 1 : -1;
+      }
+    });
+
+    setProjects(sortedProjects);
+    setProjectSortOrder(projectSortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  const sortFiles = (column) => {
+    const sortedFiles = [...files].sort((a, b) => {
+      if (fileSortOrder === 'asc') {
+        return a[column] > b[column] ? 1 : -1;
+      } else {
+        return a[column] < b[column] ? 1 : -1;
+      }
+    });
+
+    setFiles(sortedFiles);
+    setFileSortOrder(fileSortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   return (
@@ -232,10 +277,10 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
               <table>
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Details</th>
-                    <th>Status</th>
-                    <th>Type</th>
+                    <th onClick={() => sortAppointments("date")}>Date</th>
+                    <th onClick={() => sortAppointments("details")}>Details</th>
+                    <th onClick={() => sortAppointments("status")}>Status</th>
+                    <th onClick={() => sortAppointments("type")}>Type</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -261,10 +306,10 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
               <table>
                 <thead>
                   <tr>
-                    <th>Project Name</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Status</th>
+                    <th onClick={() => sortProjects("projectName")}>Project Name</th>
+                    <th onClick={() => sortProjects("startDate")}>Start Date</th>
+                    <th onClick={() => sortProjects("endDate")}>End Date</th>
+                    <th onClick={() => sortProjects("status")}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -290,10 +335,10 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
               <table>
                 <thead>
                   <tr>
-                    <th>Document Name</th>
-                    <th>Uploaded Date</th>
-                    <th>Type</th>
-                    <th>Action</th>
+                    <th onClick={() => sortFiles("documentName")}>Document Name</th>
+                    <th onClick={() => sortFiles("uploadedDate")}>Uploaded Date</th>
+                    <th onClick={() => sortFiles("type")}>Type</th>
+                    <th onClick={() => sortFiles("action")}>Action</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -14,13 +14,13 @@
 }
 /************************** Client Management **************/
 /* Search Bar */
-.search-bar {
+/* .search-bar {
   width: 300px;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
-}
+} */
 /* Scroll */
 .scrollable-table-container {
     max-height: 600px;
@@ -66,6 +66,86 @@ table tr:hover {
 table td {
   color: #555; 
 }
+th {
+  cursor: pointer;
+  position: relative;
+  padding: 10px;
+  text-align: left;
+  font-weight: bold;
+}
+
+th.ascending::after {
+  content: "▲";
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+th.descending::after {
+  content: "▼";
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.initials-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+
+.scrollable-table-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+button {
+  padding: 10px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.toast.active {
+  opacity: 1;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+}
+
+.toast .check {
+  margin-right: 10px;
+}
+
+.toast .message {
+  margin-right: 10px;
+}
+
+.toast .close {
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 10px;
+}
+
 .initials-circle {
   width: 35px;
   height: 35px;

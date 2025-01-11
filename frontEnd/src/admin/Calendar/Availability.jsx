@@ -17,6 +17,7 @@ import {
   InputLabel,
   IconButton,
 } from "@mui/material";
+import { SosOutlined } from "@mui/icons-material";
 
 const Availability = () => {
   const [selectedDates, setSelectedDates] = useState([]);
@@ -219,15 +220,13 @@ const Availability = () => {
             />
             <Box
               sx={{
-                width: 600,
+                width: 450,
                 padding: 2,
-                border: "1px solid #ccc",
-                borderRadius: 4,
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "white",
               }}
             >
               <strong>
-                <h6>Selected Dates & Time</h6>
+                <h4>Selected Dates & Time</h4>
               </strong>
 
               {selectedDates.length > 0 ? (
@@ -235,10 +234,8 @@ const Availability = () => {
                   sx={{
                     maxHeight: 100, // Set a fixed height for the scrollable list
                     overflowY: "auto", // Enable vertical scrolling
-                    backgroundColor: "#ffffff", // Optional: Background color for the scrollable area
-                    border: "1px solid #ccc", // Optional: Border for better visual separation
-                    borderRadius: 2,
-                    padding: 1,
+                    backgroundColor: "white", // Optional: Background color for the scrollable area
+                    border: "1px solid #ccc",
                   }}
                 >
                   {selectedDates.map((date, index) => (
@@ -306,15 +303,14 @@ const Availability = () => {
                 <Typography variant="h7">No dates selected.</Typography>
               )}
               <strong>
-                <h6>Availability:</h6>
+                <h4>Availability:</h4>
               </strong>
               <List
                 sx={{
                   maxHeight: 300,
                   overflowY: "auto",
-                  backgroundColor: "#ffffff",
+                  backgroundColor: "white",
                   border: "1px solid #ccc",
-                  borderRadius: 4,
                   padding: 1,
                 }}
               >
@@ -327,7 +323,6 @@ const Availability = () => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
-                        marginBottom: 2,
                       }}
                     >
                       <ListItemText
@@ -336,14 +331,12 @@ const Availability = () => {
                       />
                       <Box sx={{ display: "flex", gap: 2 }}>
                         <Button
-                          variant="outlined"
                           color="primary"
                           onClick={() => handleEdit(date, start_time, end_time)}
                         >
                           Edit
                         </Button>
                         <Button
-                          variant="outlined"
                           color="error"
                           onClick={() => handleDelete(date)}
                         >
@@ -359,7 +352,7 @@ const Availability = () => {
                 color="secondary"
                 onClick={handleClearSelection}
                 disabled={selectedDates.length === 0}
-                style={{ marginTop: "10px" }}
+                style={{ marginTop: "1px" , gap: 2 }}
               >
                 Clear
               </Button>
@@ -368,7 +361,7 @@ const Availability = () => {
                 color="primary"
                 onClick={handleSubmit}
                 disabled={selectedDates.length === 0}
-                style={{ marginTop: "10px" }}
+                style={{ marginTop: "1px" ,gap: 2  }}
               >
                 Save
               </Button>
