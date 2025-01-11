@@ -98,16 +98,8 @@ const ListView = ({
                 {startDate ? formatDate(startDate) : "--"}
                 </td>
                 <td>
-                  <DatePicker
-                    selected={finishDate}
-                    onChange={(date) => handleFinishDateChange(project.id, date)}
-                    className="date-picker-input"
-                    placeholderText="--"
-                    dateFormat="MMMM d, yyyy"
-                    showPopperArrow={false}
-                    minDate={startDate} // Disable dates before actual start date
-                    style={{ visibility: "hidden" }} // Make the input box invisible
-                  />
+                {startDate ? formatDate(startDate) : "--"}
+                  
                 </td>
               </tr>
             );

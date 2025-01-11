@@ -84,11 +84,14 @@
 
 /* Task Table Container */
 .table-container {
-  max-height: 400px; 
+  max-height: 450px; 
   overflow-y: scroll; 
   -webkit-overflow-scrolling: touch; 
   padding-right: 10px; 
-  margin-top: 20px;
+  margin-top: 50px;
+  margin-right: 200px;
+  border-radius: 10px;
+
 }
 
 /* Inner Container to Separate Table from Scrollbar */
@@ -102,7 +105,7 @@
 }
 
 .table-container::-webkit-scrollbar-track {
-  background: #b4bad5; /* Background of the scrollbar track */
+  background: transparent; /* Background of the scrollbar track */
   border-radius: 10px;
 }
 
@@ -122,7 +125,9 @@
   border-left: 2px solid #dadada;
   border-right: 2px solid #dadada;
   border-radius: 10px;
-  background-color: #f0f8ff;
+  background-color: #fbfbfb;
+  border: none;
+  
   
 }
 
@@ -130,15 +135,12 @@
 .task-table thead th {
   position: sticky;
   top: 0; 
-  background-color: #f0f8ff;
+  background-color: #eeecec;
   color: #333;
   padding: 10px;
   text-align: left;
   z-index: 2; 
-  border-top: 2px solid #dadada;
-  border-bottom: 2px solid #dadada;
-  border-left: none;
-  border-right: none;
+  border: none; 
 }
 
 /* Table Cell Styles */
@@ -146,10 +148,8 @@
 .task-table td {
   padding: 10px;
   text-align: left;
-  border-top: 2px solid #dadada;
   border-bottom: transparent;
-  border-left: none;
-  border-right: none;
+  border: none; 
 }
 
 .task-table td {
@@ -160,7 +160,7 @@
 
 /* Change Color on Hover */
 .task-table tbody tr:hover td {
-  background-color: #e9e9e9;
+  background-color: #ffffff;
 }
 
 .no-task-container {
@@ -285,3 +285,60 @@
 .post-click-popup button:hover {
   background-color: #ddd;
 }
+
+
+/*css for total amount of task*/
+.total-amount-container {
+  display: flex;
+  justify-content: flex-end; /* Align to the right */
+  align-items: center; /* Vertically align items */
+  margin-bottom: -40px; /* Add space between this and the table */
+  margin-right: 225px;
+  margin-top: 20px;
+  gap: 10px
+  
+}
+
+.total-amount-container h3 {
+  font-size: 18px; 
+  font-weight: bold; 
+  color: #333; 
+  margin: 0; 
+  font-weight: normal; 
+  gap: 10px
+}
+
+.total-amount-text { 
+  font-weight: bold; 
+}
+
+.total-amount-number {
+  font-size: 30px; 
+  font-weight: bold; 
+  color: #547099;  
+  margin-left: 10px;
+}
+
+
+/* status css*/
+.status-dropdown {
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: none;
+}
+
+.status-dropdown.pending {
+  background-color: rgb(252, 118, 118);
+  color: white;
+}
+
+.status-dropdown.ongoing {
+  background-color: pink;
+  color: black;
+}
+
+.status-dropdown.completed {
+  background-color: #3b4f67;
+  color: white;
+}
+

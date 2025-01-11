@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; 
 import { IoAddCircle } from "react-icons/io5"; 
 import { BsThreeDotsVertical } from "react-icons/bs"; 
+import { BiSortAlt2 } from "react-icons/bi";
 import TaskForm from "./TaskForm";
 import MiscellaneousForm from "./MiscellaneousForm ";
 
@@ -130,9 +131,27 @@ const PostsTab = ({
     
   };
 
+  // Calculate the total amount of all tasks
+  const calculateTotalAmount = () => {
+    return tasks.reduce((total, task) => {
+      const taskAmount = parseFloat(task.amount) || 0;
+      return total + taskAmount;
+    }, 0);
+  };
+
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
+   
+      <div className="total-amount-container">
+          <h3>
+            {/*<span className="total-amount-text">Total Task:</span>*/}
+            <span className="total-amount-number">
+              {formatCurrency(calculateTotalAmount())}</span>
+          </h3>
+        </div>
+      
+        
         {selectedTaskDetails ? (
           <div className="task-details">
             <div className="task-detail-row">
@@ -205,6 +224,7 @@ const PostsTab = ({
                   <th>Assigned</th>
                   <th>Status</th>
                   <th>Due Date</th>
+                  <th>Actual Finish</th>
                   <th>Fee</th>
                   <th>Miscellaneous</th>
                   <th className="align-right">Amount</th>
@@ -229,16 +249,22 @@ const PostsTab = ({
                       <td>{task.task_name}</td>
                       <td>{task.employee}</td>
                       <td>
-                      <select
-                        value={task.status || "Pending"} // Default status is "Pending"
-                        onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                    >
-                      
-                        <option value="Ongoing">Ongoing</option>
-                        <option value="Completed">Completed</option>
-                      </select>
-                      </td>
+  <select
+    className={`status-dropdown ${task.status.toLowerCase()}`} // Add a class based on the task's status
+    value={task.status || "Pending"} // Default status is "Pending"
+    onChange={(e) => handleStatusChange(task.id, e.target.value)}
+  >
+    <option value="Pending" disabled={task.status === "Ongoing" || task.status === "Completed"}>
+      Pending
+    </option>
+    <option value="Ongoing" disabled={task.status === "Completed"}>
+      Ongoing
+    </option>
+    <option value="Completed">Completed</option>
+  </select>
+</td>
                       <td>{formatDate(task.due_date)}</td> {/* Updated Due Date formatting */}
+                      <td>--</td>
                       <td>{formatCurrency(task.task_fee)}</td>
                       <td>
                         {totalMiscellaneousFee === 0

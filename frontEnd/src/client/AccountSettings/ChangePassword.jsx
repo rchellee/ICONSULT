@@ -160,6 +160,7 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                   className="change-password-input"
                 />
               </Box>
               <Box>
@@ -184,29 +185,32 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
             </button>
           ) : (
             <>
-              <Box className="verification-code-container">
-  <label htmlFor="verification-code">Enter Verification Code:</label>
-  <input
-    type="text"
-    id="verification-code"
-    value={enteredCode}
-    onChange={(e) => setEnteredCode(e.target.value)}
-  />
-</Box>
-<Button className="verify-btn" variant="contained" color="primary" onClick={verifyCodeAndProceed}>
-  Verify Code
-</Button>
-<Button
-  className="cancel-btn"
-  variant="outlined"
-  onClick={() => {
-    setCodeSent(false); 
-    setEnteredCode(""); 
-    setMessage(""); 
-  }}
->
-  Cancel
-</Button>
+              <Box className="change-password-verification-code-container">
+                <label htmlFor="verification-code" classname="change-password-verification-code-label">
+                  Enter Verification Code:</label>
+                <input
+                  type="text"
+                  id="verification-code"
+                  value={enteredCode}
+                  onChange={(e) => setEnteredCode(e.target.value)}
+                  className="change-password-verification-code-input"
+                  
+                />
+              </Box>
+              <Button className="verify-btn" variant="contained" color="primary" onClick={verifyCodeAndProceed}>
+                Verify Code
+              </Button>
+              <Button
+                className="cancel-btn"
+                variant="outlined"
+                onClick={() => {
+                setCodeSent(false); 
+                setEnteredCode(""); 
+                setMessage(""); 
+              }}
+              >
+                Cancel
+              </Button>
             </>
           )}
 
