@@ -51,13 +51,16 @@ const Notification = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
       year: "numeric",
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC", // Ensures consistent timezone display
     });
+    return formatter.format(date);
   };
 
   const startOfToday = new Date();

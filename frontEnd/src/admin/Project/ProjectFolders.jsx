@@ -6,9 +6,8 @@ const ProjectFolders = ({ projects, onProjectClick, fontSize = "14px" }) => {
 
   return (
     <div className="project-names-section">
-      
       <div className="folders-scroll-container">
-      <h3 className="folder-title">Folders</h3>
+        <h3 className="folder-title">Folders</h3>
         {projects.map((project) => (
           <div
             key={project.id}
@@ -28,7 +27,7 @@ const ProjectFolders = ({ projects, onProjectClick, fontSize = "14px" }) => {
               }}
               style={{
                 cursor: "pointer",
-                fontSize: "16px"  // Applying the custom font size
+                fontSize: "16px", // Applying the custom font size
               }}
             >
               {project.projectName}

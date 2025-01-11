@@ -18,6 +18,7 @@ const Topbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState("");
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const adminId = localStorage.getItem("adminId");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,12 +81,12 @@ const Topbar = () => {
             className="search-box-topbar"
             placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} 
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <Typography variant="body1"  color="#143d58">
-          {adminUsername}
+        <Typography variant="body1" color="#143d58">
+          {userName}
         </Typography>
         <IconButton onClick={handleMenuOpen} color="#0056b3">
           <Avatar alt={userName} src="/path/to/your/profile-pic.jpg" />

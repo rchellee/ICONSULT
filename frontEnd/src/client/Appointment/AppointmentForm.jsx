@@ -224,6 +224,7 @@ function AppointmentForm() {
       email: selectedClient.email_add,
       contact: selectedClient.mobile_number,
       companyName: selectedClient.companyName,
+      postedBy: "client",
     };
 
     try {
@@ -268,7 +269,7 @@ function AppointmentForm() {
         <div className="content-calendar">
           {currentStep === 1 && (
             <div>
-              <h3>Step 1: Date and Time</h3>
+              <h3>Select date and time for consulation</h3>
               <div className="calendar-time-container">
                 <DynamicCalendar
                   availableDates={availableDates}
@@ -276,10 +277,10 @@ function AppointmentForm() {
                 />
                 {selectedDate && (
                   <div className="time-slots">
-                    <h4>Available Times for {selectedDate}</h4>
+                    <h4>Available time for {selectedDate}</h4>
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod" className="required-label">
-                        Choose Time Format *
+                        AM/PM *
                       </label>
                       <select
                         id="timePeriod"

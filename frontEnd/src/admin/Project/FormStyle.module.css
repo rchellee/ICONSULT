@@ -28,7 +28,6 @@
   flex-direction: column;
 }
 
-
 .taskInputGroup {
   display: flex;
   justify-content: space-between;
@@ -59,7 +58,6 @@
   color: #ccc; /* Set the color for the "Choose an Employee" text */
 }
 
-
 .taskInput label,
 .taskFee label,
 .employee label,
@@ -72,10 +70,6 @@
   font-weight: normal; /* Removes bold styling */
 }
 
-
-
-
-
 /* Resize Assign Employee input field */
 .employee {
   width: 45%; /* Adjusted width, you can change this to your desired value */
@@ -84,7 +78,6 @@
 
 /* If you want the input field to be full width (100%) in some cases */
 .employee input {
-  
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -107,8 +100,6 @@
   font-size: 14px;
   box-sizing: border-box;
 }
-
-
 
 .taskFee {
   width: 50%;
@@ -144,7 +135,8 @@
 }
 
 /* Miscellaneous Name and Miscellaneous Fee with 50/50 width */
-.miscellaneous, .miscellaneousFee {
+.miscellaneous,
+.miscellaneousFee {
   width: 50%; /* Adjusted width for 50/50 split */
   margin-right: 20px; /* Optional space between fields */
 }
@@ -155,12 +147,14 @@
 }
 
 /* Optional: Adjusting label and input styling for Miscellaneous section */
-.miscellaneous label, .miscellaneousFee label {
+.miscellaneous label,
+.miscellaneousFee label {
   margin-bottom: 5px;
   font-size: 14px;
 }
 
-.miscellaneous input, .miscellaneousFee input {
+.miscellaneous input,
+.miscellaneousFee input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -168,8 +162,6 @@
   font-size: 14px;
   box-sizing: border-box;
 }
-
-
 
 /* Button Styles */
 .taskForm button {
@@ -249,9 +241,6 @@
   cursor: pointer;
 }
 
-
-
-
 /* Container for the miscellaneous items list */
 .miscellaneousList {
   margin-top: 20px;
@@ -268,7 +257,7 @@
 }
 
 .miscellaneousItem {
-  background-color: #eaf0f8; 
+  background-color: #eaf0f8;
   padding: 8px;
   margin: 5px 0;
   border-radius: 5px;
@@ -276,7 +265,7 @@
   justify-content: space-between;
   font-size: 1rem;
   color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Hover effect for each item */
@@ -284,7 +273,6 @@
   background-color: #f1f0f0;
   cursor: pointer;
 }
-
 
 .removeIcon {
   cursor: pointer;
@@ -299,34 +287,33 @@
 
 /* Container for the miscellaneous items list, making it scrollable */
 
-
 .scrollableMiscellaneousList {
   max-height: 200px;
-  overflow-y: auto; 
-  margin-top: 10px; 
-  padding-right: 10px; 
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-right: 10px;
 }
 
 /* Style for the scrollbar track */
 .scrollableMiscellaneousList::-webkit-scrollbar {
-  width: 11px; 
+  width: 11px;
 }
 
 /* Style for the scrollbar itself */
 .scrollableMiscellaneousList::-webkit-scrollbar-thumb {
-  background-color: #97c1f7; 
-  border-radius: 10px; 
-  border: 2px solid #fff; 
+  background-color: #97c1f7;
+  border-radius: 10px;
+  border: 2px solid #fff;
 }
 
 /* Style for the scrollbar when hovered */
 .scrollableMiscellaneousList::-webkit-scrollbar-thumb:hover {
-  background-color: #aecffa; 
+  background-color: #aecffa;
 }
 
 /* Optional: Style for the scrollbar track (the empty area) */
 .scrollableMiscellaneousList::-webkit-scrollbar-track {
-  background-color: #f8f8f8; 
+  background-color: #f8f8f8;
   border-radius: 10px;
 }
 
@@ -343,4 +330,3 @@
 .totalAmount span {
   font-weight: bold; /* Optional: Make the value bold for emphasis */
 }
-

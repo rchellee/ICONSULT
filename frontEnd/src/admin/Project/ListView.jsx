@@ -55,12 +55,8 @@ const ListView = ({
         </thead>
         <tbody>
           {filteredProjects.map((project) => {
-            const startDate = startDates[project.id]
-              ? new Date(startDates[project.id])
-              : null;
-            const finishDate = finishDates[project.id]
-              ? new Date(finishDates[project.id])
-              : null;
+            const startDate = startDates[project.id] ? new Date(startDates[project.id]) : null;
+            const finishDate = finishDates[project.id] ? new Date(finishDates[project.id]) : null;
 
             return (
               <tr

@@ -97,13 +97,12 @@ const ProjectList = ({
     console.log("Project clicked:", projectId);
     // Add your logic here, such as navigating to a project details page or displaying a modal
   };
-  
 
   return (
     <div className="project-list-wrapper">
       <div className="layout-toggle-icons">
         <LuLayoutGrid onClick={() => toggleLayout("list")} /> {/* grid */}
-        <FaList  onClick={() => toggleLayout("grid")} /> {/* list Icon */}
+        <FaList onClick={() => toggleLayout("grid")} /> {/* list Icon */}
       </div>
 
       <div className="project-list">
@@ -132,8 +131,7 @@ const ProjectList = ({
             handleStartDateChange={handleStartDateChange}
             handleFinishDateChange={handleFinishDateChange}
             handleRightClick={handleRightClick}
-            onProjectClick={handleProjectClick} 
-            
+            onProjectClick={handleProjectClick}
           />
         )}
 
@@ -144,8 +142,12 @@ const ProjectList = ({
               <div className="modal-header">
                 <MdCancel className="cancel-icon" onClick={closeModal} />
               </div>
-              <button onClick={() => handleContextMenuAction("edit")}>Edit</button>
-              <button onClick={() => handleContextMenuAction("delete")}>Delete</button>
+              <button onClick={() => handleContextMenuAction("edit")}>
+                Edit
+              </button>
+              <button onClick={() => handleContextMenuAction("delete")}>
+                Delete
+              </button>
             </div>
           </div>
         )}

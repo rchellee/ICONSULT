@@ -2,8 +2,8 @@
 .top-button {
   display: flex;
   align-items: center;
-  gap: 10px; 
-  margin-bottom: 20px; 
+  gap: 10px;
+  margin-bottom: 20px;
   font-size: 18px;
   position: absolute;
   top: 12px;
@@ -25,7 +25,7 @@
 }
 
 .top-button svg {
-  font-size: 25px; 
+  font-size: 25px;
 }
 
 .nav-button {
@@ -33,7 +33,7 @@
 }
 
 .nav-button:hover {
-  transform: scale(1.2); 
+  transform: scale(1.2);
 }
 
 .posts-tab-content {
@@ -59,35 +59,34 @@
 
 .create-task-button {
   padding: 10px 20px;
-  background-color:  #547099;
+  background-color: #547099;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3rem; 
-  height: 3rem; 
+  width: 3rem;
+  height: 3rem;
   color: white;
-  font-size: 2rem; 
+  font-size: 2rem;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  position: absolute; 
-  right: -60px; 
+  position: absolute;
+  right: -60px;
   top: -10px;
-  transition: transform 0.3s ease, background-color 0.3s ease; 
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .create-task-button:hover {
   transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84; 
+  background-color: #3a5b84;
 }
-
 
 /* Task Table Container */
 .table-container {
-  max-height: 400px; 
-  overflow-y: scroll; 
-  -webkit-overflow-scrolling: touch; 
-  padding-right: 10px; 
+  max-height: 400px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 10px;
   margin-top: 20px;
 }
 
@@ -123,18 +122,17 @@
   border-right: 2px solid #dadada;
   border-radius: 10px;
   background-color: #f0f8ff;
-  
 }
 
 /* Sticky header styles */
 .task-table thead th {
   position: sticky;
-  top: 0; 
+  top: 0;
   background-color: #f0f8ff;
   color: #333;
   padding: 10px;
   text-align: left;
-  z-index: 2; 
+  z-index: 2;
   border-top: 2px solid #dadada;
   border-bottom: 2px solid #dadada;
   border-left: none;
@@ -169,36 +167,31 @@
 }
 
 .create-button-container {
-  position: relative; 
-  margin-top: 20px; 
+  position: relative;
+  margin-top: 20px;
 }
 
 .task-add-icon {
-  background-color: #547099; 
-  border-radius: 50%; 
+  background-color: #547099;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3rem; 
-  height: 3rem; 
+  width: 3rem;
+  height: 3rem;
   cursor: pointer;
-  color: white; 
-  font-size: 2rem; 
-  position: absolute; 
-  right: -60px; 
-  top: -478px; 
-  transition: transform 0.3s ease, background-color 0.3s ease; 
+  color: white;
+  font-size: 2rem;
+  position: absolute;
+  right: -60px;
+  top: -478px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .task-add-icon:hover {
   transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84; 
+  background-color: #3a5b84;
 }
-
-
-
-
-
 
 /* Style the task details section, eto yung sa loob ng specific task */
 .task-details {
@@ -207,15 +200,15 @@
   margin-top: 20px;
   background-color: #f9f9f9;
   max-width: 600px;
-  margin-left: 100px; 
+  margin-left: 100px;
 }
 
 .task-detail-row {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   margin-bottom: 20px;
-  padding-bottom: 10px; 
-  border-bottom: 1px dashed #ccc; 
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #ccc;
 }
 
 /* Align text to the right for amount fields */
@@ -230,20 +223,20 @@
 
 /* Remove dashed line for Task Name row */
 .task-detail-row:first-child {
-  border-bottom: none; 
-  padding-bottom: 0; 
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 /* Remove dashed line for Miscellaneous row */
 .task-detail-row:nth-child(3) {
-  border-bottom: none; 
-  padding-bottom: 0; 
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 /* Add bold styling and remove dashed line for the total row */
 .total-row {
-  border-bottom: none; 
-  padding-bottom: 0; 
+  border-bottom: none;
+  padding-bottom: 0;
 }
 .total-row .align-right {
   font-weight: bold;
@@ -257,7 +250,6 @@
   padding: 20px;
   margin-left: 400px;
 }
-
 
 /* Floating Action Box */
 .post-click-popup {

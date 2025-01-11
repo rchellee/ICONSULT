@@ -651,7 +651,7 @@ app.get("/client-transactions/:id", (req, res) => {
   });
 });
 
-app.get("/clients/:id", (req, res) => {
+app.get("/clients-account/:id", (req, res) => {
   const clientId = req.params.id;
 
   const sql = "SELECT * FROM client WHERE id = ?";
