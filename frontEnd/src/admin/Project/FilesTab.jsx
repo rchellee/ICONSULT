@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
-import { MdOutlineFileUpload } from "react-icons/md"; 
+import { MdOutlineFileUpload } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import "./FileTabStyle.css";
 
@@ -69,7 +69,9 @@ const FilesTab = ({ projectId }) => {
 
     if (["jpg", "jpeg", "png", "gif", "bmp"].includes(fileExtension)) {
       return <FaFileImage className="file-type-icon" />;
-    } else if (["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(fileExtension)) {
+    } else if (
+      ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(fileExtension)
+    ) {
       return <FaFile className="file-type-icon" />;
     }
     return <FaFile className="file-type-icon" />;
@@ -90,13 +92,15 @@ const FilesTab = ({ projectId }) => {
 
         {/* New Button */}
         <button className="new-btn" onClick={handleNewButtonClick}>
-        <FaPlus /> New 
+          <FaPlus /> New
         </button>
       </div>
 
       <div className="file-list">
         {files.length > 0 && (
-          <div className="file-list-scrollable"> {/* Scrollable container */}
+          <div className="file-list-scrollable">
+            {" "}
+            {/* Scrollable container */}
             <table>
               <thead>
                 <tr>
@@ -131,7 +135,9 @@ const FilesTab = ({ projectId }) => {
                     <td>{file.uploaded_by_name || "Unknown"}</td>
                     <td>
                       <button
-                        className={`action-file ${activeFileId === file.id ? "active" : ""}`}
+                        className={`action-file ${
+                          activeFileId === file.id ? "active" : ""
+                        }`}
                         onClick={() => toggleActions(file.id)}
                       >
                         <BsThreeDotsVertical />
@@ -152,9 +158,7 @@ const FilesTab = ({ projectId }) => {
         )}
 
         {files.length === 0 && (
-          <div className="no-files-message">
-            No files uploaded yet.
-          </div>
+          <div className="no-files-message">No files uploaded yet.</div>
         )}
       </div>
     </div>

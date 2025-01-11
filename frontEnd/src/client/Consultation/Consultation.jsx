@@ -131,10 +131,8 @@ const Consultation = () => {
   const toggleSection = (section) => {
     setVisibleSection(visibleSection === section ? null : section);
   };
-
   const mapAppointmentsToEvents = () => {
     return appointments.map((appointment) => {
-      console.log("Fetched Appointment ID:", appointment.id);
       return {
         title: `Consultation - ${appointment.consultationType}`,
         start: appointment.date,
@@ -158,17 +156,16 @@ const Consultation = () => {
     setPopup({
       title,
       time: extendedProps.time,
-      id: extendedProps.id, // Add the id here to ensure it's available in the popup
+      id: extendedProps.id,
       x: selected.jsEvent.clientX,
       y: selected.jsEvent.clientY,
     });
   };
 
   const handleMouseLeave = () => {
-    // Delay hiding the popup slightly to allow for smooth transitions to the popup itself
     setTimeout(() => {
       setPopup(null);
-    }, 100000); // Adjust delay as needed
+    }, 100000);
   };
 
   return (
@@ -178,7 +175,6 @@ const Consultation = () => {
       <div className="content-consultation">
         <Box m="2px">
           <Box display="flex">
-            {/* Sidebar */}
             <div className="consultation-content">
               <div className="button-consult">
                 <Link to="/appointments/new" className="new-appointment-button">
@@ -191,7 +187,6 @@ const Consultation = () => {
               ) : (
                 <div className="appointments-and-calendar">
                   <div className="appointments-details">
-                    {/* Upcoming Appointments */}
                     <div className="upcoming-appointments">
                       <button onClick={() => toggleSection("Upcoming")}>
                         {visibleSection === "Upcoming" ? "<" : ">"} Upcoming
@@ -240,13 +235,10 @@ const Consultation = () => {
                         </div>
                       )}
                     </div>
-
-                    {/* Completed Appointments */}
                     <div className="completed-appointments">
                       <button onClick={() => toggleSection("Completed")}>
                         {visibleSection === "Completed" ? "<" : ">"} Completed
                       </button>
-
                       {visibleSection === "Completed" && (
                         <div className="appointments-list-container">
                           {getAppointmentsByView("Completed").length > 0 ? (
@@ -282,8 +274,6 @@ const Consultation = () => {
                 </div>
               )}
             </div>
-
-            {/* FullCalendar */}
             <Box flex="1 1 50%" ml="10px">
               <FullCalendar
                 height="80vh"
@@ -301,7 +291,7 @@ const Consultation = () => {
                 initialView="dayGridMonth"
                 editable={false}
                 selectable={false}
-                events={mapAppointmentsToEvents()} // Pass appointments as events here
+                events={mapAppointmentsToEvents()} 
                 eventMouseEnter={handleMouseEnter}
                 eventMouseLeave={handleMouseLeave}
                 eventContent={(eventInfo) => (
@@ -322,8 +312,8 @@ const Consultation = () => {
                     padding: "10px",
                     zIndex: 1000,
                   }}
-                  onMouseEnter={() => clearTimeout()} // Prevent hiding when mouse enters popup
-                  onMouseLeave={() => setPopup(null)} // Hide popup when mouse leaves
+                  onMouseEnter={() => clearTimeout()} 
+                  onMouseLeave={() => setPopup(null)}
                 >
                   <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                     {popup.title}

@@ -163,9 +163,10 @@ function AdminAppointment() {
       consultationType: formData.consultationType,
       additionalInfo: formData.additionalInfo || "",
       platform: formData.platform || "",
-      clientId: client_Id, // Note: Correct field naming `clientId` as per backend
+      clientId: client_Id, 
       companyName: selectedClient.companyName || "",
       reminder: formData.reminder || "",
+      postedBy: "admin",
     };
     console.log("Submitting appointment:", formDataWithClientName);
 

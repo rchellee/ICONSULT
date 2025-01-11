@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import "./project.css";
 import { FaPlus, FaBell } from "react-icons/fa";
 import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
@@ -8,7 +9,6 @@ import ProjectList from "./ProjectList";
 import ProjectFolders from "./ProjectFolders";
 import ProjectTask from "./ProjectTask";
 import Topbar from "../Topbar";
-import "./project.css";
 
 const ProjectManagement = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -193,7 +193,7 @@ const ProjectManagement = () => {
       return (
         <ProjectTask
           projectId={selectedProjectId}
-          onBack={() => setSelectedProjectId(null)} // Provide a way to go back
+          onBack={() => setSelectedProjectId(null)}
         />
       );
     }
@@ -259,12 +259,12 @@ const ProjectManagement = () => {
         ) : (
           renderProjectContent()
         )}
-        {projects.length > 0 && (
+        {/* {projects.length > 0 && (
           <ProjectFolders
             projects={projects}
             onProjectClick={(projectId) => setSelectedProjectId(projectId)}
           />
-        )}
+        )} */}
       </div>
     </div>
   );

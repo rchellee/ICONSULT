@@ -29,7 +29,7 @@ const ProjectForm = ({
         <h2 className="form-modal-title">
           {editingProjectId ? "Edit Project" : "Create Project"}
         </h2>
-        
+
         <div className="form-project-details">
           <div className="form-modal-field">
             <label>Project Name:</label>
@@ -84,7 +84,7 @@ const ProjectForm = ({
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
-            
+
           <div className="form-modal-field">
             <label>Downpayment (Optional):</label>
             <input
