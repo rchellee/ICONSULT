@@ -221,7 +221,6 @@ h2 {
   visibility: visible;
 }
 
-
 .sidebar.collapsed {
   width: 45px; /* Collapsed width */
 }
@@ -333,3 +332,5 @@ h2 {
   opacity: 1;
   visibility: visible;
 }
+
+

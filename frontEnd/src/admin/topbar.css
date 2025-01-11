@@ -1,0 +1,108 @@
+/* Topbar styles */
+.topbar {
+    background-color: #d1bfbf;
+    height: 100px; /* Increased height */
+  }
+  
+  .MuiAppBar-root {
+    background-color: #ffffff !important; /* Ensure the background color is applied */
+    height: 70px !important; /* Override the default height */
+    border-bottom: 1px solid #d1d1d1 !important; /* Add a 10px solid border with a light gray color */
+    box-shadow: none !important; /* Remove any shadow effect */
+  }
+  
+  
+  /* Toolbar customizations */
+  .MuiToolbar-root {
+    min-height: 100px !important; /* Adjust toolbar height */
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  /* Logo styles */
+  .logo-topbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo-topbar-img {
+    height: 50px; /* Adjust logo size */
+    width: auto;
+  }
+  
+  /* Typography for the admin username */
+  .topbar-username {
+    font-size: 16px;
+    color: #143d58;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Avatar and Menu */
+  .avatar-button {
+    padding: 0;
+  }
+  
+  .avatar-button img {
+    width: 40px; /* Adjust avatar size */
+    height: 40px;
+  }
+  
+  .menu-item {
+    font-size: 14px;
+    color: #0056b3;
+  }
+  
+  
+  /* Additional Styling for Folder Search Box (if needed) */
+
+/* Search box styles */
+.search-box-topbar {
+    width: 70%; /* Adjust width for desired size */
+    max-width: 600px; /* Max width to prevent the search bar from getting too wide */
+    height: 60px !important; /* Set height */
+    padding: 20px; /* Adjust padding for larger space inside */
+    font-size: 20px; /* Increase font size */
+    border: 3px solid #6eb9fb !important; /* Set initial border color */
+    border-radius: 25px !important; /* Apply rounded corners */
+    outline: none;
+    box-sizing: border-box;
+    background: #fff;
+    margin: 0 auto; /* Centers the search box */
+    display: block; /* Ensures the box is treated as a block element */
+  }
+  
+  /* Add a hover effect for the border color */
+  .search-box-topbar:hover {
+    border-color: #7fbcf6 !important; /* Force change on hover */
+  }
+  
+  /* Add focus effect to the border */
+  .search-box-topbar:focus {
+    border-color: #007dea !important; /* Change the border color when focused */
+    box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Add a light shadow for emphasis */
+  }
+  
+
+  .home-topbar-icon {
+    font-size: 30px; /* Adjust the size of the icon */
+    color: #323232; /* Set the icon color */
+    margin-left: 15px; /* Space it out from the logo */
+    cursor: pointer; /* Make it clickable */
+    transition: color 0.3s ease; /* Add smooth transition effect */
+    align-items: flex-start;
+    margin: 600px    /* Push the icon to the right */
+    
+  }
+  
+  .home-topbar-icon:hover {
+    color: #0056b3; /* Change color on hover */
+  }
+  
+  
+  
+  
+  
+  

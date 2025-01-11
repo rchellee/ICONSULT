@@ -6,6 +6,7 @@ import GridView from "./GridView"; // Import GridView component
 import ListView from "./ListView"; // Import ListView component
 import "./ListView.css";
 
+
 const ProjectList = ({
   filteredProjects,
   formatDate,

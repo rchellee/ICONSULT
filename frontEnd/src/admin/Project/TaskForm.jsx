@@ -105,6 +105,18 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       projectId,
     };
 
+    const handleCancelClick = () => {
+      console.log("Cancel button clicked");
+      onCancel();
+    };
+    
+    const handleSubmitClick = (e) => {
+      e.preventDefault();
+      console.log("Submit button clicked");
+      handleSubmit(e);
+    };
+    
+
     try {
       const url = existingTask
         ? `http://localhost:8081/tasks/${existingTask.id}`

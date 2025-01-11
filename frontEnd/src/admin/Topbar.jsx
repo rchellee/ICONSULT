@@ -9,9 +9,11 @@ import {
   Avatar,
   Typography,
 } from "@mui/material";
+import { AiFillHome } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { SearchContext } from "../components/SearchProvider"; // Import the context
 import logo from "../assets/logo2.png";
+import "./topbar.css";
 
 const Topbar = () => {
   const [adminUsername, setAdminUsername] = useState("");
@@ -28,9 +30,7 @@ const Topbar = () => {
     if (adminId && username) {
       setUserName(`${username}`);
     } else {
-      console.warn(
-        "No adminId, or username found in localStorage."
-      );
+      console.warn("No adminId, or username found in localStorage.");
     }
   }, []);
 
@@ -60,48 +60,54 @@ const Topbar = () => {
 
   return (
     <AppBar
-      position="static"
-      sx={{
-        backgroundColor: "#f3f3f3",
-        height: "58px",
-        borderBottom: "1px solid #d1d1d1",
-      }}
+  position="static"
+  sx={{
+    backgroundColor: "#f3f3f3",
+    height: "58px",
+    borderBottom: "1px solid #d1d1d1",
+  }}
+>
+  <Toolbar sx={{ minHeight: "60px" }}>
+
+    {/* Home Icon */}
+    <AiFillHome className="home-topbar-icon" />
+
+    {/* Logo */}
+    <Typography variant="h7" sx={{ flexGrow: 1 }}>
+      <div className="logo-topbar">
+        <img src={logo} alt="Logo" className="logo-topbar-img" />
+      </div>
+    </Typography>
+
+    {/* Search Box */}
+    <div className="search-box-container">
+      <input
+        type="text"
+        className="search-box-topbar"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+    </div>
+
+    <Typography variant="body1" color="#143d58">
+      {userName}
+    </Typography>
+    <IconButton onClick={handleMenuOpen} color="#0056b3">
+      <Avatar alt={userName} src="/path/to/your/profile-pic.jpg" />
+    </IconButton>
+    <Menu
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={handleMenuClose}
     >
-      <Toolbar sx={{ minHeight: "60px" }}>
-        <Typography variant="h7" sx={{ flexGrow: 1 }}>
-          {" "}
-          <div className="logo-topbar">
-            <img src={logo} alt="Logo" className="logo-topbar-img" />
-          </div>
-        </Typography>
+      <MenuItem onClick={handleAccountClick}>Account</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      <MenuItem onClick={handleReviewClick}>Reviews</MenuItem>
+    </Menu>
+  </Toolbar>
+</AppBar>
 
-        <div className="search-box-container">
-          <input
-            type="text"
-            className="search-box-topbar"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <Typography variant="body1" color="#143d58">
-          {userName}
-        </Typography>
-        <IconButton onClick={handleMenuOpen} color="#0056b3">
-          <Avatar alt={userName} src="/path/to/your/profile-pic.jpg" />
-        </IconButton>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleAccountClick}>Account</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
-          <MenuItem onClick={handleReviewClick}>Reviews</MenuItem>
-        </Menu>
-      </Toolbar>
-    </AppBar>
   );
 };
 
