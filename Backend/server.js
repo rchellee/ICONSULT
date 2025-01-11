@@ -140,7 +140,8 @@ app.post("/Login", (req, res) => {
     }
 
     // If no match in client table, check admin table
-    const sqlAdmin = "SELECT * FROM admin WHERE username = ? AND password = ?";
+    const sqlAdmin =
+      "SELECT id, username FROM admin WHERE username = ? AND password = ?";
     db.query(sqlAdmin, [username, password], (err, adminResults) => {
       if (err) {
         return res.status(500).json({
@@ -149,9 +150,15 @@ app.post("/Login", (req, res) => {
       }
 
       if (adminResults.length > 0) {
+        const admin = adminResults[0];
         return res
           .status(200)
-          .json({ message: "Login successful", role: "admin" });
+          .json({
+            message: "Login successful",
+            role: "admin",
+            username: admin.username,
+            adminId: admin.id,
+          });
       }
 
       // If no match in both tables
@@ -649,8 +656,7 @@ app.get("/client-transactions/:id", (req, res) => {
 app.get("/clients-account/:id", (req, res) => {
   const clientId = req.params.id;
 
-  const sql =
-    "SELECT * FROM client WHERE id = ?";
+  const sql = "SELECT * FROM client WHERE id = ?";
   db.query(sql, [clientId], (err, result) => {
     if (err) {
       return res

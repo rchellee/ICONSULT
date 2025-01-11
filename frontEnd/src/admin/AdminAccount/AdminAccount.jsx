@@ -18,16 +18,21 @@ const AdminAccount = () => {
   const [editMode, setEditMode] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({});
   const [message, setMessage] = useState("");
+  const adminId = localStorage.getItem("adminId");
 
   useEffect(() => {
     const fetchAdminDetails = async () => {
+      console.log("Admin ID:", adminId);
+      if (!adminId) {
+        setMessage("Admin ID not found. Please log in again.");
+        return;
+      }
       try {
-        const adminId = 1; // Replace with the actual admin ID you want to fetch
         const response = await fetch(`http://localhost:8081/admins/${adminId}`);
         if (response.ok) {
           const data = await response.json();
-          setAdminDetails(data); // Admin details fetched as an object
-          setUpdatedDetails(data); // Set for editing
+          setAdminDetails(data);
+          setUpdatedDetails(data);
         } else {
           setMessage("Failed to fetch admin details.");
         }
@@ -35,7 +40,7 @@ const AdminAccount = () => {
         console.error("Error fetching admin details:", error);
         setMessage("An unexpected error occurred.");
       }
-    };    
+    };
     fetchAdminDetails();
   }, []);
 

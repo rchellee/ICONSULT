@@ -18,31 +18,25 @@ const Topbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState("");
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
+  const adminId = localStorage.getItem("adminId");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAdminData = async () => {
-      try {
-        // Fetch admin username from the server
-        const { data } = await axios.get("http://localhost:8081/admin");
+    const adminId = localStorage.getItem("adminId");
+    const username = localStorage.getItem("username");
 
-        // Assuming the admin username is in the first entry of the data array
-        if (data.length > 0) {
-          setAdminUsername(data[0].username);
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching admin data:",
-          error.response?.data?.message || error.message
-        );
-      }
-    };
-
-    fetchAdminData();
+    if (adminId && username) {
+      setUserName(`${username}`);
+    } else {
+      console.warn(
+        "No adminId, or username found in localStorage."
+      );
+    }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
     navigate("/");
   };
 
@@ -87,12 +81,12 @@ const Topbar = () => {
             className="search-box-topbar"
             placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} 
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <Typography variant="body1"  color="#143d58">
-          {adminUsername}
+        <Typography variant="body1" color="#143d58">
+          {userName}
         </Typography>
         <IconButton onClick={handleMenuOpen} color="#0056b3">
           <Avatar alt={userName} src="/path/to/your/profile-pic.jpg" />
