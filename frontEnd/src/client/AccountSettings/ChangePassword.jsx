@@ -184,29 +184,29 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
             </button>
           ) : (
             <>
-              <Box>
-                <label>Enter Verification Code:</label>
-                <input
-                  type="text"
-                  value={enteredCode}
-                  onChange={(e) => setEnteredCode(e.target.value)}
-                />
-              </Box>
-              <Button variant="contained" color="primary" onClick={verifyCodeAndProceed}>
-                Verify Code
-              </Button>
-              <Button
-                variant="outlined"
-                color="default"
-                onClick={() => {
-                  setCodeSent(false); 
-                  setEnteredCode(""); 
-                  setMessage(""); 
-                }}
-                className="cancel-btn"
-              >
-                Cancel
-              </Button>
+              <Box className="verification-code-container">
+  <label htmlFor="verification-code">Enter Verification Code:</label>
+  <input
+    type="text"
+    id="verification-code"
+    value={enteredCode}
+    onChange={(e) => setEnteredCode(e.target.value)}
+  />
+</Box>
+<Button className="verify-btn" variant="contained" color="primary" onClick={verifyCodeAndProceed}>
+  Verify Code
+</Button>
+<Button
+  className="cancel-btn"
+  variant="outlined"
+  onClick={() => {
+    setCodeSent(false); 
+    setEnteredCode(""); 
+    setMessage(""); 
+  }}
+>
+  Cancel
+</Button>
             </>
           )}
 
