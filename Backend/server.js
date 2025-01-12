@@ -14,11 +14,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-});
-
 // Create a MySQL connection pool
 const db = mysql.createConnection({
   host: "localhost",
@@ -31,8 +26,6 @@ const db = mysql.createConnection({
 app.get("/", (req, res) => {
   return res.json("From Backend Side");
 });
-
-const PORT = process.env.PORT || 8081;
 
 // SendGrid email example
 const sgMail = require("@sendgrid/mail");
@@ -1813,7 +1806,6 @@ app.delete("/upload/:fileId", (req, res) => {
 });
 app.use("/uploads", express.static("uploads"));
 
-
 app.post("/reviews", (req, res) => {
   const { projectId, clientId, rating, comment, status } = req.body;
 
@@ -1831,12 +1823,15 @@ app.post("/reviews", (req, res) => {
       }
 
       // Update the isReview column in the project table
-      const updateProjectQuery = "UPDATE project SET isReview = TRUE WHERE id = ?";
+      const updateProjectQuery =
+        "UPDATE project SET isReview = TRUE WHERE id = ?";
 
       db.query(updateProjectQuery, [projectId], (updateErr) => {
         if (updateErr) {
           console.error("Error updating project isReview:", updateErr);
-          return res.status(500).json({ message: "Failed to update project status" });
+          return res
+            .status(500)
+            .json({ message: "Failed to update project status" });
         }
 
         return res.status(200).json({
@@ -1957,6 +1952,6 @@ app.get("/appointmentsDashboard/count", (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+app.listen(8081, () => {
+  console.log("Server is listening on port 8081");
 });
