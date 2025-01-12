@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite", 
-    "build": "vite build && tailwindcss -i ./css/input.css -o ../dist/output.css",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite" 
+    "start": "vite preview"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",

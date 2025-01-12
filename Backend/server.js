@@ -14,6 +14,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
+
 // Create a MySQL connection pool
 const db = mysql.createConnection({
   host: "localhost",
@@ -26,6 +31,8 @@ const db = mysql.createConnection({
 app.get("/", (req, res) => {
   return res.json("From Backend Side");
 });
+
+const PORT = process.env.PORT || 8081;
 
 // SendGrid email example
 const sgMail = require("@sendgrid/mail");
@@ -1950,6 +1957,6 @@ app.get("/appointmentsDashboard/count", (req, res) => {
   });
 });
 
-app.listen(8081, () => {
-  console.log("Server is listening on port 8081");
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });

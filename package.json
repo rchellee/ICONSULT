@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "start": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "backend": "cd backend && npm start",
-    "frontend": "cd frontend && npm run dev"
+    "start": "node backend/server.js",
+    "build": "npm run build-frontend && npm run build-backend",
+    "build-frontend": "cd frontend && npm run build",
+    "build-backend": "echo 'Backend build step, if any.'"
   },
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.17.0",
