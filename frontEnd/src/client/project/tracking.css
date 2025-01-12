@@ -11,8 +11,8 @@ html, body {
     height: 100vh;
 }
 
-.content {
-    margin-top: 80px; /* Adds space below the fixed tabs */
+.content-tracking {
+  margin-left: 75px;
     padding: 20px;
     overflow-y: auto;
 }

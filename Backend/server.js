@@ -1806,27 +1806,40 @@ app.delete("/upload/:fileId", (req, res) => {
 });
 app.use("/uploads", express.static("uploads"));
 
-app.post("/reviews", (req, res) => {
-  const { clientId, projectId, rating, comment, status } = req.body;
 
-  const query = `
-      INSERT INTO reviews (client_id, project_id, rating, comment, status)
-      VALUES (?, ?, ?, ?, ?)
-  `;
+app.post("/reviews", (req, res) => {
+  const { projectId, clientId, rating, comment, status } = req.body;
+
+  // Insert the review into the reviews table
+  const insertReviewQuery =
+    "INSERT INTO reviews (project_id, client_id, rating, comment, status) VALUES (?, ?, ?, ?, ?)";
 
   db.query(
-    query,
-    [clientId, projectId, rating, comment, status],
+    insertReviewQuery,
+    [projectId, clientId, rating, comment, status],
     (err, result) => {
       if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Failed to submit the review." });
-      } else {
-        res.status(201).json({ message: "Review submitted successfully." });
+        console.error("Error inserting review:", err);
+        return res.status(500).json({ message: "Failed to submit review" });
       }
+
+      // Update the isReview column in the project table
+      const updateProjectQuery = "UPDATE project SET isReview = TRUE WHERE id = ?";
+
+      db.query(updateProjectQuery, [projectId], (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating project isReview:", updateErr);
+          return res.status(500).json({ message: "Failed to update project status" });
+        }
+
+        return res.status(200).json({
+          message: "Review submitted successfully, and project updated",
+        });
+      });
     }
   );
 });
+
 app.get("/reviews", (req, res) => {
   const query = "SELECT * FROM reviews";
 

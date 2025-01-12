@@ -97,15 +97,7 @@ function Tracking() {
       <Topbar />
       <div className="client-task-page">
         <Sidebar />
-        <div className="content">
-          <div
-            className="home-icon-container"
-            onClick={() => navigate("/clientproject")}
-          >
-            <FaHome className="home-icon" />
-            <span className="tooltip">All Project</span>
-          </div>
-
+        <div className="content-tracking">
           {/* <div className="navigation-buttons">
           <button className="nav-button" onClick={handleGoback}>
             <FaChevronLeft />

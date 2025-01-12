@@ -112,35 +112,26 @@ function Review() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: 3,
+              gap: 4,
               width: "100%",
-              maxWidth: 1000,
+              maxWidth: 800,
               mt: 5,
               p: 3,
-              backgroundColor: "#fff",
+              backgroundColor: "#ffff",
               borderRadius: 2,
-              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              boxShadow: "#fff",
             }}
           >
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              gap={1} // Add space between title and stars
-              sx={{ width: "100%" }}
-            >
-              <Typography variant="h6" align="center" sx={{ mb: 1 }}>
-                Rating
-              </Typography>
-              <Box display="flex" justifyContent="center" width="100%">
-                <Rating
-                  name="rating"
-                  value={rating}
-                  onChange={(event, newValue) => setRating(newValue)}
-                  size="large"
-                />
-              </Box>
-            </Box>
+            <Typography variant="h6" align="center">
+              Rating
+            </Typography>
+            <Rating
+              name="rating"
+              value={rating}
+              onChange={(event, newValue) => setRating(newValue)}
+              size="large"
+              sx={{ alignSelf: "center" }}
+            />
             <TextField
               label="Comment"
               multiline
