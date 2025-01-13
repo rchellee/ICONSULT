@@ -103,12 +103,20 @@ function AppointmentForm() {
 
     try {
       const response = await fetch(
-        `http://localhost:8081/appointments/times?date=${date}`
+        `http://localhost:8081/appointments-client/times?date=${date}`
       );
       if (!response.ok) throw new Error("Failed to fetch booked times");
 
-      const { bookedTimes } = await response.json();
+      const { bookedTimes, start_time, end_time } = await response.json();
       const blockedTimes = new Set(bookedTimes);
+
+      const startIndex = times.indexOf(start_time);
+      const endIndex = times.indexOf(end_time);
+
+      const filteredTimes =
+      startIndex !== -1 && endIndex !== -1
+        ? times.slice(startIndex, endIndex + 1)
+        : times;
 
       bookedTimes.forEach((bookedTime) => {
         const bookedIndex = times.indexOf(bookedTime);
@@ -123,7 +131,7 @@ function AppointmentForm() {
         }
       });
 
-      const updatedTimes = times.map((time) => ({
+      const updatedTimes = filteredTimes.map((time) => ({
         time,
         isBooked: blockedTimes.has(time),
       }));
@@ -141,7 +149,7 @@ function AppointmentForm() {
   };
 
   const handleTimeSelect = (time) => {
-    setFormData({ ...formData, time });
+    setFormData((prevData) => ({ ...prevData, time }));
   };
 
   const handleChange = (e) => {
@@ -277,7 +285,12 @@ function AppointmentForm() {
                 />
                 {selectedDate && (
                   <div className="time-slots">
-                    <h4>Available time for {selectedDate}</h4>
+                    Available time for{" "}
+                    {new Date(selectedDate).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod" className="required-label">
                         AM/PM *

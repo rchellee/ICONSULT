@@ -1501,6 +1501,39 @@ app.get("/appointments/times", (req, res) => {
     res.json({ bookedTimes });
   });
 });
+app.get("/appointments-client/times", (req, res) => {
+  const { date } = req.query;
+
+  const bookedTimesSql = "SELECT time FROM appointments WHERE date = ?";
+  const availabilitySql =
+    "SELECT start_time, end_time FROM availability WHERE dates = ?";
+
+  db.query(bookedTimesSql, [date], (err, bookedTimesResult) => {
+    if (err) {
+      console.error("Error fetching booked times:", err);
+      return res.status(500).json({ message: "Error fetching booked times" });
+    }
+
+    db.query(availabilitySql, [date], (err, availabilityResult) => {
+      if (err) {
+        console.error("Error fetching availability:", err);
+        return res
+          .status(500)
+          .json({ message: "Error fetching availability data" });
+      }
+
+      const bookedTimes = bookedTimesResult.map((row) => row.time);
+      const availability = availabilityResult[0] || {};
+
+      res.status(200).json({
+        bookedTimes,
+        start_time: availability.start_time || "07:00 AM",
+        end_time: availability.end_time || "07:00 PM",
+      });
+    });
+  });
+});
+
 app.delete("/appointments/:id", (req, res) => {
   const { id } = req.params;
 

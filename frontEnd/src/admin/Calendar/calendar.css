@@ -46,6 +46,7 @@ button + button {
 .wrapper-admin {
   width: 1000px;
   background: #fff;
+  padding: 13px 19px 17px;
   border-radius: 10px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
 }
@@ -346,16 +347,16 @@ header .current-date {
 .calendar ul {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
+  gap: 5px;
   list-style: none;
   padding: 0;
 }
 
 .calendar li {
   text-align: center;
-  padding: 20px;
-  border-radius: 1px;
-  font-weight: 500;
+  padding: 25px;
+  border-radius: 100px;
+  font-weight: 400;
 }
 
 .available {
@@ -378,7 +379,7 @@ color: white;
 }
 
 .content-availability{  
-  margin-left: 150px;
+  margin-left: 100px;
   flex: 1;
   justify-content: center;
 }
