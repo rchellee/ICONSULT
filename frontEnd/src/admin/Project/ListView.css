@@ -1,19 +1,18 @@
 .project-list-wrapper td {
-    max-width: 150px; /* Adjust width as needed */
-    white-space: nowrap; /* Prevent text wrapping */
-    /* Hide overflow */
-    text-overflow: ellipsis; /* Add ellipsis for truncated text */
-    border-radius: 30px;
-    -webkit-overflow-scrolling: touch;
-    overflow-y: auto; /* Enable vertical scrolling */
-  }
+  max-width: 150px; /* Adjust width as needed */
+  white-space: nowrap; /* Prevent text wrapping */
+  /* Hide overflow */
+  text-overflow: ellipsis; /* Add ellipsis for truncated text */
+  border-radius: 30px;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
 
-  .table-scroll-wrapper {
-    max-height: 400px; /* Set a height limit */
-    overflow-y: auto; /* Enable vertical scrolling */
-    -webkit-overflow-scrolling: touch;
-  }
-
+.table-scroll-wrapper {
+  max-height: 600px; /* Set a height limit */
+  overflow-y: auto; /* Enable vertical scrolling */
+  -webkit-overflow-scrolling: touch;
+}
 
 /* Custom Scrollbar for WebKit Browsers */
 .table-scroll-wrapper::-webkit-scrollbar {
@@ -34,142 +33,141 @@
   background: #555; /* Thumb hover color */
 }
 
-.layout-toggle-icons{
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    align-items: center;
-    justify-content: flex-end;
-    cursor: pointer;
-    padding-right: 50px;
-    
+.layout-toggle-icons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+  padding-right: 50px;
 }
 
 .layout-toggle-icons svg {
-    font-size: 30px;
-    color: #333;
-    cursor: pointer;
-  }
+  font-size: 30px;
+  color: #333;
+  cursor: pointer;
+}
 
 /* Grid view styles */
 .grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
-  
-  .grid-item {
-    background: #f1f1f1;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .project-list-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: none;
-  }
-  
-  .project-list-table th, .project-list-table td {
-    padding: 3px 10px;
-    border: 1px solid #ddd;
-    border: none;
-  }
-  
-  .project-list-table th {
-    background-color: #eeecec;
-    color: rgb(71, 70, 70)
-  }
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
 
-  /*status ongoing and completed css*/
-  .status-dropdown {
-    border-radius: 50px; /* Keep the button oval */
-    padding: 5px 15px; /* Smaller padding for a more compact size */
-    font-size: 12px; /* Smaller font size */
-    border: 1px solid #ccc; /* Optional: add a border */
-    background-color: #fff; /* Optional: set background color */
-    cursor: pointer; /* Optional: change cursor to pointer */
-    appearance: none; /* Hide the default dropdown icon in most browsers */
-    -webkit-appearance: none; /* For Safari */
-    -moz-appearance: none; /* For Firefox */
-    height: auto; /* Optional: adjust height to content */
-    width: auto; /* Optional: adjust width */
-  }
-  
-  /* Custom style to remove the default dropdown icon */
-  .status-dropdown::-ms-expand {
-    display: none; /* For Internet Explorer */
-  }
-  
-  
+.grid-item {
+  background: #f1f1f1;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-  
-  .modal {
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .modal button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(198, 198, 198, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    background: none;
-  }
+.project-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: none;
+  font-size: 18px;
+}
 
+.project-list-table th,
+.project-list-table td {
+  padding: 3px 10px;
+  border: 1px solid #ddd;
+  border: none;
+  overflow: hidden;
+  font-size: 15px;
+}
 
+.project-list-table th {
+  background-color: #eeecec;
+  color: rgb(71, 70, 70);
+  overflow: hidden;
+}
 
-  .cancel-icon {
-    font-size: 24px;
-    cursor: pointer;
-    color: #dc3545;
-  }
+/*status ongoing and completed css*/
+.status-dropdown {
+  border-radius: 50px; /* Keep the button oval */
+  padding: 5px 15px; /* Smaller padding for a more compact size */
+  font-size: 15px; /* Smaller font size */
+  border: 1px solid #ccc; /* Optional: add a border */
+  background-color: #fff; /* Optional: set background color */
+  cursor: pointer; /* Optional: change cursor to pointer */
+  appearance: none; /* Hide the default dropdown icon in most browsers */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  height: auto; /* Optional: adjust height to content */
+  width: auto; /* Optional: adjust width */
+}
 
-  .modal button {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    width: 100%;
-  }
-  
-  .modal button:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .modal button:last-child {
-    background-color: transparent;
-  }
-  
-  .modal button:last-child:hover {
-    background-color: #f0f0f0;
-  }
+/* Custom style to remove the default dropdown icon */
+.status-dropdown::-ms-expand {
+  display: none; /* For Internet Explorer */
+}
+
+.modal {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.modal button {
+  background-color: #afd0f3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(198, 198, 198, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: none;
+}
+
+.cancel-icon {
+  font-size: 24px;
+  cursor: pointer;
+  color: #dc3545;
+}
+
+.modal button {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.modal button:hover {
+  background-color: #f0f0f0;
+}
+
+.modal button:last-child {
+  background-color: transparent;
+}
+
+.modal button:last-child:hover {
+  background-color: #f0f0f0;
+}
 
 /*css for actual finish date picker*/
 
@@ -179,7 +177,7 @@
   outline: none; /* Removes focus outline */
   padding: 0; /* Removes padding to eliminate box appearance */
   width: auto; /* Prevents unnecessary stretching */
- /* Centers the placeholder */
+  /* Centers the placeholder */
   font-size: inherit; /* Keeps text styling consistent with the table */
   cursor: auto; /* Indicates interactivity */
 }
@@ -189,4 +187,78 @@
   opacity: 0.7; /* Makes placeholder text slightly dimmer */
 }
 
+.project-list-table td:nth-child(1), /* Project column */
+.project-list-table td:nth-child(2) {
+  /* Client column */
+  max-width: 200px; /* Adjust this value to fit your design */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
+/* Style the payment status dropdown */
+.payment-status-dropdown {
+  width: 100%; /* Make it fit the container */
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  border: 1px solid #ccc; /* Light border for better visibility */
+  background-color: white; /* Set background to white */
+  cursor: pointer;
+  outline: none;
+  width: 130px;
+  color: #4a4a4a;
+  /*text-align: center;*/
+  height: 35px;
+}
+
+/* Style the options inside the dropdown */
+.payment-status-dropdown option {
+  padding: 10px;
+  background-color: white;
+  color: #333;
+  border: none;
+}
+
+/* Remove the dropdown arrow icon */
+.payment-status-dropdown::-ms-expand {
+  display: none; /* For Internet Explorer */
+}
+
+.payment-status-dropdown {
+  -webkit-appearance: none; /* Remove the arrow for Safari */
+  -moz-appearance: none; /* Remove the arrow for Firefox */
+  appearance: none; /* Remove the arrow for other browsers */
+  background-image: none; /* Remove background image */
+  border-radius: 100px;
+}
+
+/* Custom arrow icon (optional) */
+.payment-status-dropdown:after {
+  content: " ▼"; /* Optional, to create a custom arrow */
+  font-size: 12px;
+  color: #333;
+  padding-left: 5px;
+  pointer-events: none;
+}
+
+/* Add a custom color for different payment statuses */
+.payment-status-dropdown:focus {
+  border-color: #ffffff; /* Highlight the border on focus */
+}
+
+.payment-status-dropdown:disabled {
+  background-color: #f5f5f5; /* Gray out the dropdown when disabled */
+}
+
+/* Optional: Set the width of the dropdown's options dynamically */
+.payment-status-dropdown option {
+  padding: 10px;
+  background-color: rgb(255, 255, 255);
+  color: #333;
+  border: none;
+}
+
+/* Style for Paid status to manually set width */
+.payment-status-dropdown.paid-status {
+  width: 90px; /* Set a fixed width for the Paid dropdown */
+}

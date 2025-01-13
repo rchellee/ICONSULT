@@ -54,6 +54,23 @@ const FilesTab = ({ projectId }) => {
       setUploading(false);
     }
   };
+  const handleDelete = async (fileId) => {
+    try {
+      const response = await fetch(`http://localhost:8081/upload/${fileId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+        console.log("File deleted successfully.");
+      } else {
+        const errorData = await response.json();
+        console.error("Error deleting file:", errorData.message);
+      }
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
 
   const handleNewButtonClick = () => {
     // Add functionality for the new button here
@@ -145,8 +162,12 @@ const FilesTab = ({ projectId }) => {
 
                       {activeFileId === file.id && (
                         <div className="file-actions-popup click-delete-edit">
-                          <button className="edit-btn">Edit</button>
-                          <button className="delete-btn">Delete</button>
+                          <button
+                            className="delete-btn"
+                            onClick={() => handleDelete(file.id)}
+                          >
+                            Delete
+                          </button>
                         </div>
                       )}
                     </td>

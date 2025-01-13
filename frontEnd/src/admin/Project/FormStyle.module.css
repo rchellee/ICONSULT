@@ -1,4 +1,19 @@
-/* Center the form and make it float */
+/* Ensure all input fields have equal width and height */
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="email"],
+textarea {
+  width: 100%; /* Set width to 100% to make them equal */
+  height: 40px; /* Set a fixed height for all inputs */
+  padding: 10px; /* Add padding inside the input fields */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
 .project-form {
   margin-left: 10px;
 }
@@ -72,8 +87,8 @@
 
 /* Resize Assign Employee input field */
 .employee {
-  width: 45%; /* Adjusted width, you can change this to your desired value */
-  margin-right: 10px; /* Optional space between fields */
+  width: 50%;
+  margin-right: 10px;
 }
 
 /* If you want the input field to be full width (100%) in some cases */
@@ -87,7 +102,7 @@
 
 /* Resize Due Date input field */
 .dueDate {
-  width: 47%; /* Adjust the width as needed */
+  width: 48%;
   margin-right: 10px; /* Optional space between fields */
 }
 
@@ -329,4 +344,21 @@
 
 .totalAmount span {
   font-weight: bold; /* Optional: Make the value bold for emphasis */
+}
+
+.taskFee input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Hide default dropdown arrow */
+select {
+  -webkit-appearance: none;  /* For Safari */
+  -moz-appearance: none;     /* For Firefox */
+  appearance: none;          /* For Chrome, Opera, etc. */
+  background-image: none;    /* Removes any background image */
 }

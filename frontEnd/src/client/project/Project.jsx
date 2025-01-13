@@ -21,7 +21,7 @@ function Project() {
 
     if (loggedClientId) {
       axios
-        .get(`http://localhost:8081/project/${loggedClientId}`)
+        .get(`http://localhost:8081/project-client/${loggedClientId}`)
         .then((response) => {
           if (Array.isArray(response.data)) {
             setProjects(response.data);

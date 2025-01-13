@@ -1,1 +1,1 @@
-web: concurrently "npm run backend" "npm run frontend"
+web: npm start

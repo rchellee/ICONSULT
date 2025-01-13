@@ -798,6 +798,20 @@ app.get("/employees", (req, res) => {
     return res.json(data);
   });
 });
+// Fetch all employees with full name (GET request)
+app.get("/employees/id", (req, res) => {
+  const sql = `
+    SELECT 
+      id,
+      CONCAT(firstName, ' ', middleName, ' ', lastName) AS fullName
+    FROM employee
+  `;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.status(200).json(data);
+  });
+});
+
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -876,48 +890,6 @@ app.put("/employee/:id", (req, res) => {
   );
 });
 
-// Mark a project as deleted (PATCH request - Soft Delete)
-app.patch("/project/:id", (req, res) => {
-  const { id } = req.params;
-  const { isDeleted } = req.body;
-
-  const query = "UPDATE project SET isDeleted = ? WHERE id = ?";
-  db.query(query, [isDeleted, id], (error, results) => {
-    if (error) {
-      console.error("Error updating project:", error);
-      return res.status(500).json({ error: "Failed to update project" });
-    }
-    return res.status(200).json({ message: "Project deleted successfully" });
-  });
-});
-app.patch("/paymentStat/:id", (req, res) => {
-  const { id } = req.params;
-  const { paymentStatus } = req.body;
-
-  // Update project paymentStatus in the database
-  const query = "UPDATE project SET paymentStatus = ? WHERE id = ?";
-  db.query(query, [paymentStatus, id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error updating project status");
-    }
-    res.status(200).json({ id, paymentStatus });
-  });
-});
-app.patch("/projectStat/:id", (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-
-  // Update project status in the database
-  const query = "UPDATE project SET status = ? WHERE id = ?";
-  db.query(query, [status, id], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error updating project status");
-    }
-    res.status(200).json({ id, status });
-  });
-});
 // Add a new project (POST request)
 app.post("/project", (req, res) => {
   const {
@@ -931,10 +903,12 @@ app.post("/project", (req, res) => {
     contractPrice,
     downpayment = null,
     paymentStatus = "Not Paid",
+    actualStart = null,
+    actualFinish = null,
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, actualStart, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -948,6 +922,8 @@ app.post("/project", (req, res) => {
       contractPrice,
       downpayment,
       paymentStatus,
+      actualStart,
+      actualFinish,
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -963,11 +939,95 @@ app.post("/project", (req, res) => {
         contractPrice,
         downpayment,
         paymentStatus,
+        actualStart,
+        actualFinish,
       });
     }
   );
 });
-// Get all active (not deleted) projects (GET request)
+// Mark a project as deleted (PATCH request - Soft Delete)
+app.patch("/project/:id", (req, res) => {
+  const { id } = req.params;
+  const { isDeleted } = req.body;
+
+  const query = "UPDATE project SET isDeleted = ? WHERE id = ?";
+  db.query(query, [isDeleted, id], (error, results) => {
+    if (error) {
+      console.error("Error updating project:", error);
+      return res.status(500).json({ error: "Failed to update project" });
+    }
+    return res.status(200).json({ message: "Project deleted successfully" });
+  });
+});
+app.patch("/projectStat/:id", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  let query = "UPDATE project SET status = ?";
+  let params = [status, id];
+
+  if (status === "Ongoing") {
+    query += ", actualStart = ?";
+    params = [status, new Date(), id];
+  } else if (status === "Completed") {
+    query += ", actualFinish = ?";
+    params = [status, new Date(), id];
+  }
+
+  query += " WHERE id = ?";
+
+  db.query(query, params, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating project status");
+    }
+    res.status(200).json({ id, status });
+  });
+});
+app.patch("/paymentStat/:projectId", (req, res) => {
+  const { projectId } = req.params;
+  const { paymentStatus } = req.body;
+
+  if (!paymentStatus) {
+    return res.status(400).json({ message: "Missing paymentStatus" });
+  }
+
+  // Query the current status
+  db.query(
+    "SELECT paymentStatus FROM project WHERE id = ?",
+    [projectId],
+    (err, rows) => {
+      if (err) {
+        console.error("Error querying payment status: ", err);
+        return res.status(500).json({ message: "Server error" });
+      }
+
+      const currentStatus = rows[0]?.paymentStatus;
+      if (
+        currentStatus === "Paid" ||
+        (currentStatus === "Partial Payment" && paymentStatus === "Not Paid")
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Invalid payment status transition" });
+      }
+      db.query(
+        "UPDATE project SET paymentStatus = ? WHERE id = ?",
+        [paymentStatus, projectId],
+        (updateErr) => {
+          if (updateErr) {
+            console.error("Error updating payment status: ", updateErr);
+            return res.status(500).json({ message: "Error updating status" });
+          }
+          res
+            .status(200)
+            .json({ message: "Payment status updated successfully" });
+        }
+      );
+    }
+  );
+});
+// Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = "SELECT * FROM project WHERE isDeleted = 0";
   db.query(sql, (err, data) => {
@@ -975,7 +1035,25 @@ app.get("/project", (req, res) => {
     return res.json(data);
   });
 });
-app.get("/project/:clientId", (req, res) => {
+app.get("/project/:id", (req, res) => {
+  const projectId = req.params.id;
+
+  const sql = "SELECT projectName FROM project WHERE id = ? AND isDeleted = 0";
+  db.query(sql, [projectId], (err, result) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching project name" });
+    }
+
+    if (result.length > 0) {
+      return res.status(200).json(result[0]);
+    } else {
+      return res.status(404).json({ message: "Project name not found" });
+    }
+  });
+});
+app.get("/project-client/:clientId", (req, res) => {
   const { clientId } = req.params;
   const sql = "SELECT * FROM project WHERE clientId = ? AND isDeleted = 0";
   db.query(sql, [clientId], (err, data) => {
@@ -1080,8 +1158,8 @@ app.post("/tasks", (req, res) => {
     }, 0);
   }
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id)
-             VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?)`;
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish)
+                    VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, NULL)`;
 
   db.query(
     tasksSql,
@@ -1111,15 +1189,8 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const {
-    taskName,
-    taskFee,
-    dueDate,
-    employee,
-    miscellaneous,
-    status,
-    projectId,
-  } = req.body;
+  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
+    req.body;
 
   // Calculate total miscellaneous fees
   let miscellaneousTotal = 0;
@@ -1133,7 +1204,7 @@ app.put("/tasks/:id", (req, res) => {
 
   const updateTaskSql = `
     UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, status = ?, amount = ?
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?
     WHERE id = ?`;
 
   db.query(
@@ -1144,7 +1215,6 @@ app.put("/tasks/:id", (req, res) => {
       dueDate,
       employee,
       JSON.stringify(miscellaneous),
-      status,
       totalAmount,
       id,
     ],
@@ -1161,6 +1231,51 @@ app.put("/tasks/:id", (req, res) => {
       });
     }
   );
+});
+app.put("/task/:id/status", (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  let query = "UPDATE tasks SET status = ?";
+  const queryParams = [status, id];
+  if (status === "Completed") {
+    query += ", actual_finish = ?";
+    queryParams.splice(1, 0, new Date()); // Insert the current date as the second parameter
+  } else {
+    query += ", actual_finish = NULL"; // Reset actual_finish for non-completed statuses
+  }
+
+  query += " WHERE id = ?";
+  db.query(query, queryParams, (err, result) => {
+    if (err) {
+      console.error("Error updating task status:", err);
+      return res.status(500).send("Failed to update task status");
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Task not found");
+    }
+
+    res.status(200).send("Task status updated successfully");
+  });
+});
+app.delete("/tasks/:id", (req, res) => {
+  const { id } = req.params;
+
+  const deleteTaskSql = `DELETE FROM tasks WHERE id = ?`;
+
+  db.query(deleteTaskSql, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting task:", err);
+      return res.status(500).json({ message: "Failed to delete task" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.status(200).json({ message: "Task deleted successfully" });
+  });
 });
 app.get("/admin/tasks", (req, res) => {
   console.log(req.query);
@@ -1670,30 +1785,63 @@ app.get("/upload/:clientId", (req, res) => {
     return res.json(data);
   });
 });
+app.delete("/upload/:fileId", (req, res) => {
+  const { fileId } = req.params;
 
+  // SQL to delete the file record from the database
+  const deleteSql = "DELETE FROM uploads WHERE id = ?";
+  db.query(deleteSql, [fileId], (err, result) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+      return res.status(500).json({ message: "Error deleting file" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    console.log("File deleted successfully.");
+    res.status(200).json({ message: "File deleted successfully" });
+  });
+});
 app.use("/uploads", express.static("uploads"));
 
 app.post("/reviews", (req, res) => {
-  const { clientId, projectId, rating, comment, status } = req.body;
+  const { projectId, clientId, rating, comment, status } = req.body;
 
-  const query = `
-      INSERT INTO reviews (client_id, project_id, rating, comment, status)
-      VALUES (?, ?, ?, ?, ?)
-  `;
+  // Insert the review into the reviews table
+  const insertReviewQuery =
+    "INSERT INTO reviews (project_id, client_id, rating, comment, status) VALUES (?, ?, ?, ?, ?)";
 
   db.query(
-    query,
-    [clientId, projectId, rating, comment, status],
+    insertReviewQuery,
+    [projectId, clientId, rating, comment, status],
     (err, result) => {
       if (err) {
-        console.error(err);
-        res.status(500).json({ message: "Failed to submit the review." });
-      } else {
-        res.status(201).json({ message: "Review submitted successfully." });
+        console.error("Error inserting review:", err);
+        return res.status(500).json({ message: "Failed to submit review" });
       }
+
+      // Update the isReview column in the project table
+      const updateProjectQuery =
+        "UPDATE project SET isReview = TRUE WHERE id = ?";
+
+      db.query(updateProjectQuery, [projectId], (updateErr) => {
+        if (updateErr) {
+          console.error("Error updating project isReview:", updateErr);
+          return res
+            .status(500)
+            .json({ message: "Failed to update project status" });
+        }
+
+        return res.status(200).json({
+          message: "Review submitted successfully, and project updated",
+        });
+      });
     }
   );
 });
+
 app.get("/reviews", (req, res) => {
   const query = "SELECT * FROM reviews";
 

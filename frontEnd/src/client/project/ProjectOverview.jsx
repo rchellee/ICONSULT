@@ -29,7 +29,7 @@ function ProjectOverview({ projectId }) {
         setError("Error fetching project details. Please try again later.");
       });
 
-      axios
+    axios
       .get(`http://localhost:8081/admin/tasks?projectId=${projectId}`)
       .then((response) => {
         const tasks = response.data.tasks || [];
@@ -63,25 +63,25 @@ function ProjectOverview({ projectId }) {
       {project ? (
         <div className="project-details">
           <p>
-          <p className="pro-name">
-            <strong>Project Name:</strong> {project.projectName}
-          </p>
+            <p className="pro-name">
+              <strong>Project Name:</strong> {project.projectName}
+            </p>
             <span className="payment-status">
               <strong>Payment Status:</strong> {project.paymentStatus}
             </span>
           </p>
           <p>
-          <p className="description" style={{ marginTop: '-10px' }}>
+            <p className="description" style={{ marginTop: "-10px" }}>
               <strong>Description:</strong> {project.description}
             </p>
 
-            <span className="project-due" >
-              <strong>Project Due:</strong> {project.endDate ? formatDate(project.endDate) : "N/A"}
-            
+            <span className="project-due">
+              <strong>Project Due:</strong>{" "}
+              {project.endDate ? formatDate(project.endDate) : "N/A"}
             </span>
           </p>
           {/* Updated Status row */}
-          <p className="status-row" style={{ marginTop: '-10px' }}>
+          <p className="status-row" style={{ marginTop: "-10px" }}>
             <strong>Status:</strong> {project.status}
           </p>
 
@@ -106,27 +106,25 @@ function ProjectOverview({ projectId }) {
             </tbody>
           </table>
           <div className="payment-button-container">
-          {project.paymentStatus !== "Paid" && remainingPayment > 0 && (
-            <button
-              onClick={handlePaymentClick}
-              className="pay-now-button"
-             
-            >
-              Pay Now
-            </button>
-          )}
+            {project.paymentStatus !== "Paid" && remainingPayment > 0 && (
+              <button onClick={handlePaymentClick} className="pay-now-button">
+                Pay Now
+              </button>
+            )}
           </div>
 
-          {project.paymentStatus === "Paid" && project.status === "Completed" && (
-            <button
-              onClick={handleReviewClick}
-              style={{
-                backgroundColor: "#007bff",
-              }}
-            >
-              Leave a Review
-            </button>
-          )}
+          {project.paymentStatus === "Paid" &&
+            project.status === "Completed" &&
+            !project.isReview && (
+              <button
+                onClick={handleReviewClick}
+                style={{
+                  backgroundColor: "#007bff",
+                }}
+              >
+                Leave a Review
+              </button>
+            )}
         </div>
       ) : (
         <p>No project details found.</p>

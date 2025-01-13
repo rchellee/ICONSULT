@@ -9,9 +9,11 @@ import {
   Avatar,
   Typography,
 } from "@mui/material";
+import { AiFillHome } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { SearchContext } from "../components/SearchProvider"; // Import the context
 import logo from "../assets/logo2.png";
+import "./topbar.css";
 
 const Topbar = () => {
   const [adminUsername, setAdminUsername] = useState("");
@@ -28,9 +30,7 @@ const Topbar = () => {
     if (adminId && username) {
       setUserName(`${username}`);
     } else {
-      console.warn(
-        "No adminId, or username found in localStorage."
-      );
+      console.warn("No adminId, or username found in localStorage.");
     }
   }, []);
 
@@ -68,13 +68,14 @@ const Topbar = () => {
       }}
     >
       <Toolbar sx={{ minHeight: "60px" }}>
+        {/* Logo */}
         <Typography variant="h7" sx={{ flexGrow: 1 }}>
-          {" "}
           <div className="logo-topbar">
             <img src={logo} alt="Logo" className="logo-topbar-img" />
           </div>
         </Typography>
 
+        {/* Search Box */}
         <div className="search-box-container">
           <input
             type="text"
