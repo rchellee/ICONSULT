@@ -1,191 +1,186 @@
 /* Adjust the container to center its content */
 .login-container {
-    display: flex;
-    height: calc(100vh - 60px);
-    justify-content: center; /* Center content horizontally */
-    position: relative; /* To use positioning for right adjustment */
+  display: flex;
+  height: calc(100vh - 60px);
+  justify-content: center; /* Center content horizontally */
+  position: relative; /* To use positioning for right adjustment */
 }
 
 /* Move the content further to the right */
 .left-side,
 .right-side {
-    position: relative;
+  position: relative;
 }
 
 .left-side {
-    flex: 1;
-    display: flex;
-    flex-direction: column; /* Stack logo and text */
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0 80px;
-    box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column; /* Stack logo and text */
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 80px;
+  box-sizing: border-box;
 }
 
 .left-side > div {
-    margin-top: -100px;
+  margin-top: -100px;
 }
 
 .logo-container {
-    margin-bottom: 105px;
-    position: relative;
-    top: -100px;
-    right: 50px;
+  margin-bottom: 105px;
+  position: relative;
+  top: -100px;
+  right: 50px;
 }
 
 .left-side h2 {
-    font-size: 56px;
-    margin-bottom: 20px;
-    color: BLACK;
+  font-size: 56px;
+  margin-bottom: 20px;
+  color: BLACK;
 }
 
 .left-side p {
-    font-size: 28px;
-    color: #555;
+  font-size: 28px;
+  color: #555;
 }
 
 .right-side {
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .wrapper-login {
-    background: #fff;
-    width: 550px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    padding: 50px 60px;
-    margin-bottom: 30px;
+  background: #fff;
+  width: 550px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 50px 60px;
+  margin-bottom: 30px;
 }
 
-
 .wrapper-login h1 {
-    font-size: 45px;
-    text-align: center;
+  font-size: 45px;
+  text-align: center;
 }
 
 .wrapper-login .input-box {
-    position: relative;
-    width: 100%;
-    height: 70px;
-    margin: 25px 0;
+  position: relative;
+  width: 100%;
+  height: 70px;
+  margin: 25px 0;
 }
 
 .input-box input {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    outline: none;
-    border: 2px solid rgba(103, 100, 100, 0.3);
-    border-radius: 50px;
-    font-size: 22px;
-    color: rgb(0, 0, 0);
-    padding: 25px 60px 25px 40px;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  outline: none;
+  border: 2px solid rgba(103, 100, 100, 0.3);
+  border-radius: 50px;
+  font-size: 22px;
+  color: rgb(0, 0, 0);
+  padding: 25px 60px 25px 40px;
 }
 
 .input-box input::placeholder {
-    color: rgb(82, 79, 79);
-    font-size: 20px;
+  color: rgb(82, 79, 79);
+  font-size: 20px;
 }
 
 .input-box .icon {
-    position: absolute;
-    right: 25px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 24px;
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
 }
 
 .wrapper-login .forgot {
-    display: flex;
-    justify-content:space-around;
-    font-size: 20px;
-    margin: 10px 0 30px;
-    
+  display: flex;
+  justify-content: space-around;
+  font-size: 20px;
+  margin: 10px 0 30px;
 }
 
 .wrapper-login button {
-    width: 100%;
-    height: 60px;
-    background: #395176;
-    border: none;
-    outline: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 22px;
-    color: rgb(255, 255, 255);
-    font-weight: 700;
-    transition: background-color 0.3s, box-shadow 0.3s;
+  width: 100%;
+  height: 60px;
+  background: #395176;
+  border: none;
+  outline: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 22px;
+  color: rgb(255, 255, 255);
+  font-weight: 700;
+  transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .wrapper-login button:hover {
-    background: #5599CB;
-    box-shadow: 0 0 15px rgba(95, 89, 89, 0.5);
+  background: #5599cb;
+  box-shadow: 0 0 15px rgba(95, 89, 89, 0.5);
 }
 
 .wrapper-login .register-link {
-    font-size: 20px;
-    text-align: center;
-    margin: 30px 0 25px;
+  font-size: 20px;
+  text-align: center;
+  margin: 30px 0 25px;
 }
 
 /* Styling for Forgot Password link */
 .forgot a {
-    color: #333;
-    text-decoration: none;
-    font-weight: 600;
+  color: #333;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .forgot a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .register-link p a {
-    color: rgb(36, 36, 36);
-    text-decoration: none;
-    font-weight: 600;
+  color: rgb(36, 36, 36);
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .register-link p a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .logo {
-    max-width: 250px;
-    height: auto;
+  max-width: 250px;
+  height: auto;
 }
 
 /* Footer styles */
 footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 10px;
-    background-color: transparent;
-    font-size: 16px;
-    position: fixed; /* Fixed position to keep at the bottom */
-    bottom: 0;
-    left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  font-size: 16px;
+  position: fixed; /* Fixed position to keep at the bottom */
+  bottom: 0;
+  left: 0;
 }
 
 footer p {
-    margin: 5px 0;
-    color: #333;
+  margin: 5px 0;
+  color: #333;
 }
 
 footer a {
-    color: #333;
-    text-decoration: none; /* Remove underline */
+  color: #333;
+  text-decoration: none; /* Remove underline */
 }
 
 footer a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
-
-
-
