@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./ChangePassword.css";
+import logo from "../assets/logo1.png";
+import { FaUser, FaLock } from "react-icons/fa";
 
 const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -46,7 +48,7 @@ const ChangePassword = () => {
         }
       );
       if (response.data.message) {
-        navigate("/clientdashboard");
+        navigate("/login");
       }
     } catch (error) {
       setError("Failed to update password. Try again.");
@@ -71,55 +73,79 @@ const ChangePassword = () => {
   ];
 
   return (
-    <div className="change-password-content">
-      <div className="wrapper-change">
-        <form onSubmit={handleSubmit}>
-          <h2>Change Password</h2>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          <div className="pass-field">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-            <i
-              className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
-              onClick={togglePasswordVisibility}
-            ></i>
-          </div>
-          <div className="pass-field">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            <i
-              className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
-              onClick={togglePasswordVisibility}
-            ></i>
-          </div>
-          <div className="contentPass">
-            <p>Password must contain:</p>
-            <ul className="requirement-list">
-              {passwordRequirements.map((requirement, index) => (
-                <li key={index} className={requirement.valid ? "valid" : ""}>
-                  <i
-                    className={`fa-solid fa-circle ${
-                      requirement.valid ? "valid" : ""
-                    }`}
-                  ></i>
-                  <span>{requirement.text}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <button type="submit">Update Password</button>
-        </form>
+    <div className="login-container">
+      <div className="left-side">
+        <div className="logo-container">
+          <img src={logo} alt="Logo" className="logo" />
+        </div>
+        <div>
+          <h2>Welcome back!</h2>
+          <p>Connect and start your productivity</p>
+        </div>
       </div>
+      <div className="right-side">
+        <div className="wrapper-login">
+          <form onSubmit={handleSubmit}>
+            <h2>Change Password</h2>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            <div className="input-box">
+              <input
+                type={showPassword ? "pass" : "password"}
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                
+              />
+              <i
+                onClick={togglePasswordVisibility}
+              >
+                <FaLock className="icon" />
+              </i>
+            </div>
+            <div className="input-box">
+              <input
+                type={showPassword ? "pass" : "password"}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <i
+                onClick={togglePasswordVisibility}
+              >
+                <FaLock className="icon" />
+              </i>
+            </div>
+            <div className="contentPass">
+              <p>Password must contain:</p>
+              <ul className="requirement-list">
+                {passwordRequirements.map((requirement, index) => (
+                  <li key={index} className={requirement.valid ? "valid" : ""}>
+                    <i
+                      className={`fa-solid fa-circle ${
+                        requirement.valid ? "valid" : ""
+                      }`}
+                    ></i>
+                    <span>{requirement.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button type="submit">Update Password</button>
+          </form>
+        </div>
+      </div>
+      <footer className="footer">
+        <p>
+          {/* Modified the About link to use navigate and scroll to the About section */}
+          <a href="#about" onClick={() => navigate("/", { hash: "about" })}>
+            About
+          </a>{" "}
+          | <a href="#contact">Contact</a>
+        </p>
+        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2025</p>
+      </footer>
     </div>
   );
 };
