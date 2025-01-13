@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  Typography,
   TextField,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
 } from "@mui/material";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
@@ -26,8 +21,8 @@ const AdminAccount = () => {
         const response = await fetch(`http://localhost:8081/admins/${adminId}`);
         if (response.ok) {
           const data = await response.json();
-          setAdminDetails(data); // Admin details fetched as an object
-          setUpdatedDetails(data); // Set for editing
+          setAdminDetails(data);
+          setUpdatedDetails(data);
         } else {
           setMessage("Failed to fetch admin details.");
         }
@@ -35,7 +30,7 @@ const AdminAccount = () => {
         console.error("Error fetching admin details:", error);
         setMessage("An unexpected error occurred.");
       }
-    };    
+    };
     fetchAdminDetails();
   }, []);
 
@@ -50,7 +45,6 @@ const AdminAccount = () => {
       if (response.ok) {
         setMessage("Admin details updated successfully.");
         setEditMode(false);
-        const updatedData = await response.json();
         setAdminDetails(updatedDetails);
       } else {
         setMessage("Failed to update admin details.");
@@ -67,19 +61,36 @@ const AdminAccount = () => {
       <Sidebar />
 
       <div className="account-settings">
-        <div className="content">
+        <div className="content-admin">
           <h2>Admin Account Settings</h2>
           {adminDetails ? (
             <div>
               {!editMode ? (
                 <>
-                  <p>
-                    <strong>Username:</strong> {adminDetails.username}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {adminDetails.email}
-                  </p>
-                  <Button variant="contained" onClick={() => setEditMode(true)}>
+                  <div className="admin-detail-row">
+                    <span className="label-admin">Username</span>
+                    <p>
+                      Your Username is <span className="value-admin">{adminDetails.username}</span>
+                    </p>
+                  </div>
+                  <div className="admin-detail-row">
+                    <span className="label-admin">Email Adress</span>
+                    <p>
+                      Your Email is <span className="value-admin">{adminDetails.email}</span>
+                    </p>
+                  </div>
+
+                  <div className="admin-detail-row">
+                    <span className="label-admin">Password</span>
+                    <p>
+                    <span className="value-admin"> ********** </span>
+                    </p>
+                  </div>
+                  <Button
+                    variant="contained"
+                    onClick={() => setEditMode(true)}
+                    style={{ marginTop: "20px" }}
+                  >
                     Edit
                   </Button>
                 </>
@@ -125,11 +136,15 @@ const AdminAccount = () => {
                   <Button
                     variant="contained"
                     onClick={handleUpdate}
-                    style={{ marginRight: "10px" }}
+                    style={{ marginRight: "10px", marginTop: "20px" }}
                   >
                     Save
                   </Button>
-                  <Button variant="outlined" onClick={() => setEditMode(false)}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setEditMode(false)}
+                    style={{ marginTop: "20px" }}
+                  >
                     Cancel
                   </Button>
                 </div>

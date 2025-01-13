@@ -130,3 +130,176 @@
     height: auto; /* Automatically adjusts the height proportionally */
   }
   
+
+
+
+
+  
+  .dropdown-container {
+    display: flex;
+    gap: 10px; /* Space between dropdowns */
+    align-items: center;
+    margin-bottom: 5px;
+    position: relative;
+  }
+  
+  .dropdown-report {
+    position: relative;
+    display: inline-block;
+  }
+  
+ 
+  
+  .dropdown-icon {
+    position: absolute;
+    right: 10px; /* Adjust position of the icon */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Prevent the icon from interfering with dropdown interactions */
+    font-size: 18px;
+    color: #333;
+  }
+
+
+
+
+/* Styling for each button */
+.Management-button, .Time-button {
+  padding: 10px 20px; /* Adjust padding for the buttons */
+  font-size: 16px; /* Set the font size */
+  background-color: #ffffff; /* Green background color */
+  color: rgb(50, 50, 50);
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+
+
+/* Styling for the Management dropdown */
+.management-dropdown {
+
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  position: absolute; /* Position it below the button */
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+/* Styling for each dropdown option */
+.dropdown-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border: none;
+  border-bottom: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: rgb(50, 50, 50);
+}
+
+.dropdown-option:hover {
+  background-color: #ddd;
+}
+
+
+
+  
+
+.time-period-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  position: absolute; /* Position it below the button */
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  margin-left: 160px;
+  margin-top: -20px;
+  
+}
+
+/* Styling for each dropdown option */
+.time-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border: none;
+  border-bottom: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: rgb(50, 50, 50);
+}
+
+.time-option:hover {
+  background-color: #ddd;
+}
+
+
+
+
+/* Styling for the Monthly Options */
+.monthly-options {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 40px; /* Adjust based on where you want the options to appear */
+  margin-left: 258px;
+  margin-top: 210px;
+}
+
+/* Styling for each monthly option */
+.time-select-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  border: none;
+  border-bottom: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: rgb(50, 50, 50);
+  cursor: pointer; 
+  width: 100%; /* Make sure it's wide enough */
+}
+
+/* Hover effect for each monthly option */
+.time-select-option:hover {
+  background-color: #ddd;
+}
+
+
+
+
+.yearly-options{
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 40px; /* Adjust based on where you want the options to appear */
+  margin-left: 258px;
+  margin-top: 210px;
+}
+

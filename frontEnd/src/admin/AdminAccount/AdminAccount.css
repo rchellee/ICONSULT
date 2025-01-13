@@ -1,117 +1,78 @@
-
+/* Center the entire admin account settings content to the screen */
 .account-settings {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    background-color: #f4f4f4;
-    min-height: 100vh;
-  }
+  display: flex;
+  align-items: center; /* Centers horizontally */
+  justify-content: center; /* Centers vertically */
+  height: 100vh; /* Full viewport height */
+  flex-direction: column;
+}
 
-  .review-section {
-    margin-left: 85px;
-    padding: 20px;
-  
-  }
-  
-  .settings-content {
-    width: 100%;
-    max-width: 600px;
-    padding: 30px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-  }
-  
-  .update-btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .update-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .message {
-    margin-top: 20px;
-    padding: 12px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-  }
-  
-  .profile-form,
-  .password-form {
-    margin-bottom: 30px;
-  }
-  
-  .profile-form button,
-  .password-form button {
-    width: 100%;
-    margin: 0 auto;
-    padding: 12px;
-    background-color: #28a745;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .profile-form button:hover,
-  .password-form button:hover {
-    background-color: #218838;
-  }
-  
-  @media (max-width: 768px) {
-    .content {
-      padding: 20px;
-      width: 90%;
-      max-width: 100%;
-    }
-  
-    .form-group input {
-      font-size: 14px;
-    }
-  
-    h2 {
-      font-size: 20px;
-    }
-  }
-  
+/* Style for the content inside the account settings */
+.account-settings .content-admin {
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
+  align-items: center; /* Centers content horizontally */
+  text-align: center;
+}
+
+/* Centered styling for Username and Email */
+.admin-account-settings {
+  font-size: 16px;
+  margin: 20px 0; /* Space between sections */
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+/* Style for the label */
+.admin-account-settings .label-admin {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px; /* Space between the label and the value */
+}
+
+/* Style for the value below the label */
+.admin-account-settings .value-admin {
+  font-weight: normal;
+  color: #555;
+}
+
+/* Center and style the edit button */
+.account-settings .content button {
+  margin-top: 20px; /* Adds spacing above the button */
+}
+
+/* Add space between the heading and the details */
+.account-settings .content h2 {
+  margin-bottom: 40px; /* Space between heading and username/email */
+}
+
+/* Style for the admin detail row */
+/* Style for the admin detail row */
+.admin-detail-row {
+  display: flex;
+  flex-direction: column; /* Stack label and value vertically */
+ /* Add space between rows */
+  align-items: flex-start; /* Align to the left */
+  margin: 50px 0;
+}
+
+
+/* Style for the label */
+/* Style for the label */
+.admin-detail-row .label-admin {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px; /* Increased space between label and value */
+  font-size: 25px; /* Adjust the font size of the label */
+}
+
+/* Style for the value below the label */
+.admin-detail-row .value-admin {
+  margin-top: 5px; /* Optional: adjust the space between the value and any following content */
+  font-weight: bold;
+  color: #464646;
+}
+
+
+
