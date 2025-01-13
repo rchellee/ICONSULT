@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +11,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
+
 import "./ReportsTab.css";
 
 ChartJS.register(
@@ -28,11 +29,12 @@ const ReportsTab = () => {
   const [isYearlySubMenuOpen, setIsYearlySubMenuOpen] = useState(false);
   const [isManagementDropdownOpen, setIsManagementDropdownOpen] = useState(false);
   const [isTimePeriodOpen, setIsTimePeriodOpen] = useState(false);
+  const [selectedManagementOption, setSelectedManagementOption] = useState("");
 
   // Example data for Project Count Graph
   const projectData = {
     monthly: [4, 6, 5, 7, 8, 10, 6, 10, 11, 8, 6, 9],
-    yearly: [50, 60, 70, 80, 90], // Example yearly data
+    yearly: [50, 60, 70, 80, 90],
   };
 
   const barChartOptions = {
@@ -76,6 +78,11 @@ const ReportsTab = () => {
     setIsTimePeriodOpen(!isTimePeriodOpen);
   };
 
+  const handleManagementOptionClick = (option) => {
+    setSelectedManagementOption(option);
+    setIsManagementDropdownOpen(false);
+  };
+
   return (
     <div>
       <Topbar />
@@ -98,9 +105,24 @@ const ReportsTab = () => {
 
             {isManagementDropdownOpen && (
               <div className="management-dropdown">
-                <button className="dropdown-option">Client</button>
-                <button className="dropdown-option">Projects</button>
-                <button className="dropdown-option">Task</button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Client")}
+                >
+                  Client
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Projects")}
+                >
+                  Projects
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Task")}
+                >
+                  Task
+                </button>
               </div>
             )}
 
@@ -160,43 +182,54 @@ const ReportsTab = () => {
               </div>
             )}
 
-            <Bar
-              options={barChartOptions}
-              data={{
-                labels:
-                  dateRange === "This Month"
-                    ? [
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December",
-                      ]
-                    : ["2020", "2021", "2022", "2023", "2024"],
-                datasets: [
-                  {
-                    label:
-                      dateRange === "This Month"
-                        ? "Projects per Month"
-                        : "Projects per Year",
-                    data:
-                      dateRange === "This Month"
-                        ? projectData.monthly
-                        : projectData.yearly,
-                    backgroundColor: "rgba(247, 131, 164, 0.5)",
-                  },
-                ],
-              }}
-              width={300}
-              height={100}
-            />
+            {selectedManagementOption === "Client" ? (
+              <NewManagement />
+            ) : dateRange !== "This Month" ? (
+              <Bar
+                options={barChartOptions}
+                data={{
+                  labels: ["2020", "2021", "2022", "2023", "2024"],
+                  datasets: [
+                    {
+                      label: "Projects per Year",
+                      data: projectData.yearly,
+                      backgroundColor: "rgba(247, 131, 164, 0.5)",
+                    },
+                  ],
+                }}
+                width={300}
+                height={100}
+              />
+            ) : (
+              <Bar
+                options={barChartOptions}
+                data={{
+                  labels: [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December",
+                  ],
+                  datasets: [
+                    {
+                      label: "Projects per Month",
+                      data: projectData.monthly,
+                      backgroundColor: "rgba(247, 131, 164, 0.5)",
+                    },
+                  ],
+                }}
+                width={300}
+                height={100}
+              />
+            )}
           </div>
         </div>
       </div>
