@@ -4,12 +4,17 @@ import "./LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo1.png";
+import OtpVerification from "./OtpVerification";
+import Reset from "./Reset";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [otpMessage, setOtpMessage] = useState("");
+  const [isOtpOverlayVisible, setIsOtpOverlayVisible] = useState(false);
+  const [isResetOverlayVisible, setIsResetOverlayVisible] = useState(false);
+  const [otpOverlayData, setOtpOverlayData] = useState(null);
   const navigate = useNavigate();
 
   const handleForgotPassword = async () => {
@@ -33,17 +38,35 @@ const Login = () => {
         OTP,
       });
 
-      navigate("/otp-verification", {
-        state: { email: data.email, role: data.role, clientId: data.clientId },
+      setOtpOverlayData({
+        email: data.email,
+        role: data.role,
+        clientId: data.clientId,
       });
+      setIsOtpOverlayVisible(true);
     } catch (error) {
       console.error("Error:", error.response?.data?.message || error.message);
       alert("An error occurred. Please try again.");
     }
   };
 
+  const closeOtpOverlay = () => {
+    setIsOtpOverlayVisible(false);
+    setOtpOverlayData(null);
+  };
+
+  const openResetOverlay = () => {
+    setIsOtpOverlayVisible(false);
+    setIsResetOverlayVisible(true);
+  };
+
+  const closeResetOverlay = () => {
+    setIsResetOverlayVisible(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Login button clicked");
 
     try {
       const { data } = await axios.post("http://localhost:8081/Login", {
@@ -76,7 +99,8 @@ const Login = () => {
         setError("Your account is inactive. Please contact the admin.");
       } else {
         setError(
-          error.response?.data?.message || "An error occurred. Please try again."
+          error.response?.data?.message ||
+            "An error occurred. Please try again."
         );
       }
     }
@@ -94,11 +118,11 @@ const Login = () => {
         </div>
       </div>
       <div className="right-side">
-        <div className="wrapper">
+        <div className="wrapper-login">
           <form onSubmit={handleSubmit}>
             <div className="input-box">
               <input
-                type="text"
+                type="username"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -146,6 +170,37 @@ const Login = () => {
         </p>
         <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2025</p>
       </footer>
+
+      {isOtpOverlayVisible && (
+        <div className="otp-overlay">
+          <div className="otp-overlay-content">
+            <button className="close-btn" onClick={closeOtpOverlay}>
+              &times;
+            </button>
+            <OtpVerification
+              email={otpOverlayData.email}
+              role={otpOverlayData.role}
+              clientId={otpOverlayData.clientId}
+              onOtpSuccess={openResetOverlay}
+            />
+          </div>
+        </div>
+      )}
+
+      {isResetOverlayVisible && (
+        <div className="reset-overlay">
+          <div className="reset-overlay-content">
+            <button className="close-btn" onClick={closeResetOverlay}>
+              &times;
+            </button>
+            <Reset
+              clientIdProp={otpOverlayData?.clientId}
+              isAdmin={otpOverlayData?.role === "admin"}
+              onClose={closeResetOverlay}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
