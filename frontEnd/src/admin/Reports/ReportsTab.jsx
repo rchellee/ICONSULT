@@ -153,7 +153,7 @@ const ReportsTab = () => {
     </>
   )}
 
-  {/* Always show Display Chart button */}
+{!["Client", "Task", "Employee", "Appointments", "Revenue"].includes(selectedManagementOption) && (
   <button 
     className="Display-Chart-button" 
     onClick={handleDisplayChartClick}
@@ -161,8 +161,7 @@ const ReportsTab = () => {
     Display Chart
   </button>
 
-  {/* Show chart options dropdown when the Display Chart button is clicked, 
-      and allow toggling between "Per Month and Monthly" and "Active Projects" */}
+)}
   {showChartOptions && (
     <div className="chart-options-dropdown">
       <button 
