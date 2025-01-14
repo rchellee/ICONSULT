@@ -344,3 +344,30 @@
 
 }
 
+
+
+
+.select-yearly-button {
+  display: flex;
+  flex-direction: column;
+  margin-top: -75px;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+  position: absolute; /* Position it below the button */
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  color: #333;
+  align-items: self-end;
+}
+
+.select-yearly-button:hover {
+  background-color: #45a049;
+}
+
+.select-yearly-button:focus {
+  outline: none;
+}
+
+
