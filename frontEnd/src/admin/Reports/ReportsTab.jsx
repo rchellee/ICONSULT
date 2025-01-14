@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +13,7 @@ import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 
 import "./ReportsTab.css";
+import NewManagement from "./NewManagement/NewManagement";
 
 ChartJS.register(
   CategoryScale,
@@ -184,44 +185,37 @@ const ReportsTab = () => {
 
             {selectedManagementOption === "Client" ? (
               <NewManagement />
-            ) : dateRange !== "This Month" ? (
-              <Bar
-                options={barChartOptions}
-                data={{
-                  labels: ["2020", "2021", "2022", "2023", "2024"],
-                  datasets: [
-                    {
-                      label: "Projects per Year",
-                      data: projectData.yearly,
-                      backgroundColor: "rgba(247, 131, 164, 0.5)",
-                    },
-                  ],
-                }}
-                width={300}
-                height={100}
-              />
             ) : (
               <Bar
                 options={barChartOptions}
                 data={{
-                  labels: [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "November",
-                    "December",
-                  ],
+                  labels:
+                    dateRange === "Per Month"
+                      ? [
+                          "January",
+                          "February",
+                          "March",
+                          "April",
+                          "May",
+                          "June",
+                          "July",
+                          "August",
+                          "September",
+                          "October",
+                          "November",
+                          "December",
+                        ]
+                      : ["2020", "2021", "2022", "2023", "2024"],
                   datasets: [
                     {
-                      label: "Projects per Month",
-                      data: projectData.monthly,
+                      label:
+                        dateRange === "Per Month"
+                          ? "Projects per Month"
+                          : "Projects per Year",
+                      data:
+                        dateRange === "Per Month"
+                          ? projectData.monthly
+                          : projectData.yearly,
                       backgroundColor: "rgba(247, 131, 164, 0.5)",
                     },
                   ],
