@@ -9,14 +9,6 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import Topbar from "../Topbar";
-import Sidebar from "../sidebar";
-
-import "./ReportsTab.css";
-import ClientReports from "./ClientReports/ClientReports";
-import YearlyProjects from "./YearlyProjects";
-import EmployeeReports from "./EmployeeReports/EmployeeReports";
-import ActiveProjects from "./ActiveProjects";
 
 ChartJS.register(
   CategoryScale,
@@ -27,19 +19,16 @@ ChartJS.register(
   Legend
 );
 
-const ReportsTab = () => {
+const ClientReportsTab = () => {
   const [dateRange, setDateRange] = useState("This Month");
   const [isManagementDropdownOpen, setIsManagementDropdownOpen] = useState(false);
   const [isTimePeriodOpen, setIsTimePeriodOpen] = useState(false);
-  const [isMonthlyHovered, setIsMonthlyHovered] = useState(false); // Track hover state for Monthly
+  const [isMonthlyHovered, setIsMonthlyHovered] = useState(false);  // Track hover state for Monthly
   const [selectedManagementOption, setSelectedManagementOption] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
-  const [isYearlyBucket, setIsYearlyBucket] = useState(false); // Track Yearly Bucket state
-  const [showChartOptions, setShowChartOptions] = useState(false); // Show chart options state
-  const [selectedChartOption, setSelectedChartOption] = useState(null); // Selected chart option
 
-  // Example data for Project Count Graph
-  const projectData = {
+  // Example data for Client Count Graph
+  const clientData = {
     monthly: [4, 6, 5, 7, 8, 10, 6, 10, 11, 8, 6, 9],
     weekly: {
       January: [1, 2],
@@ -65,7 +54,7 @@ const ReportsTab = () => {
       },
       title: {
         display: true,
-        text: `Projects (${dateRange})`,
+        text: `Clients (${dateRange})`,
       },
     },
   };
@@ -73,10 +62,8 @@ const ReportsTab = () => {
   const handleMonthlyOptionClick = (month) => {
     setSelectedMonth(month === "Per Month" ? "" : month);
     setDateRange(month);
-    setIsMonthlyHovered(false); // Close submenu when a month is selected
-    setIsTimePeriodOpen(false); // Close the time period submenu after selection
-    setIsYearlyBucket(false); // Close Yearly Bucket when selecting a time period
-    setIsChartOptionSelect(false);
+    setIsMonthlyHovered(false);  // Close submenu when a month is selected
+    setIsTimePeriodOpen(false);  // Close the time period submenu after selection
   };
 
   const handleDropdownClick = () => {
@@ -90,10 +77,9 @@ const ReportsTab = () => {
   const handleManagementOptionClick = (option) => {
     setSelectedManagementOption(option);
     setIsManagementDropdownOpen(false);
-    setIsYearlyBucket(false); // this one para mag close si yearly bucket
-    setIsChartOptionSelect(false);
   };
 
+  // This function will handle hover event over "Monthly" button
   const handleMonthlyHover = () => {
     setIsMonthlyHovered(true);
   };
@@ -102,86 +88,30 @@ const ReportsTab = () => {
     setIsMonthlyHovered(false);
   };
 
-  const hideTimePeriodButtons =
-    selectedManagementOption === "Client" ||
-    selectedManagementOption === "Task" ||
-    selectedManagementOption === "Employee" ||
-    selectedManagementOption === "Appointments" ||
-    selectedManagementOption === "Revenue";
-
-  const handleYearlyBucketClick = () => {
-    setIsYearlyBucket(true);
-    setSelectedManagementOption(""); // Reset management option to avoid confusion
-    setIsTimePeriodOpen(false); // Close time period dropdown
-  };
-
-  const handleDisplayChartClick = () => {
-    setShowChartOptions(!showChartOptions);
-  };
-
-  const handleChartOptionSelect = (option) => {
-    setSelectedChartOption(option);
-    setShowChartOptions(false);
-  };
-
   return (
     <div>
-      <Topbar />
-      <Sidebar />
-      <div className="reports-tab-container">
-        <div className="reports-header"></div>
+      <div className="client-reports-tab-container">
+        <div className="client-reports-header"></div>
         <div className="management-chart-section">
           <div className="chart-container">
-          <div className="dropdown-container">
-  <button
-    className="Management-button"
-    onClick={handleManagementDropdownClick}
-  >
-    Management
-  </button>
-
-  {/* Hide Time Period and Yearly Bucket buttons only when Active Projects is selected */}
-  {selectedChartOption !== "Active Projects" && !hideTimePeriodButtons && (
-    <>
-      <button
-        className="Time-button"
-        onClick={handleDropdownClick}
-      >
-        Time Period
-      </button>
-      <button onClick={handleYearlyBucketClick}>Yearly Bucket</button>
-    </>
-  )}
-
-  {/* Always show Display Chart button */}
-  <button 
-    className="Display-Chart-button" 
-    onClick={handleDisplayChartClick}
-  >
-    Display Chart
-  </button>
-
-  {/* Show chart options dropdown when the Display Chart button is clicked, 
-      and allow toggling between "Per Month and Monthly" and "Active Projects" */}
-  {showChartOptions && (
-    <div className="chart-options-dropdown">
-      <button 
-        className="chart-option" 
-        onClick={() => handleChartOptionSelect("Per Month and Monthly")}
-      >
-        Per Month and Monthly
-      </button>
-      <button 
-        className="chart-option" 
-        onClick={() => handleChartOptionSelect("Active Projects")}
-      >
-        Active Projects
-      </button>
-    </div>
-  )}
-</div>
-
-
+            <div className="dropdown-container">
+              <button
+                className="Time-button"
+                onClick={handleDropdownClick}
+              >
+                Time Period
+              </button>
+              <button
+                className="YearlyBucket-button"
+              >
+                Yearly Bucket
+              </button>
+              <button
+                className="Display-Chart-button"
+              >
+                Display Chart
+              </button>
+            </div>
 
             {isManagementDropdownOpen && (
               <div className="management-dropdown">
@@ -193,9 +123,9 @@ const ReportsTab = () => {
                 </button>
                 <button
                   className="dropdown-option"
-                  onClick={() => handleManagementOptionClick("Projects")}
+                  onClick={() => handleManagementOptionClick("Clients")}
                 >
-                  Projects
+                  Clients
                 </button>
                 <button
                   className="dropdown-option"
@@ -261,30 +191,23 @@ const ReportsTab = () => {
               </div>
             )}
 
-            {isYearlyBucket ? (
-              <YearlyProjects />
-            ) : selectedManagementOption === "Client" ? (
+            {selectedManagementOption === "Client" ? (
               <ClientReports />
-            ) : selectedManagementOption === "Employee" ? (
-              <EmployeeReports /> 
-            ) : selectedChartOption === "Active Projects" ? (
-              <ActiveProjects />
             ) : selectedMonth && selectedMonth !== "Per Month" ? (
               <Bar
                 options={{
-                 
                   responsive: true,
                   plugins: {
                     legend: { position: "top" },
-                    title: { display: true, text: `Weekly Projects (${selectedMonth})` },
+                    title: { display: true, text: `Weekly Clients (${selectedMonth})` },
                   },
                 }}
                 data={{
                   labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
                   datasets: [
                     {
-                      label: `Projects in ${selectedMonth}`,
-                      data: projectData.weekly[selectedMonth],
+                      label: `Clients in ${selectedMonth}`,
+                      data: clientData.weekly[selectedMonth],
                       backgroundColor: "rgba(99, 132, 255, 0.5)",
                     },
                   ],
@@ -300,19 +223,29 @@ const ReportsTab = () => {
                     legend: { position: "top" },
                     title: {
                       display: true,
-                      text: "Projects per Month",
+                      text: "Per Month Clients of Year 2024",
                     },
                   },
                 }}
                 data={{
                   labels: [
-                    "January", "February", "March", "April", "May", "June", 
-                    "July", "August", "September", "October", "November", "December"
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December",
                   ],
                   datasets: [
                     {
-                      label: "Projects per Month",
-                      data: projectData.monthly,
+                      label: "Clients per Month",
+                      data: clientData.monthly,
                       backgroundColor: "rgba(247, 131, 164, 0.5)",
                     },
                   ],
@@ -328,4 +261,4 @@ const ReportsTab = () => {
   );
 };
 
-export default ReportsTab;
+export default ClientReportsTab;

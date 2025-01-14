@@ -176,6 +176,14 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
+.Management-button:hover{
+  background-color: #ebebeb;
+}
+
+.Time-button:hover{
+  background-color: #ebebeb;
+}
+
 
 
 /* Styling for the Management dropdown */
@@ -183,7 +191,7 @@
 
   display: flex;
   flex-direction: column;
-  margin-top: 5px;
+  margin-top: -20px;
   background-color: white;
   border: none;
   border-radius: 5px;
@@ -301,5 +309,38 @@
   top: 40px; /* Adjust based on where you want the options to appear */
   margin-left: 258px;
   margin-top: 210px;
+
+}
+
+
+
+
+.YearlyBucket-button {
+  background-color: #ffffff;  /* White background */
+  color: rgb(56, 56, 56);  /* Text color */
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Shadow effect */
+}
+
+.YearlyBucket-button:hover {
+  background-color: #ebebeb;  /* Light grey background on hover */
+}
+
+.Display-Chart-button{
+  background-color: #ffffff;  /* White background */
+  color: rgb(56, 56, 56);  /* Text color */
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-left: auto;  /* Align it to the right */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Shadow effect */
+
 }
 

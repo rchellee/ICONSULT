@@ -1,6 +1,6 @@
 import React from "react";
 
-const NewManagement = () => {
+const YearlyProjects = () => {
   return (
     <div>
       
@@ -10,4 +10,4 @@ const NewManagement = () => {
   );
 };
 
-export default NewManagement;
+export default YearlyProjects;
