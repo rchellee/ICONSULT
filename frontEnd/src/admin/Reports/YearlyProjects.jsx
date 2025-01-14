@@ -1,15 +1,6 @@
 import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 
 // Register the necessary chart.js components
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -21,7 +12,7 @@ const YearlyProjects = () => {
     datasets: [
       {
         label: "Projects per Year",
-        data: [5, 5, 15, 5, 25],
+        data: [5, 10, 5, 20, 25],
         borderColor: "rgba(75,192,192,1)",
         backgroundColor: "rgba(75,192,192,0.2)",
         fill: true,
@@ -30,9 +21,10 @@ const YearlyProjects = () => {
     ],
   };
 
+  // State for the selected year range
   const [yearRange, setYearRange] = useState([2020, 2024]);
-  const [showOptions, setShowOptions] = useState(false);
 
+  // Filter data based on the selected range
   const filteredData = {
     labels: fullData.labels.filter((label) => {
       const year = parseInt(label);
@@ -46,6 +38,7 @@ const YearlyProjects = () => {
     ],
   };
 
+  // Options for the line chart
   const options = {
     responsive: true,
     plugins: {
@@ -78,44 +71,26 @@ const YearlyProjects = () => {
     },
   };
 
-  const handleYearChange = (range) => {
-    const [start, end] = range.split("-").map(Number);
+  // Handle year range change
+  const handleYearChange = (e) => {
+    const [start, end] = e.target.value.split("-").map(Number);
     setYearRange([start, end]);
-    setShowOptions(false);
   };
 
   return (
-    <div style={{ width: "70%", margin: "0 auto", textAlign: "center" }}>
+    <div style={{ width: "60%", height: "1000px", margin: "0 auto", marginTop: "-10px",}}>
       <div style={{ marginBottom: "20px" }}>
-        <button
-          className="select-yearly-button"
-          onClick={() => setShowOptions((prev) => !prev)}
-          style={{ display: "inline-block", margin: "auto" }}
+        <select
+          id="yearRange"
+          onChange={handleYearChange}
+          value={`${yearRange[0]}-${yearRange[1]}`}
+          style={{ width: "150px", padding: "5px" }} // Adjusted width and padding
         >
-          Select Range
-        </button>
-
-        {showOptions && (
-          <div style={{ marginTop: "50px" }}>
-            <ul style={{ listStyle: "none", padding: 0 }}>
-              <li>
-                <button onClick={() => handleYearChange("2020-2024")}>2020-2024</button>
-              </li>
-              <li>
-                <button onClick={() => handleYearChange("2021-2022")}>2021-2022</button>
-              </li>
-              <li>
-                <button onClick={() => handleYearChange("2022-2023")}>2022-2023</button>
-              </li>
-              <li>
-                <button onClick={() => handleYearChange("2022-2024")}>2022-2024</button>
-              </li>
-              <li>
-                <button onClick={() => handleYearChange("2023-2024")}>2023-2024</button>
-              </li>
-            </ul>
-          </div>
-        )}
+          <option value="2020-2024">2020-2024</option>
+          <option value="2021-2022">2021-2022</option>
+          <option value="2022-2023">2022-2023</option>
+          <option value="2023-2024">2023-2024</option>
+        </select>
       </div>
 
       <Line data={filteredData} options={options} />
