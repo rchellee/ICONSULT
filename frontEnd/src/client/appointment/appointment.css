@@ -151,6 +151,17 @@ header .current-date {
   background: #e0e0e0;
 }
 
+.fully-booked {
+  background-color: #f8d7da;
+  color: #721c24;
+  cursor: not-allowed;
+}
+
+.fully-booked:hover {
+  background-color: #f5c6cb;
+}
+
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .calendar-container {

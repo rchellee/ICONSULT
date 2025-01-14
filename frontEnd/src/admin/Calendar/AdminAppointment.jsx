@@ -132,8 +132,36 @@ function AdminAppointment() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const nextStep = () => setCurrentStep((prevStep) => prevStep + 1);
+  const nextStep = () => {
+    if (currentStep === 2) {
+      if (
+        !formData.client ||
+        !formData.consultationType ||
+        (formData.consultationType === "Others" && !formData.otherDetails) ||
+        !formData.additionalInfo ||
+        !formData.platform ||
+        !formData.reminder
+      ) {
+        alert("Please fill out all required fields before proceeding.");
+        return;
+      }
+    }
+    setCurrentStep((prevStep) => prevStep + 1);
+  };
+
   const prevStep = () => setCurrentStep((prevStep) => prevStep - 1);
+
+  const validateForm = () => {
+    return (
+      formData.date &&
+      formData.time &&
+      formData.client &&
+      formData.consultationType &&
+      (formData.consultationType !== "Others" || formData.otherDetails) &&
+      formData.platform &&
+      formData.reminder
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -163,7 +191,7 @@ function AdminAppointment() {
       consultationType: formData.consultationType,
       additionalInfo: formData.additionalInfo || "",
       platform: formData.platform || "",
-      clientId: client_Id, 
+      clientId: client_Id,
       companyName: selectedClient.companyName || "",
       reminder: formData.reminder || "",
       postedBy: "admin",
@@ -220,7 +248,9 @@ function AdminAppointment() {
                 />
                 {selectedDate && (
                   <div className="time-slots-admin">
-                    <h4>Available Times for {selectedDate}</h4>
+                    <h4>
+                      <em>Available Time for {selectedDate}</em>
+                    </h4>
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod">Choose Time Format:</label>
                       <select
@@ -266,6 +296,7 @@ function AdminAppointment() {
                           disabled={!formData.date || !formData.time}
                         >
                           Next
+                          <i className="fas fa-arrow-right"></i>
                         </button>
                       </div>
                     )}
@@ -276,6 +307,10 @@ function AdminAppointment() {
           )}
           {currentStep === 2 && (
             <div className="step2form">
+              <h4>
+                <em>Consultation Details</em>
+              </h4>
+              <br />
               <div className="form-group">
                 <label htmlFor="client">Select Client:</label>
                 <select
@@ -407,6 +442,7 @@ function AdminAppointment() {
                   name="additionalInfo"
                   value={formData.additionalInfo}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -457,7 +493,10 @@ function AdminAppointment() {
                 </select>
               </div>
 
-              <button onClick={prevStep}>Back</button>
+              <button onClick={prevStep}>
+                {" "}
+                <i className="fas fa-arrow-left"></i>Back
+              </button>
               <button
                 onClick={nextStep}
                 disabled={
@@ -466,40 +505,62 @@ function AdminAppointment() {
                     !formData.otherDetails)
                 }
               >
-                Next
+                <i className="fas fa-arrow-right"></i>Next
               </button>
             </div>
           )}
-          {/** Step 3: Confirmation **/}
           {currentStep === 3 && (
             <div className="confirmation-container">
               <div className="confirmation-form">
+                <h4>
+                  <em>Confirm your appointment details</em>
+                </h4>
+                <br />
                 <p>
-                  <strong>Client:</strong> {formData.clientName}
+                  <i className="fa fa-user"></i>
+                  <strong> Client:</strong> {formData.clientName}
                 </p>
+                <br />
                 <p>
-                  <strong>Date:</strong> {formData.date}
+                  <i className="fa fa-calendar-check"></i>
+                  <strong> Date:</strong> {formData.date}
                 </p>
+                <br />
                 <p>
-                  <strong>Time:</strong> {formData.time}
+                  <i className="fa fa-clock"></i>
+                  <strong> Time:</strong> {formData.time}
                 </p>
+                <br />
                 <p>
-                  <strong>Consultation Type:</strong>{" "}
+                  <i className="fa fa-envelope"></i>
+                  <strong> Consultation Type:</strong>{" "}
                   {formData.consultationType}
                 </p>
+                <br />
                 <p>
-                  <strong>Additional Info:</strong> {formData.additionalInfo}
+                  <i className="fas fa-mail-bulk"></i>
+                  <strong> Additional Info:</strong> {formData.additionalInfo}
                 </p>
+                <br />
                 <p>
-                  <strong>Consultation Mode:</strong> {formData.platform}
+                  <i className="fa fa-desktop"></i>
+                  <strong> Consultation Mode:</strong> {formData.platform}
                 </p>
+                <br />
                 <p>
-                  <strong>Reminder:</strong> {formData.reminder}
+                  <i className="fa fa-stop"></i>
+                  <strong> Reminder:</strong> {formData.reminder}
                 </p>
 
                 <div className="confirmation-buttons">
-                  <button onClick={prevStep}>Back</button>
-                  <button onClick={handleSubmit}>Submit</button>
+                  <button onClick={prevStep}>
+                    {" "}
+                    <i className="fas fa-arrow-left"></i>Back
+                  </button>
+                  <button onClick={handleSubmit}>
+                    {" "}
+                    <i className="fas fa-edit"> </i>Submit
+                  </button>
                 </div>
               </div>
             </div>

@@ -7,6 +7,7 @@ const EmployeeForm = ({
   setEmployees,
   toggleForm,
   editingEmployee,
+  goBack,
 }) => {
   const [formData, setFormData] = useState({
     lastName: "",
@@ -208,10 +209,14 @@ const EmployeeForm = ({
                 <i className="fa fa-calendar"></i>
               </div>
             </div>
-
-            <button type="submit">
-              {editingEmployee ? "Update Employee" : "Add Employee"}
-            </button>
+            <div className="button-group">
+              <button type="submit">
+                {editingEmployee ? "Update Employee" : "Add Employee"}
+              </button>
+              <button className="btn-back" onClick={goBack}>
+                Back
+              </button>
+            </div>
           </div>
 
           {/* Status Section */}

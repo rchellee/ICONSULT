@@ -461,7 +461,7 @@ app.post("/notifications", (req, res) => {
   const { title, description, postedBy } = req.body;
 
   const query =
-    "INSERT INTO notifications (title, description, timestamp, postedBy, isRead) VALUES (?, ?, NOW(), FALSE)";
+    "INSERT INTO notifications (title, description, timestamp, postedBy, isRead, isReadAdmin) VALUES (?, ?, NOW(), FALSE, FALSE)";
   db.query(query, [title, description, postedBy], (err, result) => {
     if (err) {
       console.error("Error inserting notification:", err.stack);
@@ -496,6 +496,21 @@ app.put("/notifications/:id", (req, res) => {
     }
   });
 });
+// Endpoint to mark a notification as read by admin
+app.put("/notificationsAdmin/:id", (req, res) => {
+  const notificationId = req.params.id;
+
+  const query = "UPDATE notifications SET isReadAdmin = TRUE WHERE id = ?";
+  db.query(query, [notificationId], (err, result) => {
+    if (err) {
+      console.error("Error updating notification:", err.stack);
+      res.status(500).send("Error updating notification");
+    } else {
+      res.status(200).send("Notification marked as read by admin");
+    }
+  });
+});
+
 // Endpoint to get notifications for a specific client
 app.get("/notifications/:clientId", (req, res) => {
   const { clientId } = req.params;
@@ -1443,7 +1458,7 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
-app.get("/appointments/:clientId", (req, res) => {
+app.get("/appointments-details/:clientId", (req, res) => {
   const { clientId } = req.params;
 
   const sql = `SELECT * FROM appointments WHERE client_id = ?`;
@@ -1561,7 +1576,7 @@ app.delete("/appointments/:id", (req, res) => {
   });
 });
 
-// const backfillTimeFormat = () => {
+// const backfillTim  eFormat = () => {
 //   const updateTimeFormatSql = `
 //     UPDATE appointments
 //     SET time = DATE_FORMAT(STR_TO_DATE(time, '%H:%i:%s'), '%h:%i %p');

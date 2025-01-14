@@ -25,9 +25,8 @@ const Notification = () => {
 
   const markAsRead = async (id) => {
     try {
-      // Update notification on the server
       const response = await fetch(
-        `http://localhost:8081/notifications/${id}`,
+        `http://localhost:8081/notificationsAdmin/${id}`,
         {
           method: "PUT",
         }
@@ -37,7 +36,7 @@ const Notification = () => {
         // Update the local state only after server update succeeds
         const updatedNotifications = notifications.map((notification) =>
           notification.id === id
-            ? { ...notification, isRead: true }
+            ? { ...notification, isReadAdmin: true }
             : notification
         );
         setNotifications(updatedNotifications);
@@ -69,7 +68,7 @@ const Notification = () => {
   const filteredNotifications =
     filter === "all"
       ? notifications
-      : notifications.filter((notification) => !notification.isRead);
+      : notifications.filter((notification) => !notification.isReadAdmin);
 
   const now = new Date();
   const newNotifications = filteredNotifications.filter(
@@ -114,7 +113,7 @@ const Notification = () => {
                         <li
                           key={notification.id}
                           className={`notification-item ${
-                            notification.isRead ? "read" : "unread"
+                            notification.isReadAdmin ? "read" : "unread"
                           }`}
                           onClick={() => markAsRead(notification.id)}
                         >
@@ -136,7 +135,7 @@ const Notification = () => {
                         <li
                           key={notification.id}
                           className={`notification-item ${
-                            notification.isRead ? "read" : "unread"
+                            notification.isReadAdmin ? "read" : "unread"
                           }`}
                           onClick={() => markAsRead(notification.id)}
                         >

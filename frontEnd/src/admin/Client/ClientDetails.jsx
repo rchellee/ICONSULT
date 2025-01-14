@@ -22,7 +22,7 @@ const ClientDetails = ({
     const fetchAppointments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8081/appointments/${client.id}`
+          `http://localhost:8081/appointmentsdetails/${client.id}`
         );
         if (response.ok) {
           const data = await response.json();

@@ -1,18 +1,33 @@
-/* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./client.css";
 import client from "../assets/admin.jpg";
 
 const Sidebar = () => {
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUnreadNotifications = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/notifications");
+        const notifications = await response.json();
+        const hasUnread = notifications.some((notif) => !notif.isRead);
+        setHasUnreadNotifications(hasUnread);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchUnreadNotifications();
+  }, []);
 
   // Handle logout and clear local storage
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("firstName");
     localStorage.removeItem("lastName");
-    navigate('/');
+    navigate("/");
   };
 
   // Retrieve the client's name from localStorage
@@ -21,37 +36,32 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      
-
       <ul className="sidebar-links">
         <li>
-          <Link to="/clientdashboard" data-tooltip="Home">
+          <Link to="/clientproject" data-tooltip="Home">
             <div className="material-symbols-outlined icon">home</div>
             <span>Home</span>
           </Link>
         </li>
         <li>
-          <Link to="/clientproject" data-tooltip="My Projects">
-            <div className="material-symbols-outlined icon">folder</div>
-            <span>Projects</span>
+          <Link to="/consultations" data-tooltip="Calendar">
+            <div className="material-symbols-outlined icon">calendar_month</div>
+            <span>Calendar</span>
           </Link>
         </li>
         <li>
-          <Link to="/consultations" data-tooltip="Consultations">
-            <div className="material-symbols-outlined icon">chat</div>
-            <span>Consultations</span>
-          </Link>
-        </li>
-        <li>
-          <Link to="/client-notif" data-tooltip="Notifications">
-            <div className="material-symbols-outlined icon">notifications</div>
+          <Link
+            to="/client-notif"
+            data-tooltip="Notifications"
+            className="notifications-link"
+          >
+            <div className="material-symbols-outlined icon">
+              notifications
+              {hasUnreadNotifications && (
+                <span className="notification-mark"></span>
+              )}
+            </div>
             <span>Notifications</span>
-          </Link>
-        </li>
-        <li>
-          <Link to="/review" data-tooltip="Notifications">
-            <div className="material-symbols-outlined icon">reviews</div>
-            <span>Reviews</span>
           </Link>
         </li>
         <li>

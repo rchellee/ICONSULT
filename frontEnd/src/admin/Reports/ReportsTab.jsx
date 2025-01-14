@@ -26,6 +26,11 @@ const ReportsTab = () => {
   const [dateRange, setDateRange] = useState("This Month");
   const [reportType, setReportType] = useState("Overview");
 
+  // Filters
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [clientFilter, setClientFilter] = useState("All");
+  const [priorityFilter, setPriorityFilter] = useState("All");
+
   // Example data for the Overview Section
   const overviewMetrics = [
     {
@@ -62,6 +67,7 @@ const ReportsTab = () => {
       progress: 100,
       budget: "$45k",
       hours: 120,
+      client: "Client 1",
     },
     {
       name: "Project B",
@@ -69,6 +75,7 @@ const ReportsTab = () => {
       progress: 60,
       budget: "$30k",
       hours: 80,
+      client: "Client 2",
     },
     {
       name: "Project C",
@@ -76,8 +83,18 @@ const ReportsTab = () => {
       progress: 40,
       budget: "$20k",
       hours: 50,
+      client: "Client 1",
     },
   ];
+
+  // Filtered Data
+  const filteredProjectData = projectPerformanceData.filter((project) => {
+    const matchesStatus =
+      statusFilter === "All" || project.status === statusFilter;
+    const matchesClient =
+      clientFilter === "All" || project.client === clientFilter;
+    return matchesStatus && matchesClient;
+  });
 
   return (
     <div>
@@ -87,6 +104,7 @@ const ReportsTab = () => {
         <div className="reports-header">
           <h2>Reports</h2>
           <div className="reports-filters">
+            {/* Date Range Filter */}
             <select
               value={dateRange}
               onChange={(e) => setDateRange(e.target.value)}
@@ -97,6 +115,7 @@ const ReportsTab = () => {
               <option value="Custom Range">Custom Range</option>
             </select>
 
+            {/* Report Type Filter */}
             <select
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
@@ -108,10 +127,35 @@ const ReportsTab = () => {
               <option value="Client Reports">Client Reports</option>
             </select>
 
+            {/* Dynamic Filters Based on Report Type */}
+            {reportType === "Project Performance" && (
+              <>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="All">All Statuses</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Ongoing">Ongoing</option>
+                  <option value="Delayed">Delayed</option>
+                </select>
+
+                <select
+                  value={clientFilter}
+                  onChange={(e) => setClientFilter(e.target.value)}
+                >
+                  <option value="All">All Clients</option>
+                  <option value="Client 1">Client 1</option>
+                  <option value="Client 2">Client 2</option>
+                </select>
+              </>
+            )}
+
             <button>Export</button>
           </div>
         </div>
 
+        {/* Overview Section */}
         {reportType === "Overview" && (
           <div className="overview-section">
             <h3>Overview</h3>
@@ -141,6 +185,7 @@ const ReportsTab = () => {
           </div>
         )}
 
+        {/* Project Performance Section */}
         {reportType === "Project Performance" && (
           <div className="project-performance-section">
             <h3>Project Performance</h3>
@@ -155,7 +200,7 @@ const ReportsTab = () => {
                 </tr>
               </thead>
               <tbody>
-                {projectPerformanceData.map((project, index) => (
+                {filteredProjectData.map((project, index) => (
                   <tr key={index}>
                     <td>{project.name}</td>
                     <td>{project.status}</td>

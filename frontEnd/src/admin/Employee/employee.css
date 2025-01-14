@@ -1,3 +1,4 @@
+/* General layout */
 .employee-home-page {
   display: flex;
   background-color: #f4f4f9;
@@ -9,47 +10,38 @@
   flex-grow: 2;
   padding-left: 100px;
 }
-
-/* Top bar and search bar */
 .top-bar {
   width: 100%;
   display: flex;
-  justify-content: flex-start; 
-
+  justify-content: flex-start;
+  margin-bottom: 0px;
 }
 
-.search-bar {
-  width: 100%;
-  max-width: 300px;
-  border: 1px solid #ccc;
-  margin-left: 900px;
-
-}
-
-/* Button styles */
 button {
-  background-color: #0f2d4d;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 10px;
   padding: 10px 20px;
-  font-size: 12px;
+  font-size: 14px;
+  transition: opacity 0.3s;
 }
 
 button:hover {
-  opacity: 0.9;
+  opacity: 0.8;
 }
-/* Toast notif  */
+
+/* Toast Notification */
 .toast {
   position: fixed;
-  bottom: 816px;
+  bottom: 20px;
   right: 20px;
-  background-color: #136bc9;
+  background-color: #28a745;
   color: white;
   padding: 15px;
   border-radius: 5px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   display: none;
 }
 
@@ -62,59 +54,106 @@ button:hover {
   align-items: center;
 }
 
-.message {
+.toast .message {
   margin-left: 10px;
 }
 
-.progress {
+.toast i {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.toast .progress {
   width: 100%;
   height: 5px;
   background-color: #ddd;
   margin-top: 10px;
 }
 
-.progress.active {
+.toast .progress.active {
   width: 100%;
   animation: progress 5s linear;
 }
 
-/********************Employee details **************/
-h4 {
+/***************************** Employee Management Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+}
+
+th {
+  background-color: #4763a9;
   font-weight: bold;
-}
-.employee-readonly {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  max-width: 600px;
-  padding: 30px;
-  border-radius: 8px;
-  background: white;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
-  margin: 0px auto;
-  margin: 20px auto;
-}
-.employee-readonly p {
-  font-size: 18px;
-  margin: 12px 0;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 500;
+  color: white;
 }
 
-.employee-readonly i {
-  font-size: 20px;
-  color: #136bc9;
+td {
+  background-color: #fff;
+  transition: background-color 0.3s;
 }
 
-.employee-readonly strong {
+tr:hover td {
+  background-color: #f9f9f9;
+}
+
+/****************** Action Dropdown */
+.action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-btn {
+  border-radius: 5px;
+  background-color:white;
+  color: black;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
   font-weight: 600;
-  color: #000;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 5px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-btn:focus + .dropdown-content,
+.dropdown-content:hover {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  text-align: left;
+  background-color: white;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item i {
+  margin-right: 8px;
 }
 
 /* Toggle button styles */
@@ -164,7 +203,7 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
-/* employee initials */
+/* Employee Initials */
 .initials-circle {
   display: inline-flex;
   justify-content: center;
@@ -175,42 +214,176 @@ input:checked + .slider:before {
   border-radius: 50%;
   font-size: 14px;
   text-transform: uppercase;
+  margin-right: 10px;
 }
 
-
-table {
-  width: 90%;
-  border-collapse: collapse;
+/********************* Employee Readonly */
+.employee-readonly {
+  display: grid;
+  background-color: #ffffff;
+  padding: 20px;
+  border-top: 4px solid #007bff;
+  margin: 10px auto;
+  height: 600px;
+  width: 100%;
 }
 
-th, td {
-  padding: 8px 20px; /* Reduced padding for a tighter spacing */
-  text-align: left;
+.employee-readonly p {
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
 }
 
-th {
-  background-color: #f2f2f2;
-  font-weight: bold;
+.employee-readonly i {
+  font-size: 18px;
+  color: #136bc9;
 }
 
-tr:hover {
+.employee-readonly strong {
+  font-weight: 600;
+  color: #000;
+}
+
+/*************** Buttons in Employee Details readonly */
+.button-group {
+  display: flex;
+  gap: 0px;
+}
+
+/************************** Modal (History) */
+/* Modal container */
+.history-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(1px);
+}
+
+/* Modal content */
+.history-modal-content {
+  background-color: #f9f9f9;
+  padding: 25px;
+  border-radius: 4px;
+  width: 80%;
+  max-width: 900px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #333;
+  overflow-y: auto;
+}
+
+/* Close button */
+.history-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.history-modal-close:hover {
+  color: #000;
+}
+
+/* Scrollbar styling */
+.history-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.history-modal-content::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+.history-modal-content::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+}
+
+/* History list styling */
+.history-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.history-list-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fafafa;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.history-list-item:hover {
   background-color: #f1f1f1;
+}
+
+.history-list-item .history-item-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.history-list-item .history-item-details {
+  font-size: 0.9rem;
+  color: #555;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.history-list-item .history-item-date {
+  font-size: 0.8rem;
+  color: #888;
+  text-align: right;
+}
+
+
+/* Keyframes for FadeIn animation */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
 }
 
 /******************Add Employee Form ************************/
 .employee-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr)  ;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  width: 60%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 60px;
+  width: 70%;
   box-sizing: border-box;
-  position:relative;
-  margin-left:10%;
-  margin: 10px auto;
+  position: relative;
+  margin: 20px auto;
+  font-size: 1.1rem;
 }
 
 .employee-form-grid h3 {
@@ -223,7 +396,7 @@ tr:hover {
 .employee-form-row {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
 }
 
 .employee-form-row input,
@@ -247,20 +420,213 @@ tr:hover {
   font-size: 14px;
   color: #555;
 }
-
+/**************************** Editing form */
 .employee-editing-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr)  ;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  padding: 40px;
-  width: 55%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 60px;
+  width: 70%;
   box-sizing: border-box;
-  position:relative;
+  position: relative;
   margin: 20px auto;
+  font-size: 1.1rem;
 }
+
+.employee-row {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-group input,
+select {
+  padding: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.input-group input, 
+.input-group select {
+  padding: 12px 20px;
+  padding-left: 60px; /* Adjust for icon spacing */
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  right: 10px;
+  font-size: 1rem;
+  color: #555;
+}
+
+.input-group-icon .input-icon i {
+  color: #136bc9;
+}
+
+.input-group select:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+input,
+input[type="radio"] + label,
+input[type="checkbox"] + label:before,
+select option,
+select {
+    width: 100%;
+    padding: 1em;
+    line-height: 1.4;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+    transition: all 0.35s ease-in-out;
+}
+input:focus {
+    outline: none;
+    border-color: #576cab;
+}
+input:focus + .input-icon i {
+    color: #114672;
+}
+input:focus + .input-icon:after {
+    border-right-color: #214789;
+}
+
+/* Radio Button Styling */
+input[type="radio"] {
+    display: none;
+}
+input[type="radio"] + label {
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+    border-radius: 0;
+    padding: 1em;
+    cursor: pointer;
+}
+input[type="radio"] + label:first-of-type {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+input[type="radio"] + label:last-of-type {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+input[type="radio"]:checked + label {
+    background-color: #103879;
+    color: white;
+    border-color: #255c7b;
+}
+
+.input-label {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: #888;
+  pointer-events: none;
+  transition: 0.3s;
+}
+select {
+    height: 3.4em;
+    line-height: 2;
+}
+select:focus {
+    outline: none;
+}
+.input-group {
+    margin-bottom: 1em;
+}
+.input-group-icon {
+    position: relative;
+}
+.input-group-icon input {
+    padding-left: 4.4em;
+    
+}
+.input-group-icon .input-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.4em;
+    height: 3.4em;
+    line-height: 3.4em;
+    text-align: center;
+    pointer-events: none;
+}
+.input-group-icon .input-icon:after {
+    content: "";
+    position: absolute;
+    top: 0.6em;
+    bottom: 0.6em;
+    left: 3.4em;
+    border-right: 1px solid #e5e5e5;
+    transition: all 0.35s ease-in-out;
+}
+.col-half {
+    width: 100%;
+    float: left;
+    padding-right: 10px;
+    
+}
+.col-half:last-of-type {
+    padding-right: 0;
+}
+.col-third {
+    width: 33.333%;
+    float: left;
+    padding-right: 10px;
+}
+.col-third:last-of-type {
+    padding-right: 0;
+}
+
+.status-role-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.employee-button-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.employee-btn-edit,
+.employee-btn-back {
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.employee-btn-edit {
+  background-color: white;
+  color: black;
+}
+
+.employee-btn-edit:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.employee-btn-back {
+  background-color: white;
+  color: black;
+}
+
+.employee-btn-back:hover {
+  background-color: #e53935;
+  transform: scale(1.05);
+}
+
 
 @media screen and (max-width: 768px) {
 

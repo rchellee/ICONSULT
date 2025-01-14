@@ -129,6 +129,7 @@ const EmployeeManagement = () => {
               setEmployees={setEmployees}
               toggleForm={() => setShowForm(false)}
               onEmployeeAdded={handleEmployeeAdded}
+              goBack={goBackToList}
             />
           ) : selectedEmployee ? (
             <EmployeeDetails

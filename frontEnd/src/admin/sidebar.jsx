@@ -1,24 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./admin.css";
 import admin from "../assets/admin.jpg";
 
 const Sidebar = () => {
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const navigate = useNavigate();
 
-  const Sidebar = ({ onNavigate }) => {
-    return (
-      <div className="sidebar">
-        <ul>
-          <li onClick={() => onNavigate("clients")}>Clients</li>
-          <li onClick={() => onNavigate("dashboard")}>Dashboard</li>
-          <li onClick={() => onNavigate("projects")}>Projects</li>
-          <li onClick={() => onNavigate("logout")}>Logout</li>
-        </ul>
-      </div>
-    );
-  };
-  
+  useEffect(() => {
+    const fetchUnreadNotifications = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/notifications");
+        const notifications = await response.json();
+        const hasUnread = notifications.some((notif) => !notif.isReadAdmin);
+        setHasUnreadNotifications(hasUnread);
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchUnreadNotifications();
+  }, []);
 
   return (
     <div className="sidebar">
@@ -36,8 +38,17 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/notifications" data-tooltip="Notifications">
-            <div className="material-symbols-outlined icon">notifications</div>
+          <Link
+            to="/notifications"
+            data-tooltip="Notifications"
+            className="notifications-link"
+          >
+            <div className="material-symbols-outlined icon">
+              notifications
+              {hasUnreadNotifications && (
+                <span className="notification-mark"></span>
+              )}
+            </div>
             <span>Notifications</span>
           </Link>
         </li>

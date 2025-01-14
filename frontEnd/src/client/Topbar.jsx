@@ -1,21 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./Topbar.css";
 import {
   AppBar,
   Toolbar,
   IconButton,
-  Menu,
+  Menu, 
   MenuItem,
   Avatar,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import client from "../assets/admin.jpg";
+import { SearchContext } from "../components/SearchProvider"; // Import the context
 import logo from "../assets/logo2.png";
+import "./topbar.css";
 
 const Topbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState("");
+  const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -70,7 +72,16 @@ const Topbar = () => {
             <img src={logo} alt="Logo" className="logo-topbar-img" />
           </div>
         </Typography>
-        <Typography variant="body1" sx={{ marginRight: 2 }} color="#143d58">
+        <div className="search-box-container">
+          <input
+            type="text"
+            className="search-box-topbar"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <Typography variant="body1" color="#143d58">
           {userName}
         </Typography>
         <IconButton onClick={handleMenuOpen} color="#0056b3">
