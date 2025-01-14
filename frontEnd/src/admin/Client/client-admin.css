@@ -50,7 +50,6 @@ table th, table td {
 
 table th {
   background-color: #092b70; 
-  color: white;
 }
 
 table tr:nth-child(even) {
@@ -62,6 +61,7 @@ table tr:hover {
   cursor: pointer;
   transition: background 0.3s ease-in-out; 
 }
+.th-client { color: #ffff; }
 
 table td {
   color: #555; 

@@ -22,21 +22,16 @@ span:hover {
 
 .content-fullcalendar {
   margin-top: -17px;
-  margin-left: 85px;
+  margin-left: 70px;
   padding: 20px;
   transition: margin-left 0.4s ease;
 }
-
-/* button {
-  padding: 10px 20px;
-  color: white;
-  border: none;
-  border-radius: 43px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
+.sidebar-calendar {
+  max-height: 800px; /* Adjust height as needed */
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 16px;
+  background: white;
 }
 
 button + button {

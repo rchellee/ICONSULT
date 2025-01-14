@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
 const moment = require("moment");
+const sgMail = require("@sendgrid/mail");
+const schedule = require("node-schedule");
 require("dotenv").config();
 
 const scheduledTasks = {};
@@ -28,7 +30,6 @@ app.get("/", (req, res) => {
 });
 
 // SendGrid email example
-const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
 const verificationCodes = new Map();
 const otpStore = {};
@@ -249,7 +250,7 @@ app.post("/send-email", (req, res) => {
 //clientchange of password
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
-  const code = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000);
 
   const message = {
     to: email,
@@ -1405,11 +1406,71 @@ app.post("/appointments", (req, res) => {
       }
 
       const appointmentId = result.insertId;
-      // Parse date and time
       const formattedDate = moment(date, "YYYY-MM-DD").format("MMMM DD, YYYY");
       const formattedDateTime = moment(`${date} ${time}`, "YYYY-MM-DD hh:mm A");
       if (!formattedDateTime.isValid()) {
         return res.status(400).json({ message: "Invalid date or time format" });
+      }
+
+      let reminderDateTime;
+
+      if (moment(reminder).isValid()) {
+        // If reminder is a valid date-time string, use it directly
+        reminderDateTime = moment(reminder);
+      } else if (!isNaN(parseInt(reminder))) {
+        // If reminder is a number of days, calculate reminderDateTime
+        const reminderDays = parseInt(reminder);
+        reminderDateTime = moment(
+          `${date} ${time}`,
+          "YYYY-MM-DD hh:mm A"
+        ).subtract(reminderDays, "days");
+      } else {
+        return res.status(400).json({ message: "Invalid reminder format" });
+      }
+      const now = moment().utc();
+
+      // Use UTC for comparison to avoid timezone issues
+      if (reminderDateTime.isBefore(now)) {
+        console.log(
+          "Reminder time has already passed. Skipping reminder scheduling."
+        );
+      } else {
+        schedule.scheduleJob(reminderDateTime.toDate(), () => {
+          const subject = `Reminder: Appointment with ${companyName}`;
+          const html = `
+            <p>Hi ${name},</p>
+            <p>This is a reminder for your upcoming appointment:</p>
+            <ul>
+              <li><strong>Date:</strong> ${moment(date).format(
+                "MMMM DD, YYYY"
+              )}</li>
+              <li><strong>Time:</strong> ${time}</li>
+              <li><strong>Consultation Type:</strong> ${consultationType}</li>
+              <li><strong>Platform:</strong> ${platform}</li>
+            </ul>
+            <p>If you have any questions, feel free to reach out to us.</p>
+          `;
+
+          const message = {
+            to: email,
+            from: process.env.SENDER_EMAIL,
+            subject,
+            html,
+          };
+
+          sgMail
+            .send(message)
+            .then(() => console.log(`Reminder email sent to ${email}`))
+            .catch((error) =>
+              console.error("Failed to send reminder email:", error)
+            );
+        });
+
+        console.log(
+          `Reminder scheduled for ${reminderDateTime.format(
+            "YYYY-MM-DD HH:mm"
+          )}`
+        );
       }
 
       const notificationSql = `

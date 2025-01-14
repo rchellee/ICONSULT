@@ -91,16 +91,10 @@ th {
   color: white;
 }
 
-td {
-  background-color: #fff;
-  transition: background-color 0.3s;
-}
 
 tr:hover td {
   background-color: #f9f9f9;
 }
-
-/****************** Action Dropdown */
 .action-dropdown {
   position: relative;
   display: inline-block;

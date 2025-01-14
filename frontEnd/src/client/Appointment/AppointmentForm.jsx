@@ -4,6 +4,9 @@ import Sidebar from "../sidebar";
 import "./appointment.css";
 import DynamicCalendar from "./DynamicCalendar";
 import Topbar from "../Topbar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 function AppointmentForm() {
   const navigate = useNavigate();
@@ -17,13 +20,12 @@ function AppointmentForm() {
     otherDetails: "",
     additionalInfo: "",
     platform: "",
-    reminder: "",
+    reminder: null,
     client: "",
   });
   const [availableDates, setAvailableDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
-  
 
   const fetchAppointmentCounts = async () => {
     try {
@@ -97,6 +99,13 @@ function AppointmentForm() {
     "07:00 PM",
   ];
 
+  const handleDateChange = (selectedDate) => {
+    setFormData((prev) => ({
+      ...prev,
+      reminder: selectedDate,
+    }));
+  };
+
   const handleDateSelect = async (date) => {
     setSelectedDate(date);
     setFormData({ ...formData, date });
@@ -154,7 +163,10 @@ function AppointmentForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const nextStep = () => {
@@ -216,6 +228,9 @@ function AppointmentForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const reminderDateTime = formData.reminder
+      ? moment(formData.reminder).format("YYYY-MM-DD HH:mm:ss")
+      : null;
     const clientId = localStorage.getItem("clientId");
 
     if (!clientId) {
@@ -247,6 +262,7 @@ function AppointmentForm() {
       email: selectedClient.email_add,
       contact: selectedClient.mobile_number,
       companyName: selectedClient.companyName,
+      reminder: reminderDateTime,
       postedBy: "client",
     };
 
@@ -299,7 +315,9 @@ function AppointmentForm() {
                 <DynamicCalendar
                   availableDates={availableDates}
                   onDateSelect={handleDateSelect}
-                  disabledDates={(date) => availableDates[date] === "fully-booked"}
+                  disabledDates={(date) =>
+                    availableDates[date] === "fully-booked"
+                  }
                 />
                 {selectedDate && (
                   <div className="time-slots">
@@ -504,28 +522,16 @@ function AppointmentForm() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="reminder">Remind Me:</label>
-                <select
-                  id="reminder"
-                  name="reminder"
-                  value={formData.reminder || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    -- Select Reminder Time --
-                  </option>
-                  <option value="At Time of Event">At Time of Event</option>
-                  <option value="5 minutes before">5 minutes before</option>
-                  <option value="10 minutes before">10 minutes before</option>
-                  <option value="15 minutes before">15 minutes before</option>
-                  <option value="30 minutes before">30 minutes before</option>
-                  <option value="1 hour before">1 hour before</option>
-                  <option value="2 hours before">2 hours before</option>
-                  <option value="1 day before">1 day before</option>
-                  <option value="2 days before">2 days before</option>
-                  <option value="1 week before">1 week before</option>
-                </select>
+                <label htmlFor="reminder">Set Custom Reminder:</label>
+                <DatePicker
+                  selected={formData.reminder}
+                  onChange={handleDateChange}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                  placeholderText="Select Reminder Date and Time"
+                />
               </div>
 
               <button onClick={prevStep}>
@@ -579,8 +585,12 @@ function AppointmentForm() {
                 <br />
                 <p>
                   <i className="fa fa-stop"></i>
-                  <strong> Reminder:</strong> {formData.reminder}
+                  <strong> Reminder:</strong>{" "}
+                  {formData.reminder
+                    ? formData.reminder.toLocaleString()
+                    : "No reminder set"}
                 </p>
+
                 <br />
                 <div className="confirmation-buttons">
                   <button onClick={prevStep}>

@@ -4,6 +4,9 @@ import Sidebar from "../sidebar";
 import "./adminCalendar.css";
 import Topbar from "../Topbar";
 import Calendar from "./AdminDynamicCalendar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 function AdminAppointment() {
   const navigate = useNavigate();
@@ -15,7 +18,7 @@ function AdminAppointment() {
     time: "",
     consultationType: "",
     additionalInfo: "",
-    reminder: "",
+    reminder: null,
     client: "",
   });
 
@@ -76,6 +79,13 @@ function AdminAppointment() {
     "07:00 PM",
   ];
 
+  const handleDateChange = (selectedDate) => {
+    setFormData((prev) => ({
+      ...prev,
+      reminder: selectedDate,
+    }));
+  };
+
   const handleDateSelect = async (date) => {
     const today = new Date().toISOString().split("T")[0];
     if (date <= today) {
@@ -129,7 +139,10 @@ function AdminAppointment() {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const nextStep = () => {
@@ -165,6 +178,9 @@ function AdminAppointment() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const reminderDateTime = formData.reminder
+      ? moment(formData.reminder).format("YYYY-MM-DD HH:mm:ss")
+      : null;
 
     const client_Id = formData.client;
 
@@ -193,7 +209,7 @@ function AdminAppointment() {
       platform: formData.platform || "",
       clientId: client_Id,
       companyName: selectedClient.companyName || "",
-      reminder: formData.reminder || "",
+      reminder: reminderDateTime,
       postedBy: "admin",
     };
     console.log("Submitting appointment:", formDataWithClientName);
@@ -469,28 +485,16 @@ function AdminAppointment() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="reminder">Reminder Me:</label>
-                <select
-                  id="reminder"
-                  name="reminder"
-                  value={formData.reminder || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Select Reminder Time
-                  </option>
-                  <option value="At Time of Event">At Time of Event</option>
-                  <option value="5 minutes before">5 minutes before</option>
-                  <option value="10 minutes before">10 minutes before</option>
-                  <option value="15 minutes before">15 minutes before</option>
-                  <option value="30 minutes before">30 minutes before</option>
-                  <option value="1 hour before">1 hour before</option>
-                  <option value="2 hours before">2 hours before</option>
-                  <option value="1 day before">1 day before</option>
-                  <option value="2 days before">2 days before</option>
-                  <option value="1 week before">1 week before</option>
-                </select>
+                <label htmlFor="reminder">Set Custom Reminder:</label>
+                <DatePicker
+                  selected={formData.reminder}
+                  onChange={handleDateChange}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                  placeholderText="Select Reminder Date and Time"
+                />
               </div>
 
               <button onClick={prevStep}>
@@ -549,7 +553,10 @@ function AdminAppointment() {
                 <br />
                 <p>
                   <i className="fa fa-stop"></i>
-                  <strong> Reminder:</strong> {formData.reminder}
+                  <strong> Reminder:</strong>{" "}
+                  {formData.reminder
+                    ? formData.reminder.toLocaleString()
+                    : "No reminder set"}
                 </p>
 
                 <div className="confirmation-buttons">
