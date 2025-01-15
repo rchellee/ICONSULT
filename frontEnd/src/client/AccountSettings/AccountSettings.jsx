@@ -1,17 +1,22 @@
+// AccountSettings.jsx
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AccountSettings.css";
 import { IoMdArrowDropright } from "react-icons/io";
 import image from "../../assets/image.png";
-import ChangePassword from "./ChangePassword"; // Import the new component
+import ChangePassword from "./ChangePassword"; 
 import { CiEdit } from "react-icons/ci";
+import UpdateProfileForm from "./UpdateProfileForm"; // Import the new UpdateProfileForm component
 
 const AccountSettings = () => {
   const [clientDetails, setClientDetails] = useState(null);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [message, setMessage] = useState("");
+  const [isFormVisible, setIsFormVisible] = useState(false); // State to control visibility of the update form
   const clientId = localStorage.getItem("clientId");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -39,29 +44,37 @@ const AccountSettings = () => {
     fetchClientDetails();
   }, []);
 
+  const handleUpdateProfile = () => {
+    setIsFormVisible(true); // Show the floating form when the "UPDATE PROFILE" button is clicked
+  };
+
+  const handleCloseForm = () => {
+    setIsFormVisible(false); // Close the floating form
+  };
+
   return (
     <div>
       <Topbar />
       <Sidebar />
-      <div className="account-settings">
+      <div className="account-setting">
         {!isUpdatingPassword ? (
           clientDetails && (
             <>
               <div className="account">
                 <h2>Account Setting</h2>
                 <p>
-                    Personal info and options to manage it.<br />
-                    See the summary of your profiles.
+                  Personal info and options to manage it.<br />
+                  See the summary of your profiles.
                 </p>
-                <button className="update-profile-button">      
-	                <CiEdit/> UPDATE PROFILE
+                <button className="update-profile-button" onClick={handleUpdateProfile}>
+                  <CiEdit /> UPDATE PROFILE
                 </button>
 
                 <div className="imagee">
                   <img
                     src={image}
                     alt="image"
-                    className="account-settings-icon"
+                    className="account-setting-icon"
                   />
                 </div>
 
@@ -81,21 +94,21 @@ const AccountSettings = () => {
                         <td className="no-bg">{clientDetails.username}</td>
                       </tr>
                       <tr>
-                    <td>Age</td>
-                    <td className="no-bg">20</td>
-                  </tr>
-                  <tr>
-                    <td>Gender</td>
-                    <td className="no-bg">Female</td>
-                  </tr>
-                  <tr>
-                    <td>Nationality</td>
-                    <td className="no-bg">Filipino</td>
-                  </tr>
-                  <tr>
-                    <td>Home</td>
-                    <td>{clientDetails?.address}</td>
-                  </tr>
+                        <td>Age</td>
+                        <td className="no-bg">20</td>
+                      </tr>
+                      <tr>
+                        <td>Gender</td>
+                        <td className="no-bg">Female</td>
+                      </tr>
+                      <tr>
+                        <td>Nationality</td>
+                        <td className="no-bg">Filipino</td>
+                      </tr>
+                      <tr>
+                        <td>Home</td>
+                        <td>{clientDetails?.address}</td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -160,6 +173,11 @@ const AccountSettings = () => {
           />
         )}
       </div>
+
+      {/* Floating Update Profile Form */}
+      {isFormVisible && (
+        <UpdateProfileForm clientDetails={clientDetails} handleCloseForm={handleCloseForm} />
+      )}
     </div>
   );
 };

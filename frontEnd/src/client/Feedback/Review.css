@@ -1,0 +1,55 @@
+.custom-rating .MuiRating-icon {
+  font-size: 60px; /* Adjust the size here */
+ 
+}
+
+
+
+
+.submit-review-button {
+  border-radius: 100px;
+  padding: 10px 20px;
+  width: auto;  /* Adjust based on content */
+  max-width: 200px;
+  margin-left: auto;  /* Moves the button to the right */
+  background-color: #3982d0;  /* Background color (blue) */
+  color: white;  /* Text color */
+  border: none;  /* Removes border */
+    /* Make text bold */
+  cursor: pointer;  /* Changes cursor to pointer on hover */
+  transition: background-color 0.3s ease;  /* Smooth transition for color change */
+}
+
+.submit-review-button:hover {
+  background-color: #2e66a2;   /* Darker blue on hover */
+}
+
+
+.review-form-box {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
+  margin-top: 200px; /* Reduce this value to move the form up */
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+
+.leave-review-title {
+  text-align: center; /* Keep it centered */
+  font-weight: bold;
+}
+
+
+.comment-review-box .MuiOutlinedInput-root {
+  border-radius: 8px; /* Rounded edges */
+}
+
+.comment-review-box .MuiOutlinedInput-notchedOutline {
+  border: 3px solid #98caff;  /* Thicker border */
+}
+
+.comment-review-box .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #98caff; /* Border color on hover */
+}
+
+

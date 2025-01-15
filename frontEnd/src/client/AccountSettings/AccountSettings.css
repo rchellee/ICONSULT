@@ -8,21 +8,41 @@
 
 /*to make it progressive margin is flex start then add yung padding*/
 
-.account-settings .content {
+.account-setting .content {
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding-left: 10px; 
   width: calc(100% - 250px); 
   margin-left: flex-start;
-  margin-top: 1px;
+  margin-top: auto;
   height: 100vh; 
   overflow: hidden;
 }
 
-.account-settings h2{
+.account-setting {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center horizontally */
+  justify-content: flex-start; /* Align at the top */
+  margin-top: 10px; /* To prevent overlap with the topbar */
+  padding-top: -100px; /* Optional padding for spacing */
+  width: 100%; /* Ensure the container takes full width */
+  overflow-y: auto; 
+  max-height: 80vh; 
+}
+
+.account-setting h2,
+.account-setting p {
+  margin-top: -60; /* Remove top margin to bring the elements up */
+}
+
+
+.account-setting h2{
   display: flex;
   justify-content: flex-start; 
+  
+  margin-top: 60px;
 }
 
 /* Info-box styles */
@@ -98,7 +118,7 @@ table tr {
   margin-top: -10px;
 }
 
-.account-settings-icon {
+.account-setting-icon {
   width: 200px;
   height: 150px;
   margin-left: 600px;
