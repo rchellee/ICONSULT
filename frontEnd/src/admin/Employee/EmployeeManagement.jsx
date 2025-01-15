@@ -13,6 +13,9 @@ const EmployeeManagement = () => {
   const [toastVisible, setToastVisible] = useState(false); // State for toast visibility
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility toggle
   const [employeeHistory, setEmployeeHistory] = useState([]); // History data
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [filter, setFilter] = useState({ month: "", year: "" });
+
 
   const exampleHistory = [
     { title: 'Project X Assigned', description: 'Assigned to Project X for development.' },
@@ -33,6 +36,47 @@ const EmployeeManagement = () => {
 
     fetchEmployees();
   }, []);
+
+  const sortEmployees = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedEmployees = [...employees].sort((a, b) => {
+      if (key === "name") {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+        if (nameA < nameB) return direction === "asc" ? -1 : 1;
+        if (nameA > nameB) return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+      if (key === "status") {
+        const statusA = a[key];
+        const statusB = b[key];
+        if (statusA === statusB) return 0;
+        if (statusA === "active" && statusB !== "active") return direction === "asc" ? -1 : 1;
+        if (statusA !== "active" && statusB === "active") return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+      if (key === "dateAdded") {
+        return direction === "asc"
+          ? new Date(a[key]) - new Date(b[key])
+          : new Date(b[key]) - new Date(a[key]);
+      }
+      return 0;
+    });
+
+    setEmployees(sortedEmployees);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "asc" ? "▲" : "▼";
+    }
+    return "⇅";
+  };
 
   const viewEmployeeDetails = (employee) => {
     setSelectedEmployee(employee);
@@ -100,6 +144,25 @@ const EmployeeManagement = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prev) => ({ ...prev, [name]: value }));
+};
+
+const filterEmployees = () => {
+  return employees.filter((employee) => {
+      const employeeDate = new Date(employee.dateAdded);
+      const filterMonth = filter.month ? parseInt(filter.month) : null;
+      const filterYear = filter.year ? parseInt(filter.year) : null;
+
+      return (
+          (!filterMonth || employeeDate.getMonth() + 1 === filterMonth) &&
+          (!filterYear || employeeDate.getFullYear() === filterYear)
+      );
+  });
+};
+
+const filteredEmployees = filterEmployees();
 
   return (
     <div>
@@ -120,21 +183,46 @@ const EmployeeManagement = () => {
             />
           ) : (
             <>
-              <button
+            <div className="employee-filter-section">
+            <button
                 onClick={() => setShowForm(true)}
                 className="add-employee-btn"
               >
                 Add Employee
               </button>
+    <select name="month" value={filter.month} onChange={handleFilterChange}>
+        <option value="">Month</option>
+        {[...Array(12).keys()].map((m) => (
+            <option key={m + 1} value={m + 1}>
+                {new Date(0, m).toLocaleString("default", { month: "long" })}
+            </option>
+        ))}
+    </select>
+    <select name="year" value={filter.year} onChange={handleFilterChange}>
+        <option value="">Year</option>
+        {[2025, 2024, 2023].map((year) => (
+            <option key={year} value={year}>
+                {year}
+            </option>
+        ))}
+    </select>
+</div>
               {employees.length === 0 ? (
                 <p>No employees found.</p>
               ) : (
                 <table>
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Status</th>
+                      <th onClick={() => sortEmployees("name")}>
+                        Name {getSortIcon("name")}
+                      </th>
+                      <th onClick={() => sortEmployees("status")}>
+                        Status {getSortIcon("status")}
+                      </th>
                       <th>Role</th>
+                      <th onClick={() => sortEmployees("dateAdded")}>
+                        Date Added {getSortIcon("dateAdded")}
+                      </th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -163,6 +251,7 @@ const EmployeeManagement = () => {
                           </label>
                         </td>
                         <td>{employee.role || "role 1"}</td>
+                        <td>{employee.dateAdded}</td>
                         <td>
                           <div className="action-dropdown">
                             <button className="dropdown-btn">Actions</button>
@@ -209,25 +298,22 @@ const EmployeeManagement = () => {
 
       {isModalOpen && (
         <div className="history-modal">
-  <div className="history-modal-content">
-    <i className="history-modal-close" onClick={closeModal}>×</i>
-    {/* <h2>History</h2> */}
-    <ul className="history-list">
-      <li className="history-list-item">
-        <div className="history-item-title">Title of History Event 1</div>
-        <div className="history-item-details">Details of event 1, describing what happened during this event...</div>
-        <div className="history-item-date">January 14, 2025</div>
-      </li>
-      <li className="history-list-item">
-        <div className="history-item-title">Title of History Event 2</div>
-        <div className="history-item-details">Details of event 2, describing what happened during this event...</div>
-        <div className="history-item-date">January 13, 2025</div>
-      </li>
-     
-    </ul>
-  </div>
-</div>
-
+          <div className="history-modal-content">
+            <i className="history-modal-close" onClick={closeModal}>×</i>
+            <ul className="history-list">
+              <li className="history-list-item">
+                <div className="history-item-title">Title of History Event 1</div>
+                <div className="history-item-details">Details of event 1, describing what happened during this event...</div>
+                <div className="history-item-date">January 14, 2025</div>
+              </li>
+              <li className="history-list-item">
+                <div className="history-item-title">Title of History Event 2</div>
+                <div className="history-item-details">Details of event 2, describing what happened during this event...</div>
+                <div className="history-item-date">January 13, 2025</div>
+              </li>
+            </ul>
+          </div>
+        </div>
       )}
     </div>
   );

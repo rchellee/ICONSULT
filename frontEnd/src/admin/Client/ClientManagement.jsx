@@ -11,6 +11,7 @@ const ClientManagement = () => {
   const [toastVisible, setToastVisible] = useState(false);
   const [isAddingClient, setIsAddingClient] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [filter, setFilter] = useState({ month: "", year: "" });
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -64,6 +65,26 @@ const ClientManagement = () => {
     return "⇅";
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const filterClients = () => {
+    return clients.filter((client) => {
+      const clientDate = new Date(client.dateAdded);
+      const filterMonth = filter.month ? parseInt(filter.month) : null;
+      const filterYear = filter.year ? parseInt(filter.year) : null;
+
+      return (
+        (!filterMonth || clientDate.getMonth() + 1 === filterMonth) &&
+        (!filterYear || clientDate.getFullYear() === filterYear)
+      );
+    });
+  };
+
+  const filteredClients = filterClients();
+
   const toggleStatus = async (clientId, currentStatus) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
     try {
@@ -113,8 +134,27 @@ const ClientManagement = () => {
           ) : selectedClient ? (
             <ClientDetails client={selectedClient} goBack={goBackToList} />
           ) : (
-            <>
-              <button onClick={() => setIsAddingClient(true)}>Add Client</button>
+            <><div className="client-filter-section">
+<button className="add-client-btn" onClick={() => setIsAddingClient(true)}>Add Client</button>
+
+                <select name="month" value={filter.month} onChange={handleFilterChange}>
+                  <option value="">Months</option>
+                  {[...Array(12).keys()].map((m) => (
+                    <option key={m + 1} value={m + 1}>
+                      {new Date(0, m).toLocaleString("default", { month: "long" })}
+                    </option>
+                  ))}
+                </select>
+                <select name="year" value={filter.year} onChange={handleFilterChange}>
+                  <option value="">Years</option>
+                  {[2025, 2024, 2023].map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="scrollable-table-container">
                 <table>
                   <thead>
@@ -134,19 +174,14 @@ const ClientManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {clients.map((client) => {
+                    {filteredClients.map((client) => {
                       const initials = `${client.firstName[0]}${client.lastName[0]}`.toUpperCase();
-                      const color = `#${Math.floor(
-                        Math.random() * 16777215
-                      ).toString(16)}`;
+                      const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
                       return (
                         <tr key={client.id}>
                           <td onClick={() => viewClientDetails(client)}>
-                            <div
-                              className="initials-circle"
-                              style={{ backgroundColor: color }}
-                            >
+                            <div className="initials-circle" style={{ backgroundColor: color }}>
                               {initials}
                             </div>
                             {`${client.firstName} ${client.lastName}`}
@@ -181,10 +216,7 @@ const ClientManagement = () => {
                   <div className="text text-2">Success, your client has been added.</div>
                 </div>
               </div>
-              <i
-                className="fa-solid fa-xmark close"
-                onClick={() => setToastVisible(false)}
-              ></i>
+              <i className="fa-solid fa-xmark close" onClick={() => setToastVisible(false)}></i>
               <div className="progress active"></div>
             </div>
           )}

@@ -22,13 +22,9 @@
   border-radius: 5px;
 } */
 /* Scroll */
-.scrollable-table-container {
-    max-height: 800px;
-    overflow-y: auto;
-}
 /* Table Styles for client and employee */
 table {
-  width: 90%;
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -167,6 +163,26 @@ table td a {
   width: 100%;
   animation: progress 5s linear;
 }
+.container {
+  text-align: right;  /* Align all inline elements to the right */
+}
+
+.add-client-btn {
+  background-color: #2773ad;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right:1170px;
+}
+
+.add-client-btn:hover {
+  background-color: #0d3771;
+}
+
 /***************************** Client form ******************/
 
 .client-form-grid {
@@ -405,20 +421,21 @@ select:focus {
   .overview-form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px; /* Adjusted gap between the grid items */
-    background-color: #fff;
-    border-radius: 4px;
+    gap: 30px; /* Adjusted gap between the grid items */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     padding: 60px;
     width: 75%;
     box-sizing: border-box;
     position: relative;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 
 /* Adjust the gap specifically between inputs inside the grid */
 .overview-form-grid input {
-    margin-bottom: 15px; /* Add a bottom margin for spacing between input fields */
+    margin-bottom: 20px; /* Add a bottom margin for spacing between input fields */
 }
 
 .overview-input-group {
@@ -458,6 +475,52 @@ select:focus {
   border-color: #007bff;
   outline: none;
   box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+/* Style for the overview edit button group */
+.overview-edit-button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Style for the save button */
+.btn-save {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-save:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+/* Style for the cancel button */
+.btn-cancel {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: white;
+  background-color: #dc3545;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+/* Icon spacing */
+.btn-save i, .btn-cancel i {
+  margin-right: 5px;
 }
 
 
@@ -631,4 +694,36 @@ button:hover {
     width: 100%;
     margin-bottom: 10px;
   }
+}
+/******************* Month and year sorting ******************/
+
+/* Style for the filter section */
+.client-filter-section {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-bottom: 2px;
+  align-items: center;
+  padding: 3px;
+}
+
+/* Style for the dropdowns */
+.client-filter-section select {
+  padding: 2px;
+  font-size: 0.65rem;
+  border-radius: 4px;
+  cursor: pointer;
+  max-width: 70px;
+}
+
+.client-filter-section select:hover {
+  border-color: #888;
+  background-color: #f1f1f1;
+}
+
+/* Improved spacing and alignment */
+.client-filter-section label {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #333;
 }

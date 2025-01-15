@@ -49,6 +49,7 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
     if (tab === "projects") setProjects(sortData(projects, field));
     if (tab === "files") setFiles(sortData(files, field));
   };
+
   const renderSortIcon = (field) => {
     if (sortOrder.field === field) {
       return sortOrder.order === "asc" ? "▲" : "▼";
@@ -56,8 +57,7 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
     return "⇅";
   };
 
-
-const handleFilterChange = (e) => {
+  const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter((prev) => ({ ...prev, [name]: value }));
   };
@@ -83,10 +83,10 @@ const handleFilterChange = (e) => {
   const filteredProjects = filterDataByDate(projects, "startDate");
   const filteredFiles = filterDataByDate(files, "uploadedDate");
 
-
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -123,22 +123,27 @@ const handleFilterChange = (e) => {
   return (
     <div className="client-details">
       <div className="tabs">
-        <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</button>
-        <button className={activeTab === "appointments" ? "active" : ""} onClick={() => setActiveTab("appointments")}>Appointments</button>
-        <button className={activeTab === "projects" ? "active" : ""} onClick={() => setActiveTab("projects")}>Projects</button>
-        <button className={activeTab === "files" ? "active" : ""} onClick={() => setActiveTab("files")}>Files</button>
+        <button onClick={() => setActiveTab("overview")} className={activeTab === "overview" ? "active" : ""}>
+          Overview
+        </button>
+        <button onClick={() => setActiveTab("appointments")} className={activeTab === "appointments" ? "active" : ""}>
+          Appointments
+        </button>
+        <button onClick={() => setActiveTab("projects")} className={activeTab === "projects" ? "active" : ""}>
+          Projects
+        </button>
+        <button onClick={() => setActiveTab("files")} className={activeTab === "files" ? "active" : ""}>
+          Files
+        </button>
       </div>
 
       <div className="client-info">
         {activeTab === "overview" && (
-          
           <>
             {isEditing ? (
-              
               <form onSubmit={handleSave} className="overview-form-grid">
                 {/* Name Section */}
                 <div className="row">
-                
                   <div className="input-group input-group-icon">
                     <input
                       type="text"
@@ -173,11 +178,11 @@ const handleFilterChange = (e) => {
                   </div>
                   <div className="input-group input-group-icon">
                     <input
-                        type="text"
-                        name="companyContact"
-                        placeholder="Company Contact Number"
-                        value={formData.companyContact || ""}
-                        onChange={handleChange}
+                      type="text"
+                      name="companyContact"
+                      placeholder="Company Contact Number"
+                      value={formData.companyContact || ""}
+                      onChange={handleChange}
                     />
                     <div className="input-icon"><i className="fa fa-phone"></i></div>
                   </div>
@@ -204,8 +209,8 @@ const handleFilterChange = (e) => {
                       placeholder="Address"
                     />
                     <div className="input-icon"><i className="fa fa-map-marker-alt"></i></div>
-                    </div>
-                    <div className="input-group input-group-icon">
+                  </div>
+                  <div className="input-group input-group-icon">
                     <input
                       type="text"
                       name="companyName"
@@ -213,7 +218,7 @@ const handleFilterChange = (e) => {
                       onChange={handleChange}
                       placeholder="Company Name"
                     />
-                    <div className="input-icon"><i className="fa fa-building"></i></div>    
+                    <div className="input-icon"><i className="fa fa-building"></i></div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
@@ -225,105 +230,132 @@ const handleFilterChange = (e) => {
                     />
                     <div className="input-icon"><i className="fa fa-briefcase"></i></div>
                   </div>
-                </div>
-                {/* Save and Cancel Buttons */}
-                <div className="button-group">
+                  <div className="overview-edit-button-group">
                   <button type="submit" className="btn-save"><i className="fas fa-save"></i> Save Changes</button>
                   <button type="button" className="btn-cancel" onClick={toggleEdit}><i className="fas fa-times"></i> Cancel</button>
                 </div>
+                </div>
+
+                {/* Save and Cancel Buttons */}
+            
               </form>
-               ) : (
-<div className="client-readonly grid">
-    <p><strong>First Name:</strong> {client.firstName}</p>
-    <p><strong>Last Name:</strong> {client.lastName}</p>
-    <p><strong>Email Address:</strong> {client.email}</p>
-    <p><strong>Age:</strong> {client.age}</p>
-    <p><strong>Nationality:</strong> {client.nationality}</p>
-    <p><strong>Mobile Number:</strong> {client.mobileNumber}</p>
-    <p><strong>Address:</strong> {client.address}</p>
-    <p><strong>City:</strong> {client.city}</p>
-    <p><strong>Postal Code:</strong> {client.postalCode}</p>
-    <p><strong>Company Name:</strong> {client.companyName}</p>
-    <p><strong>Position in Company:</strong> {client.positionInCompany}</p>
-    <p><strong>Company Number:</strong> {client.companyContactNumber}</p>
-    <p><strong>Birthdate:</strong> {client.birthdate}</p>
-    <p><strong>Gender:</strong> {client.gender}</p>
+            ) : (
+              <div className="client-readonly grid">
+                <p><strong>First Name:</strong> {client.firstName}</p>
+                <p><strong>Last Name:</strong> {client.lastName}</p>
+                <p><strong>Email Address:</strong> {client.email}</p>
+                <p><strong>Age:</strong> {client.age}</p>
+                <p><strong>Nationality:</strong> {client.nationality}</p>
+                <p><strong>Mobile Number:</strong> {client.mobileNumber}</p>
+                <p><strong>Address:</strong> {client.address}</p>
+                <p><strong>City:</strong> {client.city}</p>
+                <p><strong>Postal Code:</strong> {client.postalCode}</p>
+                <p><strong>Company Name:</strong> {client.companyName}</p>
+                <p><strong>Position in Company:</strong> {client.positionInCompany}</p>
+                <p><strong>Company Number:</strong> {client.companyContactNumber}</p>
+                <p><strong>Birthdate:</strong> {client.birthdate}</p>
+                <p><strong>Gender:</strong> {client.gender}</p>
 
-    <div className="client-readonly-button-group">
-        <button className="btn-edit" onClick={toggleEdit}>Edit</button>
-        <button className="btn-back" onClick={goBack}>Back</button>
-    </div>
-</div>
-
-
-            )} 
+                <div className="client-readonly-button-group">
+                  <button className="btn-edit" onClick={toggleEdit}>Edit</button>
+                  <button className="btn-back" onClick={goBack}>Back</button>
+                </div>
+              </div>
+            )}
           </>
         )}
-{activeTab === "appointments" && (
-        <table>
-          <thead>
-            <tr>
-              <th onClick={() => handleSort("appointments", "date")}>Date {renderSortIcon("date")}</th>
-              <th>Details</th>
-              <th>Status</th>
-              <th>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {appointments.map((appointment, index) => (
-              <tr key={index}>
-                <td>{appointment.date}</td>
-                <td>{appointment.details}</td>
-                <td>{appointment.status}</td>
-                <td>{appointment.type}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      {activeTab === "projects" && (
-        <table>
-          <thead>
-            <tr>
-              <th onClick={() => handleSort("projects", "projectName")}>Project Name {renderSortIcon("projectName")}</th>
-              <th onClick={() => handleSort("projects", "startDate")}>Start Date {renderSortIcon("startDate")}</th>
-              <th onClick={() => handleSort("projects", "endDate")}>End Date {renderSortIcon("endDate")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((project, index) => (
-              <tr key={index}>
-                <td>{project.projectName}</td>
-                <td>{project.startDate}</td>
-                <td>{project.endDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
 
-{activeTab === "files" && (
-        <table>
-          <thead>
-            <tr>
-              <th onClick={() => handleSort("files", "documentName")}>Document Name {renderSortIcon("documentName")}</th>
-              <th onClick={() => handleSort("files", "uploadedDate")}>Uploaded Date {renderSortIcon("uploadedDate")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {files.map((file, index) => (
-              <tr key={index}>
-                <td>{file.documentName}</td>
-                <td>{file.uploadedDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        {/* Filter Section for Appointments, Projects, and Files Tabs */}
+        {(activeTab === "appointments" || activeTab === "projects" || activeTab === "files") && (
+          <div className="client-filter-section">
+            <select name="month" value={filter.month} onChange={handleFilterChange}>
+              <option value="">Months</option>
+              {[...Array(12).keys()].map((m) => (
+                <option key={m + 1} value={m + 1}>
+                  {new Date(0, m).toLocaleString("default", { month: "long" })}
+                </option>
+              ))}
+            </select>
+            <select name="year" value={filter.year} onChange={handleFilterChange}>
+              <option value="">Years</option>
+              {[2025, 2024, 2023].map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
-  
+        )}
+
+        {/* Appointments Tab */}
+        {activeTab === "appointments" && (
+          <table>
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("appointments", "date")}>Date {renderSortIcon("date")}</th>
+                <th>Details</th>
+                <th>Status</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAppointments.map((appointment, index) => (
+                <tr key={index}>
+                  <td>{appointment.date}</td>
+                  <td>{appointment.details}</td>
+                  <td>{appointment.status}</td>
+                  <td>{appointment.type}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {/* Projects Tab */}
+        {activeTab === "projects" && (
+          <table>
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("projects", "projectName")}>Project Name {renderSortIcon("projectName")}</th>
+                <th onClick={() => handleSort("projects", "startDate")}>Start Date {renderSortIcon("startDate")}</th>
+                <th onClick={() => handleSort("projects", "endDate")}>End Date {renderSortIcon("endDate")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProjects.map((project, index) => (
+                <tr key={index}>
+                  <td>{project.projectName}</td>
+                  <td>{project.startDate}</td>
+                  <td>{project.endDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {/* Files Tab */}
+        {activeTab === "files" && (
+          <table>
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("files", "documentName")}>Document Name {renderSortIcon("documentName")}</th>
+                <th onClick={() => handleSort("files", "uploadedDate")}>Uploaded Date {renderSortIcon("uploadedDate")}</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredFiles.map((file, index) => (
+                <tr key={index}>
+                  <td>{file.documentName}</td>
+                  <td>{file.uploadedDate}</td>
+                  <td>{file.type}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
-    
+    </div>
   );
 };
 
