@@ -5,27 +5,8 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
   const [isEditing, setIsEditing] = useState(false); // Toggle between view and edit modes
   const [formData, setFormData] = useState({ ...employee }); // Initialize form data with employee details
-  const [isHistoryVisible, setHistoryVisible] = useState(false); // History visibility toggle
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility toggle
-  
-  // Example history data
-  const exampleHistory = [
-    { title: 'Project X Assigned', description: 'Assigned to Project X for development.' },
-    { title: 'Task Y Completed', description: 'Completed the documentation for Task Y.' },
-    { title: 'Team Meeting', description: 'Participated in a team meeting for Q1 planning.' },
-  ];
 
-  // Function to toggle the history visibility
-  const handleHistoryClick = () => {
-    setIsModalOpen(true);  // Open the modal when history is clicked
-  };
-
-  // Close the modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  // Handle input changes
+  // Function to handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -67,7 +48,7 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
         {isEditing ? (
           <form onSubmit={handleSave} className="employee-editing-form-grid">
             {/* Name Section */}
-            <div className="row">
+            <div className="employee-row">
               <div className="input-group input-group-icon">
                 <input
                   type="text"
@@ -103,7 +84,7 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
             </div>
 
             {/* Contact Section */}
-            <div className="row">
+            <div className="employee-row">
               <div className="input-group input-group-icon">
                 <input
                   type="email"
@@ -138,7 +119,7 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
             </div>
 
             {/* Birthday and Role Section */}
-            <div className="row">
+            <div className="employee-row">
               <h4>Birthdate</h4>
               <div className="input-group input-group-icon">
                 <input
@@ -149,14 +130,14 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
                 />
                 <div className="input-icon"><i className="fa fa-calendar"></i></div>
               </div>
-              <div className="button-group">
+              <div className="details-button-group">
                 <button type="submit" className="btn-save">Save Changes</button>
                 <button type="button" className="btn-cancel" onClick={toggleEdit}>Cancel</button>
               </div>
             </div>
 
             {/* Status Section and Role */}
-            <div className="row">
+            <div className="employee-row">
               <h4>Status</h4>
               <select name="status" value={formData.status} onChange={handleChange}>
                 <option value="active">Active</option>
@@ -170,46 +151,24 @@ const EmployeeDetails = ({ employee, goBack, updateEmployee }) => {
             </div>
           </form>
         ) : (
-          // Display Section (Read-only mode with icons and centered form)
           <div className="employee-readonly">
-            <p><i className="fas fa-user"></i> <strong>Last Name:</strong> {employee.lastName}</p>
-            <p><i className="fas fa-user"></i> <strong>First Name:</strong> {employee.firstName}</p>
-            <p><i className="fas fa-user"></i> <strong>Middle Name:</strong> {employee.middleInitial}</p>
-            <p><i className="fas fa-envelope"></i> <strong>Email:</strong> {employee.email_add}</p>
-            <p><i className="fas fa-map-marker-alt"></i> <strong>Address:</strong> {employee.address}</p>
-            <p><i className="fas fa-phone"></i> <strong>Contact Number:</strong> {employee.mobile_number}</p>
-            <p><i className="fas fa-birthday-cake"></i> <strong>Birthday:</strong> {employee.birthday}</p>
-            <p><i className="fas fa-user-tag"></i> <strong>Role:</strong> {employee.role}</p>
-            <p><i className="fas fa-user-check"></i> <strong>Status:</strong> {employee.status}</p>
-            <div className="button-group">
-              {!isEditing && <button className="btn-edit" onClick={toggleEdit}>Edit</button>}
-              <button className="button-history" onClick={handleHistoryClick}><i className="fas fa-history"></i></button>
-              <button className="btn-back" onClick={goBack}>Back</button>
+            <p><strong>Last Name:</strong> {employee.lastName}</p>
+            <p><strong>First Name:</strong> {employee.firstName}</p>
+            <p><strong>Middle Name:</strong> {employee.middleInitial}</p>
+            <p><strong>Email:</strong> {employee.email_add}</p>
+            <p><strong>Address:</strong> {employee.address}</p>
+            <p><strong>Contact Number:</strong> {employee.mobile_number}</p>
+            <p><strong>Birthday:</strong> {employee.birthday}</p>
+            <p><strong>Role:</strong> {employee.role}</p>
+            <p><strong>Status:</strong> {employee.status}</p>
+
+            <div className="employee-button-group">
+              {!isEditing && <button className="employee-btn-edit" onClick={toggleEdit}>Edit</button>}
+              <button className="employee-btn-back" onClick={goBack}>Back</button>
             </div>
           </div>
         )}
       </div>
-
-      {/* Modal for history */}
-      {isModalOpen && (
-        <div className="history-modal">
-          <div className="history-modal-content">
-            <span className="close-btn" onClick={closeModal}>&times;</span>
-            <h4>History</h4>
-            {exampleHistory.length > 0 ? (
-              <ul>
-                {exampleHistory.map((task, index) => (
-                  <li key={index}>
-                    <strong>{task.title}</strong>: {task.description}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No history available for this employee.</p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

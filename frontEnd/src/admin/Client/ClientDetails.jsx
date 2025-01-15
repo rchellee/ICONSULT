@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import './client.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const ClientDetails = ({ client, goBack, updateClient }) => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -9,46 +8,91 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
   const [appointments, setAppointments] = useState([]);
   const [projects, setProjects] = useState([]);
   const [files, setFiles] = useState([]);
-  
-  // Sorting state
-  const [appointmentSortOrder, setAppointmentSortOrder] = useState('asc');
-  const [projectSortOrder, setProjectSortOrder] = useState('asc');
-  const [fileSortOrder, setFileSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState({ field: null, order: "asc" });
+  const [filter, setFilter] = useState({ month: "", year: "" });
 
   // Example data
-  const sampleAppointments = [
-    { date: "2025-01-05", details: "Initial consultation", status: "Completed", type: "Consultation" },
-    { date: "2025-01-12", details: "Follow-up meeting", status: "Scheduled", type: "Meeting" },
-  ];
-
-  const sampleProjects = [
-    { projectName: "Project A", startDate: "2025-01-01", endDate: "2025-06-01", status: "In Progress" },
-    { projectName: "Project B", startDate: "2025-02-01", endDate: "2025-07-01", status: "Completed" },
-  ];
-
-  const sampleFiles = [
-    { documentName: "Contract.pdf", uploadedDate: "2025-01-01", type: "PDF", action: "View" },
-    { documentName: "Invoice.xlsx", uploadedDate: "2025-01-05", type: "Excel", action: "Download" },
-  ];
-
-  // Simulate an API call to get appointments, projects, and files
   useEffect(() => {
-    console.log("Loading data...");
+    const sampleAppointments = [
+      { date: "2025-01-25", details: "Initial consultation", status: "Completed", type: "Consultation" },
+      { date: "2025-12-21", details: "Follow-up meeting", status: "Scheduled", type: "Meeting" },
+    ];
+
+    const sampleProjects = [
+      { projectName: "Project A", startDate: "2025-01-01", endDate: "2025-06-01", status: "In Progress" },
+      { projectName: "Project B", startDate: "2025-02-01", endDate: "2025-07-01", status: "Completed" },
+    ];
+
+    const sampleFiles = [
+      { documentName: "Contract.pdf", uploadedDate: "2025-01-01", type: "PDF" },
+      { documentName: "Invoice.xlsx", uploadedDate: "2025-01-05", type: "Excel" },
+    ];
+
     setAppointments(sampleAppointments);
     setProjects(sampleProjects);
     setFiles(sampleFiles);
   }, []);
 
+  const sortData = (data, field) => {
+    const order = sortOrder.field === field && sortOrder.order === "asc" ? "desc" : "asc";
+    const sortedData = [...data].sort((a, b) => {
+      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+      return 0;
+    });
+    setSortOrder({ field, order });
+    return sortedData;
+  };
+
+  const handleSort = (tab, field) => {
+    if (tab === "appointments") setAppointments(sortData(appointments, field));
+    if (tab === "projects") setProjects(sortData(projects, field));
+    if (tab === "files") setFiles(sortData(files, field));
+  };
+  const renderSortIcon = (field) => {
+    if (sortOrder.field === field) {
+      return sortOrder.order === "asc" ? "▲" : "▼";
+    }
+    return "⇅";
+  };
+
+
+const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const filterDataByDate = (data, dateField) => {
+    if (!filter.month && !filter.year) {
+      return data; // Show all data if no filter is selected
+    }
+
+    return data.filter((item) => {
+      const itemDate = new Date(item[dateField]);
+      const filterMonth = filter.month ? parseInt(filter.month) : null;
+      const filterYear = filter.year ? parseInt(filter.year) : null;
+  
+      return (
+        (!filterMonth || itemDate.getMonth() + 1 === filterMonth) &&
+        (!filterYear || itemDate.getFullYear() === filterYear)
+      );
+    });
+  };
+
+  const filteredAppointments = filterDataByDate(appointments, "date");
+  const filteredProjects = filterDataByDate(projects, "startDate");
+  const filteredFiles = filterDataByDate(files, "uploadedDate");
+
+
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
-  };
-
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
   };
 
   const handleSave = async (e) => {
@@ -72,85 +116,29 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this client?")) {
-      try {
-        const response = await fetch(`http://localhost:8081/client/${client.id}`, {
-          method: "DELETE",
-        });
-
-        if (response.ok) {
-          alert("Client deleted successfully");
-          goBack();
-        } else {
-          console.error("Error deleting client:", await response.text());
-        }
-      } catch (error) {
-        console.error("An error occurred:", error);
-      }
-    }
-  };
-
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-  };
-
-  // Sorting functions
-  const sortAppointments = (column) => {
-    const sortedAppointments = [...appointments].sort((a, b) => {
-      if (appointmentSortOrder === 'asc') {
-        return a[column] > b[column] ? 1 : -1;
-      } else {
-        return a[column] < b[column] ? 1 : -1;
-      }
-    });
-
-    setAppointments(sortedAppointments);
-    setAppointmentSortOrder(appointmentSortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  const sortProjects = (column) => {
-    const sortedProjects = [...projects].sort((a, b) => {
-      if (projectSortOrder === 'asc') {
-        return a[column] > b[column] ? 1 : -1;
-      } else {
-        return a[column] < b[column] ? 1 : -1;
-      }
-    });
-
-    setProjects(sortedProjects);
-    setProjectSortOrder(projectSortOrder === 'asc' ? 'desc' : 'asc');
-  };
-
-  const sortFiles = (column) => {
-    const sortedFiles = [...files].sort((a, b) => {
-      if (fileSortOrder === 'asc') {
-        return a[column] > b[column] ? 1 : -1;
-      } else {
-        return a[column] < b[column] ? 1 : -1;
-      }
-    });
-
-    setFiles(sortedFiles);
-    setFileSortOrder(fileSortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   return (
     <div className="client-details">
       <div className="tabs">
-        <button className={activeTab === "overview" ? "active" : ""} onClick={() => handleTabClick("overview")}>Overview</button>
-        <button className={activeTab === "appointments" ? "active" : ""} onClick={() => handleTabClick("appointments")}>Appointments</button>
-        <button className={activeTab === "projects" ? "active" : ""} onClick={() => handleTabClick("projects")}>Projects</button>
-        <button className={activeTab === "files" ? "active" : ""} onClick={() => handleTabClick("files")}>Files</button>
+        <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>Overview</button>
+        <button className={activeTab === "appointments" ? "active" : ""} onClick={() => setActiveTab("appointments")}>Appointments</button>
+        <button className={activeTab === "projects" ? "active" : ""} onClick={() => setActiveTab("projects")}>Projects</button>
+        <button className={activeTab === "files" ? "active" : ""} onClick={() => setActiveTab("files")}>Files</button>
       </div>
 
       <div className="client-info">
         {activeTab === "overview" && (
+          
           <>
             {isEditing ? (
+              
               <form onSubmit={handleSave} className="overview-form-grid">
                 {/* Name Section */}
                 <div className="row">
+                
                   <div className="input-group input-group-icon">
                     <input
                       type="text"
@@ -245,120 +233,97 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                 </div>
               </form>
                ) : (
-              <div className="client-readonly grid">
-                <p><i className="fas fa-user"></i> <strong>First Name:</strong> {client.firstName}</p>
-                <p><i className="fas fa-user"></i> <strong>Last Name:</strong> {client.lastName}</p>
-                <p><i className="fas fa-envelope"></i> <strong>Email Address:</strong> {client.email}</p>
-                <p><i className="fa fa-calendar"></i><strong>Age:</strong> {client.age}</p>
-                <p><i className="fas fa-flag"></i> <strong>Nationality:</strong> {client.nationality}</p>
-                <p><i className="fas fa-phone"></i> <strong>Mobile Number:</strong> {client.mobileNumber}</p>
-                <p><i className="fas fa-map-marker-alt"></i> <strong>Address:</strong> {client.address}</p>
-                <p><i className="fas fa-city"></i> <strong>City:</strong> {client.city}</p>
-                <p><i className="fas fa-mail-bulk"></i> <strong>Postal Code:</strong> {client.postalCode}</p>
-                <p><i className="fas fa-building"></i> <strong>Company Name:</strong> {client.companyName}</p>
-                <p><i className="fas fa-user-tie"></i> <strong>Position in Company:</strong> {client.positionInCompany}</p>
-                <p><i className="fas fa-phone-alt"></i> <strong>Company Number:</strong> {client.companyContactNumber}</p>
-                <p><i className="fas fa-calendar"></i> <strong>Birthdate:</strong> {client.birthdate}</p>
-                <p><i className="fas fa-venus-mars"></i> <strong>Gender:</strong> {client.gender}</p>
+<div className="client-readonly grid">
+    <p><strong>First Name:</strong> {client.firstName}</p>
+    <p><strong>Last Name:</strong> {client.lastName}</p>
+    <p><strong>Email Address:</strong> {client.email}</p>
+    <p><strong>Age:</strong> {client.age}</p>
+    <p><strong>Nationality:</strong> {client.nationality}</p>
+    <p><strong>Mobile Number:</strong> {client.mobileNumber}</p>
+    <p><strong>Address:</strong> {client.address}</p>
+    <p><strong>City:</strong> {client.city}</p>
+    <p><strong>Postal Code:</strong> {client.postalCode}</p>
+    <p><strong>Company Name:</strong> {client.companyName}</p>
+    <p><strong>Position in Company:</strong> {client.positionInCompany}</p>
+    <p><strong>Company Number:</strong> {client.companyContactNumber}</p>
+    <p><strong>Birthdate:</strong> {client.birthdate}</p>
+    <p><strong>Gender:</strong> {client.gender}</p>
 
-                <div className="button-group">
-                <button className="btn-edit" onClick={toggleEdit}> <i className="fas fa-edit"></i>Edit</button>
-                <button className="btn-back" onClick={goBack}><i className="fas fa-arrow-left"></i>Back</button>
-                <button className="btn-delete" onClick={handleDelete}><i className="fas fa-trash"></i> Delete</button>
-                </div>
-              </div>
-            )}
+    <div className="client-readonly-button-group">
+        <button className="btn-edit" onClick={toggleEdit}>Edit</button>
+        <button className="btn-back" onClick={goBack}>Back</button>
+    </div>
+</div>
+
+
+            )} 
           </>
         )}
+{activeTab === "appointments" && (
+        <table>
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("appointments", "date")}>Date {renderSortIcon("date")}</th>
+              <th>Details</th>
+              <th>Status</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {appointments.map((appointment, index) => (
+              <tr key={index}>
+                <td>{appointment.date}</td>
+                <td>{appointment.details}</td>
+                <td>{appointment.status}</td>
+                <td>{appointment.type}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {activeTab === "projects" && (
+        <table>
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("projects", "projectName")}>Project Name {renderSortIcon("projectName")}</th>
+              <th onClick={() => handleSort("projects", "startDate")}>Start Date {renderSortIcon("startDate")}</th>
+              <th onClick={() => handleSort("projects", "endDate")}>End Date {renderSortIcon("endDate")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {projects.map((project, index) => (
+              <tr key={index}>
+                <td>{project.projectName}</td>
+                <td>{project.startDate}</td>
+                <td>{project.endDate}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-        {activeTab === "appointments" && (
-          <div className="client-details-table">
-            {appointments.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th onClick={() => sortAppointments("date")}>Date</th>
-                    <th onClick={() => sortAppointments("details")}>Details</th>
-                    <th onClick={() => sortAppointments("status")}>Status</th>
-                    <th onClick={() => sortAppointments("type")}>Type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {appointments.map((appointment, index) => (
-                    <tr key={index}>
-                      <td>{appointment.date}</td>
-                      <td>{appointment.details}</td>
-                      <td>{appointment.status}</td>
-                      <td>{appointment.type}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No appointments available.</p>
-            )}
+{activeTab === "files" && (
+        <table>
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("files", "documentName")}>Document Name {renderSortIcon("documentName")}</th>
+              <th onClick={() => handleSort("files", "uploadedDate")}>Uploaded Date {renderSortIcon("uploadedDate")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {files.map((file, index) => (
+              <tr key={index}>
+                <td>{file.documentName}</td>
+                <td>{file.uploadedDate}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
           </div>
-        )}
-
-        {activeTab === "projects" && (
-          <div className="client-details-table">
-            {projects.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th onClick={() => sortProjects("projectName")}>Project Name</th>
-                    <th onClick={() => sortProjects("startDate")}>Start Date</th>
-                    <th onClick={() => sortProjects("endDate")}>End Date</th>
-                    <th onClick={() => sortProjects("status")}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.map((project, index) => (
-                    <tr key={index}>
-                      <td>{project.projectName}</td>
-                      <td>{project.startDate}</td>
-                      <td>{project.endDate}</td>
-                      <td>{project.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No projects available.</p>
-            )}
-          </div>
-        )}
-
-        {activeTab === "files" && (
-          <div className="client-details-table">
-            {files.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th onClick={() => sortFiles("documentName")}>Document Name</th>
-                    <th onClick={() => sortFiles("uploadedDate")}>Uploaded Date</th>
-                    <th onClick={() => sortFiles("type")}>Type</th>
-                    <th onClick={() => sortFiles("action")}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {files.map((file, index) => (
-                    <tr key={index}>
-                      <td>{file.documentName}</td>
-                      <td>{file.uploadedDate}</td>
-                      <td>{file.type}</td>
-                      <td>{file.action}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No files available.</p>
-            )}
-          </div>
-        )}
+  
       </div>
-    </div>
+    
   );
 };
 

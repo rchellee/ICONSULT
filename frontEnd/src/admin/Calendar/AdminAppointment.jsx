@@ -288,7 +288,7 @@ function AdminAppointment() {
               <p className="step2-form-description">
               Select client and consultation type</p>                
                     <div className="admin-app-form-group">
-                <label htmlFor="client">Select Client:</label>
+                <label htmlFor="client">Select Client</label>
                 <select
                   id="client"
                   name="client"

@@ -10,7 +10,7 @@ const ClientManagement = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [isAddingClient, setIsAddingClient] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: "name", direction: "ascending", dateSortType: "year" }); // Default sorting by name
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -25,6 +25,44 @@ const ClientManagement = () => {
 
     fetchClients();
   }, []);
+
+  const sortClients = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedClients = [...clients].sort((a, b) => {
+      if (key === "firstName") {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+        if (nameA < nameB) return direction === "asc" ? -1 : 1;
+        if (nameA > nameB) return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+      if (key === "status") {
+        if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
+        if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+      if (key === "dateAdded") {
+        return direction === "asc"
+          ? new Date(a[key]) - new Date(b[key])
+          : new Date(b[key]) - new Date(a[key]);
+      }
+      return 0;
+    });
+
+    setClients(sortedClients);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "asc" ? "▲" : "▼";
+    }
+    return "⇅";
+  };
 
   const toggleStatus = async (clientId, currentStatus) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
@@ -60,52 +98,6 @@ const ClientManagement = () => {
     setIsAddingClient(false);
   };
 
-  const handleSort = (key) => {
-    let direction = "ascending";
-    if (sortConfig.key === key && sortConfig.direction === "ascending") {
-      direction = "descending";
-    }
-    setSortConfig({ ...sortConfig, key, direction });
-
-    const sortedClients = [...clients].sort((a, b) => {
-      if (key === "name") {
-        const aName = `${a.firstName} ${a.lastName}`;
-        const bName = `${b.firstName} ${b.lastName}`;
-        if (aName < bName) return direction === "ascending" ? -1 : 1;
-        if (aName > bName) return direction === "ascending" ? 1 : -1;
-      } else if (key === "status") {
-        if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
-        if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
-      } else if (key === "dateAdded") {
-        const aDate = new Date(a[key]);
-        const bDate = new Date(b[key]);
-
-        // Handle sorting by Year or Year-Month
-        const aSortValue =
-          sortConfig.dateSortType === "month"
-            ? `${aDate.getFullYear()}-${aDate.getMonth() + 1}`
-            : `${aDate.getFullYear()}`;
-        const bSortValue =
-          sortConfig.dateSortType === "month"
-            ? `${bDate.getFullYear()}-${bDate.getMonth() + 1}`
-            : `${bDate.getFullYear()}`;
-
-        if (aSortValue < bSortValue) return direction === "ascending" ? -1 : 1;
-        if (aSortValue > bSortValue) return direction === "ascending" ? 1 : -1;
-      }
-      return 0;
-    });
-    setClients(sortedClients);
-  };
-
-  const handleDateSortTypeChange = (type) => {
-    setSortConfig({
-      ...sortConfig,
-      dateSortType: type,
-    });
-    handleSort("dateAdded");
-  };
-
   return (
     <div>
       <Topbar />
@@ -123,48 +115,21 @@ const ClientManagement = () => {
           ) : (
             <>
               <button onClick={() => setIsAddingClient(true)}>Add Client</button>
-              <div className="date-sort-options">
-                <label>
-                  <input
-                    type="radio"
-                    checked={sortConfig.dateSortType === "year"}
-                    onChange={() => handleDateSortTypeChange("year")}
-                  />
-                  Year
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    checked={sortConfig.dateSortType === "month"}
-                    onChange={() => handleDateSortTypeChange("month")}
-                  />
-                  Year-Month
-                </label>
-              </div>
               <div className="scrollable-table-container">
                 <table>
                   <thead>
                     <tr>
-                      <th
-                        onClick={() => handleSort("name")}
-                        className={sortConfig.key === "name" ? sortConfig.direction : ""}
-                      >
-                        Name
+                      <th onClick={() => sortClients("firstName")}>
+                        Name {getSortIcon("firstName")}
                       </th>
                       <th>Company</th>
                       <th>Email Address</th>
                       <th>Contact Number</th>
-                      <th
-                        onClick={() => handleSort("status")}
-                        className={sortConfig.key === "status" ? sortConfig.direction : ""}
-                      >
-                        Status
+                      <th onClick={() => sortClients("status")}>
+                        Status {getSortIcon("status")}
                       </th>
-                      <th
-                        onClick={() => handleSort("dateAdded")}
-                        className={sortConfig.key === "dateAdded" ? sortConfig.direction : ""}
-                      >
-                        Date Added
+                      <th onClick={() => sortClients("dateAdded")}>
+                        Date Added {getSortIcon("dateAdded")}
                       </th>
                     </tr>
                   </thead>

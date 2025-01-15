@@ -212,8 +212,8 @@ const Availability = () => {
       <div className="admin-appointment-form-container">
         <Sidebar />
         <div className="content-availability">
-          <h3>Set Your Availability</h3>
-          <div style={{ display: "flex", gap: "10px" }}>
+        <h3>Set Your Availability</h3>
+          <div style={{ display: "flex", justifyContent:"center", gap: "10px" }}>
             <AvailableCalendar
               availableDates={{ ...existingDates }}
               onDateSelect={handleDateSelect}
@@ -240,31 +240,34 @@ const Availability = () => {
                 >
                   {selectedDates.map((date, index) => (
                     <ListItem
-                      key={index}
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: 2,
-                      }}
-                    >
-                      <ListItemText
-                        primary={`${date.date}  ${date.startTime} - ${date.endTime}`}
-                        sx={{ flex: 1 }}
-                      />
-                      <Box sx={{ display: "flex", gap: 2 }}>
-                        <FormControl sx={{ minWidth: 120 }}>
-                          <InputLabel>Start</InputLabel>
-                          <Select
-                            value={date.startTime}
-                            onChange={(e) =>
-                              handleTimeChange(
-                                index,
-                                "startTime",
-                                e.target.value
-                              )
-                            }
-                          >
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 1,
+                      backgroundColor: isTimeInvalid(date.startTime, date.endTime)
+                        ? "#FFEBEE"
+                        : "white", // Light red if invalid
+                      border: isTimeInvalid(date.startTime, date.endTime)
+                        ? "1px solid red"
+                        : "1px solid #ddd",
+                      borderRadius: "8px",
+                    }}
+                  >
+                       <ListItemText
+            primary={`${date.date} ${date.startTime} - ${date.endTime}`}
+            sx={{ flex: 1 }}
+          />
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <FormControl sx={{ minWidth: 100 }}>
+              <InputLabel>Start</InputLabel>
+              <Select
+                value={date.startTime}
+                onChange={(e) =>
+                  handleTimeChange(index, "startTime", e.target.value)
+                }
+              >
                             {times.map((time, idx) => (
                               <MenuItem key={idx} value={time}>
                                 {time}
@@ -272,7 +275,7 @@ const Availability = () => {
                             ))}
                           </Select>
                         </FormControl>
-                        <FormControl sx={{ minWidth: 120 }}>
+                        <FormControl sx={{ minWidth: 100 }}>
                           <InputLabel>End</InputLabel>
                           <Select
                             value={date.endTime}
@@ -293,7 +296,6 @@ const Availability = () => {
                           variant="body6"
                           sx={{ color: "red", marginTop: 1 }}
                         >
-                          *Time is invalid
                         </Typography>
                       )}
                     </ListItem>
@@ -303,14 +305,13 @@ const Availability = () => {
                 <Typography variant="h7">No dates selected.</Typography>
               )}
               <strong>
-                <h4>Availability:</h4>
+                <h4>Availability</h4>
               </strong>
               <List
                 sx={{
                   maxHeight: 300,
                   overflowY: "auto",
                   backgroundColor: "white",
-                  border: "1px solid #ccc",
                   padding: 1,
                 }}
               >
@@ -346,25 +347,15 @@ const Availability = () => {
                     </ListItem>
                   ))}
               </List>
+              <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
 
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleClearSelection}
-                disabled={selectedDates.length === 0}
-                style={{ marginTop: "1px" , gap: 2 }}
-              >
-                Clear
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                disabled={selectedDates.length === 0}
-                style={{ marginTop: "1px" ,gap: 2  }}
-              >
-                Save
-              </Button>
+ <Button variant="contained" color="primary" onClick={handleClearSelection} disabled={selectedDates.length === 0}>
+ Clear
+</Button>
+<Button variant="contained" color="primary" onClick={handleSubmit} disabled={selectedDates.length === 0}>
+                  Save
+                </Button>
+            </Box>
             </Box>
           </div>
         </div>
