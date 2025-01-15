@@ -7,12 +7,15 @@
   flex-direction: column;
 }
 
+
+
 /* Style for the content inside the account settings */
 .account-settings .content-admin {
   display: flex;
   flex-direction: column; /* Stack content vertically */
   align-items: center; /* Centers content horizontally */
   text-align: center;
+  margin-top: -200px;
 }
 
 /* Centered styling for Username and Email */
@@ -35,16 +38,17 @@
 .admin-account-settings .value-admin {
   font-weight: normal;
   color: #555;
+  font-size: 5px;
 }
 
 /* Center and style the edit button */
 .account-settings .content button {
-  margin-top: 20px; /* Adds spacing above the button */
+  margin-top: 10px; /* Adds spacing above the button */
 }
 
 /* Add space between the heading and the details */
 .account-settings .content h2 {
-  margin-bottom: 40px; /* Space between heading and username/email */
+  margin-bottom: 5px; /* Space between heading and username/email */
 }
 
 /* Style for the admin detail row */
@@ -55,6 +59,7 @@
  /* Add space between rows */
   align-items: flex-start; /* Align to the left */
   margin: 50px 0;
+  margin-top: 5px;
 }
 
 
@@ -64,7 +69,7 @@
   font-weight: bold;
   color: #333;
   margin-bottom: 10px; /* Increased space between label and value */
-  font-size: 25px; /* Adjust the font size of the label */
+  font-size: 20px; /* Adjust the font size of the label */
 }
 
 /* Style for the value below the label */
@@ -74,5 +79,55 @@
   color: #464646;
 }
 
+
+/* Style for the passwordd-admin div */
+.passwordd-admin {
+  display: flex;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: center; /* Centers the content vertically */
+  margin-top: 100px; /* Adds space above the image */
+  margin-bottom: -20px; 
+}
+
+/* Style for the password image */
+.password-image-admin {
+  width: 200px; /* Adjust width as needed */
+  height: 300px; /* Adjust height as needed */
+  object-fit: cover; /* Ensures the image doesn't stretch */
+}
+
+
+
+
+
+
+.text-field {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+.text-field label {
+  font-size: 14px;
+  color: #333;
+}
+
+.text-field input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.text-field input:focus {
+  border-color: #007bff;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
 
 
