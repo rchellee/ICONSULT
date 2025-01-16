@@ -63,28 +63,31 @@
 }
 
 .create-task-button {
-  padding: 10px 20px;
-  background-color: #547099;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 3rem;
-  height: 3rem;
-  color: white;
-  font-size: 2rem;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
+  background-color: #9cadec; /* Background color */
+  color: white; /* Text color */
+  border: none; /* No border */
+  padding: 10px 16px; /* Adjust padding to fit the text and icon */
+  font-size: 18px; /* Adjust font size */
+  cursor: pointer; /* Pointer on hover */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  display: inline-flex; /* Inline-flex for dynamic sizing */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  gap: 8px; /* Space between icon and text */
   position: absolute;
-  right: -60px;
-  top: 261px;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  right: -40px;
+  top: 30px;
+  border-radius: 4px; /* Slightly rounded corners */
+}
+
+.create-task-icon {
+  font-size: 24px; /* Icon size */
 }
 
 .create-task-button:hover {
-  transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84;
+  background-color: #3a5b84; /* Change color on hover */
 }
+
 
 /* Task Table Container */
 .table-container {
@@ -174,6 +177,7 @@
   margin-top: 20px;
 }
 
+/*
 .task-add-icon {
   background-color: #547099;
   border-radius: 50%;
@@ -192,11 +196,20 @@
 }
 
 .task-add-icon:hover {
-  transform: scale(1.2); /* Slightly increase the size when hovered */
+  transform: scale(1.2); 
   background-color: #3a5b84;
 }
+*/
 
-/* Style the task details section, eto yung sa loob ng specific task */
+
+
+.create-button-container {
+  display: flex;
+  justify-content: flex-end; /* Align to the right */
+  margin-top: 20px;
+}
+
+
 .task-details {
   padding: 20px;
   border: 1px solid #ccc;
@@ -207,13 +220,14 @@
   margin-left: 300px;
 }
 
+/*
 .task-detail-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px dashed #ccc;
-}
+}*/
 
 /* Align text to the right for amount fields */
 .align-right {

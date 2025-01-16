@@ -6,11 +6,14 @@ import {
   FaArrowUp,
   FaArrowDown,
 } from "react-icons/fa";
-import { IoAddCircle } from "react-icons/io5";
+
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiSortAlt2 } from "react-icons/bi";
 import TaskForm from "./TaskForm";
 import MiscellaneousForm from "./MiscellaneousForm ";
+import { IoCreateOutline } from "react-icons/io5";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
 
 const PostsTab = ({
   projectId,
@@ -336,15 +339,26 @@ const PostsTab = ({
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
+      <div className="create-button-container">
+      <button
+  className="create-task-button"
+  onClick={() => setShowTaskForm(true)}
+>
+Create
+  <IoCreateOutline className="create-task-icon" />
+  
+</button>
+
+      </div>
         <div className="total-amount-container">
-          <h2 className="project-name-container">{projectName}</h2>{" "}
+          <h2 className="project-name-container">{projectName}</h2>
           <h4>
             <span className="total-amount-number">
               {formatCurrency(calculateTotalAmount())}
             </span>
           </h4>
         </div>
-
+  
         {selectedTaskDetails ? (
           <div className="task-details">
             <br /><br />
@@ -367,23 +381,20 @@ const PostsTab = ({
             <div className="task-detail-row">
               <div>
                 <strong>Miscellaneous</strong>
-                <button
-                  className="task-add-icon"
-                  onClick={() => setShowMiscellaneousForm(true)}
-                >
-                  +
-                </button>
+                
               </div>
               <div className="align-right amount-label">
                 <strong>Fee</strong>
               </div>
             </div>
+  
+            {/* Handling miscellaneous items */}
             {Array.isArray(selectedTaskDetails?.miscellaneous) ? (
               selectedTaskDetails.miscellaneous.map((item, index) => (
                 <div key={index}>
                   <div className="task-detail-row">
                     <div>
-                      <p> {item.name}</p>
+                      <p>{item.name}</p>
                     </div>
                     <div className="align-right amount-label">
                       <p>{formatCurrency(parseFloat(item.fee) || 0)}</p>
@@ -394,11 +405,10 @@ const PostsTab = ({
               ))
             ) : (
               <p>
-                Miscellaneous data is not available or not in the expected
-                format.
+                Miscellaneous data is not available or not in the expected format.
               </p>
             )}
-
+  
             <div className="task-detail-row total-row">
               <div>
                 <strong>Total</strong>
@@ -420,42 +430,42 @@ const PostsTab = ({
               <thead>
                 <tr>
                   <th onClick={() => handleSort("task_name")}>
-                    Task{" "}
+                    Task
                     {sortField === "task_name" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("assigned")}>
-                    Assigned{" "}
+                    Assigned
                     {sortField === "assigned" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("status")}>
-                    Status{" "}
+                    Status
                     {sortField === "status" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("due_date")}>
-                    Due Date{" "}
+                    Due Date
                     {sortField === "due_date" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("actual_finish")}>
-                    Actual Finish{" "}
+                    Actual Finish
                     {sortField === "actual_finish" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("task_fee")}>
-                    Fee{" "}
+                    Fee
                     {sortField === "task_fee" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("miscellaneous_amount")}>
-                    Miscellaneous Amount{" "}
-                    {sortField === "task_fee" &&
+                    Miscellaneous Amount
+                    {sortField === "miscellaneous_amount" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
                   <th onClick={() => handleSort("amount")}>
-                    Amount{" "}
+                    Amount
                     {sortField === "amount" &&
                       (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
                   </th>
@@ -471,7 +481,7 @@ const PostsTab = ({
                     (total, item) => total + (parseFloat(item.fee) || 0),
                     0
                   );
-
+  
                   return (
                     <tr
                       key={task.id}
@@ -489,10 +499,7 @@ const PostsTab = ({
                         >
                           <option
                             value="Pending"
-                            disabled={
-                              task.status === "Ongoing" ||
-                              task.status === "Completed"
-                            }
+                            disabled={task.status === "Ongoing" || task.status === "Completed"}
                           >
                             Pending
                           </option>
@@ -505,8 +512,7 @@ const PostsTab = ({
                           <option value="Completed">Completed</option>
                         </select>
                       </td>
-                      <td>{formatDate(task.due_date)}</td>{" "}
-                      {/* Updated Due Date formatting */}
+                      <td>{formatDate(task.due_date)}</td>
                       <td>
                         {task.actual_finish
                           ? formatDate(task.actual_finish)
@@ -538,15 +544,8 @@ const PostsTab = ({
             </table>
           </div>
         )}
-
-        <div className="create-button-container">
-          <button
-            className="create-task-button"
-            onClick={() => setShowTaskForm(true)}
-          >
-            <IoAddCircle className="create-task-icon" /> +
-          </button>
-        </div>
+  
+        
         {showTaskForm && (
           <TaskForm
             projectId={projectId}
@@ -556,7 +555,7 @@ const PostsTab = ({
             onCancel={handleCancelForm}
           />
         )}
-
+  
         {showMiscellaneousForm && selectedTaskDetails && (
           <MiscellaneousForm
             taskId={selectedTaskDetails.id}
@@ -566,6 +565,7 @@ const PostsTab = ({
       </div>
     </div>
   );
-};
-
-export default PostsTab;
+  };
+  
+  export default PostsTab;
+  
