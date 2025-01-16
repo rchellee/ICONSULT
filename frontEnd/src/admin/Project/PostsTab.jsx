@@ -15,6 +15,7 @@ import { IoCreateOutline } from "react-icons/io5";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 
+
 const PostsTab = ({
   projectId,
   tasks,
@@ -425,124 +426,87 @@ Create
             <h2>No Task Created</h2>
           </div>
         ) : (
+          
           <div className="table-container">
-            <table className="task-table">
-              <thead>
-                <tr>
-                  <th onClick={() => handleSort("task_name")}>
-                    Task
-                    {sortField === "task_name" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("assigned")}>
-                    Assigned
-                    {sortField === "assigned" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("status")}>
-                    Status
-                    {sortField === "status" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("due_date")}>
-                    Due Date
-                    {sortField === "due_date" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("actual_finish")}>
-                    Actual Finish
-                    {sortField === "actual_finish" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("task_fee")}>
-                    Fee
-                    {sortField === "task_fee" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("miscellaneous_amount")}>
-                    Miscellaneous Amount
-                    {sortField === "miscellaneous_amount" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th onClick={() => handleSort("amount")}>
-                    Amount
-                    {sortField === "amount" &&
-                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
-                  </th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTasks.map((task) => {
-                  const miscellaneousItems = JSON.parse(
-                    task.miscellaneous || "[]"
-                  );
-                  const totalMiscellaneousFee = miscellaneousItems.reduce(
-                    (total, item) => total + (parseFloat(item.fee) || 0),
-                    0
-                  );
-  
-                  return (
-                    <tr
-                      key={task.id}
-                      onDoubleClick={() => handleRowDoubleClick(task)} // Double-click event
-                    >
-                      <td>{task.task_name}</td>
-                      <td>{employeeMap[task.employee] || "Unknown"}</td>
-                      <td>
-                        <select
-                          className={`status-dropdown ${task.status.toLowerCase()}`} // Add a class based on the task's status
-                          value={task.status || "Pending"} // Default status is "Pending"
-                          onChange={(e) =>
-                            handleStatusChange(task.id, e.target.value)
-                          }
-                        >
-                          <option
-                            value="Pending"
-                            disabled={task.status === "Ongoing" || task.status === "Completed"}
-                          >
-                            Pending
-                          </option>
-                          <option
-                            value="Ongoing"
-                            disabled={task.status === "Completed"}
-                          >
-                            Ongoing
-                          </option>
-                          <option value="Completed">Completed</option>
-                        </select>
-                      </td>
-                      <td>{formatDate(task.due_date)}</td>
-                      <td>
-                        {task.actual_finish
-                          ? formatDate(task.actual_finish)
-                          : "--"}
-                      </td>
-                      <td>{formatCurrency(task.task_fee)}</td>
-                      <td>
-                        {totalMiscellaneousFee === 0
-                          ? "--"
-                          : formatCurrency(totalMiscellaneousFee)}
-                      </td>
-                      <td>{formatCurrency(task.amount)}</td>
-                      <td
-                        className="click-post-action"
-                        onClick={(e) => handleActionClick(e, task.id)}
+          <table className="task-table">
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("task_name")}>Task
+                  {sortField === "task_name" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("assigned")}>Assigned
+                  {sortField === "assigned" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("status")}>Status
+                  {sortField === "status" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("due_date")}>Due Date
+                  {sortField === "due_date" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("actual_finish")}>Actual Finish
+                  {sortField === "actual_finish" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("task_fee")}>Fee
+                  {sortField === "task_fee" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("miscellaneous_amount")}>Miscellaneous Amount
+                  {sortField === "miscellaneous_amount" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th onClick={() => handleSort("amount")}>Amount
+                  {sortField === "amount" && (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTasks.map((task) => {
+                const miscellaneousItems = JSON.parse(task.miscellaneous || "[]");
+                const totalMiscellaneousFee = miscellaneousItems.reduce(
+                  (total, item) => total + (parseFloat(item.fee) || 0),
+                  0
+                );
+        
+                return (
+                  <tr key={task.id} onDoubleClick={() => handleRowDoubleClick(task)}>
+                    <td>{task.task_name}</td>
+                    <td>{employeeMap[task.employee] || "Unknown"}</td>
+                    <td>
+                      <select
+                        className={`status-dropdown ${task.status.toLowerCase()}`}
+                        value={task.status || "Pending"}
+                        onChange={(e) => handleStatusChange(task.id, e.target.value)}
                       >
-                        <BsThreeDotsVertical />
-                        {showActions === task.id && (
-                          <div className="post-click-popup">
-                            <button onClick={handleEdit}>Edit</button>
-                            <button onClick={handleDelete}>Delete</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        <option value="Pending" disabled={task.status === "Ongoing" || task.status === "Completed"}>Pending</option>
+                        <option value="Ongoing" disabled={task.status === "Completed"}>Ongoing</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    </td>
+                    <td>{formatDate(task.due_date)}</td>
+                    <td>{task.actual_finish ? formatDate(task.actual_finish) : "--"}</td>
+                    <td>{formatCurrency(task.task_fee)}</td>
+                    <td>{totalMiscellaneousFee === 0 ? "--" : formatCurrency(totalMiscellaneousFee)}</td>
+                    <td>{formatCurrency(task.amount)}</td>
+                    <td className="action-icons">
+                      <AiOutlineEdit
+                        className="edit-task-icon"
+                        onClick={() => handleEdit(task.id)}
+                        title="Edit Task"
+                        style={{ fontSize: "1.5rem", marginRight: "10px"}}
+                      />
+                      <MdOutlineDeleteOutline
+                        className="delete-task-icon"
+                        onClick={() => handleDelete(task.id)}
+                        title="Delete Task"
+                        style={{ fontSize: "1.5rem" }}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        
         )}
   
         
