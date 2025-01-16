@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
@@ -11,6 +12,7 @@ import Topbar from "../Topbar";
 
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
+  const { searchTerm } = useContext(SearchContext);
   const [selectedProjectId, setSelectedProjectId] = useState(projectId);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("posts");

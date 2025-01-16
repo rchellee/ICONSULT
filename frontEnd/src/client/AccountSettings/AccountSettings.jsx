@@ -8,7 +8,7 @@ import { IoMdArrowDropright } from "react-icons/io";
 import image from "../../assets/image.png";
 import ChangePassword from "./ChangePassword"; 
 import { CiEdit } from "react-icons/ci";
-import UpdateProfileForm from "./UpdateProfileForm"; // Import the new UpdateProfileForm component
+import UpdateProfileForm from "./UpdateProfileForm"; 
 
 const AccountSettings = () => {
   const [clientDetails, setClientDetails] = useState(null);

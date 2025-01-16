@@ -1,4 +1,6 @@
 const express = require("express");
+const { google } = require("googleapis");
+const fs = require("fs");
 const mysql = require("mysql");
 const cors = require("cors");
 const cron = require("node-cron");
@@ -6,7 +8,10 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
 const moment = require("moment");
+const sgMail = require("@sendgrid/mail");
+const schedule = require("node-schedule");
 require("dotenv").config();
+const folderId = "1JxQr5R94Cnf47S8xq0E6w5gQVpFnzMbF";
 
 const scheduledTasks = {};
 
@@ -27,8 +32,80 @@ app.get("/", (req, res) => {
   return res.json("From Backend Side");
 });
 
+const oauth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  process.env.REDIRECT_URI
+);
+
+oauth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
+
+const drive = google.drive({ version: "v3", auth: oauth2Client });
+const upload = multer({ dest: "temp/" });
+
+// const filePath = path.join(__dirname, "exo.jpg");
+
+// async function uploadFile() {
+//   try {
+//     const response = await drive.files.create({
+//       requestBody: {
+//         name: "exo.jpg", //This can be name of your choice
+//         mimeType: "image/jpg",
+//       },
+//       media: {
+//         mimeType: "image/jpg",
+//         body: fs.createReadStream(filePath),
+//       },
+//     });
+
+//     console.log(response.data);
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
+
+// uploadFile();
+
+async function deleteFile() {
+  try {
+    const response = await drive.files.delete({
+      fileId: "1mqL58-ZHlFCgXDjGbsb2Buu2UDWMzQRV",
+    });
+    console.log(response.data, response.status);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// deleteFile();
+
+// async function generatePublicUrl() {
+//   try {
+//     const fileId = "YOUR FILE ID";
+//     await drive.permissions.create({
+//       fileId: fileId,
+//       requestBody: {
+//         role: "reader",
+//         type: "anyone",
+//       },
+//     });
+
+//     /*
+//     webViewLink: View the file in browser
+//     webContentLink: Direct download link
+//     */
+//     const result = await drive.files.get({
+//       fileId: fileId,
+//       fields: "webViewLink, webContentLink",
+//     });
+//     console.log(result.data);
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
+
+// generatePublicUrl();
 // SendGrid email example
-const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
 const verificationCodes = new Map();
 const otpStore = {};
@@ -42,8 +119,6 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
-
-const upload = multer({ storage });
 
 app.get("/admin", (req, res) => {
   const sql = "SELECT * FROM admin";
@@ -249,7 +324,7 @@ app.post("/send-email", (req, res) => {
 //clientchange of password
 app.post("/sendVerificationCode", (req, res) => {
   const { email } = req.body;
-  const code = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit code
+  const code = Math.floor(100000 + Math.random() * 900000);
 
   const message = {
     to: email,
@@ -461,7 +536,7 @@ app.post("/notifications", (req, res) => {
   const { title, description, postedBy } = req.body;
 
   const query =
-    "INSERT INTO notifications (title, description, timestamp, postedBy, isRead) VALUES (?, ?, NOW(), FALSE)";
+    "INSERT INTO notifications (title, description, timestamp, postedBy, isRead, isReadAdmin) VALUES (?, ?, NOW(), FALSE, FALSE)";
   db.query(query, [title, description, postedBy], (err, result) => {
     if (err) {
       console.error("Error inserting notification:", err.stack);
@@ -496,6 +571,21 @@ app.put("/notifications/:id", (req, res) => {
     }
   });
 });
+// Endpoint to mark a notification as read by admin
+app.put("/notificationsAdmin/:id", (req, res) => {
+  const notificationId = req.params.id;
+
+  const query = "UPDATE notifications SET isReadAdmin = TRUE WHERE id = ?";
+  db.query(query, [notificationId], (err, result) => {
+    if (err) {
+      console.error("Error updating notification:", err.stack);
+      res.status(500).send("Error updating notification");
+    } else {
+      res.status(200).send("Notification marked as read by admin");
+    }
+  });
+});
+
 // Endpoint to get notifications for a specific client
 app.get("/notifications/:clientId", (req, res) => {
   const { clientId } = req.params;
@@ -899,9 +989,9 @@ app.post("/project", (req, res) => {
     description,
     startDate,
     endDate,
-    status,
+    status = "Pending",
     contractPrice,
-    downpayment = null,
+    downpayment = "00.00",
     paymentStatus = "Not Paid",
     actualStart = null,
     actualFinish = null,
@@ -1002,15 +1092,7 @@ app.patch("/paymentStat/:projectId", (req, res) => {
         return res.status(500).json({ message: "Server error" });
       }
 
-      const currentStatus = rows[0]?.paymentStatus;
-      if (
-        currentStatus === "Paid" ||
-        (currentStatus === "Partial Payment" && paymentStatus === "Not Paid")
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Invalid payment status transition" });
-      }
+      // Allow any valid payment status transition
       db.query(
         "UPDATE project SET paymentStatus = ? WHERE id = ?",
         [paymentStatus, projectId],
@@ -1027,6 +1109,7 @@ app.patch("/paymentStat/:projectId", (req, res) => {
     }
   );
 });
+
 // Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = "SELECT * FROM project WHERE isDeleted = 0";
@@ -1085,7 +1168,6 @@ app.put("/project/:id", (req, res) => {
     description,
     startDate,
     endDate,
-    status,
     clientId,
     contractPrice,
     downpayment,
@@ -1093,7 +1175,7 @@ app.put("/project/:id", (req, res) => {
   } = req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, status = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1102,7 +1184,6 @@ app.put("/project/:id", (req, res) => {
       description,
       startDate,
       endDate,
-      status,
       clientId,
       contractPrice,
       downpayment,
@@ -1119,7 +1200,6 @@ app.put("/project/:id", (req, res) => {
         description,
         startDate,
         endDate,
-        status,
         clientId,
         contractPrice,
         downpayment,
@@ -1390,11 +1470,71 @@ app.post("/appointments", (req, res) => {
       }
 
       const appointmentId = result.insertId;
-      // Parse date and time
       const formattedDate = moment(date, "YYYY-MM-DD").format("MMMM DD, YYYY");
       const formattedDateTime = moment(`${date} ${time}`, "YYYY-MM-DD hh:mm A");
       if (!formattedDateTime.isValid()) {
         return res.status(400).json({ message: "Invalid date or time format" });
+      }
+
+      let reminderDateTime;
+
+      if (moment(reminder).isValid()) {
+        // If reminder is a valid date-time string, use it directly
+        reminderDateTime = moment(reminder);
+      } else if (!isNaN(parseInt(reminder))) {
+        // If reminder is a number of days, calculate reminderDateTime
+        const reminderDays = parseInt(reminder);
+        reminderDateTime = moment(
+          `${date} ${time}`,
+          "YYYY-MM-DD hh:mm A"
+        ).subtract(reminderDays, "days");
+      } else {
+        return res.status(400).json({ message: "Invalid reminder format" });
+      }
+      const now = moment().utc();
+
+      // Use UTC for comparison to avoid timezone issues
+      if (reminderDateTime.isBefore(now)) {
+        console.log(
+          "Reminder time has already passed. Skipping reminder scheduling."
+        );
+      } else {
+        schedule.scheduleJob(reminderDateTime.toDate(), () => {
+          const subject = `Reminder: Appointment with ${companyName}`;
+          const html = `
+            <p>Hi ${name},</p>
+            <p>This is a reminder for your upcoming appointment:</p>
+            <ul>
+              <li><strong>Date:</strong> ${moment(date).format(
+                "MMMM DD, YYYY"
+              )}</li>
+              <li><strong>Time:</strong> ${time}</li>
+              <li><strong>Consultation Type:</strong> ${consultationType}</li>
+              <li><strong>Platform:</strong> ${platform}</li>
+            </ul>
+            <p>If you have any questions, feel free to reach out to us.</p>
+          `;
+
+          const message = {
+            to: email,
+            from: process.env.SENDER_EMAIL,
+            subject,
+            html,
+          };
+
+          sgMail
+            .send(message)
+            .then(() => console.log(`Reminder email sent to ${email}`))
+            .catch((error) =>
+              console.error("Failed to send reminder email:", error)
+            );
+        });
+
+        console.log(
+          `Reminder scheduled for ${reminderDateTime.format(
+            "YYYY-MM-DD HH:mm"
+          )}`
+        );
       }
 
       const notificationSql = `
@@ -1443,7 +1583,7 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
-app.get("/appointments/:clientId", (req, res) => {
+app.get("/appointments-details/:clientId", (req, res) => {
   const { clientId } = req.params;
 
   const sql = `SELECT * FROM appointments WHERE client_id = ?`;
@@ -1501,6 +1641,39 @@ app.get("/appointments/times", (req, res) => {
     res.json({ bookedTimes });
   });
 });
+app.get("/appointments-client/times", (req, res) => {
+  const { date } = req.query;
+
+  const bookedTimesSql = "SELECT time FROM appointments WHERE date = ?";
+  const availabilitySql =
+    "SELECT start_time, end_time FROM availability WHERE dates = ?";
+
+  db.query(bookedTimesSql, [date], (err, bookedTimesResult) => {
+    if (err) {
+      console.error("Error fetching booked times:", err);
+      return res.status(500).json({ message: "Error fetching booked times" });
+    }
+
+    db.query(availabilitySql, [date], (err, availabilityResult) => {
+      if (err) {
+        console.error("Error fetching availability:", err);
+        return res
+          .status(500)
+          .json({ message: "Error fetching availability data" });
+      }
+
+      const bookedTimes = bookedTimesResult.map((row) => row.time);
+      const availability = availabilityResult[0] || {};
+
+      res.status(200).json({
+        bookedTimes,
+        start_time: availability.start_time || "07:00 AM",
+        end_time: availability.end_time || "07:00 PM",
+      });
+    });
+  });
+});
+
 app.delete("/appointments/:id", (req, res) => {
   const { id } = req.params;
 
@@ -1528,7 +1701,7 @@ app.delete("/appointments/:id", (req, res) => {
   });
 });
 
-// const backfillTimeFormat = () => {
+// const backfillTim  eFormat = () => {
 //   const updateTimeFormatSql = `
 //     UPDATE appointments
 //     SET time = DATE_FORMAT(STR_TO_DATE(time, '%H:%i:%s'), '%h:%i %p');
@@ -1591,48 +1764,72 @@ app.post("/payments", (req, res) => {
         return res.status(500).send("Error saving payment.");
       }
 
-      // Save notification for the admin
-      const notificationQuery = `
+      // Update project's downpayment
+      const updateDownpaymentQuery = `
+        UPDATE project
+        SET downpayment = downpayment + ?
+        WHERE id = ?
+      `;
+
+      db.query(
+        updateDownpaymentQuery,
+        [amount, projectId],
+        (err, updateResult) => {
+          if (err) {
+            console.error("Error updating downpayment:", err);
+            return res.status(500).send("Error updating downpayment.");
+          }
+
+          // Save notification for the admin
+          const notificationQuery = `
       INSERT INTO notifications (title, description, timestamp, isRead) 
       VALUES (?, ?, ?, ?)
     `;
 
-      const notificationTitle = "New Payment Received";
-      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
-      const timestamp = new Date();
+          const notificationTitle = "New Payment Received";
+          const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
+          const timestamp = new Date();
 
-      db.query(
-        notificationQuery,
-        [notificationTitle, notificationDescription, timestamp, false],
-        (err, notificationResult) => {
-          if (err) {
-            console.error("Error creating notification:", err);
-            return res.status(500).send("Error saving notification.");
-          }
+          db.query(
+            notificationQuery,
+            [notificationTitle, notificationDescription, timestamp, false],
+            (err, notificationResult) => {
+              if (err) {
+                console.error("Error creating notification:", err);
+                return res.status(500).send("Error saving notification.");
+              }
 
-          // Save client notification
-          const clientNotificationQuery = `
+              // Save client notification
+              const clientNotificationQuery = `
             INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
             VALUES (?, ?, ?, NOW(), FALSE)
           `;
 
-          const clientNotificationTitle = "Payment Received";
-          const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
+              const clientNotificationTitle = "Payment Received";
+              const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
 
-          db.query(
-            clientNotificationQuery,
-            [clientId, clientNotificationTitle, clientNotificationDescription],
-            (err) => {
-              if (err) {
-                console.error("Error saving client notification:", err);
-                return res
-                  .status(500)
-                  .send("Error saving client notification.");
-              }
+              db.query(
+                clientNotificationQuery,
+                [
+                  clientId,
+                  clientNotificationTitle,
+                  clientNotificationDescription,
+                ],
+                (err) => {
+                  if (err) {
+                    console.error("Error saving client notification:", err);
+                    return res
+                      .status(500)
+                      .send("Error saving client notification.");
+                  }
 
-              res
-                .status(200)
-                .send("Payment and client notification saved successfully.");
+                  res
+                    .status(200)
+                    .send(
+                      "Payment, downpayment and client notification saved successfully."
+                    );
+                }
+              );
             }
           );
         }
@@ -1684,77 +1881,125 @@ app.put("/project/update-payment-status/:id", (req, res) => {
     });
   });
 });
-app.put("/project/update-downpayment/:id", (req, res) => {
-  const projectId = req.params.id;
-  const { amount } = req.body;
 
-  const query = `
-    UPDATE project
-    SET downpayment = downpayment + ?
-    WHERE id = ?
-  `;
-
-  db.query(query, [amount, projectId], (err, result) => {
-    if (err) {
-      console.error("Error updating downpayment:", err);
-      return res.status(500).send("Error updating downpayment.");
-    }
-
-    res.status(200).send("Downpayment updated successfully.");
-  });
-});
-
-app.post("/upload", (req, res) => {
-  upload.single("file")(req, res, (err) => {
-    if (err) {
-      return res.status(500).json({ message: "File upload error" });
-    }
-
+app.post("/file", upload.single("file"), async (req, res) => {
+  console.log("DRIVE_FOLDER_ID:", process.env.DRIVE_FOLDER_ID);
+  try {
     const { project_id, uploaded_by } = req.body;
-    const originalName = req.file.originalname;
-    const fileName = req.file.filename;
-    const file_type = req.file.mimetype;
+    const fileMetadata = {
+      name: req.file.originalname,
+      parents: [process.env.DRIVE_FOLDER_ID], // Replace with the ID of your desired folder
+    };
+    const media = {
+      mimeType: req.file.mimetype,
+      body: fs.createReadStream(req.file.path),
+    };
 
-    const insertSql = `
-      INSERT INTO uploads 
-      (project_id, original_name, file_name, file_type, uploaded_by) 
-      VALUES (?, ?, ?, ?, ?)
+    const driveResponse = await drive.files.create({
+      requestBody: fileMetadata,
+      media,
+      fields: "id, name, webViewLink, webContentLink",
+    });
+
+    // Cleanup temporary file
+    fs.unlinkSync(req.file.path);
+
+    // Respond with file details
+    res.status(201).json({
+      id: driveResponse.data.id,
+      name: driveResponse.data.name,
+      link: driveResponse.data.webViewLink,
+      downloadLink: driveResponse.data.webContentLink,
+      project_id,
+      uploaded_by,
+      original_name: req.file.originalname || "Unknown File",
+    });
+  } catch (error) {
+    console.error(
+      "Error uploading file to Google Drive:",
+      error.response?.data || error.message || error
+    );
+    res
+      .status(500)
+      .json({ message: "File upload failed", error: error.message });
+  }
+});
+app.post("/upload", upload.single("file"), async (req, res) => {
+  console.log("DRIVE_FOLDER_ID:", process.env.DRIVE_FOLDER_ID);
+  try {
+    const { project_id, uploaded_by } = req.body;
+    const fileMetadata = {
+      name: req.file.originalname,
+      parents: [process.env.DRIVE_FOLDER_ID], // Replace with the ID of your desired folder
+    };
+    const media = {
+      mimeType: req.file.mimetype,
+      body: fs.createReadStream(req.file.path),
+    };
+
+    const driveResponse = await drive.files.create({
+      requestBody: fileMetadata,
+      media,
+      fields: "id, name, webViewLink, webContentLink",
+    });
+
+    // Cleanup temporary file
+    fs.unlinkSync(req.file.path);
+
+    // Prepare the file metadata to be inserted into the database
+    const fileId = driveResponse.data.id;
+    const originalName = req.file.originalname;
+    const uploadDate = moment().format("YYYY-MM-DD HH:mm:ss"); // Current timestamp
+    const uploadedBy = uploaded_by || "Unknown"; // Use the uploaded_by value or default to "Unknown"
+
+    // Insert file details into MySQL database
+    const query = `
+      INSERT INTO files (file_id, original_name, link, download_link, project_id, uploaded_by, upload_date) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
+
     db.query(
-      insertSql,
-      [project_id, originalName, fileName, file_type, uploaded_by],
-      (err, result) => {
+      query,
+      [
+        fileId,
+        originalName,
+        driveResponse.data.webViewLink,
+        driveResponse.data.webContentLink,
+        project_id,
+        uploadedBy,
+        uploadDate,
+      ],
+      (err, results) => {
         if (err) {
-          console.error("Error inserting file info:", err);
-          return res.status(500).json({ message: "Error uploading file" });
+          console.error("Error saving file to database:", err);
+          return res.status(500).json({
+            message: "Error saving file to database",
+            error: err.message,
+          });
         }
 
-        const fetchSql = `
-          SELECT 
-            uploads.*,
-            CASE 
-              WHEN uploads.uploaded_by = 'admin' THEN 'admin'
-              ELSE CONCAT(client.firstName, ' ', client.lastName)
-            END AS uploaded_by_name
-          FROM uploads
-          LEFT JOIN client ON uploads.uploaded_by = client.id
-          WHERE uploads.id = ?
-        `;
-
-        db.query(fetchSql, [result.insertId], (err, results) => {
-          if (err) {
-            console.error("Error fetching uploaded file info:", err);
-            return res
-              .status(500)
-              .json({ message: "Error fetching file data" });
-          }
-          res.status(201).json(results[0]);
+        // Respond with the file metadata
+        res.status(201).json({
+          id: fileId,
+          name: driveResponse.data.name,
+          link: driveResponse.data.webViewLink,
+          downloadLink: driveResponse.data.webContentLink,
+          project_id,
+          uploaded_by: uploadedBy,
+          original_name: originalName,
         });
       }
     );
-  });
+  } catch (error) {
+    console.error(
+      "Error uploading file to Google Drive:",
+      error.response?.data || error.message || error
+    );
+    res
+      .status(500)
+      .json({ message: "File upload failed", error: error.message });
+  }
 });
-// Endpoint to fetch files by project ID
 app.get("/upload", (req, res) => {
   const { project_id } = req.query;
   const sql = `
@@ -1775,6 +2020,99 @@ app.get("/upload", (req, res) => {
       return res.status(500).json({ message: "Error fetching files" });
     }
     res.json(results);
+  });
+});
+app.get("/files", async (req, res) => {
+  const { project_id } = req.query;
+
+  if (!project_id) {
+    return res.status(400).json({ message: "Project ID is required" });
+  }
+
+  const query = `
+    SELECT id, file_id, original_name, link, download_link, project_id, uploaded_by, upload_date
+    FROM files
+    WHERE project_id = ?
+  `;
+
+  db.query(query, [project_id], async (err, results) => {
+    if (err) {
+      console.error("Error fetching files from the database:", err);
+      return res
+        .status(500)
+        .json({ message: "Error fetching files", error: err.message });
+    }
+
+    // For each file, generate the public links using Google Drive API
+    for (let file of results) {
+      try {
+        const fileId = file.file_id;
+        const fileLinks = await generatePublicUrl(fileId); // Assume this function is defined below
+
+        // Attach the links to the file object
+        file.webViewLink = fileLinks.webViewLink;
+        file.webContentLink = fileLinks.webContentLink;
+      } catch (error) {
+        console.error(
+          `Error generating links for file ${file.file_id}:`,
+          error
+        );
+      }
+    }
+
+    res.status(200).json(results);
+  });
+});
+// Helper function to generate public URL using Google Drive API
+async function generatePublicUrl(fileId) {
+  try {
+    await drive.permissions.create({
+      fileId: fileId,
+      requestBody: {
+        role: "reader",
+        type: "anyone",
+      },
+    });
+
+    const result = await drive.files.get({
+      fileId: fileId,
+      fields: "webViewLink, webContentLink",
+    });
+
+    return result.data;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+app.delete("/files/:fileId", async (req, res) => {
+  const { fileId } = req.params;
+
+  if (!fileId) {
+    return res.status(400).json({ message: "File ID is required" });
+  }
+
+  console.log("Deleting file with ID:", fileId); // Add logging here
+
+  const query = `
+    DELETE FROM files WHERE id = ?
+  `;
+
+  db.query(query, [fileId], (err, results) => {
+    if (err) {
+      console.error("Error deleting file record:", err);
+      return res
+        .status(500)
+        .json({ message: "Error deleting file record", error: err.message });
+    }
+
+    // If no rows were affected, file not found
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    // Successfully deleted the file record
+    res.status(200).json({ message: "File record deleted successfully" });
   });
 });
 app.get("/upload/:clientId", (req, res) => {
@@ -1852,6 +2190,19 @@ app.get("/reviews", (req, res) => {
     } else {
       res.status(200).json(results);
     }
+  });
+});
+app.put("/reviews/:id", (req, res) => {
+  const { id } = req.params;
+  const { rating, comment } = req.body;
+
+  const updateQuery = "UPDATE reviews SET rating = ?, comment = ? WHERE id = ?";
+  db.query(updateQuery, [rating, comment, id], (err, result) => {
+    if (err) {
+      console.error("Error updating review:", err);
+      return res.status(500).json({ message: "Failed to update review" });
+    }
+    res.status(200).json({ message: "Review updated successfully" });
   });
 });
 
@@ -1952,6 +2303,104 @@ app.get("/appointmentsDashboard/count", (req, res) => {
   });
 });
 
+//REPORTS TAB
+// Fetch client count per month
+app.get("/clients/monthly", (req, res) => {
+  const sql = `
+    SELECT 
+      MONTHNAME(created_at) AS month, 
+      COUNT(*) AS client_count,
+      WEEK(created_at, 1) AS week_of_year,
+      YEAR(created_at) AS year
+    FROM client
+    WHERE YEAR(created_at) = YEAR(CURDATE())
+    GROUP BY MONTH(created_at), WEEK(created_at, 1)
+    ORDER BY MONTH(created_at), WEEK(created_at, 1);
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to fetch client data" });
+    }
+
+    // Process results into monthly and weekly structure
+    const monthlyData = Array(12).fill(0); // Initialize data for 12 months
+    const weeklyData = {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: [],
+    };
+
+    results.forEach((item) => {
+      const monthIndex = new Date(`${item.month} 1, ${item.year}`).getMonth();
+      monthlyData[monthIndex] += item.client_count;
+
+      const monthName = new Date(
+        `${item.month} 1, ${item.year}`
+      ).toLocaleString("default", { month: "long" });
+      weeklyData[monthName].push(item.client_count);
+    });
+
+    res.json({ monthly: monthlyData, weekly: weeklyData });
+  });
+});
+app.get("/projectsReports/monthly", (req, res) => {
+  const sql = `
+    SELECT 
+      MONTHNAME(created_at) AS month, 
+      COUNT(*) AS project_count,
+      WEEK(created_at, 1) AS week_of_year,
+      YEAR(created_at) AS year
+    FROM project
+    WHERE YEAR(created_at) = YEAR(CURDATE())
+    GROUP BY MONTH(created_at), WEEK(created_at, 1)
+    ORDER BY MONTH(created_at), WEEK(created_at, 1);
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to fetch project data" });
+    }
+
+    // Process results into monthly and weekly structure
+    const monthlyData = Array(12).fill(0); // Initialize data for 12 months
+    const weeklyData = {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: [],
+    };
+
+    results.forEach((item) => {
+      const monthIndex = new Date(`${item.month} 1, ${item.year}`).getMonth();
+      monthlyData[monthIndex] += item.project_count;
+
+      const monthName = new Date(
+        `${item.month} 1, ${item.year}`
+      ).toLocaleString("default", { month: "long" });
+      weeklyData[monthName].push(item.project_count);
+    });
+
+    res.json({ monthly: monthlyData, weekly: weeklyData });
+  });
+});
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");
 });

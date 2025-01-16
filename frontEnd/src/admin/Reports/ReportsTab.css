@@ -199,7 +199,13 @@
   position: absolute; /* Position it below the button */
   z-index: 1;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+
 
 /* Styling for each dropdown option */
 .dropdown-option {
@@ -234,6 +240,10 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
   margin-left: 160px;
   margin-top: -20px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   
 }
 
@@ -271,6 +281,10 @@
   top: 40px; /* Adjust based on where you want the options to appear */
   margin-left: 258px;
   margin-top: 210px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Styling for each monthly option */
@@ -285,6 +299,7 @@
   color: rgb(50, 50, 50);
   cursor: pointer; 
   width: 100%; /* Make sure it's wide enough */
+  
 }
 
 /* Hover effect for each monthly option */
@@ -344,6 +359,41 @@
 
 }
 
+/* Style for the chart options dropdown */
+.chart-options-dropdown {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 50px; /* Adjust this value to position the dropdown vertically */
+  right: 20px; /* Positions the dropdown near the right side of the screen */
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 200px; /* Adjust as needed for button width */
+}
+
+/* Style for individual dropdown options */
+.chart-option {
+  padding: 10px 15px;
+  font-size: 14px;
+  color: #333;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.chart-option:hover {
+  background-color: #ddd;
+}
+
+
+
+
+
 
 
 
@@ -369,5 +419,29 @@
 .select-yearly-button:focus {
   outline: none;
 }
+
+
+
+
+/* Style for the Yearly Bucket button */
+.yearly-bucket-button {
+  padding: 10px 20px; /* Adjust padding for the buttons */
+  font-size: 16px; /* Set the font size */
+  background-color: #ffffff; /* Green background color */
+  color: rgb(50, 50, 50);
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  transition: background-color 0.3s; /* Smooth transition for background color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);           /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition */
+}
+
+/* Hover effect for the Yearly Bucket button */
+.yearly-bucket-button:hover {
+  background-color: #ebebeb;  /* Darker blue on hover */
+  transform: scale(1.05);      /* Slight scaling on hover */
+}
+
 
 

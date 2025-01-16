@@ -6,15 +6,47 @@ import GridView from "./GridView"; // Import GridView component
 import ListView from "./ListView"; // Import ListView component
 import "./ListView.css";
 
-
 const ProjectList = ({
+  projects,
   filteredProjects,
+  setFilteredProjects,
   formatDate,
+  handleEdit,
   handleDelete,
+  onCancel,
   onEdit,
   toggleDropdown,
   activeDropdown,
 }) => {
+
+  useEffect(() => {
+    setStatuses(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.status;
+        return acc;
+      }, {})
+    );
+    setStartDates(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.actualStart || null;
+        return acc;
+      }, {})
+    );
+    setFinishDates(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.actualFinish || null;
+        return acc;
+      }, {})
+    );
+    setpaymentStatuses(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.paymentStatus || "Not Paid";
+        return acc;
+      }, {})
+    );
+  }, [filteredProjects]);
+  
+  
   const [statuses, setStatuses] = useState(
     filteredProjects.reduce((acc, project) => {
       acc[project.id] = project.status;
@@ -41,6 +73,8 @@ const ProjectList = ({
   );
   const [tasksInfo, setTasksInfo] = useState({});
   const [totalTasks, setTotalTasks] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isGridView, setIsGridView] = useState(false);
@@ -149,15 +183,6 @@ const ProjectList = ({
   const handlePaymentStatusChange = (projectId, newPaymentStatus) => {
     const currentStatus = paymentstatuses[projectId];
 
-    // Prevent invalid transitions
-    if (
-      currentStatus === "Paid" || // Cannot change once Paid
-      (currentStatus === "Partial Payment" && newPaymentStatus === "Not Paid")
-    ) {
-      console.warn("Invalid payment status change attempt.");
-      return;
-    }
-
     setpaymentStatuses((prevpaymentStatuses) => ({
       ...prevpaymentStatuses,
       [projectId]: newPaymentStatus,
@@ -200,6 +225,22 @@ const ProjectList = ({
     }));
   };
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setProjectName("");
+    setClientId("");
+    setClientName("");
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+    setDownpayment("");
+    setEditingProjectId(null);
+  };
+
   const statusColors = {
     Ongoing: "pink",
     Pending: "red",
@@ -209,25 +250,6 @@ const ProjectList = ({
     Paid: "#FFCD90",
     "Not Paid": "red",
     "Partial Payment": "pink",
-  };
-
-  const handleRightClick = (e, projectId) => {
-    e.preventDefault(); // Prevent the default context menu
-    setSelectedProject(projectId); // Store the selected project ID
-    setShowModal(true); // Show the confirmation modal
-  };
-
-  const handleContextMenuAction = (action) => {
-    if (action === "delete") {
-      handleDelete(selectedProject); // Trigger delete action
-    } else if (action === "edit") {
-      onEdit(selectedProject); // Trigger edit action
-    }
-    setShowModal(false); // Close the modal after action
-  };
-
-  const closeModal = () => {
-    setShowModal(false); // Close the modal without any action
   };
 
   // Toggle between grid and list view
@@ -248,7 +270,7 @@ const ProjectList = ({
     <div className="project-list-wrapper">
       <div className="layout-toggle-icons">
         <LuLayoutGrid onClick={() => toggleLayout("list")} /> {/* grid */}
-        <FaList onClick={() => toggleLayout("grid")} /> {/* list Icon */}
+        {/* <FaList onClick={() => toggleLayout("grid")} />  */}
       </div>
 
       <div className="project-list">
@@ -267,7 +289,9 @@ const ProjectList = ({
           />
         ) : (
           <ListView
+            projects={projects}
             filteredProjects={filteredProjects}
+            setFilteredProjects={setFilteredProjects}
             formatDate={formatDate}
             statuses={statuses}
             statusColors={statusColors}
@@ -281,26 +305,12 @@ const ProjectList = ({
             handleFinishDateChange={handleFinishDateChange}
             tasksInfo={tasksInfo}
             totalTasks={totalTasks}
-            handleRightClick={handleRightClick}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
             onProjectClick={handleProjectClick}
+            activeDropdown={activeDropdown}
+            toggleDropdown={toggleDropdown}
           />
-        )}
-
-        {/* Confirmation Modal */}
-        {showModal && (
-          <div className="modal-overlay">
-            <div className="modal">
-              <div className="modal-header">
-                <MdCancel className="cancel-icon" onClick={closeModal} />
-              </div>
-              <button onClick={() => handleContextMenuAction("edit")}>
-                Edit
-              </button>
-              <button onClick={() => handleContextMenuAction("delete")}>
-                Delete
-              </button>
-            </div>
-          </div>
         )}
       </div>
     </div>

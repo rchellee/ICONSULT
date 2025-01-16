@@ -2,8 +2,8 @@
 .top-button {
   display: flex;
   align-items: center;
-  gap: 10px; 
-  margin-bottom: 20px; 
+  gap: 10px;
+  margin-bottom: 20px;
   font-size: 18px;
   position: absolute;
   top: 12px;
@@ -25,7 +25,7 @@
 }
 
 .top-button svg {
-  font-size: 25px; 
+  font-size: 25px;
 }
 
 .nav-button {
@@ -33,7 +33,7 @@
 }
 
 .nav-button:hover {
-  transform: scale(1.2); 
+  transform: scale(1.2);
 }
 
 .posts-tab-content {
@@ -46,10 +46,15 @@
   height: 100%;
 }
 
+.project-name-container{
+  text-align: left;
+  margin-top: 20px;
+}
+
 .project-posts {
   display: flex;
   flex-direction: column;
-  margin-left: 300px;
+  margin-left: 100px;
   margin-top: -70px;
 }
 
@@ -59,39 +64,37 @@
 
 .create-task-button {
   padding: 10px 20px;
-  background-color:  #547099;
+  background-color: #547099;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3rem; 
-  height: 3rem; 
+  width: 3rem;
+  height: 3rem;
   color: white;
-  font-size: 2rem; 
+  font-size: 2rem;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  position: absolute; 
-  right: -60px; 
-  top: -10px;
-  transition: transform 0.3s ease, background-color 0.3s ease; 
+  position: absolute;
+  right: -60px;
+  top: 261px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .create-task-button:hover {
   transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84; 
+  background-color: #3a5b84;
 }
-
 
 /* Task Table Container */
 .table-container {
-  max-height: 500px; 
-  overflow-y: scroll; 
-  -webkit-overflow-scrolling: touch; 
-  padding-right: 10px; 
-  margin-top: 50px;
-  margin-right: 200px;
+  max-height: 700px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 10px;
+  margin-top: 40px;
+  margin-right: 50px;
   border-radius: 10px;
-
 }
 
 /* Inner Container to Separate Table from Scrollbar */
@@ -127,20 +130,18 @@
   border-radius: 10px;
   background-color: #fbfbfb;
   border: none;
-  
-  
 }
 
 /* Sticky header styles */
 .task-table thead th {
   position: sticky;
-  top: 0; 
+  top: 0;
   background-color: #eeecec;
   color: #333;
   padding: 10px;
   text-align: left;
-  z-index: 2; 
-  border: none; 
+  z-index: 2;
+  border: none;
 }
 
 /* Table Cell Styles */
@@ -149,7 +150,7 @@
   padding: 10px;
   text-align: left;
   border-bottom: transparent;
-  border: none; 
+  border: none;
 }
 
 .task-table td {
@@ -169,36 +170,31 @@
 }
 
 .create-button-container {
-  position: relative; 
-  margin-top: 20px; 
+  position: relative;
+  margin-top: 20px;
 }
 
 .task-add-icon {
-  background-color: #547099; 
-  border-radius: 50%; 
+  background-color: #547099;
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 3rem; 
-  height: 3rem; 
+  width: 3rem;
+  height: 3rem;
   cursor: pointer;
-  color: white; 
-  font-size: 2rem; 
-  position: absolute; 
-  right: -60px; 
-  top: -478px; 
-  transition: transform 0.3s ease, background-color 0.3s ease; 
+  color: white;
+  font-size: 2rem;
+  position: absolute;
+  right: -60px;
+  top: -478px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .task-add-icon:hover {
   transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84; 
+  background-color: #3a5b84;
 }
-
-
-
-
-
 
 /* Style the task details section, eto yung sa loob ng specific task */
 .task-details {
@@ -206,16 +202,17 @@
   border: 1px solid #ccc;
   margin-top: 20px;
   background-color: #f9f9f9;
-  max-width: 600px;
-  margin-left: 100px; 
+  max-width: 900px;
+  height: 700px;
+  margin-left: 300px;
 }
 
 .task-detail-row {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   margin-bottom: 20px;
-  padding-bottom: 10px; 
-  border-bottom: 1px dashed #ccc; 
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #ccc;
 }
 
 /* Align text to the right for amount fields */
@@ -230,20 +227,20 @@
 
 /* Remove dashed line for Task Name row */
 .task-detail-row:first-child {
-  border-bottom: none; 
-  padding-bottom: 0; 
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 /* Remove dashed line for Miscellaneous row */
 .task-detail-row:nth-child(3) {
-  border-bottom: none; 
-  padding-bottom: 0; 
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 /* Add bold styling and remove dashed line for the total row */
 .total-row {
-  border-bottom: none; 
-  padding-bottom: 0; 
+  border-bottom: none;
+  padding-bottom: 0;
 }
 .total-row .align-right {
   font-weight: bold;
@@ -255,9 +252,8 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  margin-left: 400px;
+  margin-left: 200px;
 }
-
 
 /* Floating Action Box */
 .post-click-popup {
@@ -286,39 +282,35 @@
   background-color: #ddd;
 }
 
-
 /*css for total amount of task*/
 .total-amount-container {
   display: flex;
-  justify-content: flex-end; /* Align to the right */
   align-items: center; /* Vertically align items */
   margin-bottom: -40px; /* Add space between this and the table */
   margin-right: 225px;
   margin-top: 20px;
-  gap: 10px
-  
+  gap: 10px;
 }
 
 .total-amount-container h3 {
-  font-size: 18px; 
-  font-weight: bold; 
-  color: #333; 
-  margin: 0; 
-  font-weight: normal; 
-  gap: 10px
+  font-size: 10px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  font-weight: normal;
+  gap: 10px;
 }
 
-.total-amount-text { 
-  font-weight: bold; 
+.total-amount-text {
+  font-weight: bold;
 }
 
 .total-amount-number {
-  font-size: 30px; 
-  font-weight: bold; 
-  color: #547099;  
+  font-size: 25px;
+  font-weight: bold;
+  color: #547099;
   margin-left: 10px;
 }
-
 
 /* status css*/
 .status-dropdown {
@@ -341,4 +333,3 @@
   background-color: #3b4f67;
   color: white;
 }
-

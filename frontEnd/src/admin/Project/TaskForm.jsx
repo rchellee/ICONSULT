@@ -1,13 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { TbXboxXFilled } from "react-icons/tb"; // Import the remove icon
-import { IoMdArrowDropdown } from "react-icons/io";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { TbXboxXFilled } from "react-icons/tb";
+import { IoMdArrowDropdown } from "react-icons/io";
 import { MdAddCircle } from "react-icons/md";
 import formStyles from "./FormStyle.module.css";
 
 const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
   const navigate = useNavigate();
-
   const [taskName, setTaskName] = useState(
     existingTask ? existingTask.task_name : ""
   );
@@ -27,9 +26,48 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
     Array.isArray(existingTask?.miscellaneous) ? existingTask.miscellaneous : []
   );
   const [totalAmount, setTotalAmount] = useState(0);
+  const [status, setStatus] = useState(
+    existingTask ? existingTask.status : "Pending"
+  );
+  const [projectDates, setProjectDates] = useState({
+    startDate: "",
+    endDate: "",
+  });
 
   useEffect(() => {
-    console.log("Received projectId in TaskForm:", projectId);
+    if (existingTask) {
+      setTaskName(existingTask.task_name || "");
+      setTaskFee(existingTask.task_fee || "");
+      setDueDate(existingTask.due_date || "");
+      setEmployee(existingTask.employee || "");
+      setMiscellaneousList(
+        Array.isArray(existingTask.miscellaneous)
+          ? existingTask.miscellaneous
+          : []
+      );
+    }
+  }, [existingTask]);
+
+  useEffect(() => {
+    // Fetch project details for start and end dates
+    const fetchProjectDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/projects/${projectId}`
+        );
+        if (response.ok) {
+          const { project } = await response.json();
+          setProjectDates({
+            startDate: project.startDate,
+            endDate: project.endDate,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+    };
+
+    fetchProjectDetails();
   }, [projectId]);
 
   useEffect(() => {
@@ -103,19 +141,8 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
       employee,
       miscellaneous: miscellaneousList,
       projectId,
+      status: "Pending",
     };
-
-    const handleCancelClick = () => {
-      console.log("Cancel button clicked");
-      onCancel();
-    };
-    
-    const handleSubmitClick = (e) => {
-      e.preventDefault();
-      console.log("Submit button clicked");
-      handleSubmit(e);
-    };
-    
 
     try {
       const url = existingTask
@@ -139,7 +166,7 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
         );
         onCreate(taskData);
         resetForm();
-        navigate("/admin");
+        navigate("/project");
       } else {
         console.error(`Failed to ${existingTask ? "update" : "create"} task`);
       }
@@ -220,6 +247,13 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 id="dueDate"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
+                min={
+                  new Date().toISOString().split("T")[0] >
+                  projectDates.startDate
+                    ? new Date().toISOString().split("T")[0]
+                    : projectDates.startDate
+                }
+                max={projectDates.endDate}
                 required
               />
             </div>

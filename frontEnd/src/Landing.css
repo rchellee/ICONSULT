@@ -1,3 +1,15 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-y: auto; /* Ensures vertical scrolling */
+  height: auto; /* Allows content to expand */
+}
+
+html {
+  scroll-behavior: smooth; /* Optional: Smooth scrolling */
+}
+
 /* Header Styles */
 .header {
   display: flex;
@@ -42,6 +54,8 @@
 .logo-img {
   height: 80px;
   width: auto;
+  
+  margin-left: 100px;
 }
 .logo-topbar {
   position: absolute;
@@ -97,13 +111,14 @@
 .hero {
   display: flex;
   flex-direction: column; 
-  height: 100vh; 
+  height: auto; 
   justify-content: center;
   align-items: center;
   background-color: transparent; 
   padding: 0;
   width: 100%; 
   box-sizing: border-box;
+  min-height: 100vh; 
 }
 
 /* Hero content layout */
@@ -115,6 +130,9 @@
   align-items: center;
   padding: 0 20px; 
   box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 /* Left section */
@@ -130,9 +148,14 @@
 
 /* Right section */
 .i-right {
-  position: absolute; 
+  position: relative; 
   transform: scale(1.4); 
   right: 20%; 
+  
+}
+
+.i-right img {
+  margin-left: 100px; /* Adjust this value to move the image more or less */
 }
 
 /* i-name styling */
@@ -334,3 +357,13 @@
 
 
 
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Change this to 'auto' if present */
+}
+
+
+.hero, .services {
+  min-height: 100vh; /* At least viewport height */
+}

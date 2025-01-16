@@ -1,16 +1,17 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
 import { FaPlus, FaBell } from "react-icons/fa";
 import Sidebar from "../sidebar";
 import pic4 from "../../Assets/pic4.png";
 import ProjectForm from "./ProjectForm";
-import ProjectList from "./ProjectList";
-import ProjectFolders from "./ProjectFolders";
+import ProjectList from "./ProjectList (1)";
+
 import ProjectTask from "./ProjectTask";
 import Topbar from "../Topbar";
 
 const ProjectManagement = () => {
+  const { searchTerm } = useContext(SearchContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
@@ -19,23 +20,40 @@ const ProjectManagement = () => {
   const [clientName, setClientName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [actualStart, setActualStart] = useState("");
+  const [actualFinish, setActualFinish] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [clients, setClients] = useState([]);
-  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingProjectId, setEditingProjectId] = useState(false);
   const [description, setDescription] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [contractPrice, setContractPrice] = useState("");
   const [downpayment, setDownpayment] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("Not Paid");
+  const [filteredProjects, setFilteredProjects] = useState(projects);
+
+  useEffect(() => {
+    const filtered = projects.filter((project) =>
+      [
+        project.projectName,
+        project.clientName,
+        project.status,
+        project.paymentStatus,
+        project.description,
+      ].some((field) =>
+        (field || "").toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredProjects(filtered);
+  }, [projects, searchTerm]);
 
   useEffect(() => {
     fetch("http://localhost:8081/project")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // Inspect the data structure
+        // console.log(data); 
         setProjects(data);
       })
       .catch((error) => console.error("Error fetching projects:", error));
@@ -66,60 +84,85 @@ const ProjectManagement = () => {
     setEditingProjectId(null);
   };
 
-  const saveProject = () => {
-    const projectData = {
+  const saveNewProject = () => {
+    const newProjectData = {
       clientId,
       projectName,
       clientName,
       description,
       startDate,
       endDate,
-      status: "Pending",
+      status: "Pending", // Default status for new projects
       contractPrice,
       downpayment,
       totalPayment:
         parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
-      paymentStatus,
+      paymentStatus: "Not Paid", // Default payment status
     };
 
+    fetch("http://localhost:8081/project", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProjectData),
+    })
+      .then((response) => response.json())
+      .then((newProject) => {
+        setProjects([...projects, newProject]);
+        closeModal(); // Clear modal and reset form
+      })
+      .catch((error) => console.error("Error creating project:", error));
+  };
+
+  const updateExistingProject = () => {
+    const updatedProjectData = {
+      clientId,
+      projectName,
+      clientName,
+      description,
+      startDate,
+      endDate,
+      contractPrice,
+      downpayment,
+      actualStart,
+      actualFinish,
+      totalPayment:
+        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
+      paymentStatus: projects.find((project) => project.id === editingProjectId)
+        ?.paymentStatus,
+    };
+
+    fetch(`http://localhost:8081/project/${editingProjectId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedProjectData),
+    })
+      .then((response) => response.json())
+      .then((updatedProject) => {
+        setProjects(
+          projects.map((project) =>
+            project.id === editingProjectId ? updatedProject : project
+          )
+        );
+        closeModal(); // Clear modal and reset form
+      })
+      .catch((error) => console.error("Error updating project:", error));
+  };
+
+  // Pass separate save functions to the ProjectForm component
+  const handleSave = () => {
     if (editingProjectId) {
-      // Update existing project
-      fetch(`http://localhost:8081/project/${editingProjectId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(projectData),
-      })
-        .then((response) => response.json())
-        .then((updatedProject) => {
-          setProjects(
-            projects.map((project) =>
-              project.id === editingProjectId ? updatedProject : project
-            )
-          );
-          closeModal();
-        })
-        .catch((error) => console.error("Error updating project:", error));
+      updateExistingProject();
     } else {
-      fetch("http://localhost:8081/project", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(projectData),
-      })
-        .then((response) => response.json())
-        .then((newProject) => {
-          setProjects([...projects, newProject]);
-          closeModal();
-        })
-        .catch((error) => console.error("Error creating project:", error));
+      saveNewProject();
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { 
-      year: "numeric",  // Full year (e.g., "2024")
-      month: "long",    // Full month name (e.g., "January")
-      day: "numeric",   // Day of the month (e.g., "6")
+    return date.toLocaleDateString("en-US", {
+      year: "numeric", // Full year (e.g., "2024")
+      month: "long", // Full month name (e.g., "January")
+      day: "numeric", // Day of the month (e.g., "6")
     });
   };
 
@@ -165,6 +208,7 @@ const ProjectManagement = () => {
       setDescription(projectToEdit.description);
       setContractPrice(projectToEdit.contractPrice || "");
       setDownpayment(projectToEdit.downpayment || "");
+      setPaymentStatus(projectToEdit.paymentStatus); // Retain current payment status
       setEditingProjectId(projectId);
       openModal();
     }
@@ -184,10 +228,6 @@ const ProjectManagement = () => {
       .catch((error) => console.error("Error deleting project:", error));
   };
 
-  const filteredProjects = projects.filter((project) =>
-    (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const renderProjectContent = () => {
     if (selectedProjectId) {
       return (
@@ -202,6 +242,7 @@ const ProjectManagement = () => {
         projects={projects}
         searchTerm={searchTerm}
         filteredProjects={filteredProjects}
+        setFilteredProjects={setFilteredProjects}
         formatDate={formatDate}
         toggleSortDropdown={toggleSortDropdown}
         isSortDropdownOpen={isSortDropdownOpen}
@@ -210,6 +251,7 @@ const ProjectManagement = () => {
         toggleDropdown={toggleDropdown}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
+        onCancel={closeModal}
         onProjectClick={(projectId) => {
           console.log("Clicked Project ID:", projectId);
           setSelectedProjectId(projectId);
@@ -244,10 +286,16 @@ const ProjectManagement = () => {
             setDescription={setDescription}
             contractPrice={contractPrice}
             setContractPrice={setContractPrice}
+            downpayment={downpayment}
             setDownpayment={setDownpayment}
+            paymentStatus={paymentStatus}
+            setPaymentStatus={setPaymentStatus}
+            actualStart={actualStart}
+            setActualStart={setActualStart}
+            actualFinish={setActualFinish}
             clients={clients}
             onCancel={closeModal}
-            onSave={saveProject}
+            onSave={handleSave}
             editingProjectId={editingProjectId}
           />
         )}

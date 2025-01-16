@@ -169,7 +169,7 @@ const ProjectForm = ({
         )}
 
         <div className="form-create-cancel">
-          <button className="form-cancel-project-button" onClick={onCancel}>
+          <button className="form-cancel-project-button" onClick={() => onCancel()}>
             Cancel
           </button>
           <button className="form-create-project-button" onClick={handleSave}>

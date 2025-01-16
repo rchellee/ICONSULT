@@ -36,7 +36,7 @@ const ReportsTab = () => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [isYearlyBucket, setIsYearlyBucket] = useState(false); // Track Yearly Bucket state
   const [showChartOptions, setShowChartOptions] = useState(false); // Show chart options state
-  const [selectedChartOption, setSelectedChartOption] = useState(null); // Selected chart option
+  const [selectedChartOption, setSelectedChartOption] = useState("Active Projects"); // Default to "Active Projects"
 
   // Example data for Project Count Graph
   const projectData = {
@@ -76,7 +76,7 @@ const ReportsTab = () => {
     setIsMonthlyHovered(false); // Close submenu when a month is selected
     setIsTimePeriodOpen(false); // Close the time period submenu after selection
     setIsYearlyBucket(false); // Close Yearly Bucket when selecting a time period
-    setIsChartOptionSelect(false);
+    setShowChartOptions(false);
   };
 
   const handleDropdownClick = () => {
@@ -90,8 +90,8 @@ const ReportsTab = () => {
   const handleManagementOptionClick = (option) => {
     setSelectedManagementOption(option);
     setIsManagementDropdownOpen(false);
-    setIsYearlyBucket(false); // this one para mag close si yearly bucket
-    setIsChartOptionSelect(false);
+    setIsYearlyBucket(false); // Close yearly bucket
+    setShowChartOptions(false);
   };
 
   const handleMonthlyHover = () => {
@@ -132,55 +132,55 @@ const ReportsTab = () => {
         <div className="reports-header"></div>
         <div className="management-chart-section">
           <div className="chart-container">
-          <div className="dropdown-container">
-  <button
-    className="Management-button"
-    onClick={handleManagementDropdownClick}
-  >
-    Management
-  </button>
+            <div className="dropdown-container">
+              <button
+                className="Management-button"
+                onClick={handleManagementDropdownClick}
+              >
+                Management
+              </button>
 
-  {/* Hide Time Period and Yearly Bucket buttons only when Active Projects is selected */}
-  {selectedChartOption !== "Active Projects" && !hideTimePeriodButtons && (
-    <>
-      <button
-        className="Time-button"
-        onClick={handleDropdownClick}
-      >
-        Time Period
-      </button>
-      <button onClick={handleYearlyBucketClick}>Yearly Bucket</button>
-    </>
-  )}
+              {/* Hide Time Period and Yearly Bucket buttons only when Active Projects is selected */}
+              {selectedChartOption !== "Active Projects" && !hideTimePeriodButtons && (
+                <>
+                  <button
+                    className="Time-button"
+                    onClick={handleDropdownClick}
+                  >
+                    Time Period
+                  </button>
+                  <button className="yearly-bucket-button" onClick={handleYearlyBucketClick}>
+  Yearly Bucket
+</button>
 
-{!["Client", "Task", "Employee", "Appointments", "Revenue"].includes(selectedManagementOption) && (
-  <button 
-    className="Display-Chart-button" 
-    onClick={handleDisplayChartClick}
-  >
-    Display Chart
-  </button>
+                </>
+              )}
 
-)}
-  {showChartOptions && (
-    <div className="chart-options-dropdown">
-      <button 
-        className="chart-option" 
-        onClick={() => handleChartOptionSelect("Per Month and Monthly")}
-      >
-        Per Month and Monthly
-      </button>
-      <button 
-        className="chart-option" 
-        onClick={() => handleChartOptionSelect("Active Projects")}
-      >
-        Active Projects
-      </button>
-    </div>
-  )}
-</div>
-
-
+              {!["Client", "Task", "Employee", "Appointments", "Revenue"].includes(selectedManagementOption) && (
+                <button 
+                  className="Display-Chart-button" 
+                  onClick={handleDisplayChartClick}
+                >
+                  Display Chart
+                </button>
+              )}
+                    {showChartOptions && (
+  <div className="chart-options-dropdown">
+    <button
+      className="chart-option"
+      onClick={() => handleChartOptionSelect("Per Month and Monthly")}
+    >
+      Total Projects
+    </button>
+    <button
+      className="chart-option"
+      onClick={() => handleChartOptionSelect("Active Projects")}
+    >
+      Active Projects
+    </button>
+                </div>
+              )}
+            </div>
 
             {isManagementDropdownOpen && (
               <div className="management-dropdown">
@@ -271,7 +271,6 @@ const ReportsTab = () => {
             ) : selectedMonth && selectedMonth !== "Per Month" ? (
               <Bar
                 options={{
-                 
                   responsive: true,
                   plugins: {
                     legend: { position: "top" },

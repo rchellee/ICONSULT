@@ -1,0 +1,85 @@
+* {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+
+
+/*.review-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 80px;
+    padding: 20px;
+  }  eto pag center yung paper*/ 
+
+  .review-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;  /* Align items to the left */
+    justify-content: flex-start;
+    margin-left: 80px;           /* Remove left margin */
+    padding: 20px;
+    width: 100%;              /* Ensure the width takes the full screen width */
+  }
+  
+  .reviews-admin-list {
+    width: 80%;
+    max-width: 1200px;
+    margin-top: 20px;
+  }
+  
+  .MuiFormControl-root {
+    width: 200px;
+    margin-bottom: 20px;
+    align-self: flex-start;
+  }
+  
+  .MuiRating-icon {
+    font-size: 3.5rem;
+  }
+  
+  .review-comment {
+    margin-top: 10px;
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  
+  
+ 
+  
+  
+  .review-header > div {
+    display: flex;
+    align-items: center;
+  }
+  
+  .review-header .rating {
+    display: flex;
+    align-items: center;
+  }
+  
+  .review-header .date {
+    font-style: italic;
+  }
+  
+  .review-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .review-comment {
+    margin-top: 10px;
+  }
+  
+  .review-comment strong {
+    display: block;
+  }
+  

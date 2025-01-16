@@ -39,7 +39,6 @@ h1 {
 }
 
 .create-button {
-  
   background-color: #3a9b9a;
   color: white;
   border: none;
@@ -64,7 +63,6 @@ h1 {
   margin-right: 8px;
 }
 
-
 /* LEFT SIDE PROJECT NAMES */
 
 /* Folder Title */
@@ -78,24 +76,21 @@ h1 {
 
 /* Project Folders Section */
 .project-names-section {
-  
   padding: 15px;
   position: absolute;
   margin-left: 10px;
   margin-top: 60px;
   width: 250px; /* Adjust the width as needed */
   background-color: transparent;
-  border-radius: 30px; 
-
+  border-radius: 30px;
 }
 
 /* Scroll Container for Folders */
 .folders-scroll-container {
-  max-height: 700px;/* Set the max height of the scrollable area */
+  max-height: 700px; /* Set the max height of the scrollable area */
   overflow-y: auto; /* Enables vertical scrolling */
   padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
   position: relative;
-  
 }
 
 /* Shift the scrollbar to the right */
@@ -104,7 +99,7 @@ h1 {
 }
 
 .folders-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #d7d5d5;  /* Color of the scrollbar */
+  background-color: #d7d5d5; /* Color of the scrollbar */
   border-radius: 10px; /* Rounded edges for the scrollbar */
 }
 
@@ -132,8 +127,6 @@ h1 {
 .project-name-item:last-child {
   border-bottom: none;
 }
-
-
 
 /* Additional Styling for Folder Search Box (if needed) */
 .search-box-container {

@@ -4,8 +4,7 @@
   height: 100vh;
 }
 
-.content-client-project {
-  margin-left: 55px;
+.content {
   flex-grow: 1;
   padding: 10px;
   overflow-y: auto;
