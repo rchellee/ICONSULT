@@ -1,7 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  /* overflow: hidden; */
+  overflow: hidden;
   height: 100%;
 }
 /* Container for the whole page */
@@ -224,9 +224,7 @@ html, body {
   }
  
   /* Button hover effect */
-  .file-actions button:hover {
-    color: #007bff;
-  }
+
  
   /* Active button styles */
   .file-actions button.active {
