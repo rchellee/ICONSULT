@@ -48,7 +48,8 @@
     "react-toastify": "^11.0.2",
     "serve": "^14.2.4",
     "side-channel": "^1.1.0",
-    "side-channel-list": "^1.0.0"
+    "side-channel-list": "^1.0.0",
+    "vis-timeline": "^7.7.3"
   },
   "devDependencies": {
     "@babel/runtime": "^7.26.0",
