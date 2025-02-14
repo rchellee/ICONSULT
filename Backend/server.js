@@ -2228,7 +2228,7 @@ app.get("/appointmentsDashboard/stats", (req, res) => {
       condition = "YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = YEAR(CURDATE())";
       break;
     default:
-      condition = "1=1"; 
+      condition = "1=1";
   }
   const sql = `
     SELECT 
@@ -2360,8 +2360,6 @@ app.get("/todaysTasks", (req, res) => {
     return res.json(data);
   });
 });
-
-
 
 //REPORTS TAB
 // Fetch client count per month
