@@ -357,8 +357,8 @@ textarea {
 
 /* Hide default dropdown arrow */
 select {
-  -webkit-appearance: none;  /* For Safari */
-  -moz-appearance: none;     /* For Firefox */
-  appearance: none;          /* For Chrome, Opera, etc. */
-  background-image: none;    /* Removes any background image */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  appearance: none; /* For Chrome, Opera, etc. */
+  background-image: none; /* Removes any background image */
 }

@@ -2,28 +2,24 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Paper,
-  Button,
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
+  Avatar,
+  Rating,
+  Link,
 } from "@mui/material";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
-import "./AdminAccount.css";
+import "./adminReview.css";
 
 const AdminReview = () => {
   const [reviews, setReviews] = useState([]);
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [filterRating, setFilterRating] = useState("all");
+  const [expandedReviewId, setExpandedReviewId] = useState(null); // State to track which review is expanded
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -73,7 +69,6 @@ const AdminReview = () => {
     fetchProjects();
   }, []);
 
-  // Filter reviews by rating
   const filteredReviews =
     filterRating === "all"
       ? reviews
@@ -91,18 +86,26 @@ const AdminReview = () => {
     return project ? project.projectName.toUpperCase() : "UNKNOWN PROJECT";
   };
 
+  const MAX_COMMENT_LENGTH = 150; // Limit for comment visibility
+
+  // Function to toggle review expansion
+  const toggleReadMore = (reviewId) => {
+    setExpandedReviewId((prevId) => (prevId === reviewId ? null : reviewId));
+  };
+
   return (
     <div>
       <Topbar />
       <Sidebar />
 
-      <div className="review-section">
-        <Typography variant="h4" gutterBottom>
-          Client Reviews
-        </Typography>
-
-        <FormControl style={{ marginBottom: "20px", minWidth: 200 }}>
-          <InputLabel>Rating</InputLabel>
+      <div className="review-admin">
+        <FormControl
+          style={{
+            marginBottom: "20px",
+            minWidth: 200,
+            backgroundColor: "white",
+          }}
+        >
           <Select
             value={filterRating}
             onChange={(e) => setFilterRating(e.target.value)}
@@ -116,44 +119,132 @@ const AdminReview = () => {
           </Select>
         </FormControl>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <strong>Client</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Project</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Rating</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>Comment</strong>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredReviews.length > 0 ? (
-                filteredReviews.map((review) => (
-                  <TableRow key={review.id}>
-                    <TableCell>{getClientName(review.client_id)}</TableCell>
-                    <TableCell>{getProjectName(review.project_id)}</TableCell>
-                    <TableCell>{review.rating}</TableCell>
-                    <TableCell>{review.comment}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    No reviews available.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div className="reviews-admin-list">
+          {filteredReviews.length > 0 ? (
+            filteredReviews.map((review) => {
+              const isExpanded = expandedReviewId === review.id;
+              const displayComment =
+                review.comment.length > MAX_COMMENT_LENGTH && !isExpanded
+                  ? review.comment.substring(0, MAX_COMMENT_LENGTH) + "..."
+                  : review.comment;
+
+              return (
+                <Paper
+                  key={review.id}
+                  elevation={3}
+                  style={{
+                    padding: "20px",
+                    marginBottom: "15px",
+                    maxWidth: "600px",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    height: "auto",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                  >
+                    {/* Rating and Date Section */}
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      width="100%"
+                    >
+                      <Box display="flex" alignItems="center">
+                        <Rating
+                          name="rating"
+                          value={review.rating}
+                          readOnly
+                          precision={0.5}
+                        />
+                        <Typography
+                          variant="body1"
+                          style={{
+                            marginTop: "10px",
+                            marginLeft: "50px",
+                            fontStyle: "italic",
+                          }}
+                        >
+                          January 16, 2025
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* User Information Section */}
+
+                    <Box display="flex" alignItems="center" marginTop="10px">
+                      <Avatar style={{ marginRight: "10px" }}>
+                        {getClientName(review.client_id)
+                          .split(" ")[0]
+                          .charAt(0)}
+                      </Avatar>
+                      <Typography variant="body1">
+                        <strong>{getClientName(review.client_id)}</strong>
+                      </Typography>
+                    </Box>
+
+                    {/* Project Name Section */}
+                    <Typography
+                      variant="body1"
+                      style={{ marginTop: "10px", marginLeft: "50px" }}
+                    >
+                      {getProjectName(review.project_id)}
+                    </Typography>
+
+                    {/* Review Comment Section */}
+                    <Typography
+                      variant="body1"
+                      style={{
+                        marginTop: "10px",
+                        marginLeft: "50px",
+                        whiteSpace: "normal",
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                        maxWidth: "500px",
+                      }}
+                    >
+                      <strong>{displayComment}</strong>
+                      {review.comment.length > MAX_COMMENT_LENGTH &&
+                        !isExpanded && (
+                          <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => toggleReadMore(review.id)}
+                            style={{ marginLeft: "10px", cursor: "pointer" }}
+                          >
+                            Read More
+                          </Link>
+                        )}
+                      {isExpanded && (
+                        <Link
+                          component="button"
+                          variant="body2"
+                          onClick={() => toggleReadMore(review.id)}
+                          style={{ marginLeft: "10px", cursor: "pointer" }}
+                        >
+                          Show Less
+                        </Link>
+                      )}
+                    </Typography>
+                  </Box>
+                </Paper>
+              );
+            })
+          ) : (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              // Full height of the viewport
+              width="90vw" // Full width of the viewport
+            >
+              <Typography variant="body1">No reviews available.</Typography>
+            </Box>
+          )}
+        </div>
       </div>
     </div>
   );

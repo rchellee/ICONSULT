@@ -101,8 +101,8 @@ const ClientManagement = () => {
   return (
     <div>
       <Topbar />
+      <Sidebar />
       <div className="client-home-page">
-        <Sidebar />
         <div className="client-content">
           {isAddingClient ? (
             <>
@@ -134,12 +134,12 @@ const ClientManagement = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Name</th>
-                        <th>Company</th>
-                        <th>Email Address</th>
-                        <th>Contact Number</th>
-                        <th>Date Added</th>
-                        <th>Status</th>
+                        <th className="th-client">Name</th>
+                        <th className="th-client">Company</th>
+                        <th className="th-client">Email Address</th>
+                        <th className="th-client">Contact Number</th>
+                        <th className="th-client">Date Added</th>
+                        <th className="th-client">Status</th>
                       </tr>
                     </thead>
                     <tbody>

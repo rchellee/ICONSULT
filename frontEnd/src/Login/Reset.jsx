@@ -5,7 +5,11 @@ import "./otp.css";
 
 axios.defaults.baseURL = "http://localhost:8081";
 
-export default function Reset({ isAdmin = false, clientIdProp = null, onClose }) {  
+export default function Reset({
+  isAdmin = false,
+  clientIdProp = null,
+  onClose,
+}) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");

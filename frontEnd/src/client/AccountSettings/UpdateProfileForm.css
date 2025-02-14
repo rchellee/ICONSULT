@@ -1,0 +1,216 @@
+.update-profile-form {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: 1000px;
+    max-width: 90%;
+  }
+  
+  .form-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .close-profile-icon {
+    font-size: 50px;
+    cursor: pointer;
+    color: #888;
+
+  }
+  
+  .close-profile-icon:hover {
+    color: #000;
+  }
+  
+  .form-update-section,
+  .form-section {
+    margin-bottom: 30px;
+  }
+  
+  .form-update-section h3,
+  .form-section h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .form-update-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;  /* Ensure input fields span the full width of their container */
+    padding: 12px; /* Increase padding for larger input fields */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .submit-btn {
+    padding: 12px 20px;  /* Increase padding for larger button */
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .submit-btn:hover {
+    background-color: #45a049;
+  }
+  
+  /* Layout adjustments for side-by-side fields */
+  .form-update-section .form-update-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  
+  .form-update-group div {
+    width: 100%; /* Ensure each group of inputs take the full width available */
+  }
+  
+  .form-update-group input {
+    width: 100%; /* Ensure inputs inside the group fill the available space */
+  }
+  
+  .form-update-group input:nth-child(2) {
+    width: 100%; /* Ensure inputs inside the group fill the available space */
+  }
+  
+  .form-update-group input:nth-child(3) {
+    width: 100%; /* Ensure inputs inside the group fill the available space */
+  }
+  
+  .form-section .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-section .form-group input {
+    width: 100%; /* Make sure contact info fields span the entire available width */
+  }
+  
+  .form-update-section .form-update-group:last-child {
+    width: 100%; /* Ensure the last group spans the full width */
+  }
+  
+
+
+
+/*contact info*/
+
+/* UpdateProfileForm.css */
+
+.form-section {
+    margin-bottom: 20px;
+  }
+  
+  .form-contact-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  .contact-item {
+    display: flex;
+    flex-direction: column;
+    width: 45%; /* Adjust to make them fit side by side */
+  }
+  
+  .contact-item label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .contact-item input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+
+  /*company*/
+
+
+
+  /* UpdateProfileForm.css */
+
+.form-company-section {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .company-item {
+    display: flex;
+    flex-direction: column;
+    width: 45%; /* Adjust to make them fit side by side */
+  }
+  
+  .company-item label {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .company-item input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .form-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  
+
+
+
+  /*buttons*/
+
+  .form-update-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px; /* Add some spacing above the buttons */
+  }
+  
+  .cancel-profile-btn:hover {
+    background-color: #dcdcdc;
+  }
+  
+  .submit-profile-btn:hover {
+    background-color: #dcdcdc;
+  }
+  
+
+  .submit-profile-btn,
+.cancel-profile-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  width: 10%;
+}
+
+.cancel-profile-btn{
+background-color: #ccc;
+}

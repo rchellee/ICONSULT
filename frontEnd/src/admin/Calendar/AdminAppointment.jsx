@@ -4,6 +4,9 @@ import Sidebar from "../sidebar";
 import "./adminCalendar.css";
 import Topbar from "../Topbar";
 import Calendar from "./AdminDynamicCalendar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 function AdminAppointment() {
   const navigate = useNavigate();
@@ -15,7 +18,7 @@ function AdminAppointment() {
     time: "",
     consultationType: "",
     additionalInfo: "",
-    reminder: "",
+    reminder: null,
     client: "",
   });
 
@@ -76,6 +79,13 @@ function AdminAppointment() {
     "07:00 PM",
   ];
 
+  const handleDateChange = (selectedDate) => {
+    setFormData((prev) => ({
+      ...prev,
+      reminder: selectedDate,
+    }));
+  };
+
   const handleDateSelect = async (date) => {
     const today = new Date().toISOString().split("T")[0];
     if (date <= today) {
@@ -129,14 +139,48 @@ function AdminAppointment() {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const nextStep = () => setCurrentStep((prevStep) => prevStep + 1);
+  const nextStep = () => {
+    if (currentStep === 2) {
+      if (
+        !formData.client ||
+        !formData.consultationType ||
+        (formData.consultationType === "Others" && !formData.otherDetails) ||
+        !formData.additionalInfo ||
+        !formData.platform ||
+        !formData.reminder
+      ) {
+        alert("Please fill out all required fields before proceeding.");
+        return;
+      }
+    }
+    setCurrentStep((prevStep) => prevStep + 1);
+  };
+
   const prevStep = () => setCurrentStep((prevStep) => prevStep - 1);
+
+  const validateForm = () => {
+    return (
+      formData.date &&
+      formData.time &&
+      formData.client &&
+      formData.consultationType &&
+      (formData.consultationType !== "Others" || formData.otherDetails) &&
+      formData.platform &&
+      formData.reminder
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const reminderDateTime = formData.reminder
+      ? moment(formData.reminder).format("YYYY-MM-DD HH:mm:ss")
+      : null;
 
     const client_Id = formData.client;
 
@@ -163,9 +207,9 @@ function AdminAppointment() {
       consultationType: formData.consultationType,
       additionalInfo: formData.additionalInfo || "",
       platform: formData.platform || "",
-      clientId: client_Id, 
+      clientId: client_Id,
       companyName: selectedClient.companyName || "",
-      reminder: formData.reminder || "",
+      reminder: reminderDateTime,
       postedBy: "admin",
     };
     console.log("Submitting appointment:", formDataWithClientName);
@@ -220,7 +264,9 @@ function AdminAppointment() {
                 />
                 {selectedDate && (
                   <div className="time-slots-admin">
-                    <h4>Available Times for {selectedDate}</h4>
+                    <h4>
+                      <em>Available Time for {selectedDate}</em>
+                    </h4>
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod">Choose Time Format:</label>
                       <select
@@ -266,6 +312,7 @@ function AdminAppointment() {
                           disabled={!formData.date || !formData.time}
                         >
                           Next
+                          <i className="fas fa-arrow-right"></i>
                         </button>
                       </div>
                     )}
@@ -276,6 +323,10 @@ function AdminAppointment() {
           )}
           {currentStep === 2 && (
             <div className="step2form">
+              <h4>
+                <em>Consultation Details</em>
+              </h4>
+              <br />
               <div className="form-group">
                 <label htmlFor="client">Select Client:</label>
                 <select
@@ -407,6 +458,7 @@ function AdminAppointment() {
                   name="additionalInfo"
                   value={formData.additionalInfo}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -433,31 +485,22 @@ function AdminAppointment() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="reminder">Reminder Me:</label>
-                <select
-                  id="reminder"
-                  name="reminder"
-                  value={formData.reminder || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Select Reminder Time
-                  </option>
-                  <option value="At Time of Event">At Time of Event</option>
-                  <option value="5 minutes before">5 minutes before</option>
-                  <option value="10 minutes before">10 minutes before</option>
-                  <option value="15 minutes before">15 minutes before</option>
-                  <option value="30 minutes before">30 minutes before</option>
-                  <option value="1 hour before">1 hour before</option>
-                  <option value="2 hours before">2 hours before</option>
-                  <option value="1 day before">1 day before</option>
-                  <option value="2 days before">2 days before</option>
-                  <option value="1 week before">1 week before</option>
-                </select>
+                <label htmlFor="reminder">Set Custom Reminder:</label>
+                <DatePicker
+                  selected={formData.reminder}
+                  onChange={handleDateChange}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                  placeholderText="Select Reminder Date and Time"
+                />
               </div>
 
-              <button onClick={prevStep}>Back</button>
+              <button onClick={prevStep}>
+                {" "}
+                <i className="fas fa-arrow-left"></i>Back
+              </button>
               <button
                 onClick={nextStep}
                 disabled={
@@ -466,40 +509,65 @@ function AdminAppointment() {
                     !formData.otherDetails)
                 }
               >
-                Next
+                <i className="fas fa-arrow-right"></i>Next
               </button>
             </div>
           )}
-          {/** Step 3: Confirmation **/}
           {currentStep === 3 && (
             <div className="confirmation-container">
               <div className="confirmation-form">
+                <h4>
+                  <em>Confirm your appointment details</em>
+                </h4>
+                <br />
                 <p>
-                  <strong>Client:</strong> {formData.clientName}
+                  <i className="fa fa-user"></i>
+                  <strong> Client:</strong> {formData.clientName}
                 </p>
+                <br />
                 <p>
-                  <strong>Date:</strong> {formData.date}
+                  <i className="fa fa-calendar-check"></i>
+                  <strong> Date:</strong> {formData.date}
                 </p>
+                <br />
                 <p>
-                  <strong>Time:</strong> {formData.time}
+                  <i className="fa fa-clock"></i>
+                  <strong> Time:</strong> {formData.time}
                 </p>
+                <br />
                 <p>
-                  <strong>Consultation Type:</strong>{" "}
+                  <i className="fa fa-envelope"></i>
+                  <strong> Consultation Type:</strong>{" "}
                   {formData.consultationType}
                 </p>
+                <br />
                 <p>
-                  <strong>Additional Info:</strong> {formData.additionalInfo}
+                  <i className="fas fa-mail-bulk"></i>
+                  <strong> Additional Info:</strong> {formData.additionalInfo}
                 </p>
+                <br />
                 <p>
-                  <strong>Consultation Mode:</strong> {formData.platform}
+                  <i className="fa fa-desktop"></i>
+                  <strong> Consultation Mode:</strong> {formData.platform}
                 </p>
+                <br />
                 <p>
-                  <strong>Reminder:</strong> {formData.reminder}
+                  <i className="fa fa-stop"></i>
+                  <strong> Reminder:</strong>{" "}
+                  {formData.reminder
+                    ? formData.reminder.toLocaleString()
+                    : "No reminder set"}
                 </p>
 
                 <div className="confirmation-buttons">
-                  <button onClick={prevStep}>Back</button>
-                  <button onClick={handleSubmit}>Submit</button>
+                  <button onClick={prevStep}>
+                    {" "}
+                    <i className="fas fa-arrow-left"></i>Back
+                  </button>
+                  <button onClick={handleSubmit}>
+                    {" "}
+                    <i className="fas fa-edit"> </i>Submit
+                  </button>
                 </div>
               </div>
             </div>

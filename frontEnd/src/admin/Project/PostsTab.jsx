@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaArrowUp,
+  FaArrowDown,
+} from "react-icons/fa";
 import { IoAddCircle } from "react-icons/io5";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { BiSortAlt2 } from "react-icons/bi";
@@ -15,6 +21,8 @@ const PostsTab = ({
   handleCancelForm,
   setTasks,
 }) => {
+  const { searchTerm } = useContext(SearchContext);
+  const [filteredTasks, setFilteredTasks] = useState(tasks);
   const [selectedTaskName, setSelectedTaskName] = useState(null);
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false);
@@ -24,6 +32,8 @@ const PostsTab = ({
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [projectName, setProjectName] = useState("");
   const miscData = selectedTaskDetails?.miscellaneous || [];
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const formatCurrency = (amount) => {
     return `₱ ${amount.toLocaleString("en-US", {
@@ -40,6 +50,78 @@ const PostsTab = ({
       day: "numeric",
     });
   };
+
+  const handleSort = (field) => {
+    const newOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newOrder);
+
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
+      if (field === "task_name" || field === "status") {
+        return newOrder === "asc"
+          ? a[field].localeCompare(b[field])
+          : b[field].localeCompare(a[field]);
+      } else if (field === "assigned") {
+        // Sorting by employee name
+        const nameA = employeeMap[a.employee] || "Unknown";
+        const nameB = employeeMap[b.employee] || "Unknown";
+        return newOrder === "asc"
+          ? nameA.localeCompare(nameB)
+          : nameB.localeCompare(nameA);
+      } else if (field === "due_date" || field === "actual_finish") {
+        const dateA = new Date(a[field]);
+        const dateB = new Date(b[field]);
+        return newOrder === "asc" ? dateA - dateB : dateB - dateA;
+      } else if (field === "miscellaneous_amount") {
+        // Sorting by total miscellaneous amount
+        const totalMiscA = parseMiscellaneous(a.miscellaneous).reduce(
+          (sum, item) => sum + (parseFloat(item.fee) || 0),
+          0
+        );
+
+        const totalMiscB = JSON.parse(b.miscellaneous || "[]").reduce(
+          (sum, item) => sum + (parseFloat(item.fee) || 0),
+          0
+        );
+        return newOrder === "asc"
+          ? totalMiscA - totalMiscB
+          : totalMiscB - totalMiscA;
+      } else {
+        return newOrder === "asc" ? a[field] - b[field] : b[field] - a[field];
+      }
+    });
+
+    setFilteredTasks(sortedTasks);
+  };
+
+  useEffect(() => {
+    const searchLower = searchTerm.toLowerCase();
+    const filtered = tasks.filter((task) => {
+      const employeeName = employeeMap[task.employee] || "";
+      const dueDate = formatDate(task.due_date) || "";
+      const actualFinish = task.actual_finish
+        ? formatDate(task.actual_finish)
+        : "";
+      const miscellaneousNames =
+        (task.miscellaneous && JSON.parse(task.miscellaneous)) || [];
+      const miscellaneousNamesString = miscellaneousNames
+        .map((item) => item.name)
+        .join(" ")
+        .toLowerCase();
+
+      return (
+        task.task_name.toLowerCase().includes(searchLower) ||
+        employeeName.toLowerCase().includes(searchLower) ||
+        task.status.toLowerCase().includes(searchLower) ||
+        dueDate.toLowerCase().includes(searchLower) ||
+        actualFinish.toLowerCase().includes(searchLower) ||
+        miscellaneousNamesString.includes(searchLower) ||
+        task.amount.toString().includes(searchLower)
+      );
+    });
+    setFilteredTasks(filtered);
+  }, [searchTerm, tasks, employeeMap]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -125,7 +207,9 @@ const PostsTab = ({
 
   const parseMiscellaneous = (miscellaneous) => {
     try {
-      return JSON.parse(miscellaneous || "[]");
+      return Array.isArray(miscellaneous)
+        ? miscellaneous
+        : JSON.parse(miscellaneous || "[]");
     } catch (e) {
       console.error("Failed to parse miscellaneous:", e);
       return [];
@@ -255,21 +339,19 @@ const PostsTab = ({
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-        <div className="project-name-container">
-          <h2>{projectName}</h2>{" "}
-          
-        </div>
         <div className="total-amount-container">
-          <h3>
-            {/*<span className="total-amount-text">Total Task:</span>*/}
+          <h2 className="project-name-container">{projectName}</h2>{" "}
+          <h4>
             <span className="total-amount-number">
               {formatCurrency(calculateTotalAmount())}
             </span>
-          </h3>
+          </h4>
         </div>
 
         {selectedTaskDetails ? (
           <div className="task-details">
+            <br />
+            <br />
             <div className="task-detail-row">
               <div>
                 <strong>Task</strong>
@@ -278,12 +360,14 @@ const PostsTab = ({
                 <strong>Amount</strong>
               </div>
             </div>
+            <br />
             <div className="task-detail-row">
               <div>{selectedTaskDetails.task_name}</div>
               <div className="align-right">
                 {formatCurrency(selectedTaskDetails.task_fee)}
               </div>
             </div>
+            <br />
             <div className="task-detail-row">
               <div>
                 <strong>Miscellaneous</strong>
@@ -309,6 +393,7 @@ const PostsTab = ({
                       <p>{formatCurrency(parseFloat(item.fee) || 0)}</p>
                     </div>
                   </div>
+                  <br />
                 </div>
               ))
             ) : (
@@ -338,19 +423,54 @@ const PostsTab = ({
             <table className="task-table">
               <thead>
                 <tr>
-                  <th>Task</th>
-                  <th>Assigned</th>
-                  <th>Status</th>
-                  <th>Due Date</th>
-                  <th>Actual Finish</th>
-                  <th>Fee</th>
-                  <th>Miscellaneous</th>
-                  <th className="align-right">Amount</th>
-                  <th>Action</th>
+                  <th onClick={() => handleSort("task_name")}>
+                    Task{" "}
+                    {sortField === "task_name" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("assigned")}>
+                    Assigned{" "}
+                    {sortField === "assigned" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("status")}>
+                    Status{" "}
+                    {sortField === "status" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("due_date")}>
+                    Due Date{" "}
+                    {sortField === "due_date" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("actual_finish")}>
+                    Actual Finish{" "}
+                    {sortField === "actual_finish" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("task_fee")}>
+                    Fee{" "}
+                    {sortField === "task_fee" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("miscellaneous_amount")}>
+                    Miscellaneous Amount{" "}
+                    {sortField === "task_fee" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("amount")}>
+                    Amount{" "}
+                    {sortField === "amount" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task) => {
+                {filteredTasks.map((task) => {
                   const miscellaneousItems = JSON.parse(
                     task.miscellaneous || "[]"
                   );
@@ -418,6 +538,8 @@ const PostsTab = ({
                           </div>
                         )}
                       </td>
+                      <td></td>
+                      <td></td>
                     </tr>
                   );
                 })}

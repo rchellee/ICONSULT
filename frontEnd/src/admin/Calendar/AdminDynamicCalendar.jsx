@@ -48,10 +48,10 @@ const AdminDynamicCalendar = ({ availableDates, onDateSelect }) => {
         i
       ).padStart(2, "0")}`;
       const status = availableDates[dateStr] || null;
-  
+
       // Disable past and current dates
       const isPastOrCurrent = dateObj <= today;
-  
+
       calendarDays.push({
         date: i,
         currentMonth: true,

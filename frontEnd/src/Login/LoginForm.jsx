@@ -90,7 +90,7 @@ const Login = () => {
         localStorage.setItem("clientId", data.clientId); // Save clientId
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
-        navigate("/clientdashboard");
+        navigate("/clientproject");
       } else {
         setError(data.message || "Login failed");
       }

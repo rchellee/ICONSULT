@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Sidebar from "../sidebar";
+import Topbar from "../Topbar";
 
-const Payment = () => {
+const Payment = ({ projectId, amount, onClose }) => {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { projectId, amount } = state || {};
 
   useEffect(() => {
     if (!document.getElementById("paypal-sdk")) {
@@ -26,30 +27,6 @@ const Payment = () => {
       }
     };
   }, []);
-
-  const updateDownpayment = async (projectId, amount) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8081/project/update-downpayment/${projectId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ amount }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update downpayment.");
-      }
-
-      console.log("Downpayment updated successfully.");
-    } catch (error) {
-      console.error("Error updating downpayment:", error);
-      alert("Error updating downpayment. Please try again.");
-    }
-  };
 
   const updatePaymentStatus = async (projectId) => {
     try {
@@ -121,14 +98,11 @@ const Payment = () => {
                 projectId,
               };
               savePaymentDetails(transactionDetails);
-              updateDownpayment(
-                projectId,
-                details.purchase_units[0].amount.value
-              );
               updatePaymentStatus(projectId);
 
               console.log("Transaction Details:", details);
               alert(`Transaction completed by ${transactionDetails.payerName}`);
+              onClose();
             });
           },
           onError: (err) => {
@@ -177,6 +151,9 @@ const Payment = () => {
         }}
       >
         Go Back
+      </button>
+      <button onClick={onClose} className="closepayment-button">
+        Close
       </button>
     </div>
   );

@@ -1,37 +1,28 @@
 /* Google Font Import - Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 .client-home-page {
   display: flex;
   background-color: #f4f4f9;
-  /* overflow: hidden; */
 }
 
 .client-content {
   flex-grow: 2;
-  margin-left: 85px;
+  margin-left: 105px;
   height: 600px;
 }
 /************************** Client Management **************/
-/* Search Bar */
-.search-bar {
-  width: 300px;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
 /* Scroll */
 .scrollable-table-container {
-    max-height: 600px;
-    overflow-y: auto;
-    border-radius: 8px;
+  max-height: 750px;
+  overflow-y: auto;
+  border-radius: 8px;
 }
 /* Table Styles for client and employee */
 table {
   width: 90%;
   border-collapse: collapse;
-  border-radius: 3px; 
+  border-radius: 3px;
   overflow: hidden;
   margin: 0px auto;
 }
@@ -42,29 +33,32 @@ thead th {
   z-index: 2;
 }
 
-table th, table td {
-  padding: 15px 15px; 
+table th,
+table td {
+  padding: 15px 15px;
   text-align: left;
-  border-bottom: 1px solid #f1f1f1; 
+  border-bottom: 1px solid #f1f1f1;
 }
 
 table th {
-  background-color: #092b70; 
-  color: white;
+  background-color: #092b70;
 }
 
 table tr:nth-child(even) {
-  background-color: #f9f9f9; 
+  background-color: #f9f9f9;
 }
 
 table tr:hover {
-  background-color: #f1f1f1; 
+  background-color: #f1f1f1;
   cursor: pointer;
-  transition: background 0.3s ease-in-out; 
+  transition: background 0.3s ease-in-out;
+}
+.th-client {
+  color: #ffff;
 }
 
 table td {
-  color: #555; 
+  color: #555;
 }
 .initials-circle {
   width: 35px;
@@ -127,7 +121,7 @@ table td a {
 
 .client-form-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr)  ;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   background-color: #fff;
   border-radius: 4px;
@@ -135,8 +129,8 @@ table td a {
   padding: 40px;
   width: 70%;
   box-sizing: border-box;
-  position:relative;
-  margin-left:10%;
+  position: relative;
+  margin-left: 10%;
 }
 /* Role Dropdown Styling with Icon */
 .input-group {
@@ -175,7 +169,7 @@ table td a {
 .input-group select:focus {
   border-color: #007bff;
   outline: none;
-  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 /* Input Fields and Select Styling */
@@ -184,49 +178,49 @@ input[type="radio"] + label,
 input[type="checkbox"] + label:before,
 select option,
 select {
-    width: 100%;
-    padding: 1em;
-    line-height: 1.4;
-    background-color: #f9f9f9;
-    border: 1px solid #e5e5e5;
-    border-radius: 3px;
-    transition: all 0.35s ease-in-out;
+  width: 100%;
+  padding: 1em;
+  line-height: 1.4;
+  background-color: #f9f9f9;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  transition: all 0.35s ease-in-out;
 }
 input:focus {
-    outline: none;
-    border-color: #576cab;
+  outline: none;
+  border-color: #576cab;
 }
 input:focus + .input-icon i {
-    color: #114672;
+  color: #114672;
 }
 input:focus + .input-icon:after {
-    border-right-color: #214789;
+  border-right-color: #214789;
 }
 
 /* Radio Button Styling */
 input[type="radio"] {
-    display: none;
+  display: none;
 }
 input[type="radio"] + label {
-    display: inline-block;
-    width: 50%;
-    text-align: center;
-    border-radius: 0;
-    padding: 1em;
-    cursor: pointer;
+  display: inline-block;
+  width: 50%;
+  text-align: center;
+  border-radius: 0;
+  padding: 1em;
+  cursor: pointer;
 }
 input[type="radio"] + label:first-of-type {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 input[type="radio"] + label:last-of-type {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 input[type="radio"]:checked + label {
-    background-color: #103879;
-    color: white;
-    border-color: #255c7b;
+  background-color: #103879;
+  color: white;
+  border-color: #255c7b;
 }
 
 .input-label {
@@ -241,62 +235,60 @@ input[type="radio"]:checked + label {
 }
 /* Select Styling */
 select {
-    height: 3.4em;
-    line-height: 2;
+  height: 3.4em;
+  line-height: 2;
 }
 select:focus {
-    outline: none;
+  outline: none;
 }
 
 /* Input Group Styling */
 .input-group {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 .input-group-icon {
-    position: relative;
+  position: relative;
 }
 .input-group-icon input {
-    padding-left: 4.4em;
-    
+  padding-left: 4.4em;
 }
 .input-group-icon .input-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3.4em;
-    height: 3.4em;
-    line-height: 3.4em;
-    text-align: center;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.4em;
+  height: 3.4em;
+  line-height: 3.4em;
+  text-align: center;
+  pointer-events: none;
 }
 .input-group-icon .input-icon:after {
-    content: "";
-    position: absolute;
-    top: 0.6em;
-    bottom: 0.6em;
-    left: 3.4em;
-    border-right: 1px solid #e5e5e5;
-    transition: all 0.35s ease-in-out;
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  bottom: 0.6em;
+  left: 3.4em;
+  border-right: 1px solid #e5e5e5;
+  transition: all 0.35s ease-in-out;
 }
 
 /* Container and Layout */
 
 .col-half {
-    width: 100%;
-    float: left;
-    padding-right: 10px;
-    
+  width: 100%;
+  float: left;
+  padding-right: 10px;
 }
 .col-half:last-of-type {
-    padding-right: 0;
+  padding-right: 0;
 }
 .col-third {
-    width: 33.333%;
-    float: left;
-    padding-right: 10px;
+  width: 33.333%;
+  float: left;
+  padding-right: 10px;
 }
 .col-third:last-of-type {
-    padding-right: 0;
+  padding-right: 0;
 }
 
 /* Flex container to align Status and Role side by side */
@@ -305,7 +297,6 @@ select:focus {
   justify-content: space-between;
   gap: 20px; /* Adds spacing between the dropdowns */
 }
-
 
 /***********************Client Details *******************/
 .tabs-container {
@@ -329,10 +320,9 @@ select:focus {
   border-radius: 8px;
   padding: 20px;
   background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
-
 
 .tabs button {
   padding: 10px 15px;
@@ -342,7 +332,6 @@ select:focus {
   background-color: #e0e0e0;
   transition: background-color 0.3s;
 }
-
 
 .section-details {
   margin-top: 20px;
@@ -354,7 +343,8 @@ select:focus {
   margin-top: 10px;
 }
 
-.section-details th, .section-details td {
+.section-details th,
+.section-details td {
   padding: 10px;
   text-align: left;
 }
@@ -367,7 +357,7 @@ select:focus {
 /*********** Overview ***********/
 .overview-form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr)  ;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   background-color: #fff;
   border-radius: 4px;
@@ -375,7 +365,7 @@ select:focus {
   padding: 40px;
   width: 55%;
   box-sizing: border-box;
-  position:relative;
+  position: relative;
   margin: 40px auto;
 }
 
@@ -425,7 +415,8 @@ select:focus {
   background-color: #fff;
 }
 
-.client-details-table th, .client-details-tablee td {
+.client-details-table th,
+.client-details-tablee td {
   padding: 12px;
   text-align: left;
 }
@@ -433,7 +424,6 @@ select:focus {
 .client-details-table th {
   background-color: #092f57;
   color: #fefdfd;
-  
 }
 
 .client-details-table tr:nth-child(even) {
@@ -445,7 +435,7 @@ select:focus {
 }
 
 /*********** Button Group ******/
-.button-group {
+.buttonClient-group {
   display: flex;
   gap: 10px;
   margin-top: 20px;
@@ -468,7 +458,7 @@ button i {
 }
 
 .btn-save {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 
@@ -478,17 +468,17 @@ button i {
 }
 
 .btn-edit {
-  background-color: #2196F3;
+  background-color: #2196f3;
   color: white;
 }
 
 .btn-back {
-  background-color: #FFC107;
+  background-color: #ffc107;
   color: white;
 }
 
 .btn-delete {
-  background-color: #9E9E9E;
+  background-color: #9e9e9e;
   color: white;
 }
 

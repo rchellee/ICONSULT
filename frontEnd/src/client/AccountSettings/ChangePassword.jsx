@@ -8,8 +8,6 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
-import "./ChangePassword.css";
-import password from "../../assets/password.png";
 
 const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
   const [newPassword, setNewPassword] = useState("");
@@ -106,14 +104,17 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
     console.log(clientId);
 
     try {
-      const response = await fetch("http://localhost:8081/updateclientPassword", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clientId,
-          newPassword,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:8081/updateclientPassword",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            clientId,
+            newPassword,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -135,114 +136,67 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
   };
 
   return (
-    <div className="password-image-container">
+    <div>
       <form onSubmit={(e) => e.preventDefault()}>
-        <div className="passwordd">
-            <img
-                src={password}
-                alt="password"
-                className="password-image"
-            />
-        </div>
-        <Box>
-          <h2>
-            Reset Password
-          </h2>
-          <p className="newpass-paragraph">
-            Set your new password so you can log in and access iConsult
-          </p>
-
-          {!codeSent && (
-            <>
-              <Box>
-                <label>New Password:</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-              </Box>
-              <Box>
-                <label>Confirm New Password:</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Box>
-            </>
-          )}
-
-          {!codeSent ? (
-            <button 
-                variant="contained" 
-                color="primary" 
-                onClick={sendVerificationCode}
-                className="send-code-btn"
-                >
-              Send Verification Code
+        {!codeSent && (
+          <>
+            <div>
+              <label>New Password:</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div>
+              <label>Confirm New Password:</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </>
+        )}
+        {!codeSent ? (
+          <button type="button" onClick={sendVerificationCode}>
+            Submit
+          </button>
+        ) : (
+          <>
+            <div>
+              <label>Enter Verification Code:</label>
+              <input
+                type="text"
+                value={enteredCode}
+                onChange={(e) => setEnteredCode(e.target.value)}
+              />
+            </div>
+            <button type="button" onClick={verifyCodeAndProceed}>
+              Submit
             </button>
-          ) : (
-            <>
-              <Box className="verification-code-container">
-  <label htmlFor="verification-code">Enter Verification Code:</label>
-  <input
-    type="text"
-    id="verification-code"
-    value={enteredCode}
-    onChange={(e) => setEnteredCode(e.target.value)}
-  />
-</Box>
-<Button className="verify-btn" variant="contained" color="primary" onClick={verifyCodeAndProceed}>
-  Verify Code
-</Button>
-<Button
-  className="cancel-btn"
-  variant="outlined"
-  onClick={() => {
-    setCodeSent(false); 
-    setEnteredCode(""); 
-    setMessage(""); 
-  }}
->
-  Cancel
-</Button>
-            </>
-          )}
-
-          {isVerified && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handlePasswordChange}
-            >
-              Confirm Changes
-            </Button>
-          )}
-
-{!codeSent && (
-  <button
-    variant="outlined"
-    color="default"
-    onClick={() => {
-      setIsUpdatingPassword(false);
-      setMessage("");
-      setCodeSent(false);
-      setIsVerified(false);
-      setNewPassword("");
-      setConfirmPassword("");
-    }}
-    className="undo-btn"
-  >
-    <span className="x-icon">✖ esc</span>
-  </button>
-)}
-
-
-          {message && <div className="message">{message}</div>}
-        </Box>
+          </>
+        )}
+        {isVerified && (
+          <button type="button" onClick={handlePasswordChange}>
+            Confirm Changes
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            setIsUpdatingPassword(false);
+            setMessage("");
+            setCodeSent(false);
+            setIsVerified(false);
+            setNewPassword("");
+            setConfirmPassword("");
+          }}
+        >
+          Cancel
+        </button>
+        {message && <div className="message">{message}</div>}
       </form>
-
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Confirm Changes</DialogTitle>
         <DialogContent>

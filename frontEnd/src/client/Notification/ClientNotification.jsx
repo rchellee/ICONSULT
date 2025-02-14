@@ -74,12 +74,6 @@ const ClientNotification = () => {
     return formatter.format(date);
   };
 
-  const formatDescription = (description, postedBy) => {
-    return postedBy === "client"
-      ? `You have set an ${description}`
-      : description;
-  };
-
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
@@ -134,12 +128,7 @@ const ClientNotification = () => {
                       onClick={() => markAsRead(notification.id)}
                     >
                       <h4>{notification.title}</h4>
-                      <p>
-                        {formatDescription(
-                          notification.description,
-                          notification.postedBy
-                        )}
-                      </p>
+                      <p>{notification.description}</p>
                       <span className="notification-time">
                         {formatDate(notification.timestamp)}
                       </span>
@@ -161,12 +150,7 @@ const ClientNotification = () => {
                       onClick={() => markAsRead(notification.id)}
                     >
                       <h4>{notification.title}</h4>
-                      <p>
-                        {formatDescription(
-                          notification.description,
-                          notification.postedBy
-                        )}
-                      </p>
+                      <p>{notification.description}</p>
                       <span className="notification-time">
                         {formatDate(notification.timestamp)}
                       </span>

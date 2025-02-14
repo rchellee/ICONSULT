@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import axios from "axios";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,7 +9,6 @@ import listPlugin from "@fullcalendar/list";
 import {
   Box,
   Typography,
-  useTheme,
   Button,
   Dialog,
   DialogActions,
@@ -21,8 +21,9 @@ import "./consultation.css";
 import Topbar from "../Topbar";
 
 const Consultation = () => {
-  const theme = useTheme();
+  const { searchTerm } = useContext(SearchContext);
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [clientId, setClientId] = useState("");
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -41,6 +42,31 @@ const Consultation = () => {
       fetchAppointments(storedClientId);
     }
   }, []);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      const searchValue = searchTerm.toLowerCase();
+      const results = appointments.filter(
+        (appointment) =>
+          [
+            "email",
+            "contact",
+            "consultationType",
+            "platform",
+            "companyName",
+          ].some((key) =>
+            appointment[key]?.toLowerCase().includes(searchValue)
+          ) ||
+          new Date(appointment.date)
+            .toLocaleDateString("en-US")
+            .toLowerCase()
+            .includes(searchValue)
+      );
+      setFilteredAppointments(results);
+    } else {
+      setFilteredAppointments([]);
+    }
+  }, [searchTerm, appointments]);
 
   const fetchAppointments = async (clientId) => {
     try {
@@ -107,6 +133,9 @@ const Consultation = () => {
     return `${day}, ${formattedDate}`;
   };
 
+  const toggleSection = (section) => {
+    setVisibleSection(visibleSection === section ? null : section);
+  };
   const getAppointmentsByView = (status) => {
     const today = new Date();
 
@@ -126,10 +155,6 @@ const Consultation = () => {
     }
 
     return sortedAppointments;
-  };
-
-  const toggleSection = (section) => {
-    setVisibleSection(visibleSection === section ? null : section);
   };
   const mapAppointmentsToEvents = () => {
     return appointments.map((appointment) => {
@@ -169,183 +194,251 @@ const Consultation = () => {
   };
 
   return (
-    <div className="consultation-page">
+    <div>
       <Topbar />
       <Sidebar />
-      <div className="content-consultation">
-        <Box m="2px">
-          <Box display="flex">
-            <div className="consultation-content">
-              <div className="button-consult">
-                <Link to="/appointments/new" className="new-appointment-button">
-                  <button>+ Schedule Consultation</button>
-                </Link>
-              </div>
-
-              {loading ? (
-                <p>Loading appointments...</p>
-              ) : (
-                <div className="appointments-and-calendar">
-                  <div className="appointments-details">
-                    <div className="upcoming-appointments">
-                      <button onClick={() => toggleSection("Upcoming")}>
-                        {visibleSection === "Upcoming" ? "<" : ">"} Upcoming
-                      </button>
-
-                      {visibleSection === "Upcoming" && (
-                        <div className="appointments-list-container">
-                          {getAppointmentsByView("Upcoming").length > 0 ? (
-                            <ul>
-                              {getAppointmentsByView("Upcoming").map(
-                                (appointment, index) => (
-                                  <li key={index} className="appointment-item">
-                                    <div className="date-box">
-                                      {formatDayAndDate(appointment.date)} at{" "}
-                                      {appointment.time}
-                                    </div>
-                                    <div className="details-box">
-                                      <p>
-                                        <strong>Email:</strong>{" "}
-                                        {appointment.email}
-                                      </p>
-                                      <p>
-                                        <strong>Contact:</strong>{" "}
-                                        {appointment.contact}
-                                      </p>
-                                      <p>
-                                        <strong>Type:</strong>{" "}
-                                        {appointment.consultationType}
-                                      </p>
-                                      <p>
-                                        <strong>Platform:</strong>{" "}
-                                        {appointment.platform}
-                                      </p>
-                                      <p>
-                                        <strong>Company:</strong>{" "}
-                                        {appointment.companyName}
-                                      </p>
-                                    </div>
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          ) : (
-                            <p>No upcoming appointments.</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <div className="completed-appointments">
-                      <button onClick={() => toggleSection("Completed")}>
-                        {visibleSection === "Completed" ? "<" : ">"} Completed
-                      </button>
-                      {visibleSection === "Completed" && (
-                        <div className="appointments-list-container">
-                          {getAppointmentsByView("Completed").length > 0 ? (
-                            <ul>
-                              {getAppointmentsByView("Completed").map(
-                                (appointment, index) => (
-                                  <li key={index} className="appointment-item">
-                                    <div className="date-box">
-                                      {formatDayAndDate(appointment.date)} at{" "}
-                                      {appointment.time}
-                                    </div>
-                                    <div className="details-box">
-                                      <p>
-                                        <strong>Type:</strong>{" "}
-                                        {appointment.consultationType}
-                                      </p>
-                                      <p>
-                                        <strong>Platform:</strong>{" "}
-                                        {appointment.platform}
-                                      </p>
-                                    </div>
-                                  </li>
-                                )
-                              )}
-                            </ul>
-                          ) : (
-                            <p>No completed appointments.</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+      <div className="consultation-page">
+        <div className="content-consultation">
+          <Box m="2px">
+            <Box display="flex">
+              <div className="consultation-content">
+                <div className="button-consult">
+                  <Link
+                    to="/appointments/new"
+                    className="new-appointment-button"
+                  >
+                    <button>+ Schedule Consultation</button>
+                  </Link>
                 </div>
-              )}
-            </div>
-            <Box flex="1 1 50%" ml="10px">
-              <FullCalendar
-                height="80vh"
-                plugins={[
-                  dayGridPlugin,
-                  timeGridPlugin,
-                  interactionPlugin,
-                  listPlugin,
-                ]}
-                headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-                }}
-                initialView="dayGridMonth"
-                editable={false}
-                selectable={false}
-                events={mapAppointmentsToEvents()} 
-                eventMouseEnter={handleMouseEnter}
-                eventMouseLeave={handleMouseLeave}
-                eventContent={(eventInfo) => (
-                  <div>
-                    <b>{eventInfo.event.title}</b>
-                  </div>
-                )}
-              />
-              {popup && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: popup.y + 10,
-                    left: popup.x + 10,
-                    backgroundColor: "white",
-                    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                    borderRadius: "5px",
-                    padding: "10px",
-                    zIndex: 1000,
+                <div className="sidebar-container">
+                  {searchTerm.trim() ? (
+                    <div className="appointments-list-container">
+                      {filteredAppointments.length > 0 ? (
+                        <ul>
+                          {filteredAppointments.map((appointment, index) => (
+                            <li key={index} className="appointment-item">
+                              <div className="date-box">
+                                <p>
+                                  <br />
+                                  <strong>
+                                    <em>
+                                      {new Date(
+                                        appointment.date
+                                      ).toLocaleString()}
+                                    </em>
+                                  </strong>
+                                </p>
+                              </div>
+                              <div className="details-box">
+                                <p>
+                                  <strong>About:</strong>{" "}
+                                  {appointment.consultationType}
+                                </p>
+                                <p>
+                                  <strong>Additional details:</strong>{" "}
+                                  {appointment.additionalInfo} through{" "}
+                                  {appointment.platform}
+                                  <br />
+                                </p>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No appointments found.</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="appointments-and-calendar">
+                      <div className="appointments-details">
+                        <div className="upcoming-appointments">
+                          <button onClick={() => toggleSection("Upcoming")}>
+                            {visibleSection === "Upcoming" ? "<" : ">"} Upcoming
+                          </button>
+
+                          {visibleSection === "Upcoming" && (
+                            <div className="appointments-list-container">
+                              {getAppointmentsByView("Upcoming").length > 0 ? (
+                                <ul>
+                                  {getAppointmentsByView("Upcoming").map(
+                                    (appointment, index) => (
+                                      <li
+                                        key={index}
+                                        className="appointment-item"
+                                      >
+                                        <div className="date-box">
+                                          <p>
+                                            <br />
+                                            <strong>
+                                              <em>
+                                                {formatDayAndDate(
+                                                  appointment.date
+                                                )}{" "}
+                                                at {appointment.time}
+                                              </em>
+                                            </strong>
+                                          </p>
+                                        </div>
+                                        <div className="details-box">
+                                          <p>
+                                            <strong>Email:</strong>{" "}
+                                            {appointment.email}
+                                          </p>
+                                          <p>
+                                            <strong>Contact:</strong>{" "}
+                                            {appointment.contact}
+                                          </p>
+                                          <p>
+                                            <strong>Type:</strong>{" "}
+                                            {appointment.consultationType}
+                                          </p>
+                                          <p>
+                                            <strong>Platform:</strong>{" "}
+                                            {appointment.platform}
+                                          </p>
+                                          <p>
+                                            <strong>Company:</strong>{" "}
+                                            {appointment.companyName}
+                                          </p>
+                                        </div>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              ) : (
+                                <p>No upcoming appointments.</p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="completed-appointments">
+                          <button onClick={() => toggleSection("Completed")}>
+                            {visibleSection === "Completed" ? "<" : ">"}{" "}
+                            Completed
+                          </button>
+                          {visibleSection === "Completed" && (
+                            <div className="appointments-list-container">
+                              {getAppointmentsByView("Completed").length > 0 ? (
+                                <ul>
+                                  {getAppointmentsByView("Completed").map(
+                                    (appointment, index) => (
+                                      <li
+                                        key={index}
+                                        className="appointment-item"
+                                      >
+                                        <div className="date-box">
+                                          <p>
+                                            <br />
+                                            <strong>
+                                              <em>
+                                                {formatDayAndDate(
+                                                  appointment.date
+                                                )}{" "}
+                                                at {appointment.time}
+                                              </em>
+                                            </strong>
+                                          </p>
+                                        </div>
+                                        <div className="details-box">
+                                          <p>
+                                            <strong>Type:</strong>{" "}
+                                            {appointment.consultationType}
+                                          </p>
+                                          <p>
+                                            <strong>Platform:</strong>{" "}
+                                            {appointment.platform}
+                                          </p>
+                                        </div>
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              ) : (
+                                <p>No completed appointments.</p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <Box flex="1 1 50%" ml="10px">
+                <FullCalendar
+                  height="80vh"
+                  plugins={[
+                    dayGridPlugin,
+                    timeGridPlugin,
+                    interactionPlugin,
+                    listPlugin,
+                  ]}
+                  headerToolbar={{
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
                   }}
-                  onMouseEnter={() => clearTimeout()} 
-                  onMouseLeave={() => setPopup(null)}
-                >
-                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                    {popup.title}
-                  </Typography>
-                  <Typography variant="body2">Time: {popup.time}</Typography>
-                  <Box sx={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                    <Button
-                      onClick={() => handleDeleteClick(popup.id)}
-                      color="error"
-                      variant="contained"
+                  initialView="dayGridMonth"
+                  editable={false}
+                  selectable={false}
+                  events={mapAppointmentsToEvents()}
+                  eventMouseEnter={handleMouseEnter}
+                  eventMouseLeave={handleMouseLeave}
+                  eventContent={(eventInfo) => (
+                    <div>
+                      <b>{eventInfo.event.title}</b>
+                    </div>
+                  )}
+                />
+                {popup && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: popup.y + 10,
+                      left: popup.x + 10,
+                      backgroundColor: "white",
+                      boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+                      borderRadius: "5px",
+                      padding: "10px",
+                      zIndex: 1000,
+                    }}
+                    onMouseEnter={() => clearTimeout()}
+                    onMouseLeave={() => setPopup(null)}
+                  >
+                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                      {popup.title}
+                    </Typography>
+                    <Typography variant="body2">Time: {popup.time}</Typography>
+                    <Box
+                      sx={{ display: "flex", gap: "10px", marginTop: "10px" }}
                     >
-                      Delete
-                    </Button>
+                      <Button
+                        onClick={() => handleDeleteClick(popup.id)}
+                        color="error"
+                        variant="contained"
+                      >
+                        Delete
+                      </Button>
+                    </Box>
                   </Box>
-                </Box>
-              )}
+                )}
+              </Box>
             </Box>
+            <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
+              <DialogTitle>Confirm Deletion</DialogTitle>
+              <DialogContent>
+                Are you sure you want to delete this appointment? This action
+                cannot be undone.
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={cancelDelete}>Cancel</Button>
+                <Button onClick={confirmDelete} color="error">
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
-          <Dialog open={deleteDialogOpen} onClose={cancelDelete}>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogContent>
-              Are you sure you want to delete this appointment? This action
-              cannot be undone.
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={cancelDelete}>Cancel</Button>
-              <Button onClick={confirmDelete} color="error">
-                Delete
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
+        </div>
       </div>
     </div>
   );

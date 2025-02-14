@@ -13,6 +13,7 @@ const ClientForm = ({ clients, setClients, showToast, hideToast, goBack }) => {
     status: "active",
     birthday: "",
     companyName: "",
+    companyContact: "",
     city: "",
     postalCode: "",
     age: "",
@@ -62,7 +63,7 @@ const ClientForm = ({ clients, setClients, showToast, hideToast, goBack }) => {
   <li>Password: ${password}</li>
 </ul>
 <p>Click the link below to log in to your account:</p>
-<a href="https://deployiconsult-6b3b14708c3c.herokuapp.com">Login to iConsult</a>`,
+<a href="https://iconsult2025-815d234ccda6.herokuapp.com">Login to iConsult</a>`,
       });
     } catch (error) {
       console.error("Error sending email:", error.message);
@@ -196,7 +197,7 @@ const ClientForm = ({ clients, setClients, showToast, hideToast, goBack }) => {
                 type="text"
                 name="mobile_number"
                 placeholder="Mobile Number"
-                value={formData.mobile_number}
+                value={formData.mobile_number || ""}
                 onChange={handleChange}
               />
               <div className="input-icon">
@@ -244,7 +245,6 @@ const ClientForm = ({ clients, setClients, showToast, hideToast, goBack }) => {
               </div>
             </div>
           </div>
-          {/* Company Information Section */}
           <div className="client-row">
             <div className="input-group input-group-icon">
               <input

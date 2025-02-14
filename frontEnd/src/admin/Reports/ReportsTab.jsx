@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +13,10 @@ import { Bar } from "react-chartjs-2";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./ReportsTab.css";
+import ClientReports from "./ClientReports/ClientReports";
+import YearlyProjects from "./YearlyProjects";
+import EmployeeReports from "./EmployeeReports/EmployeeReports";
+import ActiveProjects from "./ActiveProjects";
 
 ChartJS.register(
   CategoryScale,
@@ -24,23 +29,76 @@ ChartJS.register(
 
 const ReportsTab = () => {
   const [dateRange, setDateRange] = useState("This Month");
-  const [reportType, setReportType] = useState("Overview");
+  const [isManagementDropdownOpen, setIsManagementDropdownOpen] =
+    useState(false);
+  const [isTimePeriodOpen, setIsTimePeriodOpen] = useState(false);
+  const [isMonthlyHovered, setIsMonthlyHovered] = useState(false);
+  const [selectedManagementOption, setSelectedManagementOption] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [isYearlyBucket, setIsYearlyBucket] = useState(false);
+  const [showChartOptions, setShowChartOptions] = useState(false);
+  const [selectedChartOption, setSelectedChartOption] = useState(null);
+  const [isChartOptionSelect, setIsChartOptionSelect] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [projectData, setProjectData] = useState({
+    monthly: [],
+    weekly: {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: [],
+    },
+  });
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/projectsReports/monthly")
+      .then((response) => {
+        console.log(response.data);
+        const monthlyData = Array(12).fill(0);
+        const weeklyData = {
+          January: [],
+          February: [],
+          March: [],
+          April: [],
+          May: [],
+          June: [],
+          July: [],
+          August: [],
+          September: [],
+          October: [],
+          November: [],
+          December: [],
+        };
 
-  // Example data for the Overview Section
-  const overviewMetrics = [
-    {
-      title: "Total Revenue",
-      value: "$120,000",
-      chartData: [20000, 30000, 50000, 20000],
-    },
-    {
-      title: "Total Hours Worked",
-      value: "1200 hrs",
-      chartData: [300, 400, 250, 250],
-    },
-    { title: "Projects Completed", value: "15", chartData: [3, 4, 5, 3] },
-    { title: "Client Satisfaction", value: "95%", chartData: [90, 92, 95, 95] },
-  ];
+        if (Array.isArray(response.data)) {
+          response.data.forEach((item) => {
+            const monthIndex = new Date(`${item.month} 1, 2000`).getMonth();
+            monthlyData[monthIndex] = item.project_count;
+
+            if (item.weekly) {
+              weeklyData[item.month] = item.weekly;
+            }
+          });
+        } else {
+          const { monthly, weekly } = response.data;
+          setProjectData({ monthly, weekly });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError("Failed to fetch project data. Please try again later.");
+        console.error(err);
+      });
+  }, []);
 
   const barChartOptions = {
     responsive: true,
@@ -50,133 +108,291 @@ const ReportsTab = () => {
       },
       title: {
         display: true,
-        text: "Performance Metrics",
+        text: `Projects (${dateRange})`,
       },
     },
   };
 
-  const projectPerformanceData = [
-    {
-      name: "Project A",
-      status: "Completed",
-      progress: 100,
-      budget: "$45k",
-      hours: 120,
-    },
-    {
-      name: "Project B",
-      status: "Ongoing",
-      progress: 60,
-      budget: "$30k",
-      hours: 80,
-    },
-    {
-      name: "Project C",
-      status: "Delayed",
-      progress: 40,
-      budget: "$20k",
-      hours: 50,
-    },
-  ];
+  const handleMonthlyOptionClick = (month) => {
+    setSelectedMonth(month === "Per Month" ? "" : month);
+    setDateRange(month);
+    setIsMonthlyHovered(false); // Close submenu when a month is selected
+    setIsTimePeriodOpen(false); // Close the time period submenu after selection
+    setIsYearlyBucket(false); // Close Yearly Bucket when selecting a time period
+    setIsChartOptionSelect(false);
+  };
+
+  const handleDropdownClick = () => {
+    setIsTimePeriodOpen(!isTimePeriodOpen);
+  };
+
+  const handleManagementDropdownClick = () => {
+    setIsManagementDropdownOpen(!isManagementDropdownOpen);
+  };
+
+  const handleManagementOptionClick = (option) => {
+    setSelectedManagementOption(option);
+    setIsManagementDropdownOpen(false);
+    setIsYearlyBucket(false); // this one para mag close si yearly bucket
+    setIsChartOptionSelect(false);
+  };
+
+  const handleMonthlyHover = () => {
+    setIsMonthlyHovered(true);
+  };
+
+  const handleMonthlyLeave = () => {
+    setIsMonthlyHovered(false);
+  };
+
+  const hideTimePeriodButtons =
+    selectedManagementOption === "Client" ||
+    selectedManagementOption === "Task" ||
+    selectedManagementOption === "Employee" ||
+    selectedManagementOption === "Appointments" ||
+    selectedManagementOption === "Revenue";
+
+  const handleYearlyBucketClick = () => {
+    setIsYearlyBucket(true);
+    setSelectedManagementOption(""); // Reset management option to avoid confusion
+    setIsTimePeriodOpen(false); // Close time period dropdown
+  };
+
+  const handleDisplayChartClick = () => {
+    setShowChartOptions(!showChartOptions);
+  };
+
+  const handleChartOptionSelect = (option) => {
+    setSelectedChartOption(option);
+    setShowChartOptions(false);
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
       <Topbar />
       <Sidebar />
       <div className="reports-tab-container">
-        <div className="reports-header">
-          <h2>Reports</h2>
-          <div className="reports-filters">
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-            >
-              <option value="This Month">This Month</option>
-              <option value="Last Month">Last Month</option>
-              <option value="Last 3 Months">Last 3 Months</option>
-              <option value="Custom Range">Custom Range</option>
-            </select>
+        <div className="reports-header"></div>
+        <div className="management-chart-section">
+          <div className="chart-container">
+            <div className="dropdown-container">
+              <button
+                className="Management-button"
+                onClick={handleManagementDropdownClick}
+              >
+                Management
+              </button>
 
-            <select
-              value={reportType}
-              onChange={(e) => setReportType(e.target.value)}
-            >
-              <option value="Overview">Overview</option>
-              <option value="Project Performance">Project Performance</option>
-              <option value="Financial">Financial</option>
-              <option value="Time Tracking">Time Tracking</option>
-              <option value="Client Reports">Client Reports</option>
-            </select>
+              {/* Hide Time Period and Yearly Bucket buttons only when Active Projects is selected */}
+              {selectedChartOption !== "Active Projects" &&
+                !hideTimePeriodButtons && (
+                  <>
+                    <button
+                      className="Time-button"
+                      onClick={handleDropdownClick}
+                    >
+                      Time Period
+                    </button>
+                    <button onClick={handleYearlyBucketClick}>
+                      Yearly Bucket
+                    </button>
+                  </>
+                )}
 
-            <button>Export</button>
+              {![
+                "Client",
+                "Task",
+                "Employee",
+                "Appointments",
+                "Revenue",
+              ].includes(selectedManagementOption) && (
+                <button
+                  className="Display-Chart-button"
+                  onClick={handleDisplayChartClick}
+                >
+                  Display Chart
+                </button>
+              )}
+              {showChartOptions && (
+                <div className="chart-options-dropdown">
+                  <button
+                    className="chart-option"
+                    onClick={() =>
+                      handleChartOptionSelect("Per Month and Monthly")
+                    }
+                  >
+                    Per Month and Monthly
+                  </button>
+                  <button
+                    className="chart-option"
+                    onClick={() => handleChartOptionSelect("Active Projects")}
+                  >
+                    Active Projects
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {isManagementDropdownOpen && (
+              <div className="management-dropdown">
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Client")}
+                >
+                  Client
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Projects")}
+                >
+                  Projects
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Task")}
+                >
+                  Task
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Employee")}
+                >
+                  Employee
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Appointments")}
+                >
+                  Appointments
+                </button>
+                <button
+                  className="dropdown-option"
+                  onClick={() => handleManagementOptionClick("Revenue")}
+                >
+                  Revenue
+                </button>
+              </div>
+            )}
+
+            {isTimePeriodOpen && (
+              <div className="time-period-buttons">
+                <button
+                  className="time-option"
+                  onClick={() => handleMonthlyOptionClick("Per Month")}
+                >
+                  Per Month
+                </button>
+                <button
+                  className="time-option"
+                  onClick={() => handleMonthlyOptionClick("Monthly")}
+                  onMouseEnter={handleMonthlyHover}
+                  onMouseLeave={handleMonthlyLeave}
+                >
+                  Monthly
+                </button>
+              </div>
+            )}
+
+            {isMonthlyHovered && (
+              <div
+                className="monthly-options"
+                onMouseEnter={handleMonthlyHover}
+                onMouseLeave={handleMonthlyLeave}
+              >
+                {[
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ].map((month) => (
+                  <button
+                    key={month}
+                    className="time-select-option"
+                    onClick={() => handleMonthlyOptionClick(month)}
+                  >
+                    {month}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {isYearlyBucket ? (
+              <YearlyProjects />
+            ) : selectedManagementOption === "Client" ? (
+              <ClientReports />
+            ) : selectedManagementOption === "Employee" ? (
+              <EmployeeReports />
+            ) : selectedChartOption === "Active Projects" ? (
+              <ActiveProjects />
+            ) : selectedMonth && selectedMonth !== "Per Month" ? (
+              <Bar
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: { position: "top" },
+                    title: {
+                      display: true,
+                      text: `Weekly Projects (${selectedMonth})`,
+                    },
+                  },
+                }}
+                data={{
+                  labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                  datasets: [
+                    {
+                      label: `Projects in ${selectedMonth}`,
+                      data: projectData.weekly[selectedMonth],
+                      backgroundColor: "rgba(99, 132, 255, 0.5)",
+                    },
+                  ],
+                }}
+                width={300}
+                height={100}
+              />
+            ) : (
+              <Bar
+                options={barChartOptions}
+                data={{
+                  labels: [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December",
+                  ],
+                  datasets: [
+                    {
+                      label: "Projects per Month",
+                      data: projectData.monthly,
+                      backgroundColor: "rgba(247, 131, 164, 0.5)",
+                    },
+                  ],
+                }}
+                width={300}
+                height={100}
+              />
+            )}
           </div>
         </div>
-
-        {reportType === "Overview" && (
-          <div className="overview-section">
-            <h3>Overview</h3>
-            <div className="overview-metrics">
-              {overviewMetrics.map((metric, index) => (
-                <div key={index} className="metric-card">
-                  <h4>{metric.title}</h4>
-                  <p>{metric.value}</p>
-                  <Bar
-                    options={barChartOptions}
-                    data={{
-                      labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                      datasets: [
-                        {
-                          label: metric.title,
-                          data: metric.chartData,
-                          backgroundColor: "rgba(75, 192, 192, 0.5)",
-                        },
-                      ],
-                    }}
-                    width={300} // Width in pixels
-                    height={100} // Height in pixels
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {reportType === "Project Performance" && (
-          <div className="project-performance-section">
-            <h3>Project Performance</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Project Name</th>
-                  <th>Status</th>
-                  <th>Progress</th>
-                  <th>Budget</th>
-                  <th>Total Hours</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projectPerformanceData.map((project, index) => (
-                  <tr key={index}>
-                    <td>{project.name}</td>
-                    <td>{project.status}</td>
-                    <td>
-                      <div className="progress-bar">
-                        <div
-                          className="progress"
-                          style={{ width: `${project.progress}%` }}
-                        ></div>
-                      </div>
-                    </td>
-                    <td>{project.budget}</td>
-                    <td>{project.hours} hrs</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Add additional sections for Financial, Time Tracking, Client Reports */}
       </div>
     </div>
   );

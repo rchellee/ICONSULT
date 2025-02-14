@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
+import "./review.css";
 
 function Review() {
   const [rating, setRating] = useState(0);
@@ -21,7 +22,8 @@ function Review() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { projectId, clientId } = location.state || {};
+  // const { projectId, clientId } = location.state || {};
+  const { projectId = 1, clientId = 1 } = location.state || {};
 
   if (!projectId || !clientId) {
     return (
@@ -73,7 +75,7 @@ function Review() {
         <Sidebar />
         <Box
           flex="1"
-          p={4}
+          p={5}
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -81,7 +83,12 @@ function Review() {
           bgcolor="#f9f9f9"
           minHeight="100vh"
         >
-          <Typography variant="h4" gutterBottom>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ mt: -20, fontWeight: "bold" }}
+            className="leave-review-title"
+          >
             Leave a Review
           </Typography>
           {error && (
@@ -109,6 +116,7 @@ function Review() {
           <Box
             component="form"
             onSubmit={handleSubmit}
+            className="review-form-box"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -123,34 +131,37 @@ function Review() {
             }}
           >
             <Typography variant="h6" align="center">
-              Rating
+              How was the service?
             </Typography>
             <Rating
               name="rating"
               value={rating}
               onChange={(event, newValue) => setRating(newValue)}
-              size="large"
+              className="custom-rating"
+              size="medium"
               sx={{ alignSelf: "center" }}
             />
             <TextField
-              label="Comment"
+              label="Write your comment"
               multiline
-              rows={5}
+              rows={8}
               variant="outlined"
               fullWidth
               value={comment}
               onChange={(event) => setComment(event.target.value)}
-              placeholder="Write your review here..."
+              placeholder="Write here..."
               required
+              className="comment-review-box"
             />
-            <Button
+            <button
               type="submit"
               variant="contained"
               color="primary"
+              className="submit-review-button"
               sx={{ alignSelf: "center", py: 1.5, px: 4 }}
             >
               Submit Review
-            </Button>
+            </button>
           </Box>
         </Box>
       </Box>

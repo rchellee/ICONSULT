@@ -7,6 +7,7 @@
 }
 
 .files-tab-content {
+  margin-left: 100px;
   padding: 20px;
 }
 
@@ -25,8 +26,8 @@
   border-radius: 5px;
   cursor: pointer;
   text-align: center;
-  margin-left: -100px;
   margin-top: -20px;
+  margin-bottom: 20px;
   display: flex;
   align-items: center; /* Aligns the icon and text */
 }
@@ -63,10 +64,8 @@
 }
 
 .file-list {
-  width: 100%;
   border-collapse: collapse;
   margin-top: -10px;
-  margin-left: -100px;
 }
 
 .file-list::-webkit-scrollbar {
@@ -87,18 +86,8 @@
 }
 
 .file-list-scrollable {
-  max-height: 200px;
-  overflow-y: auto;
   border: 1px solid #ccc;
-  max-height: 450px;
-  overflow-y: auto;
-  overflow-x: hidden;
   border-radius: 10px;
-}
-
-.file-list table {
-  width: 100%;
-  border: none;
 }
 
 .file-list th,
@@ -111,7 +100,7 @@
 }
 
 .file-list th {
-  background-color: #f4f4f4;
+  background-color: #143d58;
   font-weight: bold;
 }
 

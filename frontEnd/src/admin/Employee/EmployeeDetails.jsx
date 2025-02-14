@@ -310,7 +310,7 @@ const EmployeeDetails = ({
                       <i className="fa fa-calendar"></i>
                     </div>
                   </div>
-                  <div className="button-group">
+                  <div className="buttonEmployee-group">
                     <button type="submit" className="btn-save">
                       Save Changes
                     </button>
@@ -390,7 +390,7 @@ const EmployeeDetails = ({
                   <strong>Date Modified:</strong>{" "}
                   {formatDate(employee.modified_date)}
                 </p>
-                <div className="button-group">
+                <div className="buttonEmployee-group">
                   {!isEditing && (
                     <button className="btn-edit" onClick={toggleEdit}>
                       Edit
@@ -452,7 +452,7 @@ const EmployeeDetails = ({
                     &lt;
                   </button>
                   <span>
-                    Page {currentPage} of {Math.ceil(tasks.length / pageSize)}
+                    {currentPage} - {Math.ceil(tasks.length / pageSize)}
                   </span>
                   <button
                     onClick={() =>

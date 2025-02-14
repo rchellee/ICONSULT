@@ -29,7 +29,7 @@ import Reset from "./Login/Reset.jsx";
 import ReportsTab from "./admin/Reports/ReportsTab.jsx";
 import AdminAccount from "./admin/AdminAccount/AdminAccount.jsx";
 import AdminReview from "./admin/AdminAccount/adminReview.jsx";
-
+import ClientReview from "./client/AccountSettings/clientReviews.jsx";
 
 // for google icons
 const link = document.createElement("link");
@@ -71,7 +71,7 @@ function App() {
         <Route path="/reports" element={<ReportsTab />} />
         <Route path="/admin-settings" element={<AdminAccount />} />
         <Route path="/admin-reviews" element={<AdminReview />} />
-        
+        <Route path="/client-reviews" element={<ClientReview />} />
       </Routes>
     </Router>
   );

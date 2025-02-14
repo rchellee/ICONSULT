@@ -212,7 +212,7 @@ const Availability = () => {
         <Sidebar />
         <div className="content-availability">
           <h3>Set Your Availability</h3>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "70px" }}>
             <AvailableCalendar
               availableDates={{ ...existingDates }}
               onDateSelect={handleDateSelect}
@@ -220,6 +220,7 @@ const Availability = () => {
             <Box
               sx={{
                 width: 600,
+                height: 600,
                 padding: 2,
                 border: "1px solid #ccc",
                 borderRadius: 4,
@@ -227,7 +228,7 @@ const Availability = () => {
               }}
             >
               <strong>
-                <h6>Selected Dates & Time</h6>
+                <h4>Selected Dates and Time</h4>
               </strong>
 
               {selectedDates.length > 0 ? (
@@ -306,11 +307,11 @@ const Availability = () => {
                 <Typography variant="h7">No dates selected.</Typography>
               )}
               <strong>
-                <h6>Availability:</h6>
+                <h4>Availability:</h4>
               </strong>
               <List
                 sx={{
-                  maxHeight: 300,
+                  maxHeight: 370,
                   overflowY: "auto",
                   backgroundColor: "#ffffff",
                   border: "1px solid #ccc",

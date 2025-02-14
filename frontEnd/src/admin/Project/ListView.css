@@ -3,13 +3,12 @@
   white-space: nowrap; /* Prevent text wrapping */
   /* Hide overflow */
   text-overflow: ellipsis; /* Add ellipsis for truncated text */
-  border-radius: 30px;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .table-scroll-wrapper {
-  max-height: 600px; /* Set a height limit */
+  max-height: 687px; /* Set a height limit */
   overflow-y: auto; /* Enable vertical scrolling */
   -webkit-overflow-scrolling: touch;
 }
@@ -106,7 +105,8 @@
 }
 
 .modal {
-  padding: 20px;
+  background-color: #ffff;
+  padding: 30px;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -145,7 +145,7 @@
 }
 
 .modal button {
-  background-color: transparent;
+  background-color: #9eb3c9;
   color: rgb(0, 0, 0);
   border: none;
   padding: 10px 20px;
@@ -158,15 +158,15 @@
 }
 
 .modal button:hover {
-  background-color: #f0f0f0;
+  background-color: #689dd6;
 }
 
 .modal button:last-child {
-  background-color: transparent;
+  background-color: #9eb3c9;
 }
 
 .modal button:last-child:hover {
-  background-color: #f0f0f0;
+  background-color: #689dd6;
 }
 
 /*css for actual finish date picker*/

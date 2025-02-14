@@ -42,8 +42,10 @@ function ClientDashboard() {
     task.name.toLowerCase().includes("feedback")
   );
 
-  const pendingPayments = tasks.filter((task) =>
-    task.name.toLowerCase().includes("pay") || task.name.toLowerCase().includes("payment")
+  const pendingPayments = tasks.filter(
+    (task) =>
+      task.name.toLowerCase().includes("pay") ||
+      task.name.toLowerCase().includes("payment")
   );
 
   const openModal = (title, content) => {
@@ -104,19 +106,26 @@ function ClientDashboard() {
                 ))}
               </div>
               {projects.length > 3 && (
-                <span onClick={() => openModal("All Projects", projects.map(project => (
-                  <div key={project.name}>
-                    <h4>{project.name}</h4>
-                    <div className="progress-bar">
-                      <div
-                        className="progress"
-                        style={{ width: `${project.progress}%` }}
-                      >
-                        {project.progress}%
-                      </div>
-                    </div>
-                  </div>
-                )))}>
+                <span
+                  onClick={() =>
+                    openModal(
+                      "All Projects",
+                      projects.map((project) => (
+                        <div key={project.name}>
+                          <h4>{project.name}</h4>
+                          <div className="progress-bar">
+                            <div
+                              className="progress"
+                              style={{ width: `${project.progress}%` }}
+                            >
+                              {project.progress}%
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )
+                  }
+                >
                   See More
                 </span>
               )}
@@ -134,12 +143,19 @@ function ClientDashboard() {
                 ))}
               </div>
               {tasks.length > 3 && (
-                <span onClick={() => openModal("All Tasks", tasks.map(task => (
-                  <div key={task.name}>
-                    <p>{task.name}</p>
-                    <p>Deadline: {formatDayAndDate(task.deadline)}</p>
-                  </div>
-                )))}>
+                <span
+                  onClick={() =>
+                    openModal(
+                      "All Tasks",
+                      tasks.map((task) => (
+                        <div key={task.name}>
+                          <p>{task.name}</p>
+                          <p>Deadline: {formatDayAndDate(task.deadline)}</p>
+                        </div>
+                      ))
+                    )
+                  }
+                >
                   See More
                 </span>
               )}

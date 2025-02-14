@@ -5,7 +5,6 @@ import "./AccountSettings.css";
 import { IoMdArrowDropright } from "react-icons/io";
 import image from "../../assets/image.png";
 import ChangePassword from "./ChangePassword"; // Import the new component
-import { CiEdit } from "react-icons/ci";
 
 const AccountSettings = () => {
   const [clientDetails, setClientDetails] = useState(null);
@@ -49,14 +48,6 @@ const AccountSettings = () => {
             <>
               <div className="account">
                 <h2>Account Setting</h2>
-                <p>
-                    Personal info and options to manage it.<br />
-                    See the summary of your profiles.
-                </p>
-                <button className="update-profile-button">      
-	                <CiEdit/> UPDATE PROFILE
-                </button>
-
                 <div className="imagee">
                   <img
                     src={image}
@@ -80,22 +71,6 @@ const AccountSettings = () => {
                         <td>Username</td>
                         <td className="no-bg">{clientDetails.username}</td>
                       </tr>
-                      <tr>
-                    <td>Age</td>
-                    <td className="no-bg">20</td>
-                  </tr>
-                  <tr>
-                    <td>Gender</td>
-                    <td className="no-bg">Female</td>
-                  </tr>
-                  <tr>
-                    <td>Nationality</td>
-                    <td className="no-bg">Filipino</td>
-                  </tr>
-                  <tr>
-                    <td>Home</td>
-                    <td>{clientDetails?.address}</td>
-                  </tr>
                     </tbody>
                   </table>
                 </div>
@@ -121,16 +96,12 @@ const AccountSettings = () => {
                   <table>
                     <tbody>
                       <tr>
-                        <td>Company Name</td>
-                        <td>Not Set</td>
+                        <td>Home</td>
+                        <td>{clientDetails.address}</td>
                       </tr>
                       <tr>
-                        <td>Position</td>
-                        <td>Not Set</td>
-                      </tr>
-                      <tr>
-                        <td>Company Contact Number</td>
-                        <td>Not Set</td>
+                        <td>Company</td>
+                        <td>{clientDetails.companyName}</td>
                       </tr>
                     </tbody>
                   </table>

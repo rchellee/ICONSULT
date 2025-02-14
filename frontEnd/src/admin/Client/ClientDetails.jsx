@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./client-admin.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import { format } from "date-fns";
 
 const ClientDetails = ({
   client,
@@ -22,7 +23,7 @@ const ClientDetails = ({
     const fetchAppointments = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8081/appointments/${client.id}`
+          `http://localhost:8081/appointments-details/${client.id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -38,7 +39,7 @@ const ClientDetails = ({
     const fetchProjects = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8081/project/${client.id}`
+          `http://localhost:8081/project-client/${client.id}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -136,12 +137,6 @@ const ClientDetails = ({
         >
           Projects
         </button>
-        <button
-          className={activeTab === "files" ? "active" : ""}
-          onClick={() => handleTabClick("files")}
-        >
-          Files
-        </button>
       </div>
 
       <div className="client-info">
@@ -179,7 +174,7 @@ const ClientDetails = ({
                   <div className="input-group input-group-icon">
                     <input
                       type="tel"
-                      name="mobileNumber"
+                      name="mobile_number"
                       value={formData.mobile_number}
                       onChange={handleChange}
                       placeholder="Mobile Number"
@@ -255,7 +250,7 @@ const ClientDetails = ({
                   </div>
                 </div>
                 {/* Save and Cancel Buttons */}
-                <div className="button-group">
+                <div className="buttonClient-group">
                   <button type="submit" className="btn-save">
                     <i className="fas fa-save"></i> Save Changes
                   </button>
@@ -320,14 +315,15 @@ const ClientDetails = ({
                 </p>
                 <p>
                   <i className="fas fa-calendar"></i>{" "}
-                  <strong>Birthdate:</strong> {client.birthda}
+                  <strong>Birthdate:</strong>{" "}
+                  {format(new Date(client.birthday), "MMMM dd, yyyy")}
                 </p>
                 <p>
                   <i className="fas fa-venus-mars"></i> <strong>Gender:</strong>{" "}
                   {client.gender}
                 </p>
 
-                <div className="button-group">
+                <div className="buttonClient-group">
                   <button className="btn-edit" onClick={toggleEdit}>
                     {" "}
                     <i className="fas fa-edit"></i>Edit
@@ -368,12 +364,22 @@ const ClientDetails = ({
                               )
                               .map((appointment, index) => (
                                 <tr key={index}>
-                                  <td>{appointment.date}</td>
+                                  <td>
+                                    {format(
+                                      new Date(appointment.date),
+                                      "MMMM dd, yyyy"
+                                    )}
+                                  </td>
                                   <td>{appointment.time}</td>
                                   <td>{appointment.consultationType}</td>
                                   <td>{appointment.additionalInfo}</td>
                                   <td>{appointment.platform}</td>
-                                  <td>{appointment.created_at}</td>
+                                  <td>
+                                    {format(
+                                      new Date(appointment.created_at),
+                                      "MMMM dd, yyyy"
+                                    )}
+                                  </td>
                                 </tr>
                               ))}
                           </tbody>
@@ -389,7 +395,7 @@ const ClientDetails = ({
                             &lt;
                           </button>
                           <span>
-                            Page {currentPage} of{" "}
+                            {currentPage} -{" "}
                             {Math.ceil(appointments.length / pageSize)}
                           </span>
                           <button
@@ -446,10 +452,22 @@ const ClientDetails = ({
                         <tr key={index}>
                           <td>{project.projectName}</td>
                           <td>{project.description}</td>
-                          <td>{project.startDate}</td>
-                          <td>{project.endDate}</td>
+                          <td>
+                            {format(
+                              new Date(project.startDate),
+                              "MMMM dd, yyyy"
+                            )}
+                          </td>
+                          <td>
+                            {format(new Date(project.endDate), "MMMM dd, yyyy")}
+                          </td>
                           <td>{project.status}</td>
-                          <td>{project.created_at}</td>
+                          <td>
+                            {format(
+                              new Date(project.created_at),
+                              "MMMM dd, yyyy"
+                            )}
+                          </td>
                           <td>{project.contractPrice}</td>
                         </tr>
                       ))}
@@ -466,8 +484,7 @@ const ClientDetails = ({
                     &lt;
                   </button>
                   <span>
-                    Page {currentPage} of{" "}
-                    {Math.ceil(projects.length / pageSize)}
+                    {currentPage} - {Math.ceil(projects.length / pageSize)}
                   </span>
                   <button
                     onClick={() =>
@@ -488,72 +505,6 @@ const ClientDetails = ({
               </>
             ) : (
               <p>No projects available.</p>
-            )}
-          </div>
-        )}
-
-        {activeTab === "files" && (
-          <div className="client-details-table">
-            {files.length > 0 ? (
-              <>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Upload Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {files
-                      .slice(
-                        (currentPage - 1) * pageSize,
-                        currentPage * pageSize
-                      )
-                      .map((file, index) => (
-                        <tr key={index}>
-                          <td>
-                            <a
-                              href={`http://localhost:8081/uploads/${file.file_name}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {file.original_name}
-                            </a>
-                          </td>
-                          <td>{file.upload_date}</td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-
-                <div className="pagination-buttons">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                  >
-                    &lt;
-                  </button>
-                  <span>
-                    Page {currentPage} of {Math.ceil(files.length / pageSize)}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) =>
-                        Math.min(prev + 1, Math.ceil(files.length / pageSize))
-                      )
-                    }
-                    disabled={
-                      currentPage === Math.ceil(files.length / pageSize)
-                    }
-                  >
-                    &gt;
-                  </button>
-                </div>
-              </>
-            ) : (
-              <p>No files available.</p>
             )}
           </div>
         )}

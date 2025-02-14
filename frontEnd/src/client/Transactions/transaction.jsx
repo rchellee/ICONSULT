@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import Sidebar from "../sidebar";
 import "./transactions.css";
 import Topbar from "../Topbar";
 
 const Transaction = () => {
+  const { searchTerm } = useContext(SearchContext);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [projectMap, setProjectMap] = useState({});
 
   useEffect(() => {
-    const clientId = localStorage.getItem("clientId"); 
+    const clientId = localStorage.getItem("clientId");
 
     if (!clientId) {
       console.error("No client ID found.");
@@ -36,12 +39,12 @@ const Transaction = () => {
 
     const fetchProjects = async (transactions) => {
       try {
-        const projectIds = [...new Set(transactions.map((t) => t.project_id))]; 
+        const projectIds = [...new Set(transactions.map((t) => t.project_id))];
         const projectData = {};
         for (const projectId of projectIds) {
           if (projectId) {
             const response = await fetch(
-              `http://localhost:8081/projects/${projectId}` 
+              `http://localhost:8081/projects/${projectId}`
             );
             if (response.ok) {
               const result = await response.json();
@@ -57,6 +60,35 @@ const Transaction = () => {
 
     fetchTransactions();
   }, []);
+
+  useEffect(() => {
+    const filtered = transactions.filter((transaction) => {
+      const searchValue = searchTerm.trim().toLowerCase();
+      const transactionId = String(
+        transaction.transaction_id || ""
+      ).toLowerCase();
+      const projectName = (
+        projectMap[transaction.project_id] || ""
+      ).toLowerCase();
+      const merchantId = (transaction.payee_merchant_id || "").toLowerCase();
+      const email = (transaction.payed_to_email || "").toLowerCase();
+      const amount = transaction.amount.toString().toLowerCase();
+      const currency = (transaction.currency || "").toLowerCase();
+      const date = formatDate(transaction.created_at).toLowerCase();
+
+      return (
+        transactionId.includes(searchValue) ||
+        projectName.includes(searchValue) ||
+        merchantId.includes(searchValue) ||
+        email.includes(searchValue) ||
+        amount.includes(searchValue) ||
+        currency.includes(searchValue) ||
+        date.includes(searchValue)
+      );
+    });
+
+    setFilteredTransactions(filtered);
+  }, [searchTerm, transactions, projectMap]);
 
   const formatDate = (dateString) => {
     const options = {
@@ -95,7 +127,7 @@ const Transaction = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction) => (
+              {filteredTransactions.map((transaction) => (
                 <tr key={transaction.transaction_id}>
                   <td>{transaction.transaction_id}</td>
                   <td>{getDescription(transaction)}</td>

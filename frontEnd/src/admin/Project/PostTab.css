@@ -46,10 +46,15 @@
   height: 100%;
 }
 
+.project-name-container {
+  text-align: left;
+  margin-top: 20px;
+}
+
 .project-posts {
   display: flex;
   flex-direction: column;
-  margin-left: 300px;
+  margin-left: 100px;
   margin-top: -70px;
 }
 
@@ -72,7 +77,7 @@
   cursor: pointer;
   position: absolute;
   right: -60px;
-  top: -10px;
+  top: 261px;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
@@ -83,12 +88,12 @@
 
 /* Task Table Container */
 .table-container {
-  max-height: 450px;
-  overflow-y: scroll;
+  max-height: 700px;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-right: 10px;
-  margin-top: 50px;
-  margin-right: 200px;
+  margin-top: 40px;
+  margin-right: 50px;
   border-radius: 10px;
 }
 
@@ -197,8 +202,9 @@
   border: 1px solid #ccc;
   margin-top: 20px;
   background-color: #f9f9f9;
-  max-width: 600px;
-  margin-left: 100px;
+  max-width: 900px;
+  height: 700px;
+  margin-left: 300px;
 }
 
 .task-detail-row {
@@ -246,7 +252,7 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
-  margin-left: 400px;
+  margin-left: 200px;
 }
 
 /* Floating Action Box */
@@ -279,7 +285,6 @@
 /*css for total amount of task*/
 .total-amount-container {
   display: flex;
-  justify-content: flex-end; /* Align to the right */
   align-items: center; /* Vertically align items */
   margin-bottom: -40px; /* Add space between this and the table */
   margin-right: 225px;
@@ -288,7 +293,7 @@
 }
 
 .total-amount-container h3 {
-  font-size: 18px;
+  font-size: 10px;
   font-weight: bold;
   color: #333;
   margin: 0;
@@ -301,7 +306,7 @@
 }
 
 .total-amount-number {
-  font-size: 30px;
+  font-size: 25px;
   font-weight: bold;
   color: #547099;
   margin-left: 10px;

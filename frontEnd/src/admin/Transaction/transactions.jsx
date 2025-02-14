@@ -64,38 +64,38 @@ const Transactions = () => {
 
   useEffect(() => {
     const filtered = transactions.filter((transaction) => {
-      const transactionId = String(transaction.transaction_id || "")
-        .trim()
-        .toLowerCase();
-      const project = (projectMap[transaction.project_id] || "").toLowerCase();
-      const client = (clientMap[transaction.project_id] || "").toLowerCase();
-      const merchantId = (transaction.payee_merchant_id || "").toLowerCase();
-      const email = (transaction.payed_to_email || "").toLowerCase();
-      const amount = transaction.amount.toString().toLowerCase();
-      const currency = (transaction.currency || "").toLowerCase();
-      const date = formatDate(transaction.created_at).toLowerCase();
+      const {
+        transaction_id: transactionId,
+        project_id: projectId,
+        payee_merchant_id: merchantId,
+        payed_to_email: email,
+        amount,
+        currency,
+        created_at: date,
+      } = transaction;
+
+      const project = projectMap[projectId]?.toLowerCase() || "";
+      const client = clientMap[projectId]?.toLowerCase() || "";
+
       const searchValue = searchTerm.trim().toLowerCase();
 
       return (
-        transactionId.includes(searchValue) ||
-        (projectMap[transaction.project_id] || "")
+        String(transactionId || "")
           .toLowerCase()
           .includes(searchValue) ||
-        (projectMap[transaction.project_id] || "")
+        project.includes(searchValue) ||
+        client.includes(searchValue) ||
+        String(merchantId || "")
           .toLowerCase()
           .includes(searchValue) ||
-        (clientMap[transaction.project_id] || "")
+        String(email || "")
           .toLowerCase()
           .includes(searchValue) ||
-        (transaction.payee_merchant_id || "")
+        String(amount || "").includes(searchValue) ||
+        String(currency || "")
           .toLowerCase()
           .includes(searchValue) ||
-        (transaction.payed_to_email || "")
-          .toLowerCase()
-          .includes(searchValue) ||
-        transaction.amount.toString().includes(searchValue) ||
-        (transaction.currency || "").toLowerCase().includes(searchValue) ||
-        formatDate(transaction.created_at).toLowerCase().includes(searchValue)
+        formatDate(date).toLowerCase().includes(searchValue)
       );
     });
 
@@ -141,19 +141,41 @@ const Transactions = () => {
             <tbody>
               {filteredTransactions.map((transaction) => (
                 <tr key={transaction.transaction_id}>
-                  <td>{transaction.transaction_id}</td>
-                  <td>
+                  <td title={transaction.transaction_id || "Unknown Email"}>
+                    {transaction.transaction_id}
+                  </td>
+                  <td title={transaction.project_id || "Unknown Email"}>
                     {projectMap[transaction.project_id] || "Unknown Project"}
                   </td>
-                  <td>
+                  <td
+                    title={clientMap[transaction.project_id] || "Unknown Email"}
+                  >
                     {clientMap[transaction.project_id] || "Unknown Client"}
                   </td>
-                  <td>{getDescription(transaction)}</td>
-                  <td>{transaction.payee_merchant_id || "Unknown Merchant"}</td>
-                  <td>{transaction.payed_to_email || "Unknown Email"}</td>
-                  <td>{formatAmount(transaction.amount)}</td>
-                  <td>{transaction.currency}</td>
-                  <td>{formatDate(transaction.created_at)}</td>
+                  <td title={getDescription(transaction) || "Unknown Email"}>
+                    {getDescription(transaction)}
+                  </td>
+                  <td title={transaction.payee_merchant_id || "Unknown Email"}>
+                    {transaction.payee_merchant_id || "Unknown Merchant"}
+                  </td>
+                  <td title={transaction.payed_to_email || "Unknown Email"}>
+                    {transaction.payed_to_email || "Unknown Email"}
+                  </td>
+                  <td
+                    title={formatAmount(transaction.amount) || "Unknown Email"}
+                  >
+                    {formatAmount(transaction.amount)}
+                  </td>
+                  <td title={transaction.currency || "Unknown Email"}>
+                    {transaction.currency}
+                  </td>
+                  <td
+                    title={
+                      formatDate(transaction.created_at) || "Unknown Email"
+                    }
+                  >
+                    {formatDate(transaction.created_at)}
+                  </td>
                 </tr>
               ))}
             </tbody>

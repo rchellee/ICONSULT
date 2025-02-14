@@ -7,6 +7,7 @@ const EmployeeForm = ({
   setEmployees,
   toggleForm,
   editingEmployee,
+  goBack,
 }) => {
   const [formData, setFormData] = useState({
     lastName: "",
@@ -35,13 +36,18 @@ const EmployeeForm = ({
     if (name === "birthday" && value) {
       const today = new Date();
       const birthDate = new Date(value);
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      const dayDiff = today.getDate() - birthDate.getDate();
 
-      // Adjust age if the current date is before the birthdate this year
-      newAge =
-        monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+      if (!isNaN(birthDate.getTime())) {
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const dayDiff = today.getDate() - birthDate.getDate();
+        // Adjust age if the current date is before the birthdate this year
+        newAge =
+          monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+      } else {
+        console.error("Invalid date entered:", value);
+        newAge = ""; // Reset the age if the date is invalid
+      }
     }
 
     setFormData({
@@ -86,6 +92,7 @@ const EmployeeForm = ({
           setEmployees([...employees, result]);
         }
         toggleForm();
+        // goBack();
       } else {
         console.error("Error saving employee:", await response.text());
       }
@@ -208,10 +215,14 @@ const EmployeeForm = ({
                 <i className="fa fa-calendar"></i>
               </div>
             </div>
-
-            <button type="submit">
-              {editingEmployee ? "Update Employee" : "Add Employee"}
-            </button>
+            <div className="button-group">
+              <button type="submit">
+                {editingEmployee ? "Update Employee" : "Add Employee"}
+              </button>
+              <button className="btn-back" onClick={goBack}>
+                Back
+              </button>
+            </div>
           </div>
 
           {/* Status Section */}
