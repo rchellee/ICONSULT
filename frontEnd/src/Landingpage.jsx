@@ -210,7 +210,7 @@ const LandingPage = () => {
                 <div className="topic">
                   Assistant Manager for Accounting/Accounting Supervisor/Auditor
                 </div>
-                <div className="per">2 yrs  </div>
+                <div className="per">2 yrs </div>
               </div>
               <div className="box">
                 <div className="topic">
