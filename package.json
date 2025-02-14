@@ -24,6 +24,7 @@
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "chart.js": "^4.4.7",
+    "concurrently": "^9.1.2",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -43,9 +44,9 @@
     "react-native-vector-icons": "^10.2.0",
     "react-router-dom": "^6.26.1",
     "react-toastify": "^11.0.2",
+    "serve": "^14.2.4",
     "side-channel": "^1.1.0",
-    "side-channel-list": "^1.0.0",
-    "concurrently": "^9.1.2"
+    "side-channel-list": "^1.0.0"
   },
   "devDependencies": {
     "@babel/runtime": "^7.26.0",
