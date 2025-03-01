@@ -2364,6 +2364,37 @@ app.get("/todaysTasks", (req, res) => {
 
 
 //REPORTS TAB
+//apointments
+app.get("/appointmentReports", (req, res) => {
+  const { startDate, endDate, clientId } = req.query;
+
+  let sql = "SELECT * FROM appointments WHERE 1=1";
+  const params = [];
+
+  if (startDate) {
+    sql += " AND date >= ?";
+    params.push(startDate);
+  }
+  if (endDate) {
+    sql += " AND date <= ?";
+    params.push(endDate);
+  }
+  if (clientId) {
+    sql += " AND client_id = ?";
+    params.push(clientId);
+  }
+
+  db.query(sql, params, (err, data) => {
+    if (err) {
+      console.error("Error fetching appointments:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch appointments", error: err });
+    }
+    return res.json(data);
+  });
+});
+
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {
   const sql = `
