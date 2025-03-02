@@ -43,69 +43,7 @@ oauth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 const drive = google.drive({ version: "v3", auth: oauth2Client });
 const upload = multer({ dest: "temp/" });
 
-// const filePath = path.join(__dirname, "exo.jpg");
-
-// async function uploadFile() {
-//   try {
-//     const response = await drive.files.create({
-//       requestBody: {
-//         name: "exo.jpg", //This can be name of your choice
-//         mimeType: "image/jpg",
-//       },
-//       media: {
-//         mimeType: "image/jpg",
-//         body: fs.createReadStream(filePath),
-//       },
-//     });
-
-//     console.log(response.data);
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
-
-// uploadFile();
-
-async function deleteFile() {
-  try {
-    const response = await drive.files.delete({
-      fileId: "1mqL58-ZHlFCgXDjGbsb2Buu2UDWMzQRV",
-    });
-    console.log(response.data, response.status);
-  } catch (error) {
-    console.log(error.message);
-  }
-}
-
-// deleteFile();
-
-// async function generatePublicUrl() {
-//   try {
-//     const fileId = "YOUR FILE ID";
-//     await drive.permissions.create({
-//       fileId: fileId,
-//       requestBody: {
-//         role: "reader",
-//         type: "anyone",
-//       },
-//     });
-
-//     /*
-//     webViewLink: View the file in browser
-//     webContentLink: Direct download link
-//     */
-//     const result = await drive.files.get({
-//       fileId: fileId,
-//       fields: "webViewLink, webContentLink",
-//     });
-//     console.log(result.data);
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// }
-
-// generatePublicUrl();
-// SendGrid email example
+// SendGrid
 sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Use the key from .env
 const verificationCodes = new Map();
 const otpStore = {};
@@ -1076,7 +1014,7 @@ app.patch("/projectStat/:id", (req, res) => {
 });
 app.patch("/paymentStat/:projectId", (req, res) => {
   const { projectId } = req.params;
-  const { paymentStatus } = req.body;
+  const { paymentStatus, paymentDate } = req.body;
 
   if (!paymentStatus) {
     return res.status(400).json({ message: "Missing paymentStatus" });
@@ -1094,8 +1032,8 @@ app.patch("/paymentStat/:projectId", (req, res) => {
 
       // Allow any valid payment status transition
       db.query(
-        "UPDATE project SET paymentStatus = ? WHERE id = ?",
-        [paymentStatus, projectId],
+        "UPDATE project SET paymentStatus = ?, paymentDate = ? WHERE id = ?",
+        [paymentStatus, paymentDate, projectId], // Store the payment date in the database
         (updateErr) => {
           if (updateErr) {
             console.error("Error updating payment status: ", updateErr);
@@ -1701,30 +1639,6 @@ app.delete("/appointments/:id", (req, res) => {
   });
 });
 
-// const backfillTim  eFormat = () => {
-//   const updateTimeFormatSql = `
-//     UPDATE appointments
-//     SET time = DATE_FORMAT(STR_TO_DATE(time, '%H:%i:%s'), '%h:%i %p');
-//   `;
-
-//   db.query(updateTimeFormatSql, (err, result) => {
-//     if (err) {
-//       console.error("Error updating time format:", err);
-//       db.end();
-//       return;
-//     }
-
-//     console.log(
-//       `Time format updated successfully for ${result.affectedRows} rows`
-//     );
-//     db.end();
-//   });
-// };
-
-// backfillTimeFormat();
-
-// Endpoint to upload a file
-
 // Save payment details to the database
 app.post("/payments", (req, res) => {
   const {
@@ -2207,101 +2121,247 @@ app.put("/reviews/:id", (req, res) => {
 });
 
 //for dashboard
-app.get("/clientsDashboard/count", (req, res) => {
-  const { filter } = req.query; // e.g., 'weekly', 'monthly', 'yearly'
+// Fetch total client counts and breakdowns
+app.get("/clients/stats", (req, res) => {
+  const { filter } = req.query;
+  let condition = "";
 
-  let dateCondition = "";
-  if (filter === "weekly") {
-    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
-  } else if (filter === "monthly") {
-    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
-  } else if (filter === "yearly") {
-    dateCondition = "WHERE DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  switch (filter) {
+    case "weekly":
+      condition = "WEEK(created_at) = WEEK(CURDATE())";
+      break;
+    case "yearly":
+      condition = "YEAR(created_at) = YEAR(CURDATE())";
+      break;
+    case "active":
+      condition = "status = 'Active'";
+      break;
+    case "inactive":
+      condition = "status = 'Inactive'";
+      break;
+    default:
+      condition = "1=1"; // No filter, fetch all clients
   }
 
-  const sql = `SELECT COUNT(*) AS total FROM client ${dateCondition}`;
-  db.query(sql, (err, data) => {
+  const sql = `SELECT COUNT(*) AS totalClients FROM client WHERE ${condition}`;
+  db.query(sql, (err, result) => {
     if (err) return res.status(500).json(err);
-    return res.json(data[0]); // Respond with the count
+    res.status(200).json(result[0]);
   });
 });
-app.get("/projectsDashboard/count", (req, res) => {
-  const { filter, status } = req.query;
+app.get("/projectDashboard/stats", (req, res) => {
+  const { filter } = req.query;
+  let condition = "";
 
-  let dateCondition = "";
-  if (filter === "weekly") {
-    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 7 DAY)";
-  } else if (filter === "monthly") {
-    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 1 MONTH)";
-  } else if (filter === "yearly") {
-    dateCondition = "AND DATE(created_at) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  switch (filter) {
+    case "weekly":
+      condition = "WEEK(created_at) = WEEK(CURDATE())";
+      break;
+    case "yearly":
+      condition = "YEAR(created_at) = YEAR(CURDATE())";
+      break;
+    case "pending":
+      condition = "status = 'Pending'";
+      break;
+    case "ongoing":
+      condition = "status = 'Ongoing'";
+      break;
+    case "completed":
+      condition = "status = 'Completed'";
+      break;
+    case "paid":
+      condition = "paymentStatus = 'Paid'";
+      break;
+    case "not paid":
+      condition = "paymentStatus = 'Not Paid'";
+      break;
+    case "partial payment":
+      condition = "paymentStatus = 'Partial Payment'";
+      break;
+    default:
+      condition = "1=1"; // No filter, fetch all projects
   }
-
-  let statusCondition = "";
-  if (status) {
-    statusCondition = `AND status = '${status}'`;
-  }
-
-  const sql = `SELECT COUNT(*) AS total FROM project WHERE isDeleted = 0 ${dateCondition} ${statusCondition}`;
-  db.query(sql, (err, data) => {
+  const sql = `SELECT COUNT(*) AS totalProjects FROM project WHERE ${condition} AND isDeleted = 0`;
+  db.query(sql, (err, result) => {
     if (err) return res.status(500).json(err);
-    return res.json(data[0]);
+    res.status(200).json(result[0]);
   });
 });
-app.get("/tasksDashboard/count", (req, res) => {
-  const { filter, status } = req.query;
+app.get("/taskDashboard/stats", (req, res) => {
+  const { filter } = req.query;
+  let condition = "";
 
-  let timeCondition = "";
-  if (filter === "weekly") {
-    timeCondition = "YEARWEEK(due_date, 1) = YEARWEEK(CURDATE(), 1)";
-  } else if (filter === "monthly") {
-    timeCondition =
-      "MONTH(due_date) = MONTH(CURDATE()) AND YEAR(due_date) = YEAR(CURDATE())";
-  } else if (filter === "yearly") {
-    timeCondition = "YEAR(due_date) = YEAR(CURDATE())";
+  switch (filter) {
+    case "weekly":
+      condition = "WEEK(created_at) = WEEK(CURDATE())";
+      break;
+    case "yearly":
+      condition = "YEAR(created_at) = YEAR(CURDATE())";
+      break;
+    case "pending":
+      condition = "status = 'Pending'";
+      break;
+    case "ongoing":
+      condition = "status = 'Ongoing'";
+      break;
+    case "completed":
+      condition = "status = 'Completed'";
+      break;
+    default:
+      condition = "1=1"; // No filter, fetch all projects
   }
+  const sql = `SELECT COUNT(*) AS totalTasks FROM tasks WHERE ${condition}`;
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.status(200).json(result[0]);
+  });
+});
+app.get("/appointmentsDashboard/stats", (req, res) => {
+  const { filter } = req.query;
+  let condition = "";
 
-  const statusCondition = status ? `AND status = '${status}'` : "";
-  const sql = `SELECT COUNT(*) AS total FROM tasks WHERE ${timeCondition} ${statusCondition}`;
+  switch (filter) {
+    case "weekly":
+      condition = "WEEK(STR_TO_DATE(date, '%Y-%m-%d')) = WEEK(CURDATE())";
+      break;
+    case "yearly":
+      condition = "YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = YEAR(CURDATE())";
+      break;
+    default:
+      condition = "1=1"; 
+  }
+  const sql = `
+    SELECT 
+      COUNT(*) AS totalAppointments, 
+      (SELECT COUNT(*) FROM appointments 
+       WHERE STR_TO_DATE(date, '%Y-%m-%d') >= CURDATE()) AS totalUpcomingAppointments
+    FROM appointments 
+    WHERE ${condition}
+  `;
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error("Error fetching appointment stats:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch stats", error: err });
+    }
+    res.status(200).json(result[0]);
+  });
+});
+app.get("/appointmentsDashboard/upcoming", (req, res) => {
+  const sql = `
+    SELECT * 
+    FROM appointments 
+    WHERE STR_TO_DATE(date, '%Y-%m-%d') >= CURDATE()
+    ORDER BY STR_TO_DATE(date, '%Y-%m-%d') ASC
+  `;
 
   db.query(sql, (err, result) => {
     if (err) {
-      console.error("Error fetching tasks count:", err);
+      console.error("Error fetching upcoming appointments:", err);
       return res
         .status(500)
-        .json({ message: "Error retrieving tasks count", error: err });
+        .json({ message: "Failed to fetch upcoming appointments", error: err });
     }
-    res.status(200).json({ total: result[0].total });
+    res.status(200).json(result);
   });
 });
+app.get("/projectDashboard/revenue", (req, res) => {
+  const { filter } = req.query;
+  let condition = "";
 
-app.get("/appointmentsDashboard/count", (req, res) => {
-  const { filter, status } = req.query;
-
-  let dateCondition = "";
-  if (filter === "weekly") {
-    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 7 DAY)";
-  } else if (filter === "monthly") {
-    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 1 MONTH)";
-  } else if (filter === "yearly") {
-    dateCondition = "AND DATE(date) >= DATE(NOW() - INTERVAL 1 YEAR)";
+  switch (filter) {
+    case "weekly":
+      condition = "WEEK(paymentDate) = WEEK(CURDATE())";
+      break;
+    case "yearly":
+      condition = "YEAR(paymentDate) = YEAR(CURDATE())";
+      break;
+    case "all":
+      condition = "1=1"; // No filter, fetch all projects
+      break;
+    default:
+      condition = "1=1"; // No filter, fetch all projects
   }
 
-  let statusCondition = "";
-  if (status === "upcoming") {
-    statusCondition = "AND DATE(date) >= CURDATE()";
-  }
-  const sql = `
-  SELECT COUNT(*) AS total 
-  FROM appointments 
-  WHERE 1=1 ${dateCondition} ${statusCondition}
-`;
-
-  db.query(sql, (err, data) => {
+  const sql = `SELECT SUM(contractPrice) AS totalRevenues FROM project WHERE paymentStatus = 'Paid' AND ${condition} AND isDeleted = 0`;
+  db.query(sql, (err, result) => {
     if (err) return res.status(500).json(err);
-    return res.json(data[0]); // Respond with the count
+    res.status(200).json(result[0]);
   });
 });
+app.get("/latest-activity", (req, res) => {
+  const queries = {
+    client: "SELECT * FROM client ORDER BY created_at DESC LIMIT 1",
+    project: "SELECT * FROM project ORDER BY created_at DESC LIMIT 1",
+    payment: "SELECT * FROM payments ORDER BY created_at DESC LIMIT 1",
+    appointment: "SELECT * FROM appointments ORDER BY created_at DESC LIMIT 1",
+    review: "SELECT * FROM reviews ORDER BY created_at DESC LIMIT 1",
+  };
+
+  const results = {};
+  const errors = [];
+
+  const keys = Object.keys(queries);
+  let completedQueries = 0;
+
+  keys.forEach((key) => {
+    db.query(queries[key], (err, data) => {
+      completedQueries++;
+      if (err) {
+        errors.push({ [key]: err.message });
+      } else {
+        results[key] = data[0] || null; // If no record exists, return null
+      }
+
+      // Send the response when all queries are complete
+      if (completedQueries === keys.length) {
+        if (errors.length > 0) {
+          return res.status(500).json({ errors, results });
+        }
+        return res.status(200).json(results);
+      }
+    });
+  });
+});
+app.get("/todaysAppointments", (req, res) => {
+  const { date } = req.query;
+  let sql = `SELECT * FROM appointments`;
+
+  if (date) {
+    sql += ` WHERE DATE(date) = ?`; // Filter by the given date
+  }
+
+  db.query(sql, [date], (err, data) => {
+    if (err) {
+      console.error("Error fetching appointments:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch appointments", error: err });
+    }
+    return res.json(data);
+  });
+});
+app.get("/todaysTasks", (req, res) => {
+  const { due_date } = req.query;
+  let sql = `SELECT * FROM tasks`;
+
+  if (due_date) {
+    sql += ` WHERE DATE(due_date) = ?`; // Filter by the given date
+  }
+
+  db.query(sql, [due_date], (err, data) => {
+    if (err) {
+      console.error("Error fetching tasks:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch tasks", error: err });
+    }
+    return res.json(data);
+  });
+});
+
+
 
 //REPORTS TAB
 // Fetch client count per month

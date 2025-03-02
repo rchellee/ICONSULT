@@ -35,7 +35,9 @@ const FilesTab = ({ projectId }) => {
         if (clientIds.length > 0) {
           const uniqueClientIds = [...new Set(clientIds)];
           const clientNamePromises = uniqueClientIds.map((clientId) =>
-            fetch(`http://localhost:8081/client/${clientId}`)
+            fetch(
+              `http://localhost:8081/client/${clientId}`
+            )
               .then((res) => res.json())
               .then((client) => ({
                 id: clientId,
@@ -71,10 +73,13 @@ const FilesTab = ({ projectId }) => {
     setUploading(true);
 
     try {
-      const response = await fetch("http://localhost:8081/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://localhost:8081/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const result = await response.json();
       if (response.ok) {
@@ -90,9 +95,12 @@ const FilesTab = ({ projectId }) => {
   };
   const handleDelete = async (fileId) => {
     try {
-      const response = await fetch(`http://localhost:8081/files/${fileId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:8081/files/${fileId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
@@ -219,7 +227,7 @@ const FilesTab = ({ projectId }) => {
                 </tr>
               </thead>
               <tbody>
-              {sortedFiles.map((file) => (
+                {sortedFiles.map((file) => (
                   <tr key={file.id}>
                     <td className="truncate-text">
                       <a

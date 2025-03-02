@@ -1,8 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { MdCancel } from "react-icons/md"; // Import cancel icon
-import { LuLayoutGrid } from "react-icons/lu"; // Import Grid icon
-import { FaList } from "react-icons/fa"; // Import List icon
-import GridView from "./GridView"; // Import GridView component
 import ListView from "./ListView"; // Import ListView component
 import "./ListView.css";
 
@@ -13,11 +9,16 @@ const ProjectList = ({
   formatDate,
   handleEdit,
   handleDelete,
-  onCancel,
-  onEdit,
   toggleDropdown,
   activeDropdown,
 }) => {
+  const [projectName, setProjectName] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [downpayment, setDownpayment] = useState("");
 
   useEffect(() => {
     setStatuses(
@@ -45,8 +46,7 @@ const ProjectList = ({
       }, {})
     );
   }, [filteredProjects]);
-  
-  
+
   const [statuses, setStatuses] = useState(
     filteredProjects.reduce((acc, project) => {
       acc[project.id] = project.status;
@@ -77,7 +77,6 @@ const ProjectList = ({
   const [editingProjectId, setEditingProjectId] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [isGridView, setIsGridView] = useState(false);
 
   const handleStatusChange = (projectId, newStatus) => {
     setStatuses((prevStatuses) => ({
@@ -85,13 +84,16 @@ const ProjectList = ({
       [projectId]: newStatus,
     }));
 
-    fetch(`http://localhost:8081/projectStat/${projectId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: newStatus }),
-    })
+    fetch(
+      `http://localhost:8081/projectStat/${projectId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      }
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to update status");
@@ -183,16 +185,26 @@ const ProjectList = ({
   const handlePaymentStatusChange = (projectId, newPaymentStatus) => {
     const currentStatus = paymentstatuses[projectId];
 
+    // Get the current date if the new status is "Paid"
+    const currentDate =
+      newPaymentStatus === "Paid" ? new Date().toISOString() : null;
+
     setpaymentStatuses((prevpaymentStatuses) => ({
       ...prevpaymentStatuses,
       [projectId]: newPaymentStatus,
     }));
 
-    fetch(`http://localhost:8081/paymentStat/${projectId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentStatus: newPaymentStatus }),
-    })
+    fetch(
+      `http://localhost:8081/paymentStat/${projectId}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentStatus: newPaymentStatus,
+          paymentDate: currentDate, // Send the date when payment status is updated to "Paid"
+        }),
+      }
+    )
       .then((response) => {
         if (!response.ok) throw new Error("Failed to update payment status");
         return response.json();
@@ -242,23 +254,14 @@ const ProjectList = ({
   };
 
   const statusColors = {
-    Ongoing: "pink",
-    Pending: "red",
-    Completed: "#FFCD90", // Default color for Ongoing
+    Ongoing: "#F06292",
+    Pending: "rgb(252, 118, 118)",
+    Completed: "#3b4f67", // Default color for Ongoing
   };
   const paymentstatusColors = {
-    Paid: "#FFCD90",
-    "Not Paid": "red",
-    "Partial Payment": "pink",
-  };
-
-  // Toggle between grid and list view
-  const toggleLayout = (layout) => {
-    if (layout === "grid") {
-      setIsGridView(true);
-    } else {
-      setIsGridView(false);
-    }
+    Paid: "#3b4f67",
+    "Not Paid": "rgb(252, 118, 118)",
+    "Partial Payment": "#74C69D",
   };
 
   const handleProjectClick = (projectId) => {
@@ -268,50 +271,30 @@ const ProjectList = ({
 
   return (
     <div className="project-list-wrapper">
-      <div className="layout-toggle-icons">
-        <LuLayoutGrid onClick={() => toggleLayout("list")} /> {/* grid */}
-        {/* <FaList onClick={() => toggleLayout("grid")} />  */}
-      </div>
-
       <div className="project-list">
-        {/* Conditionally render grid or table layout */}
-        {isGridView ? (
-          <GridView
-            filteredProjects={filteredProjects}
-            formatDate={formatDate}
-            statuses={statuses}
-            statusColors={statusColors}
-            handleStatusChange={handleStatusChange}
-            startDates={startDates}
-            finishDates={finishDates}
-            handleStartDateChange={handleStartDateChange}
-            handleFinishDateChange={handleFinishDateChange}
-          />
-        ) : (
-          <ListView
-            projects={projects}
-            filteredProjects={filteredProjects}
-            setFilteredProjects={setFilteredProjects}
-            formatDate={formatDate}
-            statuses={statuses}
-            statusColors={statusColors}
-            handleStatusChange={handleStatusChange}
-            paymentstatuses={paymentstatuses}
-            paymentstatusColors={paymentstatusColors}
-            handlePaymentStatusChange={handlePaymentStatusChange}
-            startDates={startDates}
-            finishDates={finishDates}
-            handleStartDateChange={handleStartDateChange}
-            handleFinishDateChange={handleFinishDateChange}
-            tasksInfo={tasksInfo}
-            totalTasks={totalTasks}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            onProjectClick={handleProjectClick}
-            activeDropdown={activeDropdown}
-            toggleDropdown={toggleDropdown}
-          />
-        )}
+        <ListView
+          projects={projects}
+          filteredProjects={filteredProjects}
+          setFilteredProjects={setFilteredProjects}
+          formatDate={formatDate}
+          statuses={statuses}
+          statusColors={statusColors}
+          handleStatusChange={handleStatusChange}
+          paymentstatuses={paymentstatuses}
+          paymentstatusColors={paymentstatusColors}
+          handlePaymentStatusChange={handlePaymentStatusChange}
+          startDates={startDates}
+          finishDates={finishDates}
+          handleStartDateChange={handleStartDateChange}
+          handleFinishDateChange={handleFinishDateChange}
+          tasksInfo={tasksInfo}
+          totalTasks={totalTasks}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          onProjectClick={handleProjectClick}
+          activeDropdown={activeDropdown}
+          toggleDropdown={toggleDropdown}
+        />
       </div>
     </div>
   );

@@ -254,16 +254,92 @@
   color: white;
 }
 
-.status-pending {
-   color: white;
-   background-color: #3a0971;
-}
+
 
 .paid-status {
   background-color: #3b4f67; /* Desired color for Paid */
   color: white; /* Optional: Ensure text contrast */
 }
 
+
+
+
+
+
+.sorting-button {
+  display: flex;
+  gap: 10px;
+  align-items: center; /* Ensures all buttons are aligned at the same height */
+  padding: 10px;
+  justify-content: flex-end;
+}
+
+.sorting-button-container,
+.payment-button-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Ensures button stays centered */
+  height: 40px; /* Forces all containers to have the same height */
+}
+
+.action-button {
+  background-color: transparent;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease-in-out;
+  min-width: 120px;
+  height: 40px; /* Ensures all buttons are the same height */
+  display: flex;
+  justify-content: center; /* Centers text horizontally */
+  align-items: center; /* Centers text vertically */
+  text-align: center;
+}
+
+.action-button:hover {
+  background-color: #ccc;
+}
+
+/* Dropdowns stay below the buttons and do not affect alignment */
+.sorting-dropdown,
+.payment-dropdown {
+  position: absolute;
+  top: 100%; /* Ensures dropdown appears below the button */
+  left: 0;
+  background: white;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  padding: 5px 0;
+}
+
+.sorting-dropdown button,
+.payment-dropdown button {
+  background: none;
+  border: none;
+  padding: 8px;
+  text-align: left; 
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+  color: #333;
+
+}
+
+.sorting-dropdown button:hover,
+.payment-dropdown button:hover {
+  background-color: #f1f1f1;
+}
 
 
 

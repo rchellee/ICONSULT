@@ -27,6 +27,8 @@ const ProjectForm = ({
   const [feeWarning, setFeeWarning] = useState(false);
   const [validationError, setValidationError] = useState("");
 
+  const currentDate = new Date().toLocaleDateString("en-US");
+
   // Handle downpayment input change (only numeric input allowed)
   const handleDownpaymentChange = (e) => {
     const value = e.target.value;
@@ -73,6 +75,8 @@ const ProjectForm = ({
         <h2 className="form-modal-title">
           {editingProjectId ? "Edit Project" : "Create Project"}
         </h2>
+
+        <p className="date-created">Date created: {currentDate}</p>
 
         <div className="form-project-details">
           <div className="form-modal-field">
