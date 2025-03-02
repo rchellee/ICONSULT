@@ -2228,7 +2228,7 @@ app.get("/appointmentsDashboard/stats", (req, res) => {
       condition = "YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = YEAR(CURDATE())";
       break;
     default:
-      condition = "1=1";
+      condition = "1=1"; 
   }
   const sql = `
     SELECT 
@@ -2361,6 +2361,8 @@ app.get("/todaysTasks", (req, res) => {
   });
 });
 
+
+
 //REPORTS TAB
 //apointments
 app.get("/appointmentReports", (req, res) => {
@@ -2389,6 +2391,15 @@ app.get("/appointmentReports", (req, res) => {
         .status(500)
         .json({ message: "Failed to fetch appointments", error: err });
     }
+    return res.json(data);
+  });
+});
+//clients
+app.get("/clientsReports", (req, res) => {
+  const year = req.query.year || new Date().getFullYear();
+  const sql = "SELECT * FROM client WHERE YEAR(created_at) = ?";
+  db.query(sql, [year], (err, data) => {
+    if (err) return res.json(err);
     return res.json(data);
   });
 });
