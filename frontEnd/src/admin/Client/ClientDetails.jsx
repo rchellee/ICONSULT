@@ -1,91 +1,77 @@
 import React, { useState, useEffect } from "react";
-import './client.css';
+import "./client-admin.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import { format } from "date-fns";
 
-const ClientDetails = ({ client, goBack, updateClient }) => {
+const ClientDetails = ({
+  client,
+  showToast,
+  hideToast,
+  goBack,
+  updateClient,
+}) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...client });
   const [appointments, setAppointments] = useState([]);
   const [projects, setProjects] = useState([]);
   const [files, setFiles] = useState([]);
-  const [sortOrder, setSortOrder] = useState({ field: null, order: "asc" });
-  const [filter, setFilter] = useState({ month: "", year: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  // Example data
   useEffect(() => {
-    const sampleAppointments = [
-      { date: "2025-01-25", details: "Initial consultation", status: "Completed", type: "Consultation" },
-      { date: "2025-12-21", details: "Follow-up meeting", status: "Scheduled", type: "Meeting" },
-    ];
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/appointments-details/${client.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setAppointments(data);
+        } else {
+          console.error("Failed to fetch appointments");
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
 
-    const sampleProjects = [
-      { projectName: "Project A", startDate: "2025-01-01", endDate: "2025-06-01", status: "In Progress" },
-      { projectName: "Project B", startDate: "2025-02-01", endDate: "2025-07-01", status: "Completed" },
-    ];
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/project-client/${client.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setProjects(data);
+        } else {
+          console.error("Failed to fetch projects");
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
 
-    const sampleFiles = [
-      { documentName: "Contract.pdf", uploadedDate: "2025-01-01", type: "PDF" },
-      { documentName: "Invoice.xlsx", uploadedDate: "2025-01-05", type: "Excel" },
-    ];
+    const fetchUploads = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/upload/${client.id}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setFiles(data);
+        } else {
+          console.error("Failed to fetch upload");
+        }
+      } catch (error) {
+        console.error("Error fetching upload:", error);
+      }
+    };
 
-    setAppointments(sampleAppointments);
-    setProjects(sampleProjects);
-    setFiles(sampleFiles);
-  }, []);
-
-  const sortData = (data, field) => {
-    const order = sortOrder.field === field && sortOrder.order === "asc" ? "desc" : "asc";
-    const sortedData = [...data].sort((a, b) => {
-      if (a[field] < b[field]) return order === "asc" ? -1 : 1;
-      if (a[field] > b[field]) return order === "asc" ? 1 : -1;
-      return 0;
-    });
-    setSortOrder({ field, order });
-    return sortedData;
-  };
-
-  const handleSort = (tab, field) => {
-    if (tab === "appointments") setAppointments(sortData(appointments, field));
-    if (tab === "projects") setProjects(sortData(projects, field));
-    if (tab === "files") setFiles(sortData(files, field));
-  };
-
-  const renderSortIcon = (field) => {
-    if (sortOrder.field === field) {
-      return sortOrder.order === "asc" ? "▲" : "▼";
-    }
-    return "⇅";
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilter((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const filterDataByDate = (data, dateField) => {
-    if (!filter.month && !filter.year) {
-      return data; // Show all data if no filter is selected
-    }
-
-    return data.filter((item) => {
-      const itemDate = new Date(item[dateField]);
-      const filterMonth = filter.month ? parseInt(filter.month) : null;
-      const filterYear = filter.year ? parseInt(filter.year) : null;
-  
-      return (
-        (!filterMonth || itemDate.getMonth() + 1 === filterMonth) &&
-        (!filterYear || itemDate.getFullYear() === filterYear)
-      );
-    });
-  };
-
-  const filteredAppointments = filterDataByDate(appointments, "date");
-  const filteredProjects = filterDataByDate(projects, "startDate");
-  const filteredFiles = filterDataByDate(files, "uploadedDate");
-
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
-  };
+    fetchAppointments();
+    fetchProjects();
+    fetchUploads();
+  }, [client.id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,19 +81,29 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
     });
   };
 
+  const toggleEdit = () => {
+    setIsEditing(!isEditing);
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8081/client/${client.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `http://localhost:8081/client/${client.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         const updatedClient = await response.json();
-        updateClient(updatedClient);
+        showToast();
         setIsEditing(false);
+        goBack();
+        updateClient(updatedClient);
+        hideToast();
       } else {
         console.error("Error updating client:", await response.text());
       }
@@ -123,17 +119,23 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
   return (
     <div className="client-details">
       <div className="tabs">
-        <button onClick={() => setActiveTab("overview")} className={activeTab === "overview" ? "active" : ""}>
+        <button
+          className={activeTab === "overview" ? "active" : ""}
+          onClick={() => handleTabClick("overview")}
+        >
           Overview
         </button>
-        <button onClick={() => setActiveTab("appointments")} className={activeTab === "appointments" ? "active" : ""}>
+        <button
+          className={activeTab === "appointments" ? "active" : ""}
+          onClick={() => handleTabClick("appointments")}
+        >
           Appointments
         </button>
-        <button onClick={() => setActiveTab("projects")} className={activeTab === "projects" ? "active" : ""}>
+        <button
+          className={activeTab === "projects" ? "active" : ""}
+          onClick={() => handleTabClick("projects")}
+        >
           Projects
-        </button>
-        <button onClick={() => setActiveTab("files")} className={activeTab === "files" ? "active" : ""}>
-          Files
         </button>
       </div>
 
@@ -142,7 +144,6 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
           <>
             {isEditing ? (
               <form onSubmit={handleSave} className="overview-form-grid">
-                {/* Name Section */}
                 <div className="row">
                   <div className="input-group input-group-icon">
                     <input
@@ -153,7 +154,9 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                       placeholder="First Name"
                       required
                     />
-                    <div className="input-icon"><i className="fa fa-user"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-user"></i>
+                    </div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
@@ -164,17 +167,21 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                       placeholder="Last Name"
                       required
                     />
-                    <div className="input-icon"><i className="fa fa-user"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-user"></i>
+                    </div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
                       type="tel"
-                      name="mobileNumber"
-                      value={formData.mobileNumber}
+                      name="mobile_number"
+                      value={formData.mobile_number}
                       onChange={handleChange}
                       placeholder="Mobile Number"
                     />
-                    <div className="input-icon"><i className="fa fa-phone"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-phone"></i>
+                    </div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
@@ -184,7 +191,9 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                       value={formData.companyContact || ""}
                       onChange={handleChange}
                     />
-                    <div className="input-icon"><i className="fa fa-phone"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-phone"></i>
+                    </div>
                   </div>
                 </div>
                 {/* Contact Section */}
@@ -193,12 +202,14 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                     <input
                       type="email"
                       name="email"
-                      value={formData.email}
+                      value={formData.email_add}
                       onChange={handleChange}
                       placeholder="Email Address"
                       required
                     />
-                    <div className="input-icon"><i className="fa fa-envelope"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-envelope"></i>
+                    </div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
@@ -208,7 +219,9 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                       onChange={handleChange}
                       placeholder="Address"
                     />
-                    <div className="input-icon"><i className="fa fa-map-marker-alt"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-map-marker-alt"></i>
+                    </div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
@@ -218,141 +231,282 @@ const ClientDetails = ({ client, goBack, updateClient }) => {
                       onChange={handleChange}
                       placeholder="Company Name"
                     />
-                    <div className="input-icon"><i className="fa fa-building"></i></div>
+                    <div className="input-icon">
+                      <i className="fa fa-building"></i>
+                    </div>
                   </div>
                   <div className="input-group input-group-icon">
                     <input
                       type="text"
-                      name="positionInCompany"
-                      value={formData.positionInCompany}
+                      name="companyPosition"
+                      value={formData.companyPosition}
                       onChange={handleChange}
                       placeholder="Position in Company"
                     />
-                    <div className="input-icon"><i className="fa fa-briefcase"></i></div>
-                  </div>
-                  <div className="overview-edit-button-group">
-                  <button type="submit" className="btn-save"><i className="fas fa-save"></i> Save Changes</button>
-                  <button type="button" className="btn-cancel" onClick={toggleEdit}><i className="fas fa-times"></i> Cancel</button>
-                </div>
-                </div>
 
+                    <div className="input-icon">
+                      <i className="fa fa-briefcase"></i>
+                    </div>
+                  </div>
+                </div>
                 {/* Save and Cancel Buttons */}
-            
+                <div className="buttonClient-group">
+                  <button type="submit" className="btn-save">
+                    <i className="fas fa-save"></i> Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={toggleEdit}
+                  >
+                    <i className="fas fa-times"></i> Cancel
+                  </button>
+                </div>
               </form>
             ) : (
               <div className="client-readonly grid">
-                <p><strong>First Name:</strong> {client.firstName}</p>
-                <p><strong>Last Name:</strong> {client.lastName}</p>
-                <p><strong>Email Address:</strong> {client.email}</p>
-                <p><strong>Age:</strong> {client.age}</p>
-                <p><strong>Nationality:</strong> {client.nationality}</p>
-                <p><strong>Mobile Number:</strong> {client.mobileNumber}</p>
-                <p><strong>Address:</strong> {client.address}</p>
-                <p><strong>City:</strong> {client.city}</p>
-                <p><strong>Postal Code:</strong> {client.postalCode}</p>
-                <p><strong>Company Name:</strong> {client.companyName}</p>
-                <p><strong>Position in Company:</strong> {client.positionInCompany}</p>
-                <p><strong>Company Number:</strong> {client.companyContactNumber}</p>
-                <p><strong>Birthdate:</strong> {client.birthdate}</p>
-                <p><strong>Gender:</strong> {client.gender}</p>
+                <p>
+                  <i className="fas fa-user"></i> <strong>First Name:</strong>{" "}
+                  {client.firstName}
+                </p>
+                <p>
+                  <i className="fas fa-user"></i> <strong>Last Name:</strong>{" "}
+                  {client.lastName}
+                </p>
+                <p>
+                  <i className="fas fa-envelope"></i>{" "}
+                  <strong>Email Address:</strong> {client.email_add}
+                </p>
+                <p>
+                  <i className="fa fa-calendar"></i>
+                  <strong>Age:</strong> {client.age}
+                </p>
+                <p>
+                  <i className="fas fa-flag"></i> <strong>Nationality:</strong>{" "}
+                  {client.nationality}
+                </p>
+                <p>
+                  <i className="fas fa-phone"></i>{" "}
+                  <strong>Mobile Number:</strong> {client.mobile_number}
+                </p>
+                <p>
+                  <i className="fas fa-map-marker-alt"></i>{" "}
+                  <strong>Address:</strong> {client.address}
+                </p>
+                <p>
+                  <i className="fas fa-city"></i> <strong>City:</strong>{" "}
+                  {client.city}
+                </p>
+                <p>
+                  <i className="fas fa-mail-bulk"></i>{" "}
+                  <strong>Postal Code:</strong> {client.postalCode}
+                </p>
+                <p>
+                  <i className="fas fa-building"></i>{" "}
+                  <strong>Company Name:</strong> {client.companyName}
+                </p>
+                <p>
+                  <i className="fas fa-user-tie"></i>{" "}
+                  <strong>Position in Company:</strong> {client.companyPosition}
+                </p>
+                <p>
+                  <i className="fas fa-phone-alt"></i>{" "}
+                  <strong>Company Number:</strong> {client.companyContact}
+                </p>
+                <p>
+                  <i className="fas fa-calendar"></i>{" "}
+                  <strong>Birthdate:</strong>{" "}
+                  {format(new Date(client.birthday), "MMMM dd, yyyy")}
+                </p>
+                <p>
+                  <i className="fas fa-venus-mars"></i> <strong>Gender:</strong>{" "}
+                  {client.gender}
+                </p>
 
-                <div className="client-readonly-button-group">
-                  <button className="btn-edit" onClick={toggleEdit}>Edit</button>
-                  <button className="btn-back" onClick={goBack}>Back</button>
+                <div className="buttonClient-group">
+                  <button className="btn-edit" onClick={toggleEdit}>
+                    {" "}
+                    <i className="fas fa-edit"></i>Edit
+                  </button>
+                  <button className="btn-back" onClick={goBack}>
+                    <i className="fas fa-arrow-left"></i>Back
+                  </button>
                 </div>
               </div>
             )}
           </>
         )}
 
-        {/* Filter Section for Appointments, Projects, and Files Tabs */}
-        {(activeTab === "appointments" || activeTab === "projects" || activeTab === "files") && (
-          <div className="client-filter-section">
-            <select name="month" value={filter.month} onChange={handleFilterChange}>
-              <option value="">Months</option>
-              {[...Array(12).keys()].map((m) => (
-                <option key={m + 1} value={m + 1}>
-                  {new Date(0, m).toLocaleString("default", { month: "long" })}
-                </option>
-              ))}
-            </select>
-            <select name="year" value={filter.year} onChange={handleFilterChange}>
-              <option value="">Years</option>
-              {[2025, 2024, 2023].map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+        {activeTab === "appointments" && (
+          <div className="client-details-table">
+            {activeTab === "appointments" && (
+              <div className="client-details-table">
+                {activeTab === "appointments" && (
+                  <div className="client-details-table">
+                    {appointments && appointments.length > 0 ? (
+                      <>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Time</th>
+                              <th>Consultation Type</th>
+                              <th>Additional Info</th>
+                              <th>Platform</th>
+                              <th>Modified</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {appointments
+                              .slice(
+                                (currentPage - 1) * pageSize,
+                                currentPage * pageSize
+                              )
+                              .map((appointment, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    {format(
+                                      new Date(appointment.date),
+                                      "MMMM dd, yyyy"
+                                    )}
+                                  </td>
+                                  <td>{appointment.time}</td>
+                                  <td>{appointment.consultationType}</td>
+                                  <td>{appointment.additionalInfo}</td>
+                                  <td>{appointment.platform}</td>
+                                  <td>
+                                    {format(
+                                      new Date(appointment.created_at),
+                                      "MMMM dd, yyyy"
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+
+                        <div className="pagination-buttons">
+                          <button
+                            onClick={() =>
+                              setCurrentPage((prev) => Math.max(prev - 1, 1))
+                            }
+                            disabled={currentPage === 1}
+                          >
+                            &lt;
+                          </button>
+                          <span>
+                            {currentPage} -{" "}
+                            {Math.ceil(appointments.length / pageSize)}
+                          </span>
+                          <button
+                            onClick={() =>
+                              setCurrentPage((prev) =>
+                                Math.min(
+                                  prev + 1,
+                                  Math.ceil(appointments.length / pageSize)
+                                )
+                              )
+                            }
+                            disabled={
+                              currentPage ===
+                              Math.ceil(appointments.length / pageSize)
+                            }
+                          >
+                            &gt;
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p>No appointments available.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Appointments Tab */}
-        {activeTab === "appointments" && (
-          <table>
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("appointments", "date")}>Date {renderSortIcon("date")}</th>
-                <th>Details</th>
-                <th>Status</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAppointments.map((appointment, index) => (
-                <tr key={index}>
-                  <td>{appointment.date}</td>
-                  <td>{appointment.details}</td>
-                  <td>{appointment.status}</td>
-                  <td>{appointment.type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-
-        {/* Projects Tab */}
         {activeTab === "projects" && (
-          <table>
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("projects", "projectName")}>Project Name {renderSortIcon("projectName")}</th>
-                <th onClick={() => handleSort("projects", "startDate")}>Start Date {renderSortIcon("startDate")}</th>
-                <th onClick={() => handleSort("projects", "endDate")}>End Date {renderSortIcon("endDate")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProjects.map((project, index) => (
-                <tr key={index}>
-                  <td>{project.projectName}</td>
-                  <td>{project.startDate}</td>
-                  <td>{project.endDate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+          <div className="client-details-table">
+            {projects.length > 0 ? (
+              <>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Project Name</th>
+                      <th>Description</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Status</th>
+                      <th>Modified</th>
+                      <th>Contract Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projects
+                      .slice(
+                        (currentPage - 1) * pageSize,
+                        currentPage * pageSize
+                      )
+                      .map((project, index) => (
+                        <tr key={index}>
+                          <td>{project.projectName}</td>
+                          <td>{project.description}</td>
+                          <td>
+                            {format(
+                              new Date(project.startDate),
+                              "MMMM dd, yyyy"
+                            )}
+                          </td>
+                          <td>
+                            {format(new Date(project.endDate), "MMMM dd, yyyy")}
+                          </td>
+                          <td>{project.status}</td>
+                          <td>
+                            {format(
+                              new Date(project.created_at),
+                              "MMMM dd, yyyy"
+                            )}
+                          </td>
+                          <td>{project.contractPrice}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
 
-        {/* Files Tab */}
-        {activeTab === "files" && (
-          <table>
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("files", "documentName")}>Document Name {renderSortIcon("documentName")}</th>
-                <th onClick={() => handleSort("files", "uploadedDate")}>Uploaded Date {renderSortIcon("uploadedDate")}</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredFiles.map((file, index) => (
-                <tr key={index}>
-                  <td>{file.documentName}</td>
-                  <td>{file.uploadedDate}</td>
-                  <td>{file.type}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                <div className="pagination-buttons">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                    disabled={currentPage === 1}
+                  >
+                    &lt;
+                  </button>
+                  <span>
+                    {currentPage} - {Math.ceil(projects.length / pageSize)}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(
+                          prev + 1,
+                          Math.ceil(projects.length / pageSize)
+                        )
+                      )
+                    }
+                    disabled={
+                      currentPage === Math.ceil(projects.length / pageSize)
+                    }
+                  >
+                    &gt;
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>No projects available.</p>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -26,22 +26,21 @@
 }
 
 .scrollable-notifications {
-  max-height: 840px;
+  max-height: 670px;
   overflow-y: auto;
-  padding-right: 10px; 
+  padding-right: 10px;
   scrollbar-width: thin;
-  scrollbar-color: #0d4976 #9d8383; 
-  
+  scrollbar-color: gray #f2f2f2;
   opacity: 0.9;
 }
 
 .scrollable-notifications::-webkit-scrollbar {
-  width: 1px; 
+  width: 1px;
   opacity: 1;
 }
 
 .scrollable-notifications::-webkit-scrollbar-thumb {
-  background-color: #0d4976; 
+  background-color: #0d4976;
   border-radius: 2px;
   opacity: 1;
 }

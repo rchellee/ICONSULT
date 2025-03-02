@@ -4,6 +4,9 @@ import Sidebar from "../sidebar";
 import "./appointment.css";
 import DynamicCalendar from "./DynamicCalendar";
 import Topbar from "../Topbar";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 function AppointmentForm() {
   const navigate = useNavigate();
@@ -17,7 +20,7 @@ function AppointmentForm() {
     otherDetails: "",
     additionalInfo: "",
     platform: "",
-    reminder: "",
+    reminder: null,
     client: "",
   });
   const [availableDates, setAvailableDates] = useState({});
@@ -73,7 +76,6 @@ function AppointmentForm() {
       Object.entries(counts).forEach(([date, count]) => {
         availability[date] = count < 3 ? "available" : "fully-booked";
       });
-
       setAvailableDates(availability);
     };
 
@@ -97,18 +99,33 @@ function AppointmentForm() {
     "07:00 PM",
   ];
 
+  const handleDateChange = (selectedDate) => {
+    setFormData((prev) => ({
+      ...prev,
+      reminder: selectedDate,
+    }));
+  };
+
   const handleDateSelect = async (date) => {
     setSelectedDate(date);
     setFormData({ ...formData, date });
 
     try {
       const response = await fetch(
-        `http://localhost:8081/appointments/times?date=${date}`
+        `http://localhost:8081/appointments-client/times?date=${date}`
       );
       if (!response.ok) throw new Error("Failed to fetch booked times");
 
-      const { bookedTimes } = await response.json();
+      const { bookedTimes, start_time, end_time } = await response.json();
       const blockedTimes = new Set(bookedTimes);
+
+      const startIndex = times.indexOf(start_time);
+      const endIndex = times.indexOf(end_time);
+
+      const filteredTimes =
+        startIndex !== -1 && endIndex !== -1
+          ? times.slice(startIndex, endIndex + 1)
+          : times;
 
       bookedTimes.forEach((bookedTime) => {
         const bookedIndex = times.indexOf(bookedTime);
@@ -123,7 +140,7 @@ function AppointmentForm() {
         }
       });
 
-      const updatedTimes = times.map((time) => ({
+      const updatedTimes = filteredTimes.map((time) => ({
         time,
         isBooked: blockedTimes.has(time),
       }));
@@ -141,18 +158,26 @@ function AppointmentForm() {
   };
 
   const handleTimeSelect = (time) => {
-    setFormData({ ...formData, time });
+    setFormData((prevData) => ({ ...prevData, time }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const nextStep = () => {
+    if (availableDates[formData.date] === "fully-booked") {
+      alert("The selected date is fully booked. Please choose another date.");
+      return;
+    }
+
     const stepFields = {
       1: ["date", "time"],
-      2: ["consultationType"],
+      2: ["consultationType", "platform", "additionalInfo", "reminder"],
     };
 
     const missingFields = stepFields[currentStep].filter((field) => {
@@ -164,6 +189,12 @@ function AppointmentForm() {
       }
       return !formData[field];
     });
+    if (currentStep === 2) {
+      if (!formData.additionalInfo) {
+        alert("Please fill out all required fields before proceeding.");
+        return;
+      }
+    }
 
     if (missingFields.length > 0) {
       const missingFieldNames = missingFields
@@ -177,6 +208,10 @@ function AppointmentForm() {
               return "Consultation Type";
             case "otherDetails":
               return "Other Details";
+            case "platform":
+              return "Preferred Communication Platform";
+            case "reminder":
+              return "Reminder";
             default:
               return field;
           }
@@ -193,6 +228,9 @@ function AppointmentForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const reminderDateTime = formData.reminder
+      ? moment(formData.reminder).format("YYYY-MM-DD HH:mm:ss")
+      : null;
     const clientId = localStorage.getItem("clientId");
 
     if (!clientId) {
@@ -224,6 +262,8 @@ function AppointmentForm() {
       email: selectedClient.email_add,
       contact: selectedClient.mobile_number,
       companyName: selectedClient.companyName,
+      reminder: reminderDateTime,
+      postedBy: "client",
     };
 
     try {
@@ -268,18 +308,32 @@ function AppointmentForm() {
         <div className="content-calendar">
           {currentStep === 1 && (
             <div>
-              <h3>Step 1: Date and Time</h3>
+              <h4>
+                <em>Select date and time for consulation</em>
+              </h4>
               <div className="calendar-time-container">
                 <DynamicCalendar
                   availableDates={availableDates}
                   onDateSelect={handleDateSelect}
+                  disabledDates={(date) =>
+                    availableDates[date] === "fully-booked"
+                  }
                 />
                 {selectedDate && (
                   <div className="time-slots">
-                    <h4>Available Times for {selectedDate}</h4>
+                    <h5>
+                      <em>
+                        Available time for{" "}
+                        {new Date(selectedDate).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </em>
+                    </h5>
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod" className="required-label">
-                        Choose Time Format *
+                        AM/PM *
                       </label>
                       <select
                         id="timePeriod"
@@ -329,16 +383,19 @@ function AppointmentForm() {
                 onClick={nextStep}
                 disabled={!formData.date || !formData.time}
               >
-                Next
+                <i className="fas fa-arrow-right"> </i>Next
               </button>
             </div>
           )}
           {currentStep === 2 && (
-            <div>
-              <h3>Step 2: Consultation Details</h3>
+            <div className="step2form">
+              <h4>
+                <em>Consultation Details</em>
+              </h4>
+              <br />
               <div className="form-group">
                 <label htmlFor="consultationType" className="required-label">
-                  Consultation Type *
+                  Consultation Type
                 </label>
                 <select
                   id="consultationType"
@@ -349,7 +406,7 @@ function AppointmentForm() {
                     setFormData({
                       ...formData,
                       consultationType: selectedValue,
-                      otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
+                      otherDetails: selectedValue === "Others" ? "" : undefined,
                     });
                   }}
                   required
@@ -438,6 +495,7 @@ function AppointmentForm() {
                   name="additionalInfo"
                   value={formData.additionalInfo}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -464,31 +522,22 @@ function AppointmentForm() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="reminder">Remind Me:</label>
-                <select
-                  id="reminder"
-                  name="reminder"
-                  value={formData.reminder || ""}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    -- Select Reminder Time --
-                  </option>
-                  <option value="At Time of Event">At Time of Event</option>
-                  <option value="5 minutes before">5 minutes before</option>
-                  <option value="10 minutes before">10 minutes before</option>
-                  <option value="15 minutes before">15 minutes before</option>
-                  <option value="30 minutes before">30 minutes before</option>
-                  <option value="1 hour before">1 hour before</option>
-                  <option value="2 hours before">2 hours before</option>
-                  <option value="1 day before">1 day before</option>
-                  <option value="2 days before">2 days before</option>
-                  <option value="1 week before">1 week before</option>
-                </select>
+                <label htmlFor="reminder">Set Custom Reminder:</label>
+                <DatePicker
+                  selected={formData.reminder}
+                  onChange={handleDateChange}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                  placeholderText="Select Reminder Date and Time"
+                />
               </div>
 
-              <button onClick={prevStep}>Back</button>
+              <button onClick={prevStep}>
+                {" "}
+                <i className="fas fa-arrow-left"></i>Back
+              </button>
               <button
                 onClick={nextStep}
                 disabled={
@@ -497,35 +546,63 @@ function AppointmentForm() {
                     !formData.otherDetails)
                 }
               >
-                Next
+                <i className="fas fa-arrow-right"></i>Next
               </button>
             </div>
           )}
-
-          {/** Step 4: Confirmation **/}
           {currentStep === 3 && (
-            <div>
-              <h3>Step 3: Confirmation</h3>
-              <p>
-                <strong>Date:</strong> {formData.date}
-              </p>
-              <p>
-                <strong>Time:</strong> {formData.time}
-              </p>
-              <p>
-                <strong>Consultation Type:</strong> {formData.consultationType}
-              </p>
-              <p>
-                <strong>Additional Info:</strong> {formData.additionalInfo}
-              </p>
-              <p>
-                <strong>Consultation Mode:</strong> {formData.platform}
-              </p>
-              <p>
-                <strong>Reminder:</strong> {formData.reminder}
-              </p>
-              <button onClick={prevStep}>Back</button>
-              <button onClick={handleSubmit}>Submit</button>
+            <div className="confirmation-container">
+              <div className="confirmation-form">
+                <h4>
+                  <em>Confirm your appointment details</em>
+                </h4>
+                <br />
+                <p>
+                  <i className="fa fa-calendar-check"></i>
+                  <strong> Date:</strong> {formData.date}
+                </p>
+                <br />
+                <p>
+                  <i className="fa fa-clock"></i>
+                  <strong> Time:</strong> {formData.time}
+                </p>
+                <br />
+                <p>
+                  <i className="fa fa-envelope"></i>
+                  <strong> Consultation Type:</strong>{" "}
+                  {formData.consultationType}
+                </p>
+                <br />
+                <p>
+                  <i className="fas fa-mail-bulk"></i>
+                  <strong> Additional Info:</strong> {formData.additionalInfo}
+                </p>
+                <br />
+                <p>
+                  <i className="fa fa-desktop"></i>
+                  <strong> Consultation Mode:</strong> {formData.platform}
+                </p>
+                <br />
+                <p>
+                  <i className="fa fa-stop"></i>
+                  <strong> Reminder:</strong>{" "}
+                  {formData.reminder
+                    ? formData.reminder.toLocaleString()
+                    : "No reminder set"}
+                </p>
+
+                <br />
+                <div className="confirmation-buttons">
+                  <button onClick={prevStep}>
+                    {" "}
+                    <i className="fas fa-arrow-left"></i>Back
+                  </button>
+                  <button onClick={handleSubmit}>
+                    {" "}
+                    <i className="fas fa-edit"> </i>Submit
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

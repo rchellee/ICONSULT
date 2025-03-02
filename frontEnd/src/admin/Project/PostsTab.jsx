@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Import navigation icons
-import { IoAddCircle } from "react-icons/io5"; // Import IoAddCircle icon
-import { BsThreeDotsVertical } from "react-icons/bs"; // Import BsThreeDotsVertical icon
-import TaskForm from "./Taskform";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaArrowUp,
+  FaArrowDown,
+} from "react-icons/fa";
+import { IoAddCircle } from "react-icons/io5";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { BiSortAlt2 } from "react-icons/bi";
+import TaskForm from "./TaskForm";
 import MiscellaneousForm from "./MiscellaneousForm ";
 
 const PostsTab = ({
@@ -14,15 +21,107 @@ const PostsTab = ({
   handleCancelForm,
   setTasks,
 }) => {
-  const [selectedTaskName, setSelectedTaskName] = useState(null); // State for selected task
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null); // State for selected task details
+  const { searchTerm } = useContext(SearchContext);
+  const [filteredTasks, setFilteredTasks] = useState(tasks);
+  const [selectedTaskName, setSelectedTaskName] = useState(null);
+  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
   const [showMiscellaneousForm, setShowMiscellaneousForm] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const [showActions, setShowActions] = useState(null); // State for controlling visibility of action buttons
-  const [selectedTaskId, setSelectedTaskId] = useState(null); // To track which task is selected for actions
-
+  const [employeeMap, setEmployeeMap] = useState({});
+  const [showActions, setShowActions] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const [projectName, setProjectName] = useState("");
   const miscData = selectedTaskDetails?.miscellaneous || [];
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  const formatCurrency = (amount) => {
+    return `₱ ${amount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const handleSort = (field) => {
+    const newOrder =
+      sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    setSortField(field);
+    setSortOrder(newOrder);
+
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
+      if (field === "task_name" || field === "status") {
+        return newOrder === "asc"
+          ? a[field].localeCompare(b[field])
+          : b[field].localeCompare(a[field]);
+      } else if (field === "assigned") {
+        // Sorting by employee name
+        const nameA = employeeMap[a.employee] || "Unknown";
+        const nameB = employeeMap[b.employee] || "Unknown";
+        return newOrder === "asc"
+          ? nameA.localeCompare(nameB)
+          : nameB.localeCompare(nameA);
+      } else if (field === "due_date" || field === "actual_finish") {
+        const dateA = new Date(a[field]);
+        const dateB = new Date(b[field]);
+        return newOrder === "asc" ? dateA - dateB : dateB - dateA;
+      } else if (field === "miscellaneous_amount") {
+        // Sorting by total miscellaneous amount
+        const totalMiscA = parseMiscellaneous(a.miscellaneous).reduce(
+          (sum, item) => sum + (parseFloat(item.fee) || 0),
+          0
+        );
+
+        const totalMiscB = JSON.parse(b.miscellaneous || "[]").reduce(
+          (sum, item) => sum + (parseFloat(item.fee) || 0),
+          0
+        );
+        return newOrder === "asc"
+          ? totalMiscA - totalMiscB
+          : totalMiscB - totalMiscA;
+      } else {
+        return newOrder === "asc" ? a[field] - b[field] : b[field] - a[field];
+      }
+    });
+
+    setFilteredTasks(sortedTasks);
+  };
+
+  useEffect(() => {
+    const searchLower = searchTerm.toLowerCase();
+    const filtered = tasks.filter((task) => {
+      const employeeName = employeeMap[task.employee] || "";
+      const dueDate = formatDate(task.due_date) || "";
+      const actualFinish = task.actual_finish
+        ? formatDate(task.actual_finish)
+        : "";
+      const miscellaneousNames =
+        (task.miscellaneous && JSON.parse(task.miscellaneous)) || [];
+      const miscellaneousNamesString = miscellaneousNames
+        .map((item) => item.name)
+        .join(" ")
+        .toLowerCase();
+
+      return (
+        task.task_name.toLowerCase().includes(searchLower) ||
+        employeeName.toLowerCase().includes(searchLower) ||
+        task.status.toLowerCase().includes(searchLower) ||
+        dueDate.toLowerCase().includes(searchLower) ||
+        actualFinish.toLowerCase().includes(searchLower) ||
+        miscellaneousNamesString.includes(searchLower) ||
+        task.amount.toString().includes(searchLower)
+      );
+    });
+    setFilteredTasks(filtered);
+  }, [searchTerm, tasks, employeeMap]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -45,8 +144,52 @@ const PostsTab = ({
     }
   }, [projectId]);
 
-  const handleRowClick = async (task) => {
-    console.log("Row clicked:", task);
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch("http://localhost:8081/employees/id");
+        if (!response.ok) throw new Error("Failed to fetch employee names");
+        const data = await response.json();
+
+        // Create a map of employee IDs to full names
+        const map = data.reduce((acc, curr) => {
+          acc[curr.id] = curr.fullName;
+          return acc;
+        }, {});
+        setEmployeeMap(map);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/project/${projectId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch project details");
+        }
+        const data = await response.json();
+        console.log("Project Data:", data); // Add this log to inspect the response
+
+        // Adjust based on the response structure
+        setProjectName(data.projectName || "Unknown Project");
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+    };
+
+    if (projectId) {
+      fetchProjectDetails();
+    }
+  }, [projectId]);
+
+  const handleRowDoubleClick = async (task) => {
     setLoading(true);
     setSelectedTaskName(task.task_name);
     try {
@@ -54,7 +197,6 @@ const PostsTab = ({
       if (!response.ok) throw new Error("Failed to fetch task details");
       const taskDetails = await response.json();
       taskDetails.miscellaneous = parseMiscellaneous(taskDetails.miscellaneous);
-      handleEditTask(taskDetails);
       setSelectedTaskDetails(taskDetails);
     } catch (error) {
       console.error("Error fetching task details:", error);
@@ -65,7 +207,9 @@ const PostsTab = ({
 
   const parseMiscellaneous = (miscellaneous) => {
     try {
-      return JSON.parse(miscellaneous || "[]");
+      return Array.isArray(miscellaneous)
+        ? miscellaneous
+        : JSON.parse(miscellaneous || "[]");
     } catch (e) {
       console.error("Failed to parse miscellaneous:", e);
       return [];
@@ -91,47 +235,123 @@ const PostsTab = ({
       task.id === updatedTask.id ? updatedTask : task
     );
     setTasks(updatedTasks);
-    console.log("Updated selectedTaskDetails:", updatedTask);
   };
 
   const handleActionClick = (event, taskId) => {
-    event.stopPropagation(); // Prevent the click event from bubbling up
+    event.stopPropagation();
     if (showActions === taskId) {
-      setShowActions(null); // Close if the same task's action button is clicked
+      setShowActions(null);
     } else {
-      setShowActions(taskId); // Show the action menu for the clicked task
-      setSelectedTaskId(taskId); // Store the taskId for action
+      setShowActions(taskId);
+      setSelectedTaskId(taskId);
+      setShowActions(taskId === showActions ? null : taskId);
     }
   };
 
-  const handleEditTask = (task) => {
-    setSelectedTaskDetails(task);
-    setShowTaskForm(true);
+  const handleEdit = () => {
+    const taskToEdit = tasks.find((task) => task.id === selectedTaskId);
+    if (taskToEdit) {
+      setSelectedTaskDetails({
+        ...taskToEdit,
+        miscellaneous: parseMiscellaneous(taskToEdit.miscellaneous),
+      });
+      setShowTaskForm(true);
+    }
+    setShowActions(null);
   };
-  
 
-  const handleDelete = () => {
-    console.log("Delete task", selectedTaskId);
-    
-    setShowActions(null); 
+  const handleDelete = async () => {
+    if (!selectedTaskId) return;
+
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/tasks/${selectedTaskId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to delete task");
+        }
+
+        // Remove the deleted task from the state
+        const updatedTasks = tasks.filter((task) => task.id !== selectedTaskId);
+        setTasks(updatedTasks);
+        console.log("Task deleted successfully");
+      } catch (error) {
+        console.error("Error deleting task:", error);
+      }
+    }
+
+    setShowActions(null);
+  };
+
+  const handleStatusChange = async (taskId, newStatus) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, status: newStatus } : task
+    );
+    setTasks(updatedTasks);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8081/task/${taskId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update task status");
+      }
+      if (newStatus === "Completed") {
+        const updatedTask = updatedTasks.find((task) => task.id === taskId);
+        updatedTask.actual_finish = new Date().toISOString();
+        setTasks([...updatedTasks]);
+      }
+      console.log("Task status  and actual finish updated successfully");
+    } catch (error) {
+      console.error("Error updating task status:", error);
+
+      // Revert the status in the UI in case of an error
+      const revertedTasks = tasks.map((task) =>
+        task.id === taskId
+          ? { ...task, status: tasks.find((t) => t.id === taskId).status }
+          : task
+      );
+      setTasks(revertedTasks);
+    }
+  };
+
+  // Calculate the total amount of all tasks
+  const calculateTotalAmount = () => {
+    return tasks.reduce((total, task) => {
+      const taskAmount = parseFloat(task.amount) || 0;
+      return total + taskAmount;
+    }, 0);
   };
 
   return (
     <div className="posts-tab-content">
       <div className="project-posts">
-         
-        <div className="top-button">
-           {/*<button className="nav-button">
-            <FaChevronLeft />
-            <span className="tooltip">Go back</span>
-          </button>
-          <button className="nav-button">
-            <FaChevronRight />
-          </button>*/}
-        </div>   
+        <div className="total-amount-container">
+          <h2 className="project-name-container">{projectName}</h2>{" "}
+          <h4>
+            <span className="total-amount-number">
+              {formatCurrency(calculateTotalAmount())}
+            </span>
+          </h4>
+        </div>
 
         {selectedTaskDetails ? (
           <div className="task-details">
+            <br />
+            <br />
             <div className="task-detail-row">
               <div>
                 <strong>Task</strong>
@@ -140,10 +360,14 @@ const PostsTab = ({
                 <strong>Amount</strong>
               </div>
             </div>
+            <br />
             <div className="task-detail-row">
               <div>{selectedTaskDetails.task_name}</div>
-              <div className="align-right">{selectedTaskDetails.task_fee}</div>
+              <div className="align-right">
+                {formatCurrency(selectedTaskDetails.task_fee)}
+              </div>
             </div>
+            <br />
             <div className="task-detail-row">
               <div>
                 <strong>Miscellaneous</strong>
@@ -166,9 +390,10 @@ const PostsTab = ({
                       <p> {item.name}</p>
                     </div>
                     <div className="align-right amount-label">
-                      <p> {item.fee}</p>
+                      <p>{formatCurrency(parseFloat(item.fee) || 0)}</p>
                     </div>
                   </div>
+                  <br />
                 </div>
               ))
             ) : (
@@ -183,12 +408,13 @@ const PostsTab = ({
                 <strong>Total</strong>
               </div>
               <div className="align-right">
-                {calculateTotal(selectedTaskDetails)}
+                {calculateTotal(selectedTaskDetails) === 0
+                  ? "--"
+                  : formatCurrency(calculateTotal(selectedTaskDetails))}
               </div>
             </div>
           </div>
-        ) : // Task Table is displayed when no task is selected
-        tasks.length === 0 ? (
+        ) : tasks.length === 0 ? (
           <div className="no-task-container">
             <h2>No Task Created</h2>
           </div>
@@ -197,52 +423,123 @@ const PostsTab = ({
             <table className="task-table">
               <thead>
                 <tr>
-                  <th>Task</th>
-                  <th>Assigned</th>
-                  <th>Status</th>
-                  <th>Due Date</th>
-                  <th>Fee</th>
-                  <th>Miscellaneous</th>
-                  <th className="align-right">Amount</th>
-                  <th>Action</th>
+                  <th onClick={() => handleSort("task_name")}>
+                    Task{" "}
+                    {sortField === "task_name" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("assigned")}>
+                    Assigned{" "}
+                    {sortField === "assigned" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("status")}>
+                    Status{" "}
+                    {sortField === "status" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("due_date")}>
+                    Due Date{" "}
+                    {sortField === "due_date" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("actual_finish")}>
+                    Actual Finish{" "}
+                    {sortField === "actual_finish" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("task_fee")}>
+                    Fee{" "}
+                    {sortField === "task_fee" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("miscellaneous_amount")}>
+                    Miscellaneous Amount{" "}
+                    {sortField === "task_fee" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th onClick={() => handleSort("amount")}>
+                    Amount{" "}
+                    {sortField === "amount" &&
+                      (sortOrder === "asc" ? <FaArrowUp /> : <FaArrowDown />)}
+                  </th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task) => {
+                {filteredTasks.map((task) => {
                   const miscellaneousItems = JSON.parse(
                     task.miscellaneous || "[]"
                   );
-                  const miscellaneousDetails =
-                    Array.isArray(miscellaneousItems) &&
-                    miscellaneousItems.length > 0
-                      ? miscellaneousItems
-                          .map((item) => `${item.name}: ${item.fee}`)
-                          .join(", ")
-                      : "N/A";
+                  const totalMiscellaneousFee = miscellaneousItems.reduce(
+                    (total, item) => total + (parseFloat(item.fee) || 0),
+                    0
+                  );
 
                   return (
-                    <tr key={task.id} onClick={() => handleRowClick(task)}>
+                    <tr
+                      key={task.id}
+                      onDoubleClick={() => handleRowDoubleClick(task)} // Double-click event
+                    >
                       <td>{task.task_name}</td>
-                      <td>{task.employee}</td>
-                      <td>{task.status}</td>
-                      <td>{task.due_date}</td>
-                      <td>{task.task_fee}</td>
-                      <td>{miscellaneousDetails || "N/A"}</td>
-                      <td>{task.amount}</td>
-                      {/* Action Button */}
+                      <td>{employeeMap[task.employee] || "Unknown"}</td>
+                      <td>
+                        <select
+                          className={`status-dropdown ${task.status.toLowerCase()}`} // Add a class based on the task's status
+                          value={task.status || "Pending"} // Default status is "Pending"
+                          onChange={(e) =>
+                            handleStatusChange(task.id, e.target.value)
+                          }
+                        >
+                          <option
+                            value="Pending"
+                            disabled={
+                              task.status === "Ongoing" ||
+                              task.status === "Completed"
+                            }
+                          >
+                            Pending
+                          </option>
+                          <option
+                            value="Ongoing"
+                            disabled={task.status === "Completed"}
+                          >
+                            Ongoing
+                          </option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </td>
+                      <td>{formatDate(task.due_date)}</td>{" "}
+                      {/* Updated Due Date formatting */}
+                      <td>
+                        {task.actual_finish
+                          ? formatDate(task.actual_finish)
+                          : "--"}
+                      </td>
+                      <td>{formatCurrency(task.task_fee)}</td>
+                      <td>
+                        {totalMiscellaneousFee === 0
+                          ? "--"
+                          : formatCurrency(totalMiscellaneousFee)}
+                      </td>
+                      <td>{formatCurrency(task.amount)}</td>
                       <td
                         className="click-post-action"
-                        onClick={(e) => handleActionClick(e, task.id)} // Pass the event and task id
+                        onClick={(e) => handleActionClick(e, task.id)}
                       >
                         <BsThreeDotsVertical />
-                        {/* Floating Action Box */}
                         {showActions === task.id && (
                           <div className="post-click-popup">
-                            <button onClick={handleEditTask}>Edit</button>
+                            <button onClick={handleEdit}>Edit</button>
                             <button onClick={handleDelete}>Delete</button>
                           </div>
                         )}
                       </td>
+                      <td></td>
+                      <td></td>
                     </tr>
                   );
                 })}
@@ -251,17 +548,14 @@ const PostsTab = ({
           </div>
         )}
 
-        {/* Create Button */}
         <div className="create-button-container">
           <button
             className="create-task-button"
             onClick={() => setShowTaskForm(true)}
           >
-            +
+            <IoAddCircle className="create-task-icon" /> +
           </button>
         </div>
-
-        {/* Task Form */}
         {showTaskForm && (
           <TaskForm
             projectId={projectId}
@@ -272,12 +566,10 @@ const PostsTab = ({
           />
         )}
 
-        {/* Miscellaneous Form */}
-        {showMiscellaneousForm && (
+        {showMiscellaneousForm && selectedTaskDetails && (
           <MiscellaneousForm
-            taskDetails={selectedTaskDetails}
-            onSave={updateTaskWithMiscellaneous}
-            onCancel={() => setShowMiscellaneousForm(false)}
+            taskId={selectedTaskDetails.id}
+            updateTaskWithMiscellaneous={updateTaskWithMiscellaneous}
           />
         )}
       </div>

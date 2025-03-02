@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import { useParams, useLocation } from "react-router-dom";
 import {
   FaChevronLeft,
   FaChevronRight,
   FaPlus,
   FaArrowUp,
+  FaArrowDown,
   FaFolder,
   FaFile,
   FaHome,
@@ -22,16 +24,18 @@ function Tracking() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const clientId = queryParams.get("clientId");
-
   const [tasks, setTasks] = useState([]);
+  const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [folderName, setFolderName] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm } = useContext(SearchContext);
   const [folders, setFolders] = useState([]);
   const navigate = useNavigate();
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortField, setSortField] = useState("task_name");
 
   useEffect(() => {
     if (activeTab === "tasks") {
@@ -56,6 +60,60 @@ function Tracking() {
     if (tab === "overview") {
       setIsLoading(false);
     }
+  };
+
+  const handleSort = (field) => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc"; // Toggle order
+    setSortField(field);
+    setSortOrder(newSortOrder);
+    sortTasks(field, newSortOrder);
+  };
+
+  const sortTasks = (field, order) => {
+    const sortedTasks = [...tasks].sort((a, b) => {
+      if (field === "task_fee" || field === "amount") {
+        const feeA = parseFloat(a[field]) || 0;
+        const feeB = parseFloat(b[field]) || 0;
+        return order === "asc" ? feeA - feeB : feeB - feeA;
+      } else if (field === "due_date") {
+        const dateA = new Date(a[field]);
+        const dateB = new Date(b[field]);
+        return order === "asc" ? dateA - dateB : dateB - dateA;
+      } else if (field === "status") {
+        const statusOrder = ["Pending", "Ongoing", "Completed"];
+        return order === "asc"
+          ? statusOrder.indexOf(a[field]) - statusOrder.indexOf(b[field])
+          : statusOrder.indexOf(b[field]) - statusOrder.indexOf(a[field]);
+      } else {
+        if (a[field] < b[field]) return order === "asc" ? -1 : 1;
+        if (a[field] > b[field]) return order === "asc" ? 1 : -1;
+        return 0;
+      }
+    });
+    setTasks(sortedTasks);
+  };
+
+  useEffect(() => {
+    if (searchTerm.trim().length > 0) {
+      // Check if search term matches a task name or file name
+      const taskMatch = tasks.some((task) =>
+        task.task_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      const fileMatch = files.some((file) =>
+        file.original_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      if (taskMatch) {
+        setActiveTab("tasks");
+      } else if (fileMatch) {
+        setActiveTab("files");
+      }
+    }
+  }, [searchTerm, tasks, files]);
+
+  const formatDueDate = (date) => {
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(date).toLocaleDateString("en-US", options);
   };
 
   const handleNewFolderClick = () => {
@@ -84,46 +142,12 @@ function Tracking() {
     }
   };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleGoback = () => {
-    navigate("/clientproject");
-  };
-
   return (
     <div>
       <Topbar />
       <div className="client-task-page">
         <Sidebar />
-        <div className="content">
-          <div
-            className="home-icon-container"
-            onClick={() => navigate("/clientproject")}
-          >
-            <FaHome className="home-icon" />
-            <span className="tooltip">All Project</span>
-          </div>
-
-          {/* <div className="navigation-buttons">
-          <button className="nav-button" onClick={handleGoback}>
-            <FaChevronLeft />
-            <span className="tooltip">Go back</span>
-          </button>
-        </div> */}
-
-          {/* Search Box */}
-          <div className="search-box-container">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
-          </div>
-
+        <div className="content-tracking">
           {/* Tabs */}
           <div className="tabs">
             <button
@@ -163,12 +187,66 @@ function Tracking() {
                     <table className="task-table">
                       <thead>
                         <tr>
-                          <th>Task</th>
-                          <th>Fee</th>
-                          <th>Miscellaneous</th>
-                          <th>Due Date</th>
-                          <th>Status</th>
-                          <th>Amount</th>
+                          <th onClick={() => handleSort("task_name")}>
+                            Task{" "}
+                            {sortField === "task_name" && (
+                              <span>
+                                {sortOrder === "asc" ? (
+                                  <FaArrowUp />
+                                ) : (
+                                  <FaArrowDown />
+                                )}
+                              </span>
+                            )}
+                          </th>
+                          <th onClick={() => handleSort("task_fee")}>
+                            Fee{" "}
+                            {sortField === "task_fee" && (
+                              <span>
+                                {sortOrder === "asc" ? (
+                                  <FaArrowUp />
+                                ) : (
+                                  <FaArrowDown />
+                                )}
+                              </span>
+                            )}
+                          </th>
+                          <th onClick={() => handleSort("due_date")}>
+                            Due Date{" "}
+                            {sortField === "due_date" && (
+                              <span>
+                                {sortOrder === "asc" ? (
+                                  <FaArrowUp />
+                                ) : (
+                                  <FaArrowDown />
+                                )}
+                              </span>
+                            )}
+                          </th>
+                          <th onClick={() => handleSort("status")}>
+                            Status{" "}
+                            {sortField === "status" && (
+                              <span>
+                                {sortOrder === "asc" ? (
+                                  <FaArrowUp />
+                                ) : (
+                                  <FaArrowDown />
+                                )}
+                              </span>
+                            )}
+                          </th>
+                          <th onClick={() => handleSort("amount")}>
+                            Amount{" "}
+                            {sortField === "amount" && (
+                              <span>
+                                {sortOrder === "asc" ? (
+                                  <FaArrowUp />
+                                ) : (
+                                  <FaArrowDown />
+                                )}
+                              </span>
+                            )}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -184,8 +262,7 @@ function Tracking() {
                             <tr key={task.id}>
                               <td>{task.task_name}</td>
                               <td>{task.task_fee}</td>
-                              <td>{miscellaneousDetails || "N/A"}</td>
-                              <td>{task.due_date}</td>
+                              <td>{formatDueDate(task.due_date)}</td>
                               <td>{task.status}</td>
                               <td>{task.amount}</td>
                             </tr>

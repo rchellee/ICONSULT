@@ -2,7 +2,7 @@
   "scripts": {
     "start": "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && npm start",
-    "frontend": "cd frontend && npm run dev"
+    "frontend": "cd frontend && npm run build && serve -s build"
   },
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.17.0",
@@ -25,32 +25,40 @@
     "axios": "^1.7.7",
     "boxicons": "^2.1.4",
     "chart.js": "^4.4.7",
+    "concurrently": "^9.1.2",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "googleapis": "^144.0.0",
+    "jspdf": "^3.0.0",
+    "jspdf-autotable": "^5.0.2",
     "moment": "^2.30.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.5",
     "node-cron": "^3.0.3",
+    "node-schedule": "^2.1.1",
     "postcss": "^8.4.49",
     "qs": "^6.13.1",
     "react-big-calendar": "^1.15.0",
     "react-calendar": "^5.1.0",
     "react-chartjs-2": "^5.3.0",
+    "react-csv": "^2.2.2",
+    "react-datepicker": "^7.6.0",
     "react-icons": "^5.3.0",
     "react-native-gesture-handler": "^2.21.2",
     "react-native-modal": "^13.0.1",
     "react-native-vector-icons": "^10.2.0",
     "react-router-dom": "^6.26.1",
     "react-toastify": "^11.0.2",
+    "recharts": "^2.15.1",
+    "serve": "^14.2.4",
     "side-channel": "^1.1.0",
     "side-channel-list": "^1.0.0",
-    "tailwindcss": "^3.4.17"
+    "vis-timeline": "^7.7.3"
   },
   "devDependencies": {
     "@babel/runtime": "^7.26.0",
     "@vitejs/plugin-react": "^4.3.2",
-    "concurrently": "^9.1.0",
     "postcss-loader": "^8.1.1",
     "vite": "^5.4.11"
   }

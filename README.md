@@ -1,5 +1,11 @@
 iCONSULT: A BUSINESS CONSULTANCY INTEGRATED WITH PROJECT MANAGEMENT SYSTEM AND CLIENT MANAGEMENT SYSTEM
 
+Deployment Link: https://iconsult2025-815d234ccda6.herokuapp.com/
+Admin Username: admin
+Admin Password: admin12345
+Client Username: bautista.claireza
+Client Password: client12345
+
 Group4
 
 Project Manager - (Rueras, Ritchelle T.)

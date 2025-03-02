@@ -4,7 +4,7 @@
   max-height: 840px;
   overflow-y: auto;
   margin-left: 85px;
-  padding: 20px;
+  padding: 80px;
   font-family: Arial, sans-serif;
   color: #333;
   transition: margin-left 0.4s ease;
@@ -115,23 +115,6 @@
 }
 
 .metric-card {
-<<<<<<< Updated upstream
-    flex: 1;
-    min-width: 250px;
-    padding: 15px;
-    text-align: center;
-    background-color: #fff;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .metric-card canvas {
-    max-width: 100%; /* Ensures the chart fits within its container */
-    height: auto; /* Automatically adjusts the height proportionally */
-  }
-  
-=======
   flex: 1;
   min-width: 250px;
   padding: 15px;
@@ -338,4 +321,3 @@
 .total-appointments {
   margin-top: 8rem;  /* Add top margin to prevent overlap */
 }
->>>>>>> Stashed changes

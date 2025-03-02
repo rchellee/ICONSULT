@@ -1,8 +1,6 @@
-/* General layout */
 .employee-home-page {
   display: flex;
   background-color: #f4f4f9;
-  /* overflow: hidden; */
   margin-right: 50px;
 }
 
@@ -81,7 +79,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   text-align: left;
 }
 
@@ -108,7 +107,7 @@ tr:hover td {
 
 .dropdown-btn {
   border-radius: 5px;
-  background-color:white;
+  background-color: white;
   color: black;
   border: none;
   cursor: pointer;
@@ -253,7 +252,7 @@ input:checked + .slider:before {
 }
 
 /*************** Buttons in Employee Details readonly */
-.button-group {
+.buttonEmployee-group {
   display: flex;
   gap: 0px;
 }
@@ -355,11 +354,14 @@ input:checked + .slider:before {
   text-align: right;
 }
 
-
 /* Keyframes for FadeIn animation */
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Scrollbar Styling */
@@ -453,7 +455,7 @@ select {
   font-size: 1rem;
 }
 
-.input-group input, 
+.input-group input,
 .input-group select {
   padding: 12px 20px;
   padding-left: 60px; /* Adjust for icon spacing */
@@ -476,56 +478,56 @@ select {
 .input-group select:focus {
   border-color: #007bff;
   outline: none;
-  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 input,
 input[type="radio"] + label,
 input[type="checkbox"] + label:before,
 select option,
 select {
-    width: 100%;
-    padding: 1em;
-    line-height: 1.4;
-    background-color: #f9f9f9;
-    border: 1px solid #e5e5e5;
-    border-radius: 3px;
-    transition: all 0.35s ease-in-out;
+  width: 100%;
+  padding: 1em;
+  line-height: 1.4;
+  background-color: #f9f9f9;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  transition: all 0.35s ease-in-out;
 }
 input:focus {
-    outline: none;
-    border-color: #576cab;
+  outline: none;
+  border-color: #576cab;
 }
 input:focus + .input-icon i {
-    color: #114672;
+  color: #114672;
 }
 input:focus + .input-icon:after {
-    border-right-color: #214789;
+  border-right-color: #214789;
 }
 
 /* Radio Button Styling */
 input[type="radio"] {
-    display: none;
+  display: none;
 }
 input[type="radio"] + label {
-    display: inline-block;
-    width: 50%;
-    text-align: center;
-    border-radius: 0;
-    padding: 1em;
-    cursor: pointer;
+  display: inline-block;
+  width: 50%;
+  text-align: center;
+  border-radius: 0;
+  padding: 1em;
+  cursor: pointer;
 }
 input[type="radio"] + label:first-of-type {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
 }
 input[type="radio"] + label:last-of-type {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 input[type="radio"]:checked + label {
-    background-color: #103879;
-    color: white;
-    border-color: #255c7b;
+  background-color: #103879;
+  color: white;
+  border-color: #255c7b;
 }
 
 .input-label {
@@ -539,57 +541,55 @@ input[type="radio"]:checked + label {
   transition: 0.3s;
 }
 select {
-    height: 3.4em;
-    line-height: 2;
+  height: 3.4em;
+  line-height: 2;
 }
 select:focus {
-    outline: none;
+  outline: none;
 }
 .input-group {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 .input-group-icon {
-    position: relative;
+  position: relative;
 }
 .input-group-icon input {
-    padding-left: 4.4em;
-    
+  padding-left: 4.4em;
 }
 .input-group-icon .input-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3.4em;
-    height: 3.4em;
-    line-height: 3.4em;
-    text-align: center;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.4em;
+  height: 3.4em;
+  line-height: 3.4em;
+  text-align: center;
+  pointer-events: none;
 }
 .input-group-icon .input-icon:after {
-    content: "";
-    position: absolute;
-    top: 0.6em;
-    bottom: 0.6em;
-    left: 3.4em;
-    border-right: 1px solid #e5e5e5;
-    transition: all 0.35s ease-in-out;
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  bottom: 0.6em;
+  left: 3.4em;
+  border-right: 1px solid #e5e5e5;
+  transition: all 0.35s ease-in-out;
 }
 .col-half {
-    width: 100%;
-    float: left;
-    padding-right: 10px;
-    
+  width: 100%;
+  float: left;
+  padding-right: 10px;
 }
 .col-half:last-of-type {
-    padding-right: 0;
+  padding-right: 0;
 }
 .col-third {
-    width: 33.333%;
-    float: left;
-    padding-right: 10px;
+  width: 33.333%;
+  float: left;
+  padding-right: 10px;
 }
 .col-third:last-of-type {
-    padding-right: 0;
+  padding-right: 0;
 }
 
 .status-role-group {
@@ -632,9 +632,7 @@ select:focus {
   transform: scale(1.05);
 }
 
-
 @media screen and (max-width: 768px) {
-
 }
 .add-employee-btn {
   background-color: #2773ad;
@@ -645,7 +643,7 @@ select:focus {
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-right:1085px;
+  margin-right: 1085px;
 }
 
 .add-employee-btn:hover {
@@ -656,7 +654,6 @@ select:focus {
 /* Style for the filter section */
 .employee-filter-section {
   display: flex;
-  justify-content: flex-end;
   gap: 5px;
   margin-bottom: 2px;
   align-items: center;

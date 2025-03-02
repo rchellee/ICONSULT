@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import qs from "qs";
 import { useNavigate } from "react-router-dom";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa"; // Import icons
+import {
+  FaChevronDown,
+  FaChevronRight,
+  FaInfoCircle,
+  FaTasks,
+  FaChartLine,
+} from "react-icons/fa"; // Import icons
 import Sidebar from "../sidebar";
 import axios from "axios";
 import "./project.css";
@@ -21,7 +27,7 @@ function Project() {
 
     if (loggedClientId) {
       axios
-        .get(`http://localhost:8081/project/${loggedClientId}`)
+        .get(`http://localhost:8081/project-client/${loggedClientId}`)
         .then((response) => {
           if (Array.isArray(response.data)) {
             setProjects(response.data);
@@ -29,7 +35,9 @@ function Project() {
             const projectIds = response.data.map((project) => project.id);
 
             axios
-              .get(`http://localhost:8081/tasks`, { params: { projectIds } }) // Adjust backend to accept multiple IDs if needed
+              .get(`http://localhost:8081/tasks`, {
+                params: { projectIds },
+              }) // Adjust backend to accept multiple IDs if needed
               .then((taskResponse) => {
                 console.log("Fetched tasks:", taskResponse.data.tasks);
                 setTasks(taskResponse.data.tasks || []);
@@ -61,7 +69,7 @@ function Project() {
 
   const handleTrackingClick = (projectId) => {
     navigate(`/tracking/${projectId}?clientId=${clientId}`);
-  };  
+  };
 
   const toggleProjectsVisibility = () => {
     setIsProjectsVisible(!isProjectsVisible); // Toggle Projects section
@@ -73,79 +81,96 @@ function Project() {
 
   return (
     <div>
-    <Topbar />
-    <div className="client-project-page">
-      <Sidebar />
-      <div className="content-client-project">
-        <div
-          className="toggle-button-projects"
-          onClick={toggleProjectsVisibility}
-        >
-          {isProjectsVisible ? <FaChevronDown /> : <FaChevronRight />} Projects
-        </div>
+      <Topbar />
+      <div className="client-project-page">
+        <Sidebar />
+        <div className="content-client-project">
+          <div
+            className="toggle-button-projects"
+            onClick={toggleProjectsVisibility}
+          >
+            {isProjectsVisible ? <FaChevronDown /> : <FaChevronRight />}{" "}
+            Projects
+          </div>
 
-        {isProjectsVisible && (
-          <div className="project-grid-container">
-            {projects
-              .filter((project) => project.status !== "Completed")
-              .map((project) => (
-                <div
-                  className="project-grid"
-                  key={project.id}
-                  onClick={() => handleTrackingClick(project.id)}
-                >
-                  <div className="project-box">
-                    <div className="project-header">
-                      <div className="logo-box">{project.projectName[0]}</div>
-                      <h2 className="project-title">{project.projectName}</h2>
-                    </div>
-                    <div className="project-info">
-                      <p>Status: {project.status}</p>
-                      <p>Tasks: {getTaskCountForProject(project.id)}</p>
-                      <p>Progress: {calculateProgress(project.id)}%</p>
+          {isProjectsVisible && (
+            <div className="project-grid-container">
+              {projects
+                .filter((project) => project.status !== "Completed")
+                .map((project) => (
+                  <div
+                    className="project-grid"
+                    key={project.id}
+                    onClick={() => handleTrackingClick(project.id)}
+                  >
+                    <div className="project-box">
+                      <div className="project-header">
+                        <div className="logo-box">{project.projectName[0]}</div>
+                        <h2 className="project-title">{project.projectName}</h2>
+                      </div>
+                      <div className="project-info">
+                        <p>
+                          <span className="icon-with-gap">
+                            <FaInfoCircle /> {project.status}
+                          </span>
+                          <span className="icon-with-gap">
+                            <FaTasks /> {getTaskCountForProject(project.id)}
+                          </span>
+                          <span className="icon-with-gap">
+                            <FaChartLine /> {calculateProgress(project.id)}%
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+            </div>
+          )}
+
+          {/* Completed Toggle Section with a separate class */}
+          <div
+            className="toggle-button-completed"
+            onClick={toggleCompletedVisibility}
+          >
+            {isCompletedVisible ? <FaChevronDown /> : <FaChevronRight />}{" "}
+            Completed
           </div>
-        )}
 
-        {/* Completed Toggle Section with a separate class */}
-        <div
-          className="toggle-button-completed"
-          onClick={toggleCompletedVisibility}
-        >
-          {isCompletedVisible ? <FaChevronDown /> : <FaChevronRight />}{" "}
-          Completed
-        </div>
-
-        {isCompletedVisible && (
-          <div className="project-grid-container">
-            {projects
-              .filter((project) => project.status === "Completed")
-              .map((project) => (
-                <div
-                  className="project-grid"
-                  key={project.id}
-                  onClick={() => handleTrackingClick(project.id)}
-                >
-                  <div className="project-box">
-                    <div className="project-header">
-                      <div className="logo-box">{project.projectName[0]}</div>
-                      <h2 className="project-title">{project.projectName}</h2>
-                    </div>
-                    <div className="project-info">
-                      <p>Status: {project.status}</p>
-                      <p>Tasks: {getTaskCountForProject(project.id)}</p>
-                      <p>Progress: {calculateProgress(project.id)}%</p>
+          {isCompletedVisible && (
+            <div className="project-grid-container">
+              {projects
+                .filter((project) => project.status === "Completed")
+                .map((project) => (
+                  <div
+                    className="project-grid"
+                    key={project.id}
+                    onClick={() => handleTrackingClick(project.id)}
+                  >
+                    <div className="project-box">
+                      <div className="project-header">
+                        <div className="logo-box">{project.projectName[0]}</div>
+                        <h2 className="project-title">{project.projectName}</h2>
+                      </div>
+                      <div className="project-info">
+                        <p>
+                          <span className="icon-with-gap">
+                            <FaInfoCircle /> {project.status}
+                          </span>
+                          <span className="icon-with-gap">
+                            <FaTasks /> {getTaskCountForProject(project.id)}
+                          </span>
+                          <span className="icon-with-gap">
+                            <FaChartLine /> {calculateProgress(project.id)}%
+                          </span>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-          </div>
-        )}
+                ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 }

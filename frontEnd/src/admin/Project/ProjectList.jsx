@@ -1,46 +1,97 @@
 import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { MdCancel } from "react-icons/md"; // Import cancel icon
-import "./project.css";
-import { Pending } from "@mui/icons-material";
+import { LuLayoutGrid } from "react-icons/lu"; // Import Grid icon
+import GridView from "./GridView"; // Import GridView component
+import ListView from "./ListView"; // Import ListView component
+import "./ListView.css";
 
 const ProjectList = ({
+  projects,
   filteredProjects,
+  setFilteredProjects,
   formatDate,
-  handleDelete,
   handleEdit,
+  handleDelete,
   toggleDropdown,
   activeDropdown,
 }) => {
+  const [projectName, setProjectName] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [downpayment, setDownpayment] = useState("");
+
+  useEffect(() => {
+    setStatuses(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.status;
+        return acc;
+      }, {})
+    );
+    setStartDates(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.actualStart || null;
+        return acc;
+      }, {})
+    );
+    setFinishDates(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.actualFinish || null;
+        return acc;
+      }, {})
+    );
+    setpaymentStatuses(
+      filteredProjects.reduce((acc, project) => {
+        acc[project.id] = project.paymentStatus || "Not Paid";
+        return acc;
+      }, {})
+    );
+  }, [filteredProjects]);
+
   const [statuses, setStatuses] = useState(
     filteredProjects.reduce((acc, project) => {
       acc[project.id] = project.status;
       return acc;
     }, {})
   );
-
+  const [startDates, setStartDates] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualStart || null;
+      return acc;
+    }, {})
+  );
+  const [finishDates, setFinishDates] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualFinish || null;
+      return acc;
+    }, {})
+  );
   const [paymentstatuses, setpaymentStatuses] = useState(
     filteredProjects.reduce((ass, project) => {
       ass[project.id] = project.paymentStatus;
       return ass;
     }, {})
   );
-  const [totalTasks, setTotalTasks] = useState({});
   const [tasksInfo, setTasksInfo] = useState({});
+  const [totalTasks, setTotalTasks] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isGridView, setIsGridView] = useState(false);
 
   const handleStatusChange = (projectId, newStatus) => {
-    // Update status locally
     setStatuses((prevStatuses) => ({
       ...prevStatuses,
       [projectId]: newStatus,
     }));
 
-    // Send update to the database
     fetch(`http://localhost:8081/projectStat/${projectId}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ status: newStatus }),
     })
       .then((response) => {
@@ -49,16 +100,23 @@ const ProjectList = ({
         }
         return response.json();
       })
-      .then((updatedProject) => {
-        console.log("Status updated successfully:", updatedProject);
+      .then((data) => {
+        console.log("Status updated successfully:", data);
+
+        if (newStatus === "Ongoing") {
+          setStartDates((prevStartDates) => ({
+            ...prevStartDates,
+            [projectId]: new Date(),
+          }));
+        } else if (newStatus === "Completed") {
+          setFinishDates((prevFinishDates) => ({
+            ...prevFinishDates,
+            [projectId]: new Date(),
+          }));
+        }
       })
       .catch((error) => {
         console.error("Error updating status:", error);
-        // Revert the status locally if the update fails
-        setStatuses((prevStatuses) => ({
-          ...prevStatuses,
-          [projectId]: filteredProjects.find((p) => p.id === projectId).status,
-        }));
       });
   };
 
@@ -124,176 +182,144 @@ const ProjectList = ({
     fetchTotalPayments();
   }, [filteredProjects]);
 
-  const handlePaymentStatusChange = (projectId, newpaymentStatus) => {
-    // Update paymentstatus locally
+  const handlePaymentStatusChange = (projectId, newPaymentStatus) => {
+    const currentStatus = paymentstatuses[projectId];
+
+    // Get the current date if the new status is "Paid"
+    const currentDate =
+      newPaymentStatus === "Paid" ? new Date().toISOString() : null;
+
     setpaymentStatuses((prevpaymentStatuses) => ({
       ...prevpaymentStatuses,
-      [projectId]: newpaymentStatus,
+      [projectId]: newPaymentStatus,
     }));
 
-    // Send update to the database
     fetch(`http://localhost:8081/paymentStat/${projectId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentStatus: newpaymentStatus }),
+      body: JSON.stringify({
+        paymentStatus: newPaymentStatus,
+        paymentDate: currentDate, // Send the date when payment status is updated to "Paid"
+      }),
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update status");
-        }
+        if (!response.ok) throw new Error("Failed to update payment status");
         return response.json();
       })
       .then((updatedProject) => {
-        console.log("Payment Status updated successfully:", updatedProject);
+        console.log("Payment status updated successfully:", updatedProject);
       })
       .catch((error) => {
-        console.error("Error updating status:", error);
-        // Revert the status locally if the update fails
+        console.error("Error updating payment status:", error);
+
+        // Revert payment status on failure
         setpaymentStatuses((prevpaymentStatuses) => ({
           ...prevpaymentStatuses,
-          [projectId]: filteredProjects.find((p) => p.id === projectId)
-            .paymentStatus,
+          [projectId]: currentStatus,
         }));
       });
   };
 
-  const statusColors = {
-    Ongoing: "pink",
-    Pending: "red",
-    Completed: "#FFCD90",
-  };
-  const paymentstatusColors = {
-    Paid: "green",
-    "Not Paid": "gray",
-    "Partial Payment": "yellow",
+  const handleStartDateChange = (projectId, date) => {
+    setStartDates((prevStartDates) => ({
+      ...prevStartDates,
+      [projectId]: date, // Update the start date for the specific project
+    }));
   };
 
-  const handleRightClick = (e, projectId) => {
-    e.preventDefault();
-    setSelectedProject(projectId);
-    setShowModal(true);
+  const handleFinishDateChange = (projectId, date) => {
+    setFinishDates((prevFinishDates) => ({
+      ...prevFinishDates,
+      [projectId]: date, // Update the finish date for the specific project
+    }));
   };
 
-  const handleContextMenuAction = (action) => {
-    if (action === "delete") {
-      handleDelete(selectedProject);
-    } else if (action === "edit") {
-      handleEdit(selectedProject);
-    }
-    setShowModal(false);
+  const openModal = () => {
+    setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setShowModal(false);
+    setIsModalOpen(false);
+    setProjectName("");
+    setClientId("");
+    setClientName("");
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+    setDownpayment("");
+    setEditingProjectId(null);
+  };
+
+  const statusColors = {
+    Ongoing: "#F06292",
+    Pending: "rgb(252, 118, 118)",
+    Completed: "#3b4f67", // Default color for Ongoing
+  };
+  const paymentstatusColors = {
+    Paid: "#3b4f67",
+    "Not Paid": "rgb(252, 118, 118)",
+    "Partial Payment": "#74C69D",
+  };
+
+  // Toggle between grid and list view
+  const toggleLayout = (layout) => {
+    if (layout === "grid") {
+      setIsGridView(true);
+    } else {
+      setIsGridView(false);
+    }
+  };
+
+  const handleProjectClick = (projectId) => {
+    console.log("Project clicked:", projectId);
+    // Add your logic here, such as navigating to a project details page or displaying a modal
   };
 
   return (
     <div className="project-list-wrapper">
+      <div className="layout-toggle-icons">
+        <LuLayoutGrid onClick={() => toggleLayout("list")} /> {/* grid */}
+        {/* <FaList onClick={() => toggleLayout("grid")} />  */}
+      </div>
+
       <div className="project-list">
-        <div className="project-list-header">
-          <h3>Project</h3>
-          <h3>Client</h3>
-          <h3>Progress</h3>
-          <h3>Timeline</h3>
-          <h3>Status</h3>
-          <h3>Downpayment</h3>
-          <h3>Total</h3>
-          <h3>Payment Status</h3>
-        </div>
-        {filteredProjects.map((project) => {
-          const { total = 0, completed = 0 } = tasksInfo[project.id] || {};
-          const progress =
-            total > 0 ? Math.round((completed / total) * 100) : 0;
-          const totalPayment =
-            totalTasks[project.id] || project.contractPrice || 0;
-
-          return (
-            <div
-              key={project.id}
-              className="project-item"
-              onContextMenu={(e) => handleRightClick(e, project.id)}
-            >
-              <p className="truncate" title={project.projectName}>
-                {project.projectName}
-              </p>
-              <p className="truncate" title={project.clientName}>
-                {project.clientName}
-              </p>
-              <p>{`${progress}%`}</p>
-              <p>
-                {formatDate(project.startDate)} - {formatDate(project.endDate)}
-              </p>
-              <select
-                value={statuses[project.id] || "Pending"}
-                onChange={(e) => handleStatusChange(project.id, e.target.value)}
-                className={`status-dropdown $(
-                statuses[project.id] === "Pending"
-                  ? "status-pending"
-                  : statuses[project.id] === "Completed"
-                  ? "status-completed"
-                  : ""
-              )`}
-                style={{
-                  backgroundColor: statusColors[statuses[project.id]] || "pink",
-                }}
-              >
-                <option value="Pending">Pending</option>
-                <option value="Ongoing">Ongoing</option>
-                <option value="Completed">Completed</option>
-              </select>
-              <p>{project.downpayment || "N/A"}</p>
-              <p>{totalPayment}</p>
-              <select
-                value={paymentstatuses[project.id] || "Not Paid"}
-                onChange={(e) =>
-                  handlePaymentStatusChange(project.id, e.target.value)
-                }
-                className={`paymentstatus-dropdown $(
-                paymentstatuses[project.id] === "Partial Payment"
-                  ? "paymentstatus-partialPayment"
-                  : paymentstatuses[project.id] === "Paid"
-                  ? "paymentstatus-paid"
-                  : ""
-              )`}
-                style={{
-                  backgroundColor:
-                    paymentstatusColors[paymentstatuses[project.id]] || "pink",
-                }}
-              >
-                <option value="Not Paid">Not Paid</option>
-                <option value="Partial Payment">Partial Payment</option>
-                <option value="Paid">Paid</option>
-              </select>
-
-              <div className="action-project">
-                <button
-                  className="action-menu-button"
-                  onClick={() => toggleDropdown(project.id)}
-                >
-                  &#x22EE;
-                </button>
-                {activeDropdown === project.id && (
-                  <div className="dropdown-menu">
-                    <button onClick={() => handleEdit(project.id)}>Edit</button>
-                    <button onClick={() => handleDelete(project.id)}>
-                      Trash
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-        {showModal && (
-          <div className="modal-overlay">
-            <div className="modal">
-              <div className="modal-header">
-                <MdCancel className="cancel-icon" onClick={closeModal} />
-              </div>
-              <button onClick={() => handleEdit(project.id)}>Edit</button>
-              <button onClick={() => handleDelete(project.id)}>Delete</button>
-            </div>
-          </div>
+        {/* Conditionally render grid or table layout */}
+        {isGridView ? (
+          <GridView
+            filteredProjects={filteredProjects}
+            formatDate={formatDate}
+            statuses={statuses}
+            statusColors={statusColors}
+            handleStatusChange={handleStatusChange}
+            startDates={startDates}
+            finishDates={finishDates}
+            handleStartDateChange={handleStartDateChange}
+            handleFinishDateChange={handleFinishDateChange}
+          />
+        ) : (
+          <ListView
+            projects={projects}
+            filteredProjects={filteredProjects}
+            setFilteredProjects={setFilteredProjects}
+            formatDate={formatDate}
+            statuses={statuses}
+            statusColors={statusColors}
+            handleStatusChange={handleStatusChange}
+            paymentstatuses={paymentstatuses}
+            paymentstatusColors={paymentstatusColors}
+            handlePaymentStatusChange={handlePaymentStatusChange}
+            startDates={startDates}
+            finishDates={finishDates}
+            handleStartDateChange={handleStartDateChange}
+            handleFinishDateChange={handleFinishDateChange}
+            tasksInfo={tasksInfo}
+            totalTasks={totalTasks}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            onProjectClick={handleProjectClick}
+            activeDropdown={activeDropdown}
+            toggleDropdown={toggleDropdown}
+          />
         )}
       </div>
     </div>

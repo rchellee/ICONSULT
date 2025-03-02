@@ -1,5 +1,85 @@
-.transaction-content {
-    margin-left: 85px;
-    padding: 20px;
-    transition: margin-left 0.4s ease;
+.content-transaction {
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 8px;
+  text-align: left;
+  max-width: 200px;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transactions-table th {
+  background-color: #163e69;
+  position: sticky;
+  top: 0; /* Keep the header fixed at the top */
+  z-index: 1; /* Ensure it stays on top of the scrolling content */
+}
+
+.transactions-table tbody {
+  display: block;
+  max-height: 700px; /* Set a height limit for the table's body */
+  overflow-y: auto;
+}
+.transactions-table thead,
+.transactions-table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.transactions-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.transactions-table td {
+  max-width: 200px;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Hide columns for smaller screens */
+@media (max-width: 1200px) {
+  .transactions-table th:nth-child(9),
+  .transactions-table td:nth-child(9) {
+    display: none; /* Hide Date column */
   }
+}
+
+@media (max-width: 992px) {
+  .transactions-table th:nth-child(8),
+  .transactions-table td:nth-child(8) {
+    display: none; /* Hide Currency column */
+  }
+}
+
+@media (max-width: 768px) {
+  .transactions-table th:nth-child(7),
+  .transactions-table td:nth-child(7) {
+    display: none; /* Hide Amount column */
+  }
+}
+
+@media (max-width: 576px) {
+  .transactions-table th:nth-child(6),
+  .transactions-table td:nth-child(6),
+  .transactions-table th:nth-child(5),
+  .transactions-table td:nth-child(5) {
+    display: none; /* Hide Email and Merchant ID columns */
+  }
+}

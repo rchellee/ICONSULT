@@ -17,7 +17,6 @@ import {
   InputLabel,
   IconButton,
 } from "@mui/material";
-import { SosOutlined } from "@mui/icons-material";
 
 const Availability = () => {
   const [selectedDates, setSelectedDates] = useState([]);
@@ -212,21 +211,24 @@ const Availability = () => {
       <div className="admin-appointment-form-container">
         <Sidebar />
         <div className="content-availability">
-        <h3>Set Your Availability</h3>
-          <div style={{ display: "flex", justifyContent:"center", gap: "10px" }}>
+          <h3>Set Your Availability</h3>
+          <div style={{ display: "flex", gap: "70px" }}>
             <AvailableCalendar
               availableDates={{ ...existingDates }}
               onDateSelect={handleDateSelect}
             />
             <Box
               sx={{
-                width: 450,
+                width: 600,
+                height: 600,
                 padding: 2,
-                backgroundColor: "white",
+                border: "1px solid #ccc",
+                borderRadius: 4,
+                backgroundColor: "#f9f9f9",
               }}
             >
               <strong>
-                <h4>Selected Dates & Time</h4>
+                <h4>Selected Dates and Time</h4>
               </strong>
 
               {selectedDates.length > 0 ? (
@@ -234,40 +236,39 @@ const Availability = () => {
                   sx={{
                     maxHeight: 100, // Set a fixed height for the scrollable list
                     overflowY: "auto", // Enable vertical scrolling
-                    backgroundColor: "white", // Optional: Background color for the scrollable area
-                    border: "1px solid #ccc",
+                    backgroundColor: "#ffffff", // Optional: Background color for the scrollable area
+                    border: "1px solid #ccc", // Optional: Border for better visual separation
+                    borderRadius: 2,
+                    padding: 1,
                   }}
                 >
                   {selectedDates.map((date, index) => (
                     <ListItem
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: 1,
-                      backgroundColor: isTimeInvalid(date.startTime, date.endTime)
-                        ? "#FFEBEE"
-                        : "white", // Light red if invalid
-                      border: isTimeInvalid(date.startTime, date.endTime)
-                        ? "1px solid red"
-                        : "1px solid #ddd",
-                      borderRadius: "8px",
-                    }}
-                  >
-                       <ListItemText
-            primary={`${date.date} ${date.startTime} - ${date.endTime}`}
-            sx={{ flex: 1 }}
-          />
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <FormControl sx={{ minWidth: 100 }}>
-              <InputLabel>Start</InputLabel>
-              <Select
-                value={date.startTime}
-                onChange={(e) =>
-                  handleTimeChange(index, "startTime", e.target.value)
-                }
-              >
+                      key={index}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 2,
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${date.date}  ${date.startTime} - ${date.endTime}`}
+                        sx={{ flex: 1 }}
+                      />
+                      <Box sx={{ display: "flex", gap: 2 }}>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel>Start</InputLabel>
+                          <Select
+                            value={date.startTime}
+                            onChange={(e) =>
+                              handleTimeChange(
+                                index,
+                                "startTime",
+                                e.target.value
+                              )
+                            }
+                          >
                             {times.map((time, idx) => (
                               <MenuItem key={idx} value={time}>
                                 {time}
@@ -275,7 +276,7 @@ const Availability = () => {
                             ))}
                           </Select>
                         </FormControl>
-                        <FormControl sx={{ minWidth: 100 }}>
+                        <FormControl sx={{ minWidth: 120 }}>
                           <InputLabel>End</InputLabel>
                           <Select
                             value={date.endTime}
@@ -296,6 +297,7 @@ const Availability = () => {
                           variant="body6"
                           sx={{ color: "red", marginTop: 1 }}
                         >
+                          *Time is invalid
                         </Typography>
                       )}
                     </ListItem>
@@ -305,13 +307,15 @@ const Availability = () => {
                 <Typography variant="h7">No dates selected.</Typography>
               )}
               <strong>
-                <h4>Availability</h4>
+                <h4>Availability:</h4>
               </strong>
               <List
                 sx={{
-                  maxHeight: 300,
+                  maxHeight: 370,
                   overflowY: "auto",
-                  backgroundColor: "white",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #ccc",
+                  borderRadius: 4,
                   padding: 1,
                 }}
               >
@@ -324,6 +328,7 @@ const Availability = () => {
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        marginBottom: 2,
                       }}
                     >
                       <ListItemText
@@ -332,12 +337,14 @@ const Availability = () => {
                       />
                       <Box sx={{ display: "flex", gap: 2 }}>
                         <Button
+                          variant="outlined"
                           color="primary"
                           onClick={() => handleEdit(date, start_time, end_time)}
                         >
                           Edit
                         </Button>
                         <Button
+                          variant="outlined"
                           color="error"
                           onClick={() => handleDelete(date)}
                         >
@@ -347,15 +354,25 @@ const Availability = () => {
                     </ListItem>
                   ))}
               </List>
-              <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: 2 }}>
 
- <Button variant="contained" color="primary" onClick={handleClearSelection} disabled={selectedDates.length === 0}>
- Clear
-</Button>
-<Button variant="contained" color="primary" onClick={handleSubmit} disabled={selectedDates.length === 0}>
-                  Save
-                </Button>
-            </Box>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleClearSelection}
+                disabled={selectedDates.length === 0}
+                style={{ marginTop: "10px" }}
+              >
+                Clear
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                disabled={selectedDates.length === 0}
+                style={{ marginTop: "10px" }}
+              >
+                Save
+              </Button>
             </Box>
           </div>
         </div>

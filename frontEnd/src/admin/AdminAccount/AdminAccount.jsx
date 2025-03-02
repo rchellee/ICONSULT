@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
-  Typography,
   TextField,
   Button,
   Dialog,
@@ -9,15 +7,18 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import { CiEdit } from "react-icons/ci";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AdminAccount.css";
+import password from "../../assets/admin.jpg";
 
 const AdminAccount = () => {
   const [adminDetails, setAdminDetails] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({});
   const [message, setMessage] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const fetchAdminDetails = async () => {
@@ -26,16 +27,18 @@ const AdminAccount = () => {
         const response = await fetch(`http://localhost:8081/admins/${adminId}`);
         if (response.ok) {
           const data = await response.json();
-          setAdminDetails(data); // Admin details fetched as an object
-          setUpdatedDetails(data); // Set for editing
+          setAdminDetails(data);
+          setUpdatedDetails(data);
         } else {
           setMessage("Failed to fetch admin details.");
+          setOpenDialog(true);
         }
       } catch (error) {
         console.error("Error fetching admin details:", error);
         setMessage("An unexpected error occurred.");
+        setOpenDialog(true);
       }
-    };    
+    };
     fetchAdminDetails();
   }, []);
 
@@ -50,37 +53,68 @@ const AdminAccount = () => {
       if (response.ok) {
         setMessage("Admin details updated successfully.");
         setEditMode(false);
-        const updatedData = await response.json();
         setAdminDetails(updatedDetails);
       } else {
         setMessage("Failed to update admin details.");
       }
+      setOpenDialog(true);
     } catch (error) {
       console.error("Error updating admin details:", error);
       setMessage("An unexpected error occurred.");
+      setOpenDialog(true);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   return (
     <div>
       <Topbar />
       <Sidebar />
-
       <div className="account-settings">
-        <div className="content">
-          <h2>Admin Account Settings</h2>
+        <div className="content-admin">
+          <div className="passwordd-admin">
+            <img
+              src={password}
+              alt="password"
+              className="password-image-admin"
+            />
+          </div>
+          <h2>Account Settings</h2>
           {adminDetails ? (
             <div>
               {!editMode ? (
                 <>
-                  <p>
-                    <strong>Username:</strong> {adminDetails.username}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {adminDetails.email}
-                  </p>
-                  <Button variant="contained" onClick={() => setEditMode(true)}>
-                    Edit
+                  <div className="admin-detail-row">
+                    <span className="label-admin">Username</span>
+                    <p>
+                      Username:{" "}
+                      <span className="value-admin">
+                        {adminDetails.username}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="admin-detail-row">
+                    <span className="label-admin">Email Address</span>
+                    <p>
+                      Email:{" "}
+                      <span className="value-admin">{adminDetails.email}</span>
+                    </p>
+                  </div>
+                  <div className="admin-detail-row">
+                    <span className="label-admin">Password</span>
+                    <p>
+                      <span className="value-admin">**********</span>
+                    </p>
+                  </div>
+                  <Button
+                    variant="contained"
+                    onClick={() => setEditMode(true)}
+                    style={{ marginTop: "10px" }}
+                  >
+                    <CiEdit /> UPDATE PROFILE
                   </Button>
                 </>
               ) : (
@@ -96,6 +130,7 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
+                    className="text-field"
                   />
                   <TextField
                     label="Email"
@@ -108,6 +143,7 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
+                    className="text-field"
                   />
                   <TextField
                     label="New Password"
@@ -121,26 +157,47 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
+                    className="text-field"
                   />
-                  <Button
-                    variant="contained"
-                    onClick={handleUpdate}
-                    style={{ marginRight: "10px" }}
-                  >
-                    Save
-                  </Button>
-                  <Button variant="outlined" onClick={() => setEditMode(false)}>
-                    Cancel
-                  </Button>
+                  <div className="button-group">
+                    <Button
+                      variant="contained"
+                      onClick={handleUpdate}
+                      style={{ marginRight: "10px", marginTop: "20px" }}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setEditMode(false)}
+                      style={{ marginTop: "20px" }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
                 </div>
               )}
-              {message && <p>{message}</p>}
             </div>
           ) : (
             <p>Loading...</p>
           )}
         </div>
       </div>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>
+          {message.startsWith("Failed") || message.startsWith("An unexpected")
+            ? "Error"
+            : "Success"}
+        </DialogTitle>
+        <DialogContent>
+          <p>{message}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

@@ -6,6 +6,7 @@ import Topbar from "../Topbar";
 const ClientNotification = () => {
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState("all");
+  const normalizeDate = (timestamp) => new Date(timestamp).toISOString();
 
   // Fetch clientId from localStorage
   const clientId = localStorage.getItem("clientId");
@@ -19,7 +20,7 @@ const ClientNotification = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8081/client-notifications/${clientId}`
+          `http://localhost:8081/notifications/${clientId}`
         );
         if (response.ok) {
           const data = await response.json();
@@ -61,17 +62,20 @@ const ClientNotification = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
       year: "numeric",
-      hour: "2-digit",
+      hour: "numeric",
       minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC", // Ensures consistent timezone display
     });
+    return formatter.format(date);
   };
 
   const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0); // Set to midnight of today
+  startOfToday.setHours(0, 0, 0, 0);
 
   const filteredNotifications =
     filter === "all"
@@ -110,7 +114,7 @@ const ClientNotification = () => {
         {filteredNotifications.length === 0 ? (
           <p>No notifications available.</p>
         ) : (
-          <div className="notification-groups">
+          <div className="scrollable-notifications">
             {newNotifications.length > 0 && (
               <div className="new-notifications">
                 <h4>New</h4>
