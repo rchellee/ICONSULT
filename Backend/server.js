@@ -1666,9 +1666,30 @@ app.get("/tasksDashboard/count", (req, res) => {
     timeCondition = "YEAR(due_date) = YEAR(CURDATE())";
   }
 
+<<<<<<< Updated upstream
   const statusCondition = status ? `AND status = '${status}'` : "";
   const sql = `SELECT COUNT(*) AS total FROM tasks WHERE ${timeCondition} ${statusCondition}`;
 
+=======
+  switch (filter) {
+    case "weekly":
+      condition = "WEEK(STR_TO_DATE(date, '%Y-%m-%d')) = WEEK(CURDATE())";
+      break;
+    case "yearly":
+      condition = "YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = YEAR(CURDATE())";
+      break;
+    default:
+      condition = "1=1"; 
+  }
+  const sql = `
+    SELECT 
+      COUNT(*) AS totalAppointments, 
+      (SELECT COUNT(*) FROM appointments 
+       WHERE STR_TO_DATE(date, '%Y-%m-%d') >= CURDATE()) AS totalUpcomingAppointments
+    FROM appointments 
+    WHERE ${condition}
+  `;
+>>>>>>> Stashed changes
   db.query(sql, (err, result) => {
     if (err) {
       console.error("Error fetching tasks count:", err);
@@ -1708,6 +1729,149 @@ app.get("/appointmentsDashboard/count", (req, res) => {
   });
 });
 
+<<<<<<< Updated upstream
+=======
+
+
+//REPORTS TAB
+//apointments
+app.get("/appointmentReports", (req, res) => {
+  const { startDate, endDate, clientId } = req.query;
+
+  let sql = "SELECT * FROM appointments WHERE 1=1";
+  const params = [];
+
+  if (startDate) {
+    sql += " AND date >= ?";
+    params.push(startDate);
+  }
+  if (endDate) {
+    sql += " AND date <= ?";
+    params.push(endDate);
+  }
+  if (clientId) {
+    sql += " AND client_id = ?";
+    params.push(clientId);
+  }
+
+  db.query(sql, params, (err, data) => {
+    if (err) {
+      console.error("Error fetching appointments:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch appointments", error: err });
+    }
+    return res.json(data);
+  });
+});
+//clients
+app.get("/clientsReports", (req, res) => {
+  const year = req.query.year || new Date().getFullYear();
+  const sql = "SELECT * FROM client WHERE YEAR(created_at) = ?";
+  db.query(sql, [year], (err, data) => {
+    if (err) return res.json(err);
+    return res.json(data);
+  });
+});
+
+// Fetch client count per month
+app.get("/clients/monthly", (req, res) => {
+  const sql = `
+    SELECT 
+      MONTHNAME(created_at) AS month, 
+      COUNT(*) AS client_count,
+      WEEK(created_at, 1) AS week_of_year,
+      YEAR(created_at) AS year
+    FROM client
+    WHERE YEAR(created_at) = YEAR(CURDATE())
+    GROUP BY MONTH(created_at), WEEK(created_at, 1)
+    ORDER BY MONTH(created_at), WEEK(created_at, 1);
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to fetch client data" });
+    }
+
+    // Process results into monthly and weekly structure
+    const monthlyData = Array(12).fill(0); // Initialize data for 12 months
+    const weeklyData = {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: [],
+    };
+
+    results.forEach((item) => {
+      const monthIndex = new Date(`${item.month} 1, ${item.year}`).getMonth();
+      monthlyData[monthIndex] += item.client_count;
+
+      const monthName = new Date(
+        `${item.month} 1, ${item.year}`
+      ).toLocaleString("default", { month: "long" });
+      weeklyData[monthName].push(item.client_count);
+    });
+
+    res.json({ monthly: monthlyData, weekly: weeklyData });
+  });
+});
+app.get("/projectsReports/monthly", (req, res) => {
+  const sql = `
+    SELECT 
+      MONTHNAME(created_at) AS month, 
+      COUNT(*) AS project_count,
+      WEEK(created_at, 1) AS week_of_year,
+      YEAR(created_at) AS year
+    FROM project
+    WHERE YEAR(created_at) = YEAR(CURDATE())
+    GROUP BY MONTH(created_at), WEEK(created_at, 1)
+    ORDER BY MONTH(created_at), WEEK(created_at, 1);
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to fetch project data" });
+    }
+
+    // Process results into monthly and weekly structure
+    const monthlyData = Array(12).fill(0); // Initialize data for 12 months
+    const weeklyData = {
+      January: [],
+      February: [],
+      March: [],
+      April: [],
+      May: [],
+      June: [],
+      July: [],
+      August: [],
+      September: [],
+      October: [],
+      November: [],
+      December: [],
+    };
+
+    results.forEach((item) => {
+      const monthIndex = new Date(`${item.month} 1, ${item.year}`).getMonth();
+      monthlyData[monthIndex] += item.project_count;
+
+      const monthName = new Date(
+        `${item.month} 1, ${item.year}`
+      ).toLocaleString("default", { month: "long" });
+      weeklyData[monthName].push(item.project_count);
+    });
+
+    res.json({ monthly: monthlyData, weekly: weeklyData });
+  });
+});
+>>>>>>> Stashed changes
 app.listen(8081, () => {
   console.log("Server is listening on port 8081");
 });

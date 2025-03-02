@@ -94,7 +94,169 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+<<<<<<< Updated upstream
     </div>
+=======
+
+      {/* Skills Section */}
+      <section className="skills" id="skills">
+        <div className="content">
+          <div className="title">
+            <span>Our Skills</span>
+          </div>
+          <div className="skills-details">
+            <div className="text">
+              <div className="topic">Skills Reflects Our Knowledge</div>
+              <p>
+                At iConsult, our team is equipped with a robust combination of
+                expertise in accounting, financial management, and business
+                consultancy. With years of hands-on experience across diverse
+                industries, we bring a deep understanding of operational
+                challenges and innovative solutions to the table. Our mission is
+                to empower businesses through exceptional service and
+                data-driven insights.
+              </p>
+              <div className="experience">
+                <div className="num">9</div>
+                <div className="exp">
+                  Years Of <br /> Service
+                </div>
+              </div>
+            </div>
+            <div className="boxes">
+              <div className="box">
+                <div className="topic">Certified Public Accountant</div>
+                <div className="per">CPA</div>
+              </div>
+              <div className="box">
+                <div className="topic">
+                  Finance Manager at DMCM Capital Corporate Services Inc
+                </div>
+                <div className="per">4 yrs</div>
+              </div>
+              <div className="box">
+                <div className="topic">
+                  Assistant Manager for Accounting/Accounting Supervisor/Auditor
+                </div>
+                <div className="per">2 yrs  </div>
+              </div>
+              <div className="box">
+                <div className="topic">
+                  Audit Associate at Diaz Murillo Dalupan and Company CPAs
+                </div>
+                <div className="per">1 yr </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="services" id="services">
+        <div className="content">
+          <div className="title">
+            <span>Our Services</span>
+          </div>
+          <div className="boxes">
+            <div className="box">
+              <div className="icon">
+                <i className="fas fa-desktop"></i>
+              </div>
+              <div className="topic">Corporate and Consultancy Services</div>
+              <p>
+                Providing strategic guidance to organizations to streamline
+                their operations, enhance profitability, and align business
+                goals with sustainable practices.
+              </p>
+            </div>
+            <div className="box">
+              <div className="icon">
+                <i className="fas fa-paint-brush"></i>
+              </div>
+              <div className="topic">Management Advisory Services</div>
+              <p>
+                Offering expert advice on leadership, organizational
+                development, and change management to drive efficiency and
+                innovation.
+              </p>
+            </div>
+            <div className="box">
+              <div className="icon">
+                <i className="fas fa-desktop"></i>
+              </div>
+              <div className="topic"> Professional Services</div>
+              <p>
+                Delivering specialized services such as accounting, legal, and
+                compliance support tailored to your business needs.
+              </p>
+            </div>
+            <div className="box">
+              <div className="icon">
+                <i className="fas fa-paint-brush"></i>
+              </div>
+              <div className="topic">Payroll Services</div>
+              <p>
+                Ensuring accurate and timely payroll management, tax compliance,
+                and employee benefits administration.
+              </p>
+            </div>
+            <div className="box">
+              <div className="icon">
+                <i className="fas fa-desktop"></i>
+              </div>
+              <div className="topic">Registrations</div>
+              <p>
+                Assisting with business registrations, licensing, and
+                certifications to ensure compliance with local and international
+                regulations.
+              </p>
+            </div>
+            <div className="box">
+              <div className="icon">
+                <i className="fas fa-paint-brush"></i>
+              </div>
+              <div className="topic">Other Related Matters</div>
+              <p>
+                Providing end-to-end support for unique business challenges,
+                ensuring comprehensive and effective solutions.
+              </p>
+            </div>{" "}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="contact" id="contact">
+        <div className="content">
+          <div className="title">
+            <span>Contact Us</span>
+          </div>
+          <div className="text">
+            <div className="topic">Have Any Project?</div>
+            <p>Contact Us sharpmindsbc@gmail.com || 0917 137 0636.</p>
+            <div className="button">
+              <button>
+                <a href="#home">Start Working With Us!</a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer>
+        <div className="text">
+          <span>
+            Created By{" "}
+            <a href="#">
+              iConsult Team Bautista, Cabigting, Rueras, Sandiego 2025
+            </a>{" "}
+            | &#169; 2025 All Rights Reserved
+          </span>
+        </div>
+      </footer>
+    </>
+>>>>>>> Stashed changes
   );
 };
 
