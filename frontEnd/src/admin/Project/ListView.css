@@ -274,12 +274,12 @@
   display: flex;
   gap: 10px;
   align-items: center; /* Ensures all buttons are aligned at the same height */
-  padding: 10px;
+  padding: 15px;
   justify-content: flex-end;
+  /*margin-top: -60px; ETO PARA TUMAAS SORTING*/
 }
 
-.sorting-button-container,
-.payment-button-container {
+.sorting-button-container {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -311,8 +311,8 @@
 }
 
 /* Dropdowns stay below the buttons and do not affect alignment */
-.sorting-dropdown,
-.payment-dropdown {
+/* Dropdown container */
+.sorting-dropdown {
   position: absolute;
   top: 100%; /* Ensures dropdown appears below the button */
   left: 0;
@@ -325,25 +325,60 @@
   flex-direction: column;
   min-width: 120px;
   padding: 5px 0;
+  opacity: 0; /* Start with 0 opacity */
+  transform: translateY(-10px); /* Start slightly above */
+  visibility: hidden; /* Hide initially */
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    visibility 0.3s ease;
 }
 
-.sorting-dropdown button,
-.payment-dropdown button {
+/* Dropdown container when visible */
+.sorting-dropdown.visible {
+  opacity: 1; /* Fully visible */
+  transform: translateY(0); /* Move to original position */
+  visibility: visible; /* Show dropdown */
+}
+
+/* Dropdown buttons */
+.sorting-dropdown button {
   background: none;
   border: none;
   padding: 8px;
-  text-align: left; 
+  text-align: left;
   cursor: pointer;
   font-size: 14px;
   width: 100%;
   color: #333;
-
 }
 
-.sorting-dropdown button:hover,
-.payment-dropdown button:hover {
+.sorting-dropdown button:hover {
   background-color: #f1f1f1;
 }
 
 
+.sort-text {
+  font-size: 15px; /* Adjust the size as needed */
+}
+
+
+
+.button-group {
+  display: flex;
+  gap: 0; /* Adjust this value to control the spacing */
+}
+
+.button-group button {
+  margin: 0; /* Remove default margin */
+  padding: 0.25rem; /* Adjust padding if needed */
+  background-color: transparent; /* Remove background color */
+  border: none; /* Remove border if needed */
+  cursor: pointer; /* Ensure the cursor changes to a pointer on hover */
+  color: #000; /* Default icon color (change as needed) */
+}
+
+.button-group button:hover {
+  background-color: transparent; /* Ensure no background color on hover */
+}
 

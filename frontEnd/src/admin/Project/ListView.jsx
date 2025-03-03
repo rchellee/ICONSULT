@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { SearchContext } from "../../components/SearchProvider";
 import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,6 +8,9 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { FaSort, FaMoneyBillWave, FaExclamationTriangle } from "react-icons/fa";
 import { TbArrowsSort } from "react-icons/tb";
+import { FaTasks } from "react-icons/fa";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
 
 // Utility function to format numbers with ₱ symbol
 const formatCurrency = (amount) => {
@@ -43,17 +46,56 @@ const ListView = ({
 }) => {
   const navigate = useNavigate();
   const { searchTerm } = useContext(SearchContext);
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [showSortOptions, setShowSortOptions] = useState(false);
+  const [sortOrder, setSortOrder] = useState("default");
   const [showStatusOptions, setShowStatusOptions] = useState(false);
+  const [showSortOptions, setShowSortOptions] = useState(false);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(null); // State for filtering by status
+  const [filterStatus, setFilterStatus] = useState(null);
+
+  // Refs for dropdown containers
+  const statusDropdownRef = useRef(null);
+  const sortDropdownRef = useRef(null);
+  const statusButtonRef = useRef(null);
+  const sortButtonRef = useRef(null);
+
+  // Handle clicks outside the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close status dropdown if clicked outside
+      if (
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target) &&
+        statusButtonRef.current &&
+        !statusButtonRef.current.contains(event.target)
+      ) {
+        setShowStatusOptions(false);
+      }
+
+      // Close sort dropdown if clicked outside
+      if (
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(event.target) &&
+        sortButtonRef.current &&
+        !sortButtonRef.current.contains(event.target)
+      ) {
+        setShowSortOptions(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Handle status option selection
   const handleStatusOptionClick = (status) => {
-    setFilterStatus(status); // Directly set the selected filter
-    setShowStatusOptions(false); // Close dropdown
+    setFilterStatus(status);
+    setShowStatusOptions(false);
   };
 
   // Handle payment option selection
@@ -80,8 +122,19 @@ const ListView = ({
     setSelectedProjectId(projectId);
   };
 
+  // Handle dropdown visibility
+  const toggleStatusDropdown = () => {
+    setShowStatusOptions(!showStatusOptions);
+    setShowSortOptions(false); // Close sort dropdown
+  };
+
+  const toggleSortDropdown = () => {
+    setShowSortOptions(!showSortOptions);
+    setShowStatusOptions(false); // Close status dropdown
+  };
+
   useEffect(() => {
-    if (!projects) return; // Ensure projects exist
+    if (!projects) return;
 
     // Filter projects based on the search term and filter status
     const filtered = projects.filter((project) => {
@@ -95,16 +148,44 @@ const ListView = ({
     });
 
     // Sort projects based on the selected sort order
-    const sorted = [...filtered].sort((a, b) => {
-      const dateA = new Date(a.startDate);
-      const dateB = new Date(b.startDate);
+    let sorted = [...filtered];
 
-      if (sortOrder === "asc") {
+    if (sortOrder === "default") {
+      // Default sorting
+      const statusOrder = { Ongoing: 1, Pending: 2, Completed: 3 };
+      sorted.sort((a, b) => {
+        const statusA = statuses[a.id] || "Pending";
+        const statusB = statuses[b.id] || "Pending";
+
+        if (statusOrder[statusA] !== statusOrder[statusB]) {
+          return statusOrder[statusA] - statusOrder[statusB];
+        }
+        return 0;
+      });
+    } else if (sortOrder === "name") {
+      // Sort alphabetically
+      sorted.sort((a, b) => {
+        const nameA = a.projectName.toLowerCase();
+        const nameB = b.projectName.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+    } else if (sortOrder === "asc") {
+      // Ascending
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
         return dateA - dateB;
-      } else {
+      });
+    } else if (sortOrder === "desc") {
+      // Descending
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
         return dateB - dateA;
-      }
-    });
+      });
+    }
 
     setFilteredProjects(sorted);
   }, [searchTerm, projects, filterStatus, statuses, sortOrder]);
@@ -126,71 +207,50 @@ const ListView = ({
         <div className="sorting-button-container">
           <button
             className="action-button"
-            onClick={() => setShowStatusOptions(!showStatusOptions)}
+            onClick={toggleStatusDropdown}
+            ref={statusButtonRef}
           >
-            <FaSort style={{ marginRight: "8px" }} /> {filterStatus || "Status"}
+            <FaTasks size={20} style={{ marginRight: "13px" }} />
+            <span style={{ fontSize: "15px" }}>Status</span> {/* Always show "Status" */}
           </button>
-          {showStatusOptions && (
-            <div className="sorting-dropdown">
-              <button onClick={() => handleStatusOptionClick(null)}>All</button>
-              <button onClick={() => handleStatusOptionClick("Ongoing")}>Ongoing</button>
-              <button onClick={() => handleStatusOptionClick("Completed")}>Completed</button>
-              <button onClick={() => handleStatusOptionClick("Pending")}>Pending</button>
-            </div>
-          )}
+          <div
+            className={`sorting-dropdown ${showStatusOptions ? "visible" : ""}`}
+            ref={statusDropdownRef}
+          >
+            <button onClick={() => handleStatusOptionClick(null)}>All</button>
+            <button onClick={() => handleStatusOptionClick("Ongoing")}>Ongoing</button>
+            <button onClick={() => handleStatusOptionClick("Completed")}>Completed</button>
+            <button onClick={() => handleStatusOptionClick("Pending")}>Pending</button>
+          </div>
         </div>
 
-        <div className="payment-button-container">
-          <button
-            className="action-button"
-            onClick={() => setShowPaymentOptions(!showPaymentOptions)}
-          >
-            <FaMoneyBillWave style={{ marginRight: "8px" }} />Payment
-          </button>
-          {showPaymentOptions && (
-            <div className="payment-dropdown">
-              <button onClick={() => handlePaymentOptionClick("Not Paid")}>Not Paid</button>
-              <button onClick={() => handlePaymentOptionClick("Partial Payment")}>
-                Partial Payment
-              </button>
-              <button onClick={() => handlePaymentOptionClick("Paid")}>Paid</button>
-            </div>
-          )}
-        </div>
-
-        <button className="action-button">
-          <FaExclamationTriangle style={{ marginRight: "8px" }} /> Past Due
-        </button>
-
-        {/* Sorting dropdown for Ascending/Descending */}
+        {/* Sorting dropdown for Default, Name, Ascending, Descending */}
         <div className="sorting-button-container">
           <button
             className="action-button"
-            onClick={() => setShowSortOptions(!showSortOptions)}
+            onClick={toggleSortDropdown}
+            ref={sortButtonRef}
           >
-            
-            {sortOrder === "asc" ? (
-              <span>
-                <FaArrowUp style={{ marginRight: "4px" }} />
-                Ascending
-              </span>
-            ) : (
-              <span>
-                <FaArrowDown style={{ marginRight: "4px" }} />
-                Descending
-              </span>
-            )}
+            <TbArrowsSort size={20} style={{ marginRight: "13px" }} />
+            <span style={{ fontSize: "15px" }}>Sort</span> {/* Always show "Sort" */}
           </button>
-          {showSortOptions && (
-            <div className="sorting-dropdown">
-              <button onClick={() => handleSortOptionClick("asc")}>
-                <FaArrowUp style={{ marginRight: "8px" }} /> Ascending
-              </button>
-              <button onClick={() => handleSortOptionClick("desc")}>
-                <FaArrowDown style={{ marginRight: "8px" }} /> Descending
-              </button>
-            </div>
-          )}
+          <div
+            className={`sorting-dropdown ${showSortOptions ? "visible" : ""}`}
+            ref={sortDropdownRef}
+          >
+            <button onClick={() => handleSortOptionClick("default")}>
+              Default
+            </button>
+            <button onClick={() => handleSortOptionClick("name")}>
+              Name
+            </button>
+            <button onClick={() => handleSortOptionClick("asc")}>
+              Ascending
+            </button>
+            <button onClick={() => handleSortOptionClick("desc")}>
+              Descending
+            </button>
+          </div>
         </div>
       </div>
 
@@ -202,18 +262,15 @@ const ListView = ({
               <th>Project</th>
               <th>Client</th>
               <th>Progress</th>
-              
               <th>Planned <br /> Duration</th>
-              
+              <th>Actual <br /> Start</th>
+              <th>Actual <br /> Finish</th>
               <th>Professional <br /> Fee</th>
               <th>Downpayment</th>
               <th>Total</th>
-              <th>Actual <br /> Start</th>
-              <th>Actual <br /> Finish</th>
               <th>Payment <br /> Status</th>
               <th>Status</th>
-              
-              <th></th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -234,7 +291,7 @@ const ListView = ({
                   <td title={project.description}>{project.projectName}</td>
                   <td title={project.clientName}>{project.clientName}</td>
 
-                  {/*professional fee */}
+                  {/* Progress */}
                   <td>
                     {(() => {
                       const { total = 0, completed = 0 } =
@@ -244,8 +301,8 @@ const ListView = ({
                       return `${progress}%`;
                     })()}
                   </td>
-                  
 
+                  {/* Planned Duration */}
                   <td>
                     <div title={formatDate(project.startDate)}>
                       {formatDate(project.startDate)}
@@ -255,6 +312,16 @@ const ListView = ({
                       {formatDate(project.endDate)}
                     </div>
                   </td>
+
+                  {/* Actual Start and Finish */}
+                  <td title={startDate ? formatDate(startDate) : "--"}>
+                    {startDate ? formatDate(startDate) : "--"}
+                  </td>
+                  <td title={finishDate ? formatDate(finishDate) : "--"}>
+                    {finishDate ? formatDate(finishDate) : "--"}
+                  </td>
+
+                  {/* Professional Fee, Downpayment, Total */}
                   <td className="right-align" title={formatCurrency(project.contractPrice)}>
                     {formatCurrency(project.contractPrice)}
                   </td>
@@ -264,17 +331,11 @@ const ListView = ({
                   <td className="right-align" title={formatCurrency(totalTasks[project.id])}>
                     {formatCurrency(totalTasks[project.id])}
                   </td>
-                  <td title={startDate ? formatDate(startDate) : "--"}>
-                    {startDate ? formatDate(startDate) : "--"}
-                  </td>
-                  <td title={finishDate ? formatDate(finishDate) : "--"}>
-                    {finishDate ? formatDate(finishDate) : "--"}
-                  </td>
 
-                  {/*Paid */}
+                  {/* Payment Status */}
                   <td>Paid</td>
 
-                  {/*status */}
+                  {/* Status Dropdown */}
                   <td>
                     <select
                       value={statuses[project.id] || "Pending"}
@@ -334,27 +395,27 @@ const ListView = ({
                       )}
                     </select>
                   </td>
-                  
 
-                  {/*action buttons */}
+                  {/* Action Buttons */}
                   <td>
-                    <div className="button-group">
-                      <button
-                        className="btn-edit"
-                        onClick={(e) => handleEditClick(e, project.id)}
-                      >
-                        {" "}
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      <button
-                        className="btn-delete"
-                        onClick={(e) => handleDeleteClick(e, project.id)}
-                      >
-                        {" "}
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </td>
+  <div className="button-group">
+    {/* Edit Button */}
+    <button
+      className="btn-edit"
+      onClick={(e) => handleEditClick(e, project.id)}
+    >
+      <AiOutlineEdit style={{ fontSize: "1.5rem" }} /> {/* Apply style here */}
+    </button>
+
+    {/* Delete Button */}
+    <button
+      className="btn-delete"
+      onClick={(e) => handleDeleteClick(e, project.id)}
+    >
+      <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} /> {/* Apply style here */}
+    </button>
+  </div>
+</td>
                 </tr>
               );
             })}
