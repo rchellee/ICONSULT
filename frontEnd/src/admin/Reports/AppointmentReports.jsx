@@ -137,14 +137,15 @@ const AppointmentReports = () => {
   }));
 
   const appointmentsByPlatform = [
-    "In-Person",
-    "Zoom",
-    "Google Meet",
-    "Phone Call",
-    "Microsoft Teams",
+    { name: "In-Person", color: "#2E86C1" },
+    { name: "Zoom", color: "#28B463" },
+    { name: "Google Meet", color: "#D4AC0D" },
+    { name: "Phone Call", color: "#A569BD" },
+    { name: "Microsoft Teams", color: "#E74C3C" },
   ].map((platform) => ({
-    name: platform,
-    value: filteredAppointments.filter((a) => a.platform === platform).length,
+    name: platform.name,
+    value: filteredAppointments.filter((a) => a.platform === platform.name).length,
+    color: platform.color,
   }));
 
   const appointmentsByConsultationType = [
@@ -174,22 +175,21 @@ const AppointmentReports = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Appointment Reports</h2>
-      <div className="flex space-x-4 mb-4">
+      <div className="filter-container">
         <input
           type="date"
-          className="border p-2"
+          className="filter-input"
           onChange={(e) =>
             setFilters({ ...filters, startDate: e.target.value })
           }
         />
         <input
           type="date"
-          className="border p-2"
+          className="filter-input"
           onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
         />
         <select
-          className="border p-2"
+          className="filter-select"
           value={filters.clientId}
           onChange={(e) => setFilters({ ...filters, clientId: e.target.value })}
         >
@@ -202,78 +202,19 @@ const AppointmentReports = () => {
         </select>
       </div>
 
-      <div id="summary-section" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">
-          Total Appointments: {totalAppointments}
-        </h3>
-        <h3 className="text-lg font-semibold">
-          Appointments This Month: {currentMonthAppointments}
-        </h3>
-      </div>
+      <div id="summary-section">
+  <div className="summary-box">
+    <h2 className="summary-title">Total Appointments</h2>
+    <p className="summary-value">{totalAppointments}</p>
+  </div>
+  <div className="summary-box">
+    <h2 className="summary-title">Appointments This Month</h2>
+    <p className="summary-value">{currentMonthAppointments}</p>
+  </div>
+</div>
 
-      {!filters.clientId && (
-        <div
-          id="appointments-client"
-          className="bg-white p-4 shadow rounded-lg"
-        >
-          <h3 className="text-lg font-semibold">Appointments per Client</h3>
-          <PieChart width={1000} height={500}>
-            <Pie
-              data={appointmentsByClient}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={250}
-            >
-              {appointmentsByClient.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={["#8884d8", "#82ca9d"][index % 2]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </div>
-      )}
 
-      <div
-        id="appointments-platform"
-        className="bg-white p-4 shadow rounded-lg"
-      >
-        <h3 className="text-lg font-semibold">Appointments by Platform</h3>
-        <BarChart width={1000} height={500} data={appointmentsByPlatform}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
-        </BarChart>
-      </div>
-
-      <div
-        id="appointments-consultation"
-        className="bg-white p-4 shadow rounded-lg"
-      >
-        <h3 className="text-lg font-semibold">
-          Appointments by Consultation Type
-        </h3>
-        <BarChart
-          width={1500}
-          height={500}
-          data={appointmentsByConsultationType}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#82ca9d" />
-        </BarChart>
-      </div>
-
+      {/* Button  */}
       <div className="mt-4 flex space-x-4">
         <CSVLink
           data={appointments}
@@ -289,7 +230,86 @@ const AppointmentReports = () => {
           Export PDF
         </button>
       </div>
+
+  {/* Charts Section */}
+<div id="report-content" className="charts-container">
+
+  {/* Appointments per Client */}
+  {!filters.clientId && (
+    <div className="chart-box">
+      <h3 className="chart-title">Appointments per Client</h3>
+      <p className="chart-description">
+        Overview of client appointments in percentage format.
+      </p>
+      <div className="chart-scroll">
+        <PieChart width={600} height={350}>
+          <Pie
+            data={appointmentsByClient}
+            dataKey="value"
+            cx="50%"
+            cy="50%"
+            outerRadius={120}
+            label={({ percent }) => percent > 0 ? `${(percent * 100).toFixed(0)}%` : ""}
+            animationDuration={800}
+          >
+            {appointmentsByClient.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={["#3498DB", "#1ABC9C", "#F39C12", "#8E44AD", "#E74C3C"][index % 5]} />
+            ))}
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </div>
     </div>
+  )}
+
+  {/* Appointments by Platform */}
+  <div className="chart-box">
+    <h3 className="chart-title">Appointments by Platform</h3>
+    <p className="chart-description">
+      Distribution of appointments across various platforms.
+    </p>
+    <div className="chart-scroll">
+      <BarChart width={700} height={350} data={appointmentsByPlatform}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} />
+        <Tooltip cursor={{ fill: "rgba(0, 0, 0, 0.1)" }} />
+        <Legend wrapperStyle={{ paddingBottom: "10px" }} />
+        <Bar dataKey="value">
+          {appointmentsByPlatform.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.color} />
+          ))}
+        </Bar>
+      </BarChart>
+    </div>
+  </div>
+
+</div>
+
+{/* Appointments by Consultation Type */}
+<div id="appointments-consultation" className="chart-box">
+  <h3 className="chart-title">Consultation Type Overview</h3>
+  <p className="chart-description">
+    Breakdown of appointments by consultation type.
+  </p>
+  <div className="chart-scroll">
+    <BarChart width={1400} height={450} data={appointmentsByConsultationType}>
+      <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+      <XAxis dataKey="name" angle={-20} textAnchor="end" interval={0} height={120} tick={{ fontSize: 12 }} />
+      <YAxis tick={{ fontSize: 12 }} />
+      <Tooltip cursor={{ fill: "rgba(0, 0, 0, 0.1)" }} />
+      <Legend wrapperStyle={{ paddingBottom: "10px" }} />
+      <Bar dataKey="value">
+        {appointmentsByConsultationType.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={["#3498DB", "#1ABC9C", "#F39C12", "#8E44AD", "#E74C3C"][index % 5]} />
+        ))}
+      </Bar>
+    </BarChart>
+  </div>
+</div>
+</div>
+      
+    
   );
 };
 

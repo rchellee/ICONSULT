@@ -2396,11 +2396,29 @@ app.get("/appointmentReports", (req, res) => {
 });
 //clients
 app.get("/clientsReports", (req, res) => {
-  const year = req.query.year || new Date().getFullYear();
-  const sql = "SELECT * FROM client WHERE YEAR(created_at) = ?";
-  db.query(sql, [year], (err, data) => {
-    if (err) return res.json(err);
-    return res.json(data);
+  const sql = `
+    SELECT c.id, c.firstName, c.lastName, p.id as projectId, p.projectName, p.status 
+    FROM client c 
+    LEFT JOIN project p ON c.id = p.clientId AND p.isDeleted = 0
+    WHERE p.status != 'Completed' OR p.status IS NULL
+  `;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+
+    const clientsMap = new Map();
+    data.forEach(row => {
+      if (!clientsMap.has(row.id)) {
+        clientsMap.set(row.id, { id: row.id, firstName: row.firstName, lastName: row.lastName, projects: [] });
+      }
+      if (row.projectId) {
+        clientsMap.get(row.id).projects.push({ id: row.projectId, projectName: row.projectName });
+      }
+    });
+
+    // Only return clients that have at least one active project
+    const filteredClients = Array.from(clientsMap.values()).filter(client => client.projects.length > 0);
+
+    return res.json(filteredClients);
   });
 });
 
