@@ -475,7 +475,6 @@ const ClientsReports = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Clients Reports</h2>
       <div className="flex space-x-4 mb-4">
         <input
           type="date"
@@ -539,127 +538,138 @@ const ClientsReports = () => {
         </div>
       </div>
 
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">
-          Clients Per Month ({selectedYear})
-        </h3>
-        <div className="mb-4">
-          <label className="mr-2">Select Year:</label>
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="border p-2"
-          >
-            {Array.from(
-              { length: new Date().getFullYear() - 2023 },
-              (_, i) => 2024 + i
-            ).map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <LineChart width={600} height={300} data={clientsByMonth}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="value" stroke="#8884d8" />
-        </LineChart>
-      </div>
-
-      <table className="min-w-full bg-white border border-gray-200">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">Client Name</th>
-            <th className="border px-4 py-2">Active Projects</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clientProjects.map((client) => (
-            <tr key={client.id}>
-              <td className="border px-4 py-2">
-                {client.firstName} {client.lastName}
-              </td>
-              <td className="border px-4 py-2">
-                {client.projects.length > 0 ? (
-                  <ul>
-                    {client.projects.map((project) => (
-                      <li key={project.id}>{project.projectName}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  "No Active Projects"
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Clients by Age</h3>
-
-        <BarChart width={500} height={300} data={clientsByAge}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
-        </BarChart>
-      </div>
-
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Clients by Gender</h3>
-
-        <PieChart width={400} height={300}>
-          <Pie
-            data={clientsByGender}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-          >
-            {clientsByGender.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={["#8884d8", "#82ca9d"][index]}
-              />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </div>
-
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Active vs Inactive Clients</h3>
-        <PieChart width={400} height={300}>
-          <Pie
-            data={clientsByStatus}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-          >
-            {clientsByStatus.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={["#8884d8", "#FF8042"][index]}
-              />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </div>
+      <div className="clients-month-container">
+  {/* Clients Per Month Chart */}
+  <div className="clients-chart-box">
+    <h3 className="clients-chart-title">Clients Per Month ({selectedYear})</h3>
+    
+    <div className="year-selector">
+      <label>Select Year:</label>
+      <select
+        value={selectedYear}
+        onChange={(e) => setSelectedYear(Number(e.target.value))}
+        className="year-dropdown"
+      >
+        {Array.from(
+          { length: new Date().getFullYear() - 2023 },
+          (_, i) => 2024 + i
+        ).map((year) => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </select>
     </div>
+
+    <LineChart width={1000} height={300} data={clientsByMonth}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="month" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Line type="monotone" dataKey="value" stroke="#4CAF50" strokeWidth={2} />
+    </LineChart>
+  </div>
+
+  {/* Clients Projects Table */}
+  <div className="table-box">
+    <h3 className="chart-title">Client Projects</h3>
+    
+    <table className="styled-table">
+      <thead>
+        <tr>
+          <th>Client Name</th>
+          <th>Active Projects</th>
+        </tr>
+      </thead>
+      <tbody>
+        {clientProjects.map((client) => (
+          <tr key={client.id}>
+            <td>{client.firstName} {client.lastName}</td>
+            <td>
+              {client.projects.length > 0 ? (
+                <ul className="project-list">
+                  {client.projects.map((project) => (
+                    <li key={project.id}>{project.projectName}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="no-projects">No Active Projects</span>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+      {/* Clients by Age */}
+      <div className="charts-container">
+  <div className="chart-box">
+    <h3 className="chart-title">Clients by Age</h3>
+    
+    {/* Scrollable Container */}
+    <div className="chart-scroll">
+      <BarChart width={800} height={300} data={clientsByAge}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Bar dataKey="value" fill="#4CAF50" />
+      </BarChart>
+    </div>
+  </div>
+
+
+  {/* Clients by Gender */}
+  <div className="chart-box">
+    <h3 className="chart-title">Clients by Gender</h3>
+    <PieChart width={400} height={300}>
+      <Pie
+        data={clientsByGender}
+        dataKey="value"
+        nameKey="name"
+        cx="50%"
+        cy="50%"
+        outerRadius={110}
+        label
+      >
+        {clientsByGender.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={["#0088FE", "#FF69B4"][index]} />
+        ))}
+      </Pie>
+      <Tooltip />
+      <Legend />
+    </PieChart>
+  </div>
+
+  {/* Active vs Inactive Clients */}
+  <div className="chart-box">
+    <h3 className="chart-title">Active vs Inactive Clients</h3>
+    <PieChart width={400} height={300}>
+      <Pie
+        data={clientsByStatus}
+        dataKey="value"
+        nameKey="name"
+        cx="50%"
+        cy="50%"
+        outerRadius={110}
+        label
+      >
+        {clientsByStatus.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={["#4CAF50", "#FF5252"][index]} />
+        ))}
+      </Pie>
+      <Tooltip />
+      <Legend />
+    </PieChart>
+  </div>
+</div>
+</div>
+
+
   );
 };
 

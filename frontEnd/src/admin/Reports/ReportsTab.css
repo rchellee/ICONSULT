@@ -48,18 +48,47 @@ select:focus {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-.filter-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
+/* Filter Container with Grid */
+.filter-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Auto-adjusting columns */
+  gap: 16px; /* Space between elements */
   background: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e1e1e1;
-  margin-bottom: 24px;
+  padding: 16px;
+
+  align-items: center;
+}
+
+/* Input and Select Styling */
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+/* Hover and Focus Effects */
+.filter-input:hover,
+.filter-select:hover {
+  border-color: #007bff;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filter-container {
+    grid-template-columns: 1fr; /* Single column layout on smaller screens */
+    gap: 10px;
+  }
 }
 
 
@@ -170,8 +199,6 @@ select:focus {
   transition: transform 0.2s ease-in-out;
 }
 
-
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .flex {
@@ -184,7 +211,167 @@ select:focus {
   }
 }
 
-/* ------------------------------------------------- */
+/* --------------------- Clients ---------------------------- */
+/* ---- Main Container ---- */
+.clients-month-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(to right, #f9f9f9, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ---- Chart Box ---- */
+.chart-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* ---- Titles ---- */
+.chart-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* ---- Year Dropdown ---- */
+.year-selector {
+  margin-bottom: 15px;
+}
+
+.year-selector label {
+  font-weight: bold;
+  margin-right: 10px;
+  color: #555;
+}
+
+.year-dropdown {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #fff;
+  transition: 0.3s;
+}
+
+.year-dropdown:hover {
+  border-color: #4CAF50;
+}
+
+/* ---- Table Box ---- */
+.table-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ---- Styled Table ---- */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.styled-table th, .styled-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.styled-table th {
+  background: #13436c;
+  color: white;
+  font-weight: bold;
+}
+
+.styled-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+/* ---- Project List ---- */
+.project-list {
+  padding-left: 15px;
+  list-style-type: disc;
+  color: #333;
+}
+
+.no-projects {
+  color: red;
+  font-style: italic;
+}
+/* ---- Main Chart Container ---- */
+.client-scharts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(to right, #f9f9f9, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ---- Chart Boxes ---- */
+.clients-chart-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* ---- Titles ---- */
+.client-chart-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* ---- Responsive Design ---- */
+@media (max-width: 768px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Responsive Design ---- */
+@media (max-width: 768px) {
+  .clients-month-container {
+    padding: 15px;
+  }
+
+  .chart-box, .table-box {
+    padding: 15px;
+  }
+
+  .year-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .year-dropdown {
+    width: 100%;
+  }
+
+  .styled-table th, .styled-table td {
+    font-size: 14px;
+  }
+}
+
+/* ---------------------------------------------------- */
 .overview-statistics {
   display: flex;
   flex-wrap: wrap;
