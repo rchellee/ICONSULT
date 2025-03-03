@@ -2392,6 +2392,33 @@ app.get("/appointmentReports", (req, res) => {
     return res.json(data);
   });
 });
+//clients
+app.get("/clientsReports", (req, res) => {
+  const sql = `
+    SELECT c.id, c.firstName, c.lastName, p.id as projectId, p.projectName, p.status 
+    FROM client c 
+    LEFT JOIN project p ON c.id = p.clientId AND p.isDeleted = 0
+    WHERE p.status != 'Completed' OR p.status IS NULL
+  `;
+  db.query(sql, (err, data) => {
+    if (err) return res.status(500).json(err);
+
+    const clientsMap = new Map();
+    data.forEach(row => {
+      if (!clientsMap.has(row.id)) {
+        clientsMap.set(row.id, { id: row.id, firstName: row.firstName, lastName: row.lastName, projects: [] });
+      }
+      if (row.projectId) {
+        clientsMap.get(row.id).projects.push({ id: row.projectId, projectName: row.projectName });
+      }
+    });
+
+    // Only return clients that have at least one active project
+    const filteredClients = Array.from(clientsMap.values()).filter(client => client.projects.length > 0);
+
+    return res.json(filteredClients);
+  });
+});
 
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {

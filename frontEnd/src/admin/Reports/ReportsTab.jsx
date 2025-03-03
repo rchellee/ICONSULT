@@ -14,34 +14,7 @@ import "./ReportsTab.css";
 
 const ReportsTab = () => {
   const [reportType, setReportType] = useState("appointments");
-  const [data, setData] = useState([]);
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    status: "",
-  });
 
-  useEffect(() => {
-    fetchReportData();
-  }, [reportType, filters]);
-
-  const fetchReportData = async () => {
-    try {
-      const response = await axios.get(
-        `/api/reports?type=${reportType}&startDate=${filters.startDate}&endDate=${filters.endDate}&status=${filters.status}`
-      );
-      setData(response.data);
-    } catch (error) {
-      console.error("Error fetching report data", error);
-    }
-  };
-
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.text(`${reportType.toUpperCase()} REPORT`, 20, 10);
-    doc.autoTable({ html: "#report-table" });
-    doc.save(`${reportType}-report.pdf`);
-  };
 
   return (
     <div>
