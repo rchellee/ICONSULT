@@ -71,6 +71,52 @@ const ClientsReports = () => {
     };
   };
 
+  const activeClients = clients.filter((c) => c.status === "active");
+  const inactiveClients = clients.filter((c) => c.status === "inactive");
+  const newClientsThisMonth = clients.filter(
+    (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
+  ).length;
+
+  const clientsByAge = [
+    {
+      name: "18-25",
+      value: clients.filter((c) => c.age >= 18 && c.age <= 25).length,
+    },
+    {
+      name: "26-35",
+      value: clients.filter((c) => c.age >= 26 && c.age <= 35).length,
+    },
+    {
+      name: "36-50",
+      value: clients.filter((c) => c.age >= 36 && c.age <= 50).length,
+    },
+    { name: "51+", value: clients.filter((c) => c.age > 50).length },
+  ];
+
+  const clientsByGender = [
+    { name: "Male", value: clients.filter((c) => c.gender === "Male").length },
+    {
+      name: "Female",
+      value: clients.filter((c) => c.gender === "Female").length,
+    },
+  ];
+
+  const clientsByStatus = [
+    { name: "Active", value: activeClients.length },
+    { name: "Inactive", value: inactiveClients.length },
+  ];
+
+  const clientsByMonth = Array.from({ length: 12 }, (_, index) => {
+    return {
+      month: new Date(0, index).toLocaleString("default", { month: "short" }),
+      value: clients.filter(
+        (c) =>
+          new Date(c.created_at).getFullYear() === selectedYear &&
+          new Date(c.created_at).getMonth() === index
+      ).length,
+    };
+  });
+
   const exportPDF = async (data, title) => {
     if (data.length === 0) {
       alert("No data available to export.");
@@ -96,12 +142,12 @@ const ClientsReports = () => {
         const clientData = groupedClients[ageRange];
         if (clientData.length > 0) {
           autoTable(doc, {
-            head: [["ID", "Name", "Age", "Gender", "Email"]],
+            head: [["ID", "Name", "Age", "Comapny Name", "Email"]],
             body: clientData.map((c) => [
               c.id,
               `${c.firstName} ${c.lastName}`,
               c.age,
-              c.gender,
+              c.companyName,
               c.email_add,
             ]),
             startY: 30,
@@ -112,19 +158,17 @@ const ClientsReports = () => {
         }
       });
     } else if (title.includes("Clients by Gender")) {
-      const maleClients = data.filter((c) => c.gender === "Male");
-      const femaleClients = data.filter((c) => c.gender === "Female");
-
-      // Male Clients Table
+      // Male Clients
+      const maleClients = clients.filter((c) => c.gender === "Male");
       doc.text("Male Clients", 14, 20);
       if (maleClients.length > 0) {
         autoTable(doc, {
-          head: [["ID", "Name", "Age", "Gender", "Email"]],
+          head: [["ID", "Name", "Age", "Company Name", "Email"]],
           body: maleClients.map((c) => [
             c.id,
             `${c.firstName} ${c.lastName}`,
             c.age,
-            c.gender,
+            c.companyName,
             c.email_add,
           ]),
           startY: 30,
@@ -134,18 +178,19 @@ const ClientsReports = () => {
         doc.text("No Male Clients.", 14, 30);
       }
 
-      doc.addPage(); // Separate page for Female Clients
+      doc.addPage();
 
-      // Female Clients Table
+      // Female Clients
+      const femaleClients = clients.filter((c) => c.gender === "Female");
       doc.text("Female Clients", 14, 20);
       if (femaleClients.length > 0) {
         autoTable(doc, {
-          head: [["ID", "Name", "Age", "Gender", "Email"]],
+          head: [["ID", "Name", "Age", "Company Name", "Email"]],
           body: femaleClients.map((c) => [
             c.id,
             `${c.firstName} ${c.lastName}`,
             c.age,
-            c.gender,
+            c.companyName,
             c.email_add,
           ]),
           startY: 30,
@@ -154,6 +199,57 @@ const ClientsReports = () => {
       } else {
         doc.text("No Female Clients.", 14, 30);
       }
+    } else if (title.includes("Active vs Inactive Clients")) {
+      doc.text("Active Clients", 14, 20);
+      if (activeClients.length > 0) {
+        autoTable(doc, {
+          head: [["ID", "Name", "Age", "Company Name", "Email"]],
+          body: activeClients.map((c) => [
+            c.id,
+            `${c.firstName} ${c.lastName}`,
+            c.age,
+            c.companyName,
+            c.email_add,
+          ]),
+          startY: 30,
+          theme: "grid",
+        });
+      } else {
+        doc.text("No Active Clients.", 14, 30);
+      }
+
+      doc.addPage();
+      doc.text("Inactive Clients", 14, 20);
+      if (inactiveClients.length > 0) {
+        autoTable(doc, {
+          head: [["ID", "Name", "Age", "Company Name", "Email"]],
+          body: inactiveClients.map((c) => [
+            c.id,
+            `${c.firstName} ${c.lastName}`,
+            c.age,
+            c.companyName,
+            c.email_add,
+          ]),
+          startY: 30,
+          theme: "grid",
+        });
+      } else {
+        doc.text("No Inactive Clients.", 14, 30);
+      }
+    } else if (title.includes("Client Projects")) {
+      doc.text("Client Projects", 14, 20);
+
+      autoTable(doc, {
+        head: [["ID", "First Name", "Last Name", "Projects"]],
+        body: data.map((client) => [
+          client.id,
+          client.firstName,
+          client.lastName,
+          client.projects.map((p) => p.projectName).join(", "), // Extract project names
+        ]),
+        startY: 20,
+        theme: "grid",
+      });
     } else {
       // General Table Export
       const headers = Object.keys(data[0]).map((key) => ({
@@ -210,65 +306,19 @@ const ClientsReports = () => {
     doc.save(`${title.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
 
-  const activeClients = clients.filter((c) => c.status === "active").length;
-  const inactiveClients = clients.filter((c) => c.status === "inactive").length;
-  const newClientsThisMonth = clients.filter(
-    (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
-  ).length;
-
-  const clientsByAge = [
-    {
-      name: "18-25",
-      value: clients.filter((c) => c.age >= 18 && c.age <= 25).length,
-    },
-    {
-      name: "26-35",
-      value: clients.filter((c) => c.age >= 26 && c.age <= 35).length,
-    },
-    {
-      name: "36-50",
-      value: clients.filter((c) => c.age >= 36 && c.age <= 50).length,
-    },
-    { name: "51+", value: clients.filter((c) => c.age > 50).length },
-  ];
-
-  const clientsByGender = [
-    { name: "Male", value: clients.filter((c) => c.gender === "Male").length },
-    {
-      name: "Female",
-      value: clients.filter((c) => c.gender === "Female").length,
-    },
-  ];
-
-  const clientsByStatus = [
-    { name: "Active", value: activeClients },
-    { name: "Inactive", value: inactiveClients },
-  ];
-
-  const clientsByMonth = Array.from({ length: 12 }, (_, index) => {
-    return {
-      month: new Date(0, index).toLocaleString("default", { month: "short" }),
-      value: clients.filter(
-        (c) =>
-          new Date(c.created_at).getFullYear() === selectedYear &&
-          new Date(c.created_at).getMonth() === index
-      ).length,
-    };
-  });
-
   const exportCSVData = () => {
     const groupedClients = groupClientsByAgeRange();
     let csvData = [];
 
     Object.keys(groupedClients).forEach((ageRange) => {
       csvData.push([`Age Range: ${ageRange}`]);
-      csvData.push(["ID", "Name", "Age", "Gender", "Email"]);
+      csvData.push(["ID", "Name", "Age", "Company Name", "Email"]);
       groupedClients[ageRange].forEach((c) => {
         csvData.push([
           c.id,
           `${c.firstName} ${c.lastName}`,
           c.age,
-          c.gender,
+          c.companyName,
           c.email_add,
         ]);
       });
@@ -276,6 +326,98 @@ const ClientsReports = () => {
     });
 
     return csvData;
+  };
+
+  const exportGenderCSVData = () => {
+    let csvData = [];
+
+    // Male Clients
+    csvData.push(["Male Clients"]);
+    csvData.push([
+      "ID",
+      "First Name",
+      "Last Name",
+      "Age",
+      "Company Name",
+      "Email",
+    ]);
+    clients
+      .filter((c) => c.gender === "Male")
+      .forEach((c) => {
+        csvData.push([
+          c.id,
+          c.firstName,
+          c.lastName,
+          c.age,
+          c.companyName,
+          c.email_add,
+        ]);
+      });
+    csvData.push([]); // Empty row for spacing
+
+    // Female Clients
+    csvData.push(["Female Clients"]);
+    csvData.push([
+      "ID",
+      "First Name",
+      "Last Name",
+      "Age",
+      "Company Name",
+      "Email",
+    ]);
+    clients
+      .filter((c) => c.gender === "Female")
+      .forEach((c) => {
+        csvData.push([
+          c.id,
+          c.firstName,
+          c.lastName,
+          c.age,
+          c.companyName,
+          c.email_add,
+        ]);
+      });
+
+    return csvData;
+  };
+
+  const exportStatusCSVData = () => {
+    let csvData = [];
+    csvData.push(["Active Clients"]);
+    csvData.push(["ID", "Name", "Age", "Comapny Name", "Email"]);
+    activeClients.forEach((c) => {
+      csvData.push([
+        c.id,
+        `${c.firstName} ${c.lastName}`,
+        c.age,
+        c.companyName,
+        c.email_add,
+      ]);
+    });
+    csvData.push([]);
+
+    csvData.push(["Inactive Clients"]);
+    csvData.push(["ID", "Name", "Age", "Comapny Name", "Email"]);
+    inactiveClients.forEach((c) => {
+      csvData.push([
+        c.id,
+        `${c.firstName} ${c.lastName}`,
+        c.age,
+        c.companyName,
+        c.email_add,
+      ]);
+    });
+
+    return csvData;
+  };
+
+  const exportProjectCSVData = () => {
+    return clientProjects.map((client) => ({
+      id: client.id,
+      firstName: client.firstName,
+      lastName: client.lastName,
+      projects: client.projects.map((p) => p.projectName).join(", "), // Extract project names
+    }));
   };
 
   const exportOptions = [
@@ -311,19 +453,23 @@ const ClientsReports = () => {
     },
     { label: "CSV Clients by Age", type: "csv", data: exportCSVData() },
     { label: "PDF Clients by Age", type: "pdf", data: clientsByAge },
-    { label: "CSV Clients by Gender", type: "csv", data: clientsByGender },
+    {
+      label: "CSV Clients by Gender",
+      type: "csv",
+      data: exportGenderCSVData(),
+    },
     { label: "PDF Clients by Gender", type: "pdf", data: clientsByGender },
     {
       label: "CSV Active vs Inactive Clients",
       type: "csv",
-      data: clientsByStatus,
+      data: exportStatusCSVData(),
     },
     {
       label: "PDF Active vs Inactive Clients",
       type: "pdf",
       data: clientsByStatus,
     },
-    { label: "CSV Client Projects", type: "csv", data: clientProjects },
+    { label: "CSV Client Projects", type: "csv", data: exportProjectCSVData() },
     { label: "PDF Client Projects", type: "pdf", data: clientProjects },
   ];
 
@@ -414,16 +560,15 @@ const ClientsReports = () => {
             ))}
           </select>
         </div>
-        <div ref={chartRef}>
-          <LineChart width={600} height={300} data={clientsByMonth}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="value" stroke="#8884d8" />
-          </LineChart>
-        </div>
+
+        <LineChart width={600} height={300} data={clientsByMonth}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="value" stroke="#8884d8" />
+        </LineChart>
       </div>
 
       <table className="min-w-full bg-white border border-gray-200">
@@ -457,41 +602,39 @@ const ClientsReports = () => {
 
       <div className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold">Clients by Age</h3>
-        <div ref={chartRef}>
-          <BarChart width={500} height={300} data={clientsByAge}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
-          </BarChart>
-        </div>
+
+        <BarChart width={500} height={300} data={clientsByAge}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="value" fill="#8884d8" />
+        </BarChart>
       </div>
 
       <div className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold">Clients by Gender</h3>
-        <div ref={chartRef}>
-          <PieChart width={400} height={300}>
-            <Pie
-              data={clientsByGender}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-            >
-              {clientsByGender.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={["#8884d8", "#82ca9d"][index]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </div>
+
+        <PieChart width={400} height={300}>
+          <Pie
+            data={clientsByGender}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={100}
+          >
+            {clientsByGender.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={["#8884d8", "#82ca9d"][index]}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
       </div>
 
       <div className="bg-white p-4 shadow rounded-lg">
