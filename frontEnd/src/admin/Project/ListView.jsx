@@ -204,13 +204,15 @@ const ListView = ({
               <th>Progress</th>
               
               <th>Planned <br /> Duration</th>
+              
               <th>Professional <br /> Fee</th>
               <th>Downpayment</th>
               <th>Total</th>
               <th>Actual <br /> Start</th>
               <th>Actual <br /> Finish</th>
-              <th>Status</th>
               <th>Payment <br /> Status</th>
+              <th>Status</th>
+              
               <th></th>
             </tr>
           </thead>
@@ -231,6 +233,8 @@ const ListView = ({
                 >
                   <td title={project.description}>{project.projectName}</td>
                   <td title={project.clientName}>{project.clientName}</td>
+
+                  {/*professional fee */}
                   <td>
                     {(() => {
                       const { total = 0, completed = 0 } =
@@ -241,6 +245,7 @@ const ListView = ({
                     })()}
                   </td>
                   
+
                   <td>
                     <div title={formatDate(project.startDate)}>
                       {formatDate(project.startDate)}
@@ -265,6 +270,11 @@ const ListView = ({
                   <td title={finishDate ? formatDate(finishDate) : "--"}>
                     {finishDate ? formatDate(finishDate) : "--"}
                   </td>
+
+                  {/*Paid */}
+                  <td>Paid</td>
+
+                  {/*status */}
                   <td>
                     <select
                       value={statuses[project.id] || "Pending"}
@@ -324,79 +334,9 @@ const ListView = ({
                       )}
                     </select>
                   </td>
-                  <td>
-                    <select
-                      value={paymentstatuses[project.id] || "Not Paid"}
-                      onChange={(e) => handlePaymentStatusChange(project.id, e.target.value)}
-                      className={`status-dropdown ${
-                      paymentstatuses[project.id] === "Paid"
-                        ? "paid-status"
-                        : paymentstatuses[project.id] === "Partial Payment"
-                        ? "status-partial-payment"
-                        : ""
-                    }`}
-                      style={{
-                      backgroundColor:
-                        paymentstatuses[project.id] === "Paid"
-                        ? "#3b4f67"
-                        : paymentstatuses[project.id] === "Partial Payment"
-                        ? "#74C69D"
-                        : paymentstatuses[project.id] === "Not Paid"
-                        ? "rgb(252, 118, 118)"
-                        : paymentstatusColors[paymentstatuses[project.id]] || "blue",
-                      color: "white",
-                    }}
-                    >
-                      {paymentstatuses[project.id] === "Not Paid" && (
-                        <>
-                          <option value="Not Paid">
-                            Not Paid
-                            <span className="icon-container">
-                              <MdOutlineArrowDropDown />
-                            </span>
-                          </option>
-                          <option value="Partial Payment">
-                            Partial Payment
-                            <span className="icon-container">
-                              <MdOutlineArrowDropDown />
-                            </span>
-                          </option>
-                        </>
-                      )}
-                      {paymentstatuses[project.id] === "Partial Payment" && (
-                        <>
-                          <option value="Partial Payment">
-                            Partial Payment
-                            <span className="icon-container">
-                              <MdOutlineArrowDropDown />
-                            </span>
-                          </option>
-                          <option value="Paid">
-                            Paid
-                            <span className="icon-container">
-                              <MdOutlineArrowDropDown />
-                            </span>
-                          </option>
-                        </>
-                      )}
-                      {paymentstatuses[project.id] === "Paid" && (
-                        <>
-                          <option value="Partial Payment">
-                            Partial Payment
-                            <span className="icon-container">
-                              <MdOutlineArrowDropDown />
-                            </span>
-                          </option>
-                          <option value="Paid">
-                            Paid
-                            <span className="icon-container">
-                              <MdOutlineArrowDropDown />
-                            </span>
-                          </option>
-                        </>
-                      )}
-                    </select>
-                  </td>
+                  
+
+                  {/*action buttons */}
                   <td>
                     <div className="button-group">
                       <button
