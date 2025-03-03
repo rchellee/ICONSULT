@@ -269,7 +269,7 @@ const ListView = ({
               <th>Downpayment</th>
               <th>Total</th>
               <th>Payment <br /> Status</th>
-              <th>Status</th>
+              <th>Project <br /> Status</th>
               <th>Action</th>
             </tr>
           </thead>
