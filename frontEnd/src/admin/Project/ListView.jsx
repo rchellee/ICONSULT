@@ -7,6 +7,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { FaSort, FaMoneyBillWave, FaExclamationTriangle } from "react-icons/fa";
+import { TbArrowsSort } from "react-icons/tb";
 
 // Utility function to format numbers with ₱ symbol
 const formatCurrency = (amount) => {
@@ -42,8 +43,8 @@ const ListView = ({
 }) => {
   const navigate = useNavigate();
   const { searchTerm } = useContext(SearchContext);
-  const [sortField, setSortField] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [showSortOptions, setShowSortOptions] = useState(false);
   const [showStatusOptions, setShowStatusOptions] = useState(false);
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -54,9 +55,6 @@ const ListView = ({
     setFilterStatus(status); // Directly set the selected filter
     setShowStatusOptions(false); // Close dropdown
   };
-  
-  
-  
 
   // Handle payment option selection
   const handlePaymentOptionClick = (paymentStatus) => {
@@ -65,6 +63,12 @@ const ListView = ({
     }
     setShowPaymentOptions(false);
     setSelectedProjectId(null);
+  };
+
+  // Handle sorting option selection
+  const handleSortOptionClick = (order) => {
+    setSortOrder(order);
+    setShowSortOptions(false);
   };
 
   // Handle row click to set selected project ID
@@ -90,69 +94,20 @@ const ListView = ({
       return matchesSearchTerm && matchesStatus;
     });
 
-    // Sort by createdAt in descending order (newest first)
-    const sorted = [...filtered].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // Sort projects based on the selected sort order
+    const sorted = [...filtered].sort((a, b) => {
+      const dateA = new Date(a.startDate);
+      const dateB = new Date(b.startDate);
 
-    setFilteredProjects(sorted);
-  }, [searchTerm, projects, filterStatus, statuses]); // Add filterStatus and statuses to the dependency array
-
-  // Handle sorting logic (unchanged)
-  const handleSort = (field) => {
-    const newOrder =
-      sortField === field && sortOrder === "asc" ? "desc" : "asc";
-    setSortField(field);
-    setSortOrder(newOrder);
-
-    const sortedProjects = [...filteredProjects].sort((a, b) => {
-      if (field === "createdAt") {
-        return newOrder === "asc"
-          ? new Date(a.createdAt) - new Date(b.createdAt)
-          : new Date(b.createdAt) - new Date(a.createdAt);
-      } else if (field === "progress") {
-        const progressA =
-          tasksInfo[a.id]?.completed / tasksInfo[a.id]?.total || 0;
-        const progressB =
-          tasksInfo[b.id]?.completed / tasksInfo[b.id]?.total || 0;
-        return newOrder === "asc"
-          ? progressA - progressB
-          : progressB - progressA;
-      } else if (field === "plannedDuration") {
-        const startA = new Date(a.startDate);
-        const endA = new Date(a.endDate);
-        const startB = new Date(b.startDate);
-        const endB = new Date(b.endDate);
-        const durationA = endA - startA;
-        const durationB = endB - startB;
-        return newOrder === "asc"
-          ? durationA - durationB
-          : durationB - durationA;
-      } else if (field === "status") {
-        const statusOrder = ["Pending", "Ongoing", "Completed"];
-        return newOrder === "asc"
-          ? statusOrder.indexOf(a[field]) - statusOrder.indexOf(b[field])
-          : statusOrder.indexOf(b[field]) - statusOrder.indexOf(a[field]);
-      } else if (field === "contractPrice") {
-        return newOrder === "asc" ? a[field] - b[field] : b[field] - a[field];
-      } else if (field === "downpayment" || field === "total") {
-        return newOrder === "asc" ? a[field] - b[field] : b[field] - a[field];
-      } else if (field === "paymentStatus") {
-        const statusOrder = ["Not Paid", "Partial Payment", "Paid"];
-        return newOrder === "asc"
-          ? statusOrder.indexOf(a[field]) - statusOrder.indexOf(b[field])
-          : statusOrder.indexOf(b[field]) - statusOrder.indexOf(a[field]);
-      } else if (field === "actualStart" || field === "actualFinish") {
-        const dateA = new Date(a[field]);
-        const dateB = new Date(b[field]);
-        return newOrder === "asc" ? dateA - dateB : dateB - dateA;
+      if (sortOrder === "asc") {
+        return dateA - dateB;
       } else {
-        return newOrder === "asc"
-          ? a[field].localeCompare(b[field])
-          : b[field].localeCompare(a[field]);
+        return dateB - dateA;
       }
     });
 
-    setFilteredProjects(sortedProjects);
-  };
+    setFilteredProjects(sorted);
+  }, [searchTerm, projects, filterStatus, statuses, sortOrder]);
 
   const handleEditClick = (e, projectId) => {
     e.stopPropagation();
@@ -168,23 +123,22 @@ const ListView = ({
     <div>
       {/* Button Container */}
       <div className="sorting-button">
-      <div className="sorting-button-container">
-  <button
-    className="action-button"
-    onClick={() => setShowStatusOptions(!showStatusOptions)}
-  >
-    <FaSort style={{ marginRight: "8px" }} /> {filterStatus || "Status"}
-  </button>
-  {showStatusOptions && (
-    <div className="sorting-dropdown">
-      <button onClick={() => handleStatusOptionClick(null)}>All</button>
-      <button onClick={() => handleStatusOptionClick("Ongoing")}>Ongoing</button>
-      <button onClick={() => handleStatusOptionClick("Completed")}>Completed</button>
-      <button onClick={() => handleStatusOptionClick("Pending")}>Pending</button>
-    </div>
-  )}
-</div>
-
+        <div className="sorting-button-container">
+          <button
+            className="action-button"
+            onClick={() => setShowStatusOptions(!showStatusOptions)}
+          >
+            <FaSort style={{ marginRight: "8px" }} /> {filterStatus || "Status"}
+          </button>
+          {showStatusOptions && (
+            <div className="sorting-dropdown">
+              <button onClick={() => handleStatusOptionClick(null)}>All</button>
+              <button onClick={() => handleStatusOptionClick("Ongoing")}>Ongoing</button>
+              <button onClick={() => handleStatusOptionClick("Completed")}>Completed</button>
+              <button onClick={() => handleStatusOptionClick("Pending")}>Pending</button>
+            </div>
+          )}
+        </div>
 
         <div className="payment-button-container">
           <button
@@ -196,7 +150,9 @@ const ListView = ({
           {showPaymentOptions && (
             <div className="payment-dropdown">
               <button onClick={() => handlePaymentOptionClick("Not Paid")}>Not Paid</button>
-              <button onClick={() => handlePaymentOptionClick("Partial Payment")}>Partial Payment</button>
+              <button onClick={() => handlePaymentOptionClick("Partial Payment")}>
+                Partial Payment
+              </button>
               <button onClick={() => handlePaymentOptionClick("Paid")}>Paid</button>
             </div>
           )}
@@ -205,6 +161,37 @@ const ListView = ({
         <button className="action-button">
           <FaExclamationTriangle style={{ marginRight: "8px" }} /> Past Due
         </button>
+
+        {/* Sorting dropdown for Ascending/Descending */}
+        <div className="sorting-button-container">
+          <button
+            className="action-button"
+            onClick={() => setShowSortOptions(!showSortOptions)}
+          >
+            
+            {sortOrder === "asc" ? (
+              <span>
+                <FaArrowUp style={{ marginRight: "4px" }} />
+                Ascending
+              </span>
+            ) : (
+              <span>
+                <FaArrowDown style={{ marginRight: "4px" }} />
+                Descending
+              </span>
+            )}
+          </button>
+          {showSortOptions && (
+            <div className="sorting-dropdown">
+              <button onClick={() => handleSortOptionClick("asc")}>
+                <FaArrowUp style={{ marginRight: "8px" }} /> Ascending
+              </button>
+              <button onClick={() => handleSortOptionClick("desc")}>
+                <FaArrowDown style={{ marginRight: "8px" }} /> Descending
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Table */}
@@ -215,7 +202,7 @@ const ListView = ({
               <th>Project</th>
               <th>Client</th>
               <th>Progress</th>
-              <th>Date Created</th>
+              
               <th>Planned <br /> Duration</th>
               <th>Professional <br /> Fee</th>
               <th>Downpayment</th>
@@ -253,7 +240,7 @@ const ListView = ({
                       return `${progress}%`;
                     })()}
                   </td>
-                  <td>{new Date(project.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</td>
+                  
                   <td>
                     <div title={formatDate(project.startDate)}>
                       {formatDate(project.startDate)}

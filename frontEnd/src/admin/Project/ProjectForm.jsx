@@ -22,14 +22,19 @@ const ProjectForm = ({
   onCancel,
   onSave,
   editingProjectId,
+  existingCreatedAt,
 }) => {
   const [downpaymentWarning, setDownpaymentWarning] = useState(false);
   const [feeWarning, setFeeWarning] = useState(false);
   const [validationError, setValidationError] = useState("");
 
-  const currentDate = new Date().toLocaleDateString("en-US");
+  const createdAt = existingCreatedAt || new Date().toISOString();
+  const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
-  // Handle downpayment input change (only numeric input allowed)
   const handleDownpaymentChange = (e) => {
     const value = e.target.value;
     if (isNaN(value) && value !== "") {
@@ -40,7 +45,6 @@ const ProjectForm = ({
     }
   };
 
-  // Handle professional fee input change (only numeric input allowed)
   const handleFeeChange = (e) => {
     const value = e.target.value;
     if (isNaN(value) && value !== "") {
@@ -51,22 +55,27 @@ const ProjectForm = ({
     }
   };
 
-  // Handle save action with validation
   const handleSave = () => {
-    if (
-      !projectName ||
-      !clientId ||
-      !startDate ||
-      !endDate ||
-      !description ||
-      !contractPrice
-    ) {
+    if (!projectName || !clientId || !startDate || !endDate || !description || !contractPrice) {
       setValidationError("All fields except Downpayment are required.");
       return;
     }
 
-    setValidationError(""); // Clear error if all fields are valid
-    onSave(); // Call the original onSave function
+    setValidationError("");
+
+    const newProject = {
+      projectName,
+      clientId,
+      clientName,
+      startDate,
+      endDate,
+      description,
+      contractPrice,
+      downpayment,
+      createdAt,
+    };
+
+    onSave(newProject);
   };
 
   return (
@@ -76,7 +85,7 @@ const ProjectForm = ({
           {editingProjectId ? "Edit Project" : "Create Project"}
         </h2>
 
-        <p className="date-created">Date created: {currentDate}</p>
+        <p className="date-created">Date Created: {formattedDate}</p>
 
         <div className="form-project-details">
           <div className="form-modal-field">
@@ -100,9 +109,7 @@ const ProjectForm = ({
                   (client) => client.id === parseInt(selectedClientId)
                 );
                 if (selectedClient) {
-                  setClientName(
-                    `${selectedClient.firstName} ${selectedClient.lastName}`
-                  );
+                  setClientName(`${selectedClient.firstName} ${selectedClient.lastName}`);
                 }
               }}
             >
@@ -117,43 +124,23 @@ const ProjectForm = ({
 
           <div className="form-modal-field">
             <label>Start Date:</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           </div>
 
           <div className="form-modal-field">
             <label>End Date:</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </div>
 
           <div className="form-modal-field">
             <label>Downpayment (Optional):</label>
-            <input
-              type="text"
-              placeholder="₱"
-              value={downpayment}
-              onChange={handleDownpaymentChange}
-            />
-            {downpaymentWarning && (
-              <span className="warning-message">Invalid</span>
-            )}
+            <input type="text" placeholder="₱" value={downpayment} onChange={handleDownpaymentChange} />
+            {downpaymentWarning && <span className="warning-message">Invalid</span>}
           </div>
 
           <div className="form-modal-field">
             <label>Professional Fee:</label>
-            <input
-              type="text"
-              placeholder="₱"
-              value={contractPrice}
-              onChange={handleFeeChange}
-            />
+            <input type="text" placeholder="₱" value={contractPrice} onChange={handleFeeChange} />
             {feeWarning && <span className="warning-message">Invalid</span>}
           </div>
 
@@ -168,9 +155,7 @@ const ProjectForm = ({
           </div>
         </div>
 
-        {validationError && (
-          <div className="validation-error">{validationError}</div>
-        )}
+        {validationError && <div className="validation-error">{validationError}</div>}
 
         <div className="form-create-cancel">
           <button className="form-cancel-project-button" onClick={() => onCancel()}>

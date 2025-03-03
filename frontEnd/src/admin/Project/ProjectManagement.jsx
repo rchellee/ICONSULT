@@ -32,6 +32,7 @@ const ProjectManagement = () => {
   const [downpayment, setDownpayment] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("Not Paid");
   const [filteredProjects, setFilteredProjects] = useState(projects);
+  
 
   useEffect(() => {
     const filtered = projects.filter((project) =>
@@ -303,6 +304,7 @@ const ProjectManagement = () => {
               onCancel={closeModal}
               onSave={handleSave}
               editingProjectId={editingProjectId}
+              
             />
           )}
           {projects.length === 0 ? (
