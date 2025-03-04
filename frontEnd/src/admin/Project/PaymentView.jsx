@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./PaymentView.css"; 
+import "./PaymentView.css";
 
 const PaymentView = () => {
   // Example data
@@ -10,11 +10,11 @@ const PaymentView = () => {
       actualStart: "2023-01-01",
       actualFinish: "2023-06-30",
       professionalFee: 5000,
-      taskFee: 1000, 
-      miscellaneousFee: 500, 
+      taskFee: 1000,
+      miscellaneousFee: 500,
       downpayment: 1000,
-      total: 6500, 
-      paymentStatus: "Paid", 
+      total: 6500,
+      paymentStatus: "Paid",
     },
     {
       project: "Project B",
@@ -23,12 +23,20 @@ const PaymentView = () => {
       actualFinish: "2023-08-15",
       professionalFee: 7000,
       taskFee: 1500,
-      miscellaneousFee: 300, 
+      miscellaneousFee: 300,
       downpayment: 1500,
-      total: 8800, 
-      paymentStatus: "Unpaid", 
+      total: 8800,
+      paymentStatus: "Unpaid",
     },
   ]);
+
+  // State to manage table visibility
+  const [isTableVisible, setIsTableVisible] = useState(true);
+
+  // Function to toggle table visibility
+  const toggleTableVisibility = () => {
+    setIsTableVisible(!isTableVisible);
+  };
 
   const formatCurrency = (amount) => {
     return `₱ ${amount.toLocaleString("en-US", {
@@ -53,55 +61,69 @@ const PaymentView = () => {
   };
 
   return (
-    <div className="parent">
-      <h1 className="header">Payment Transaction</h1>
-      
-      <div className="payment-container">
-        {/* Header Row */}
-        <div className="payment-header">
-          <div className="header-item">Project</div>
-          <div className="header-item">Client</div>
-          <div className="header-item">Actual Start</div>
-          <div className="header-item">Actual Finish</div>
-          <div className="header-item">Professional Fee</div>
-          <div className="header-item">Task Fee</div>
-          <div className="header-item">Misc. Fee</div>
-          <div className="header-item">Downpayment</div>
-          <div className="header-item">Total</div>
-          <div className="header-item">Payment Status</div>
-        </div>
+    <div className="parentito">
+      <h1 className="payment-text-title">Payment Transaction</h1>
 
-        {/* Payment Rows */}
-        {payments.map((payment, index) => (
-          <div className="payment-row" key={index}>
-            <div className="row-item">{payment.project}</div>
-            <div className="row-item">{payment.client}</div>
-            <div className="row-item">{formatDate(payment.actualStart)}</div>
-            <div className="row-item">{formatDate(payment.actualFinish)}</div>
-            <div className="row-item">{formatCurrency(payment.professionalFee)}</div>
-            <div className="row-item">{formatCurrency(payment.taskFee)}</div>
-            <div className="row-item">{formatCurrency(payment.miscellaneousFee)}</div>
-            <div className="row-item">{formatCurrency(payment.downpayment)}</div>
-            <div className="row-item">{formatCurrency(payment.total)}</div>
-            <div className="row-item">
-              <div className="payment-status-dropdown-wrapper">
-                <select
-                  className="payment-status-dropdown"
-                  value={payment.paymentStatus}
-                  onChange={(e) =>
-                    handlePaymentStatusChange(index, e.target.value)
-                  }
-                >
-                  <option value="Paid">Paid</option>
-                  <option value="Partial payment">Partial payment</option>
-                  <option value="Unpaid">Unpaid</option>
-                  <option value="Overdue">Overdue</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        ))}
+      {/* Button to toggle table visibility */}
+      <div className="potaena">
+      <button onClick={toggleTableVisibility} className="toggle-table-button">
+        {isTableVisible ? "Paid ▼" : "Paid ▲"}
+      </button>
       </div>
+
+      {/* Conditionally render the table based on visibility state */}
+      {isTableVisible && (
+        <table className="payment-table">
+          {/* Table Header */}
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Client</th>
+              <th>Date Paid</th>
+              {/*<th>Actual Finish</th>*/}
+              <th className="numeric-column">Professional Fee</th>
+              <th className="numeric-column">Task Fee</th>
+              <th className="numeric-column">Misc. Fee</th>
+              <th className="numeric-column">Downpayment</th>
+              <th className="numeric-column">Total</th>
+              <th>Payment Status</th>
+            </tr>
+          </thead>
+
+          {/* Table Body */}
+          <tbody>
+            {payments.map((payment, index) => (
+              <tr key={index}>
+                <td>{payment.project}</td>
+                <td>{payment.client}</td>
+                <td>{formatDate(payment.actualStart)}</td>
+                {/*<td>{formatDate(payment.actualFinish)}</td>*/}
+                <td className="numeric-column">{formatCurrency(payment.professionalFee)}</td>
+                <td className="numeric-column">{formatCurrency(payment.taskFee)}</td>
+                <td className="numeric-column">{formatCurrency(payment.miscellaneousFee)}</td>
+                <td className="numeric-column">{formatCurrency(payment.downpayment)}</td>
+                <td className="numeric-column">{formatCurrency(payment.total)}</td>
+                <td>
+                  <div className="payment-status-dropdown-wrapper">
+                    <select
+                      className="payment-status-dropdown"
+                      value={payment.paymentStatus}
+                      onChange={(e) =>
+                        handlePaymentStatusChange(index, e.target.value)
+                      }
+                    >
+                      <option value="Paid">Paid</option>
+                      <option value="Partial payment">Partial payment</option>
+                      <option value="Unpaid">Unpaid</option>
+                      <option value="Overdue">Overdue</option>
+                    </select>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

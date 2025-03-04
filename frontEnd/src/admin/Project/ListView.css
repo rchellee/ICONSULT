@@ -1,3 +1,11 @@
+/* Align numeric columns to the right */
+.task-table .numeric-column {
+  text-align: right;
+}
+
+
+
+
 .project-list-wrapper{
   position: relative;
 }

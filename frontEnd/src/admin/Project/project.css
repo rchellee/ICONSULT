@@ -14,7 +14,7 @@
 
 .project-management-page {
   height: 100vh;
-  position: relative;
+  /*position: relative;*/
 }
 .content-project {
   margin-left: 100px;

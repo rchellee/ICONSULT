@@ -188,9 +188,12 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
 
   return (
     <div className="project-form">
+      
       <div className={formStyles.taskFormContainer}>
         <form className={formStyles.taskForm} onSubmit={handleSubmit}>
+        <h1>Create Task</h1>
           <div className={formStyles.taskInputGroup}>
+          
             <div className={formStyles.taskInput}>
               <label htmlFor="taskName">Task Name</label>
               <input
