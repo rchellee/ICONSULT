@@ -14,6 +14,7 @@
 
 .project-management-page {
   height: 100vh;
+  position: relative;
 }
 .content-project {
   margin-left: 100px;
@@ -38,29 +39,54 @@ h1 {
   padding: 0;
 }
 
+
+
+
+
+.action-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  background-color: transparent;
+  position: absolute;
+  right: 0; 
+  margin-right: 50px;
+  margin-top: 20px;
+  
+  
+}
+
 .create-button {
-  background-color: #3a9b9a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #3b4f67;
   color: white;
   border: none;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 20px;
-  margin-top: 30px; /*position ng new button*/
-  margin-left: auto;
-  margin-bottom: auto;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .create-button:hover {
-  background-color: #51d1eb;
+  background-color: #2c3a4d;
 }
 
-.create-button .icon {
-  margin-right: 8px;
+
+
+
+
+
+
+
+
+
+
+
+.icon {
+  font-size: 14px; /* Adjust icon size */
 }
 
 /* LEFT SIDE PROJECT NAMES */

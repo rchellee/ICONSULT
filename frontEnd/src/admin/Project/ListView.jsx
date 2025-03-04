@@ -201,7 +201,7 @@ const ListView = ({
   };
 
   return (
-    <div>
+    <div className="eto-parent">
       {/* Button Container */}
       <div className="sorting-button">
         <div className="sorting-button-container">
@@ -256,6 +256,9 @@ const ListView = ({
 
       {/* Table */}
       <div className="table-scroll-wrapper">
+        <div className="title-project">
+          <h1>Your Projects</h1>
+        </div>
         <table className="project-list-table">
           <thead>
             <tr>

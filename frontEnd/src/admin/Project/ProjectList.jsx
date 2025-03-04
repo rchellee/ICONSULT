@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import ListView from "./ListView"; // Import ListView component
+import ListView from "./ListView";
+import PaymentView from "./PaymentView"; // Ensure this component exists
 import "./ListView.css";
 
 const ProjectList = ({
@@ -12,6 +13,10 @@ const ProjectList = ({
   toggleDropdown,
   activeDropdown,
 }) => {
+  // Toggle state for switching views
+  const [activeView, setActiveView] = useState("overview");
+
+  // Other states for project details
   const [projectName, setProjectName] = useState("");
   const [clientId, setClientId] = useState("");
   const [clientName, setClientName] = useState("");
@@ -20,6 +25,40 @@ const ProjectList = ({
   const [description, setDescription] = useState("");
   const [downpayment, setDownpayment] = useState("");
 
+  // States to hold statuses and dates based on filteredProjects
+  const [statuses, setStatuses] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.status;
+      return acc;
+    }, {})
+  );
+  const [startDates, setStartDates] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualStart || null;
+      return acc;
+    }, {})
+  );
+  const [finishDates, setFinishDates] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualFinish || null;
+      return acc;
+    }, {})
+  );
+  const [paymentstatuses, setpaymentStatuses] = useState(
+    filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.paymentStatus || "Not Paid";
+      return acc;
+    }, {})
+  );
+
+  const [tasksInfo, setTasksInfo] = useState({});
+  const [totalTasks, setTotalTasks] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  // Update statuses, startDates, finishDates, and paymentstatuses when filteredProjects changes
   useEffect(() => {
     setStatuses(
       filteredProjects.reduce((acc, project) => {
@@ -47,53 +86,20 @@ const ProjectList = ({
     );
   }, [filteredProjects]);
 
-  const [statuses, setStatuses] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.status;
-      return acc;
-    }, {})
-  );
-  const [startDates, setStartDates] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.actualStart || null;
-      return acc;
-    }, {})
-  );
-  const [finishDates, setFinishDates] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.actualFinish || null;
-      return acc;
-    }, {})
-  );
-  const [paymentstatuses, setpaymentStatuses] = useState(
-    filteredProjects.reduce((ass, project) => {
-      ass[project.id] = project.paymentStatus;
-      return ass;
-    }, {})
-  );
-  const [tasksInfo, setTasksInfo] = useState({});
-  const [totalTasks, setTotalTasks] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProjectId, setEditingProjectId] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
-
+  // Function to handle status changes
   const handleStatusChange = (projectId, newStatus) => {
     setStatuses((prevStatuses) => ({
       ...prevStatuses,
       [projectId]: newStatus,
     }));
 
-    fetch(
-      `http://localhost:8081/projectStat/${projectId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: newStatus }),
-      }
-    )
+    fetch(`http://localhost:8081/projectStat/${projectId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: newStatus }),
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Failed to update status");
@@ -102,7 +108,6 @@ const ProjectList = ({
       })
       .then((data) => {
         console.log("Status updated successfully:", data);
-
         if (newStatus === "Ongoing") {
           setStartDates((prevStartDates) => ({
             ...prevStartDates,
@@ -120,6 +125,7 @@ const ProjectList = ({
       });
   };
 
+  // Fetch tasks info for each project
   useEffect(() => {
     const fetchTasksInfo = async () => {
       const info = {};
@@ -150,6 +156,7 @@ const ProjectList = ({
     fetchTasksInfo();
   }, [filteredProjects]);
 
+  // Fetch total payments for each project
   useEffect(() => {
     const fetchTotalPayments = async () => {
       const totalPayments = {};
@@ -162,14 +169,10 @@ const ProjectList = ({
             throw new Error("Failed to fetch tasks");
           }
           const data = await response.json();
-
-          // Calculate the total amount of tasks for the project
           const totalTaskAmount = data.tasks.reduce(
             (sum, task) => sum + (parseFloat(task.amount) || 0),
             0
           );
-
-          // Combine contractPrice and totalTaskAmount
           totalPayments[project.id] = project.contractPrice + totalTaskAmount;
         } catch (error) {
           console.error("Error fetching total payment for project:", error);
@@ -182,10 +185,9 @@ const ProjectList = ({
     fetchTotalPayments();
   }, [filteredProjects]);
 
+  // Function to handle payment status changes
   const handlePaymentStatusChange = (projectId, newPaymentStatus) => {
     const currentStatus = paymentstatuses[projectId];
-
-    // Get the current date if the new status is "Paid"
     const currentDate =
       newPaymentStatus === "Paid" ? new Date().toISOString() : null;
 
@@ -194,17 +196,14 @@ const ProjectList = ({
       [projectId]: newPaymentStatus,
     }));
 
-    fetch(
-      `http://localhost:8081/paymentStat/${projectId}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          paymentStatus: newPaymentStatus,
-          paymentDate: currentDate, // Send the date when payment status is updated to "Paid"
-        }),
-      }
-    )
+    fetch(`http://localhost:8081/paymentStat/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        paymentStatus: newPaymentStatus,
+        paymentDate: currentDate,
+      }),
+    })
       .then((response) => {
         if (!response.ok) throw new Error("Failed to update payment status");
         return response.json();
@@ -214,8 +213,6 @@ const ProjectList = ({
       })
       .catch((error) => {
         console.error("Error updating payment status:", error);
-
-        // Revert payment status on failure
         setpaymentStatuses((prevpaymentStatuses) => ({
           ...prevpaymentStatuses,
           [projectId]: currentStatus,
@@ -223,20 +220,22 @@ const ProjectList = ({
       });
   };
 
+  // Functions to handle date changes
   const handleStartDateChange = (projectId, date) => {
     setStartDates((prevStartDates) => ({
       ...prevStartDates,
-      [projectId]: date, // Update the start date for the specific project
+      [projectId]: date,
     }));
   };
 
   const handleFinishDateChange = (projectId, date) => {
     setFinishDates((prevFinishDates) => ({
       ...prevFinishDates,
-      [projectId]: date, // Update the finish date for the specific project
+      [projectId]: date,
     }));
   };
 
+  // Modal handling functions
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -253,11 +252,13 @@ const ProjectList = ({
     setEditingProjectId(null);
   };
 
+  // Color mappings for statuses
   const statusColors = {
     Ongoing: "#F06292",
     Pending: "rgb(252, 118, 118)",
-    Completed: "#3b4f67", // Default color for Ongoing
+    Completed: "#3b4f67",
   };
+
   const paymentstatusColors = {
     Paid: "#3b4f67",
     "Not Paid": "rgb(252, 118, 118)",
@@ -266,35 +267,81 @@ const ProjectList = ({
 
   const handleProjectClick = (projectId) => {
     console.log("Project clicked:", projectId);
-    // Add your logic here, such as navigating to a project details page or displaying a modal
+    // Add your logic here (e.g., show modal or additional details)
   };
 
   return (
     <div className="project-list-wrapper">
+      {/* Toggle Buttons */}
+      <div className="toggle-buttons">
+        <button
+          className={`toggle-button ${
+            activeView === "overview" ? "active" : ""
+          }`}
+          onClick={() => setActiveView("overview")}
+        >
+          Overview
+        </button>
+        <button
+          className={`toggle-button ${
+            activeView === "payment" ? "active" : ""
+          }`}
+          onClick={() => setActiveView("payment")}
+        >
+          Payment
+        </button>
+      </div>
+
       <div className="project-list">
-        <ListView
-          projects={projects}
-          filteredProjects={filteredProjects}
-          setFilteredProjects={setFilteredProjects}
-          formatDate={formatDate}
-          statuses={statuses}
-          statusColors={statusColors}
-          handleStatusChange={handleStatusChange}
-          paymentstatuses={paymentstatuses}
-          paymentstatusColors={paymentstatusColors}
-          handlePaymentStatusChange={handlePaymentStatusChange}
-          startDates={startDates}
-          finishDates={finishDates}
-          handleStartDateChange={handleStartDateChange}
-          handleFinishDateChange={handleFinishDateChange}
-          tasksInfo={tasksInfo}
-          totalTasks={totalTasks}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          onProjectClick={handleProjectClick}
-          activeDropdown={activeDropdown}
-          toggleDropdown={toggleDropdown}
-        />
+        {activeView === "overview" ? (
+          <ListView
+            projects={projects}
+            filteredProjects={filteredProjects}
+            setFilteredProjects={setFilteredProjects}
+            formatDate={formatDate}
+            statuses={statuses}
+            statusColors={statusColors}
+            handleStatusChange={handleStatusChange}
+            paymentstatuses={paymentstatuses}
+            paymentstatusColors={paymentstatusColors}
+            handlePaymentStatusChange={handlePaymentStatusChange}
+            startDates={startDates}
+            finishDates={finishDates}
+            handleStartDateChange={handleStartDateChange}
+            handleFinishDateChange={handleFinishDateChange}
+            tasksInfo={tasksInfo}
+            totalTasks={totalTasks}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            onProjectClick={handleProjectClick}
+            activeDropdown={activeDropdown}
+            toggleDropdown={toggleDropdown}
+          />
+        ) : (
+          <PaymentView
+            projects={projects}
+            filteredProjects={filteredProjects}
+            setFilteredProjects={setFilteredProjects}
+            formatDate={formatDate}
+            statuses={statuses}
+            statusColors={statusColors}
+            handleStatusChange={handleStatusChange}
+            paymentstatuses={paymentstatuses}
+            paymentstatusColors={paymentstatusColors}
+            handlePaymentStatusChange={handlePaymentStatusChange}
+            startDates={startDates}
+            finishDates={finishDates}
+            handleStartDateChange={handleStartDateChange}
+            handleFinishDateChange={handleFinishDateChange}
+            tasksInfo={tasksInfo}
+            totalTasks={totalTasks}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            onProjectClick={handleProjectClick}
+            activeDropdown={activeDropdown}
+            toggleDropdown={toggleDropdown}
+          />
+        )}
       </div>
     </div>
   );

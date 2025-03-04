@@ -1,3 +1,7 @@
+.project-list-wrapper{
+  position: relative;
+}
+
 .project-list-wrapper td {
   max-width: 150px; /* Adjust width as needed */
   white-space: nowrap; /* Prevent text wrapping */
@@ -11,6 +15,7 @@
   max-height: 687px; /* Set a height limit */
   overflow-y: auto; /* Enable vertical scrolling */
   -webkit-overflow-scrolling: touch;
+  
 }
 
 .right-align {
@@ -71,6 +76,12 @@
   border-collapse: collapse;
   border: none;
   font-size: 18px;
+  position: absolute;
+  margin-right: 50px;
+  margin-top: 100px;
+  top: 70px;
+
+  
 }
 
 .project-list-table th,
@@ -266,7 +277,9 @@
 }
 
 
-
+.eto-parent{
+  position: relative;
+}
 
 
 
@@ -274,9 +287,14 @@
   display: flex;
   gap: 10px;
   align-items: center; /* Ensures all buttons are aligned at the same height */
-  padding: 15px;
+  
   justify-content: flex-end;
-  /*margin-top: -60px; ETO PARA TUMAAS SORTING*/
+  background-color: transparent;
+  position: absolute;
+  right: 0; 
+  margin-right: 50px;
+  margin-top: 100px;
+  
 }
 
 .sorting-button-container {
@@ -304,10 +322,11 @@
   justify-content: center; /* Centers text horizontally */
   align-items: center; /* Centers text vertically */
   text-align: center;
+  
 }
 
 .action-button:hover {
-  background-color: #ccc;
+  background-color: #e2e2e2;
 }
 
 /* Dropdowns stay below the buttons and do not affect alignment */
@@ -382,3 +401,64 @@
   background-color: transparent; /* Ensure no background color on hover */
 }
 
+
+.title-project{
+  position: absolute;
+}
+
+
+.toggle-buttons {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  position: absolute;
+  top: 70px;
+  
+  
+}
+
+.toggle-button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  background-color: transparent;
+  color: #3b4f67;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative; /* Required for positioning the ::after pseudo-element */
+  transition: color 0.3s ease;
+}
+
+.toggle-button:hover {
+  color: #3b4f67; /* Keep the text color consistent on hover */
+  /* Remove or comment out the background-color property */
+  /* background-color: transparent; */
+}
+
+.toggle-button.active {
+  color: #3b4f67; /* Active text color */
+  font-weight: bold; /* Optional: Make the text bold when active */
+}
+
+.toggle-button.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px; /* Adjust this value to control the distance of the line from the button */
+  width: 100%;
+  height: 3px; /* Thickness of the line */
+  background: linear-gradient(90deg, #3b4f67, #74C69D); /* Gradient background */
+  border-radius: 2px; /* Rounded corners for the line */
+  box-shadow: 0 2px 5px rgba(59, 79, 103, 0.3); /* Subtle shadow */
+  animation: slideIn 0.3s ease; /* Animation for the line */
+}
+
+@keyframes slideIn {
+  from {
+    transform: scaleX(0); /* Start with no width */
+  }
+  to {
+    transform: scaleX(1); /* Expand to full width */
+  }
+}

@@ -31,6 +31,7 @@ import AdminAccount from "./admin/AdminAccount/AdminAccount.jsx";
 import AdminReview from "./admin/AdminAccount/adminReview.jsx";
 
 
+
 // for google icons
 const link = document.createElement("link");
 link.href =
@@ -71,6 +72,7 @@ function App() {
         <Route path="/reports" element={<ReportsTab />} />
         <Route path="/admin-settings" element={<AdminAccount />} />
         <Route path="/admin-reviews" element={<AdminReview />} />
+
         
       </Routes>
     </Router>

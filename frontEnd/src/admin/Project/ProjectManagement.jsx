@@ -272,11 +272,12 @@ const ProjectManagement = () => {
       <Sidebar />
       <div className="project-management-page">
         <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
-          <div className="header-actions">
-            <button className="create-button" onClick={openModal}>
-              <FaPlus className="icon" /> New
-            </button>
-          </div>
+        <div className="action-container">
+  <button className="create-button" onClick={openModal}>
+    <FaPlus className="icon" /> New
+  </button>
+</div>
+
           {isModalOpen && (
             <ProjectForm
               projectName={projectName}

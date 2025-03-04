@@ -150,8 +150,8 @@ const ReportsTab = () => {
                     Time Period
                   </button>
                   <button className="yearly-bucket-button" onClick={handleYearlyBucketClick}>
-  Yearly Bucket
-</button>
+                  Yearly Bucket
+                  </button>
 
                 </>
               )}
