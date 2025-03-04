@@ -83,7 +83,7 @@ const Topbar = () => {
   };
 
   return (
-    <nav>
+    <nav style={{ backgroundColor: "#171c24" }}>
       <div className="logo">iConsult.</div>
       <div className="search-icon" onClick={handleSearchClick}>
         <span className="fas fa-search"></span>
