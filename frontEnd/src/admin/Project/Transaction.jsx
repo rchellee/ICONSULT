@@ -1,4 +1,3 @@
-// src/components/Transaction.jsx
 import React, { useState } from "react";
 import "./Transaction.css"; // Import the CSS file
 
@@ -24,74 +23,87 @@ const Transaction = ({ projectId }) => {
     });
   };
 
-  // Sample transaction data for a single project
+  // Sample transaction data for a single task with multiple miscellaneous items
   const transactions = [
     {
-      expenses: "Professional Fee",
-      amount: 1000,
-      datePaid: "",
-      status: "",
-    },
-    {
-      expenses: "Task Fee",
-      amount: 1000,
-      datePaid: "",
-      status: "",
-    },
-    {
-      expenses: "Miscellaneous Fees",
-      amount: 1000, // Parent category, amount will be calculated from sub-items
+      expenses: "Task 1",
+      amount: 1000, // Task amount
       datePaid: "",
       status: "",
       subItems: [
         {
-          expenses: "misc1",
-          amount: 500,
+          expenses: "Misc1",
+          amount: 500, // Miscellaneous amount
           datePaid: "2023-10-01",
           status: "Paid",
         },
         {
-          expenses: "misc2",
-          amount: 500,
+          expenses: "Misc2",
+          amount: 500, // Miscellaneous amount
           datePaid: "",
           status: "",
         },
       ],
     },
+    {
+      expenses: "Task 2",
+      amount: 1000, // Task amount
+      datePaid: "",
+      status: "",
+      subItems: [
+        {
+          expenses: "Misc1",
+          amount: 500, // Miscellaneous amount
+          datePaid: "",
+          status: "",
+        },
+        {
+          expenses: "Misc2",
+          amount: 500, // Miscellaneous amount
+          datePaid: "2023-10-05",
+          status: "Paid",
+        },
+      ],
+    },
   ];
 
-  // State to manage the visibility of sub-items
-  const [showSubItems, setShowSubItems] = useState(false);
+  // State to manage the visibility of sub-items for each task
+  const [showSubItems, setShowSubItems] = useState({});
 
-  // Toggle sub-items visibility
-  const toggleSubItems = () => {
-    setShowSubItems(!showSubItems);
+  // Toggle sub-items visibility for a specific task
+  const toggleSubItems = (taskIndex) => {
+    setShowSubItems((prevState) => ({
+      ...prevState,
+      [taskIndex]: !prevState[taskIndex],
+    }));
   };
 
-  // Calculate total amount for each category
-  const calculateTotalAmount = (transactions) => {
-    return transactions.reduce((sum, transaction) => {
-      if (transaction.subItems) {
-        return sum + transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0);
-      }
-      return sum + transaction.amount;
-    }, 0);
-  };
-
-  // Calculate total amount
-  const totalAmount = calculateTotalAmount(transactions);
+  // Calculate total amount (Task + Miscellaneous)
+  const totalAmount = transactions.reduce((sum, transaction) => {
+    const taskAmount = transaction.amount;
+    const miscellaneousAmount = transaction.subItems
+      ? transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0)
+      : 0;
+    return sum + taskAmount + miscellaneousAmount;
+  }, 0);
 
   // Calculate total paid amount
   const totalPaid = transactions.reduce((sum, transaction) => {
-    if (transaction.subItems) {
-      return (
-        sum +
-        transaction.subItems
-          .filter((subItem) => subItem.status === "Paid")
-          .reduce((subSum, subItem) => subSum + subItem.amount, 0)
-      );
+    let paidAmount = 0;
+
+    // Add task amount if paid
+    if (transaction.status === "Paid") {
+      paidAmount += transaction.amount;
     }
-    return transaction.status === "Paid" ? sum + transaction.amount : sum;
+
+    // Add miscellaneous amounts if paid
+    if (transaction.subItems) {
+      paidAmount += transaction.subItems
+        .filter((subItem) => subItem.status === "Paid")
+        .reduce((subSum, subItem) => subSum + subItem.amount, 0);
+    }
+
+    return sum + paidAmount;
   }, 0);
 
   // Calculate payment progress percentage
@@ -192,10 +204,10 @@ const Transaction = ({ projectId }) => {
               <span className="detail-label">Date Paid:</span>
               <span className="detail-value">{formatDate(paidDate)}</span>
             </div>
-            <div className="detail-item">
+            {/*<div className="detail-two">
               <span className="detail-label">Date Partial Payment:</span>
               <span className="detail-value">{formatDate(partialPaymentDate)}</span>
-            </div>
+            </div>*/}
           </div>
           <div className="detail-row">
             <div className="detail-item">
@@ -214,7 +226,8 @@ const Transaction = ({ projectId }) => {
       <table className="transaction-table">
         <thead>
           <tr>
-            <th>Expenses</th>
+            <th>Task</th>
+            <th>Miscellaneous</th>
             <th>Amount</th>
             <th>Date Paid</th>
             <th>Status</th>
@@ -223,31 +236,20 @@ const Transaction = ({ projectId }) => {
         <tbody>
           {transactions.map((transaction, index) => (
             <React.Fragment key={index}>
-              {/* Parent Transaction */}
+              {/* Parent Task */}
               <tr>
-                <td>
-                  {transaction.subItems ? (
-                    <button onClick={toggleSubItems} className="toggle-misc-btn">
-                      {showSubItems ? "▼" : "▶"} {transaction.expenses}
-                    </button>
-                  ) : (
-                    transaction.expenses
-                  )}
-                </td>
-                <td>
-                  {transaction.subItems
-                    ? formatAmount(calculateTotalAmount(transaction.subItems))
-                    : formatAmount(transaction.amount)}
-                </td>
+                <td>{transaction.expenses}</td>
                 <td></td>
-                <td></td>
+                <td>{formatAmount(transaction.amount)}</td>
+                <td>{formatDate(transaction.datePaid)}</td>
+                <td>{transaction.status}</td>
               </tr>
-              {/* Sub-items */}
+              {/* Sub-items (Miscellaneous) */}
               {transaction.subItems &&
-                showSubItems &&
                 transaction.subItems.map((subItem, subIndex) => (
                   <tr key={`sub-${subIndex}`}>
-                    <td style={{ paddingLeft: "20px" }}>- {subItem.expenses}</td>
+                    <td></td>
+                    <td>{subItem.expenses}</td>
                     <td>{formatAmount(subItem.amount)}</td>
                     <td>{formatDate(subItem.datePaid)}</td>
                     <td>{subItem.status}</td>
@@ -258,6 +260,7 @@ const Transaction = ({ projectId }) => {
           {/* Total row */}
           <tr className="total-row">
             <td>Total</td>
+            <td></td>
             <td>{formatAmount(totalAmount)}</td>
             <td colSpan="2"></td>
           </tr>
