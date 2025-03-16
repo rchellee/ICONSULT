@@ -3,7 +3,7 @@ import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
 import { FaPlus } from "react-icons/fa";
 import Sidebar from "../sidebar";
-import pic4 from "../../assets/pic4.png";
+import pic4 from "../../assets/pic4.jpg";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectTask from "./ProjectTask";

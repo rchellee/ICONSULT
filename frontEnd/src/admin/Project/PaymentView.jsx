@@ -3,40 +3,20 @@ import "./PaymentView.css";
 
 const PaymentView = () => {
   // Example data
-  const [payments, setPayments] = useState([
+  const [payments] = useState([
     {
       project: "Project A",
       client: "Client X",
-      actualStart: "2023-01-01",
+      actualStart: "2025-03-02", 
       actualFinish: "2023-06-30",
-      professionalFee: 5000,
-      taskFee: 1000,
-      miscellaneousFee: 500,
+      professionalFee: 800,
+      taskFee: 800,
+      miscellaneousFee: 800,
       downpayment: 1000,
-      total: 6500,
+      total: 2400,
       paymentStatus: "Paid",
     },
-    {
-      project: "Project B",
-      client: "Client Y",
-      actualStart: "2023-02-15",
-      actualFinish: "2023-08-15",
-      professionalFee: 7000,
-      taskFee: 1500,
-      miscellaneousFee: 300,
-      downpayment: 1500,
-      total: 8800,
-      paymentStatus: "Unpaid",
-    },
   ]);
-
-  // State to manage table visibility
-  const [isTableVisible, setIsTableVisible] = useState(true);
-
-  // Function to toggle table visibility
-  const toggleTableVisibility = () => {
-    setIsTableVisible(!isTableVisible);
-  };
 
   const formatCurrency = (amount) => {
     return `₱ ${amount.toLocaleString("en-US", {
@@ -54,76 +34,76 @@ const PaymentView = () => {
     });
   };
 
-  const handlePaymentStatusChange = (index, newStatus) => {
-    const updatedPayments = [...payments];
-    updatedPayments[index].paymentStatus = newStatus;
-    setPayments(updatedPayments);
-  };
-
   return (
     <div className="parentito">
       <h1 className="payment-text-title">Payment Transaction</h1>
-
-      {/* Button to toggle table visibility */}
-      <div className="potaena">
-      <button onClick={toggleTableVisibility} className="toggle-table-button">
-        {isTableVisible ? "Paid ▼" : "Paid ▲"}
-      </button>
-      </div>
-
-      {/* Conditionally render the table based on visibility state */}
-      {isTableVisible && (
-        <table className="payment-table">
-          {/* Table Header */}
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th>Client</th>
-              <th>Date Paid</th>
-              {/*<th>Actual Finish</th>*/}
-              <th className="numeric-column">Professional Fee</th>
-              <th className="numeric-column">Task Fee</th>
-              <th className="numeric-column">Misc. Fee</th>
-              <th className="numeric-column">Downpayment</th>
-              <th className="numeric-column">Total</th>
-              <th>Payment Status</th>
-            </tr>
-          </thead>
-
-          {/* Table Body */}
-          <tbody>
-            {payments.map((payment, index) => (
-              <tr key={index}>
-                <td>{payment.project}</td>
-                <td>{payment.client}</td>
-                <td>{formatDate(payment.actualStart)}</td>
-                {/*<td>{formatDate(payment.actualFinish)}</td>*/}
-                <td className="numeric-column">{formatCurrency(payment.professionalFee)}</td>
-                <td className="numeric-column">{formatCurrency(payment.taskFee)}</td>
-                <td className="numeric-column">{formatCurrency(payment.miscellaneousFee)}</td>
-                <td className="numeric-column">{formatCurrency(payment.downpayment)}</td>
-                <td className="numeric-column">{formatCurrency(payment.total)}</td>
-                <td>
-                  <div className="payment-status-dropdown-wrapper">
-                    <select
-                      className="payment-status-dropdown"
-                      value={payment.paymentStatus}
-                      onChange={(e) =>
-                        handlePaymentStatusChange(index, e.target.value)
-                      }
-                    >
-                      <option value="Paid">Paid</option>
-                      <option value="Partial payment">Partial payment</option>
-                      <option value="Unpaid">Unpaid</option>
-                      <option value="Overdue">Overdue</option>
-                    </select>
-                  </div>
-                </td>
+      <div className="payment-container">
+        {/* Sidebar Table */}
+        <div className="payment-sidebar">
+          <table className="sidebar-table">
+            <thead>
+              <tr>
+                <th>Projects</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              <tr>
+                <td>Project A</td>
+              </tr>
+              <tr>
+                <td>Project B</td>
+              </tr>
+              <tr>
+                <td>Project C</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* New Payment Breakdown Table */}
+        <div className="main-content">
+          <table className="payment-breakdown-table">
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Date Paid</th>
+                <th>Name</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map((payment, index) => (
+                <React.Fragment key={index}>
+                  <tr>
+                    <td>{payment.project}</td>
+                    <td>{formatDate(payment.actualStart)}</td>
+                    <td>Miscellaneous</td>
+                    <td>{formatCurrency(payment.miscellaneousFee)}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Professional Fee</td>
+                    <td>{formatCurrency(payment.professionalFee)}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Task Fee</td>
+                    <td>{formatCurrency(payment.taskFee)}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Total</td>
+                    <td>{formatCurrency(payment.total)}</td>
+                  </tr>
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

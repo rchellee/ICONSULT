@@ -1,3 +1,5 @@
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
 import React, { useState, useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaFile, FaFileImage } from "react-icons/fa";
@@ -35,9 +37,7 @@ const FilesTab = ({ projectId }) => {
         if (clientIds.length > 0) {
           const uniqueClientIds = [...new Set(clientIds)];
           const clientNamePromises = uniqueClientIds.map((clientId) =>
-            fetch(
-              `http://localhost:8081/client/${clientId}`
-            )
+            fetch(`http://localhost:8081/client/${clientId}`)
               .then((res) => res.json())
               .then((client) => ({
                 id: clientId,
@@ -73,13 +73,10 @@ const FilesTab = ({ projectId }) => {
     setUploading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:8081/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch("http://localhost:8081/upload", {
+        method: "POST",
+        body: formData,
+      });
 
       const result = await response.json();
       if (response.ok) {
@@ -93,14 +90,12 @@ const FilesTab = ({ projectId }) => {
       setUploading(false);
     }
   };
+
   const handleDelete = async (fileId) => {
     try {
-      const response = await fetch(
-        `http://localhost:8081/files/${fileId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`http://localhost:8081/files/${fileId}`, {
+        method: "DELETE",
+      });
 
       if (response.ok) {
         setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
@@ -114,13 +109,42 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
+  const handleRename = async (fileId, currentName) => {
+    const newName = prompt("Enter new file name:", currentName);
+    if (newName && newName !== currentName) {
+      try {
+        const response = await fetch(`http://localhost:8081/files/${fileId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ original_name: newName }),
+        });
+
+        if (response.ok) {
+          setFiles((prevFiles) =>
+            prevFiles.map((file) =>
+              file.id === fileId ? { ...file, original_name: newName } : file
+            )
+          );
+          console.log("File renamed successfully.");
+        } else {
+          const errorData = await response.json();
+          console.error("Error renaming file:", errorData.message);
+        }
+      } catch (error) {
+        console.error("Error renaming file:", error);
+      }
+    }
+  };
+
   const toggleActions = (fileId) => {
     setActiveFileId(activeFileId === fileId ? null : fileId);
   };
 
   const getFileIcon = (fileName) => {
     if (!fileName) {
-      return <FaFile className="file-type-icon" />; // Default icon for missing file names
+      return <FaFile className="file-type-icon" />; 
     }
     const fileExtension = fileName.split(".").pop().toLowerCase();
 
@@ -267,24 +291,29 @@ const FilesTab = ({ projectId }) => {
                       {activeFileId === file.id && (
                         <div className="file-actions-popup click-delete-edit">
                           <button
-                            className="delete-btn"
-                            onClick={() => handleDelete(file.id)}
+                            className="rename-btn"
+                            onClick={() => handleRename(file.id, file.original_name)}
                           >
-                            Delete
+                            <AiOutlineEdit /> Rename
                           </button>
                           <button
                             className="delete-btn"
+                            onClick={() => handleDelete(file.id)}
+                          >
+                            <MdOutlineDeleteOutline /> Delete
+                          </button>
+                          <button
+                            className="download-btn"
                             onClick={() => {
-                              // Triggering download by clicking the button
                               const downloadLink =
                                 file.webContentLink ||
                                 `http://localhost:8081/uploads/${file.original_name}`;
                               const a = document.createElement("a");
                               a.href = downloadLink;
-                              a.download = file.original_name; // This will suggest a file name for the download
+                              a.download = file.original_name;
                               document.body.appendChild(a);
                               a.click();
-                              document.body.removeChild(a); // Clean up
+                              document.body.removeChild(a);
                             }}
                           >
                             Download

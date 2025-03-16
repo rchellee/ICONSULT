@@ -71,7 +71,7 @@ const Topbar = () => {
 
    
 
-    {/* Logo */}
+   
     <Typography variant="h7" sx={{ flexGrow: 1 }}>
       <div className="logo-topbar">
         <img src={logo} alt="Logo" className="logo-topbar-img" />

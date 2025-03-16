@@ -28,12 +28,7 @@ const ProjectForm = ({
   const [feeWarning, setFeeWarning] = useState(false);
   const [validationError, setValidationError] = useState("");
 
-  const createdAt = existingCreatedAt || new Date().toISOString();
-  const formattedDate = new Date(createdAt).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  
 
   const handleDownpaymentChange = (e) => {
     const value = e.target.value;
@@ -85,7 +80,7 @@ const ProjectForm = ({
           {editingProjectId ? "Edit Project" : "Create Project"}
         </h2>
 
-        <p className="date-created">Date Created: {formattedDate}</p>
+        
 
         <div className="form-project-details">
           <div className="form-modal-field">

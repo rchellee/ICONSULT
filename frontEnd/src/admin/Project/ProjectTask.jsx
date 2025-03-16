@@ -8,6 +8,7 @@ import PostsTab from "./PostsTab";
 import FilesTab from "./FilesTab";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
+import Transaction from "./Transaction"; // Import the new Transaction component
 
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
@@ -35,10 +36,6 @@ const ProjectTask = ({ onBack }) => {
   };
 
   const handleCancelForm = () => setShowTaskForm(false);
-  useEffect(() => {
-    console.log("Project ID in ProjectTask:", projectId);
-    // Fetch or perform actions based on projectId
-  }, [projectId]);
 
   return (
     <div>
@@ -62,6 +59,12 @@ const ProjectTask = ({ onBack }) => {
           >
             Documents
           </button>
+          <button
+            className={activeTab === "transactions" ? "active" : ""}
+            onClick={() => handleTabClick("transactions")}
+          >
+            Transaction History
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -81,6 +84,11 @@ const ProjectTask = ({ onBack }) => {
             </ErrorBoundary>
           )}
           {activeTab === "files" && <FilesTab projectId={projectId} />}
+          {activeTab === "transactions" && (
+            <ErrorBoundary>
+              <Transaction projectId={projectId} />
+            </ErrorBoundary>
+          )}
         </div>
       </div>
     </div>

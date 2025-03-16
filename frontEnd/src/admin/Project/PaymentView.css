@@ -1,114 +1,62 @@
 .parentito {
   padding: 20px;
-  position: relative;
 }
 
 .payment-text-title {
   text-align: left;
   margin-bottom: 20px;
-  background-color: transparent;
-  position: absolute;
-  top: 0;
 }
 
-.potaena{
-  position: absolute;
-  margin-right: 50px;
-  
-  top: 160px;
-
+/* Container to hold sidebar and main content */
+.payment-container {
+  display: flex;
+  gap: 20px;
 }
 
-.toggle-table-button {
-  background-color: #3b4f67;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 14px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  outline: none;
-
+/* Sidebar styling */
+.payment-sidebar {
+  width: 20%;
+  margin-top: 110px;
 }
 
-.toggle-table-button:hover {
-  background-color: #2c3a4d;
-}
-
-/* Table styles */
-.payment-table {
+.sidebar-table {
   width: 100%;
-  border-collapse: separate; /* Use separate to allow border-radius */
-  border-spacing: 0; /* Remove spacing between cells */
-  background-color: transparent;
-  position: absolute;
-  margin-right: 50px;
-  margin-top: 100px;
-  top: 195px;
-  border-radius: 10px; /* Add border radius */
-  overflow: hidden; /* Ensure the border radius is applied */
-  background-color: transparent;
+  border-collapse: collapse;
+  border: transparent;
+  box-shadow: none;
+ 
 }
 
-/* Header row styles */
-.payment-table th {
-  font-weight: bold;
+.sidebar-table th,
+.sidebar-table td {
   padding: 10px;
   text-align: left;
-  background-color: #eeecec; /* Add background color to header */
+  border: transparent;
+  background-color: white;
 }
 
-/* Row styles */
-.payment-table td {
+/* Main content styling */
+.main-content {
+  flex: 1;
+}
+
+/* Payment Breakdown Table Styles */
+.payment-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  margin-top: 20px;
+ 
+  box-shadow: none;
+}
+
+.payment-breakdown-table th,
+.payment-breakdown-table td {
+  border: transparent;
   padding: 8px;
   text-align: left;
 }
 
-/* Remove borders between cells */
-.payment-table th,
-.payment-table td {
-  border: none;
-}
-
-/* Payment Status Dropdown Styles */
-.payment-status-dropdown {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #3b4f67;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 32px 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  outline: none;
-  position: relative;
-}
-
-.payment-status-dropdown-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.payment-status-dropdown-wrapper::after {
-  content: "▼";
-  font-size: 12px;
-  color: white;
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.payment-status-dropdown:hover,
-.payment-status-dropdown:focus {
-  background-color: #2c3a4d;
-}
-
-/* Align numeric columns to the right */
-.payment-table .numeric-column {
-  text-align: right;
+.payment-breakdown-table th {
+  background-color: #eeecec;
 }
