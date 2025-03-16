@@ -10,6 +10,7 @@
 .admin-home-page {
   display: flex;
   transition: margin-left 0.4s ease;
+  padding-top: 70px;
 }
 /******************** Dashboard *********************/
 

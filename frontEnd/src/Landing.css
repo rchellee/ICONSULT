@@ -24,16 +24,11 @@
 }
 /* navbar styling */
 nav {
-  position: sticky;
   width: 100%;
-  padding: 20px 0;
+  padding: 10px 0;
   z-index: 998;
   transition: all 0.3s ease;
   font-family: "Ubuntu", sans-serif;
-}
-nav.sticky {
-  background: #4070f4;
-  padding: 13px 0;
 }
 nav .navbar {
   width: 90%;

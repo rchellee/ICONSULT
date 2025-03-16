@@ -10,6 +10,7 @@
   flex-grow: 2;
   margin-left: 105px;
   height: 600px;
+  padding-top: 70px;
 }
 /************************** Client Management **************/
 /* Scroll */
@@ -123,7 +124,7 @@ table td a {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  background-color: #fff;
+  background-color: #f4f4f9;
   border-radius: 4px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   padding: 40px;

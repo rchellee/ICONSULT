@@ -4,6 +4,8 @@
   padding: 10px;
   margin-left: 100px; /* Adjust if sidebar width changes */
   transition: margin-left 0.3s ease;
+  padding-top: 70px;
+
 }
 
 .reports-tab-container h2 {

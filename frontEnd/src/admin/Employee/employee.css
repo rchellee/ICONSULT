@@ -1,12 +1,14 @@
 .employee-home-page {
   display: flex;
-  background-color: #f4f4f9;
   margin-right: 50px;
+  padding-top: 70px;
+  background-color: #f4f4f9;
 }
 
 .employee-content {
   flex-grow: 2;
   padding-left: 100px;
+  background-color: #f4f4f9;
 }
 .top-bar {
   width: 100%;
