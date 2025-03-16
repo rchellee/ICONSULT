@@ -1,180 +1,197 @@
 /* src/styles/Transaction.css */
 /* Header Container */
 .header-container {
-    display: flex;
-    justify-content: space-between; /* Space between project ID, progress, and status */
-    align-items: center; /* Vertically center align items */
-    margin-left: 125px; /* Align with the table */
-    margin-right: 125px; /* Align with the table */
-    margin-bottom: 20px; /* Space between header and table */
-  }
-  
-  .project-id {
-    margin: 0; /* Remove default margin */
-    color: #333; /* Text color */
-  }
-  
-  /* Progress Container */
-  .progress-container {
-    display: flex;
-    align-items: center; /* Vertically center align progress text and bar */
-    gap: 10px; /* Space between progress text and bar */
-  }
-  
-  .progress-text {
-    color: #333; /* Text color */
-    font-weight: bold; /* Bold text */
-  }
-  
-  /* Progress Bar */
-  .progress-bar {
-    width: 150px; /* Fixed width for the progress bar */
-    height: 10px;
-    background-color: #e0e0e0; /* Background color of the progress bar */
-    border-radius: 5px; /* Rounded corners */
-    overflow: hidden; /* Ensures the inner bar doesn't overflow */
-  }
-  
-  .progress-bar-fill {
-    height: 100%;
-    background-color: #4caf50; /* Fill color of the progress bar */
-    transition: width 0.3s ease; /* Smooth transition for width changes */
-  }
-  
-  /* Status Container */
-  .status-container {
-    display: flex;
-    align-items: center; /* Vertically center align dropdown */
-    gap: 5px; /* Space between label, dropdown, and arrow */
-  }
-  
-  .status-label {
-    font-weight: bold; /* Bold text */
-    color: #333; /* Text color */
-  }
-  
-  .status-dropdown {
-    padding: 5px 10px; /* Padding for the dropdown */
-    border: 1px solid #ccc; /* Border for the dropdown */
-    border-radius: 5px; /* Rounded corners */
-    background-color: #fff; /* Background color */
-    font-size: 14px; /* Font size */
-    color: #333; /* Text color */
-    cursor: pointer; /* Pointer cursor on hover */
-    appearance: none; /* Remove default arrow */
-    -webkit-appearance: none; /* Remove default arrow for Safari */
-    -moz-appearance: none; /* Remove default arrow for Firefox */
-  }
-  
-  .status-dropdown:focus {
-    outline: none; /* Remove outline on focus */
-    border-color: #4caf50; /* Highlight border on focus */
-  }
-  
-  .dropdown-arrow {
-    font-size: 12px; /* Arrow size */
-    color: #333; /* Arrow color */
-    pointer-events: none; /* Prevent arrow from blocking dropdown click */
-  }
-  
-  /* Details Container */
-  .details-container {
-    margin-left: 125px; /* Align with the table */
-    margin-right: 125px; /* Align with the table */
-    margin-bottom: 20px; /* Space between details and table */
-  }
-  
-  .details-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Space between detail rows */
-  }
-  
-  .detail-row {
-    display: flex;
-    justify-content: flex-start; /* Align items to the left */
-    gap: 230px; /* Space between detail items */
-  }
+  display: flex;
+  justify-content: space-between; /* Space between project ID, progress, and status */
+  align-items: center; /* Vertically center align items */
+  margin-left: 125px; /* Align with the table */
+  margin-right: 125px; /* Align with the table */
+  margin-bottom: 20px; /* Space between header and table */
+}
 
-  .detail-two {
-    display: flex;
-    justify-content: flex-start; /* Align items to the left */
-    gap: 486px; /* Space between detail items */
-  }
-  
-  .detail-item {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Space between label and value */
-  }
-  
-  .detail-item.partial-payment {
-    margin-right: 50px; /* Move Partial Payment slightly to the left */
-  }
-  
-  .detail-label {
-    font-weight: bold; /* Bold text */
-    color: #333; /* Text color */
-   
-  }
-  
-  .detail-value {
-    color: #555; /* Text color */
-  }
-  
-  /* Toggle Button */
-  .toggle-misc-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .toggle-misc-btn:hover {
-    color: #4caf50;
-  }
-  
-  /* Table Styles */
-  .transaction-table {
-    width: calc(100% - 250px); /* Adjust width to account for left and right margins */
-    border-collapse: collapse; /* Ensures no spacing between cells */
-    margin-top: 20px;
-    margin-left: 125px; /* Margin on the left */
-    margin-right: 125px; /* Margin on the right */
-    background-color: #fbfbfb;
-    border: none; /* Explicitly remove any table border */
-    outline: none; /* Remove any outline */
-    box-shadow: none; /* Remove any box shadow */
-  }
-  
-  .transaction-table th,
-  .transaction-table td {
-    border: none; /* Remove cell borders */
-    padding: 8px;
-    text-align: left;
-    color: #555; /* Change font color for table cells and headers */
-    outline: none; /* Remove any outline */
-  }
-  
-  .transaction-table th {
-    font-weight: bold;
-    color: #333; /* Change font color for table headers */
-    background-color: #eeecec;
-    border: none; /* Ensure no border on headers */
-  }
-  
-  .transaction-table tr:hover {
-    background-color: #ffffff;
-  }
-  
-  .total-row {
-    background-color: #e0e0e0;
-    font-weight: bold;
-    color: #333; /* Change font color for the total row */
-    border: none; /* Ensure no border on the total row */
-  }
+.project-id {
+  margin: 0; /* Remove default margin */
+  color: #333; /* Text color */
+}
+
+/* Progress Container */
+.progress-container {
+  display: flex;
+  align-items: center; /* Vertically center align progress text and bar */
+  gap: 10px; /* Space between progress text and bar */
+}
+
+.progress-text {
+  color: #333; /* Text color */
+  font-weight: bold; /* Bold text */
+}
+
+/* Details Container */
+.details-container {
+  margin-left: 125px; /* Align with the table */
+  margin-right: 125px; /* Align with the table */
+  margin-bottom: 20px; /* Space between details and table */
+}
+
+.details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between detail rows */
+}
+
+.detail-row {
+  display: flex;
+  justify-content: flex-start; /* Align items to the left */
+  gap: 50px; /* Space between detail items */
+  align-items: center; /* Vertically center align items */
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Space between label and value */
+}
+
+.detail-item.partial-payment,
+.detail-item.current-task,
+.detail-item.past-dues,
+.detail-item.progress {
+  font-weight: bold; /* Bold text for labels */
+}
+
+.detail-label {
+  color: #333; /* Text color */
+}
+
+.detail-value {
+  color: #555; /* Text color */
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100px; /* Fixed width for the progress bar */
+  height: 10px;
+  background-color: #e0e0e0; /* Background color of the progress bar */
+  border-radius: 5px; /* Rounded corners */
+  overflow: hidden; /* Ensures the inner bar doesn't overflow */
+  margin-left: 10px; /* Space between progress text and bar */
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #4caf50; /* Fill color of the progress bar */
+  transition: width 0.3s ease; /* Smooth transition for width changes */
+}
+
+/* Toggle Button */
+.toggle-misc-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.toggle-misc-btn:hover {
+  color: #4caf50;
+}
+
+/* Table Styles */
+.transaction-table {
+  width: calc(100% - 250px); /* Adjust width to account for left and right margins */
+  border-collapse: collapse; /* Ensures no spacing between cells */
+  margin-top: 20px;
+  margin-left: 125px; /* Margin on the left */
+  margin-right: 125px; /* Margin on the right */
+  background-color: #fbfbfb;
+  border: none; /* Explicitly remove any table border */
+  outline: none; /* Remove any outline */
+  box-shadow: none; /* Remove any box shadow */
+}
+
+.transaction-table th,
+.transaction-table td {
+  border-right: 1px solid #ccc; /* Vertical line between columns */
+  padding: 8px;
+  text-align: left;
+  color: #555; /* Change font color for table cells and headers */
+  outline: none; /* Remove any outline */
+}
+
+.transaction-table th:last-child,
+.transaction-table td:last-child {
+  border-right: none; /* No vertical line for the last column */
+}
+
+.transaction-table th {
+  font-weight: bold;
+  color: #333; /* Change font color for table headers */
+  background-color: #eeecec;
+  border: none; /* Ensure no border on headers */
+}
+
+.transaction-table tr:hover {
+  background-color: #ffffff;
+}
+
+.total-row {
+  background-color: #e0e0e0;
+  font-weight: bold;
+  color: #333; /* Change font color for the total row */
+  border: none; /* Ensure no border on the total row */
+}
+
+/* Add specific width for the Amount column */
+td.amount-cell {
+  text-align: right !important;
+  padding-right: 30px; /* Add space between Amount and Due Date */
+  width: 120px; /* Specific width for the Amount column */
+}
+
+.subtotal-amount {
+  border-bottom: 2px solid black; /* Add horizontal line */
+}
+
+
+
+
+
+
+
+
+/* Style for the status dropdown (button-like appearance) */
+.transaction-button {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  width: 150px; /* Set a fixed width */
+  max-width: 100%; /* Ensure it doesn't overflow its container */
+  box-sizing: border-box; /* Include padding and border in the width */
+}
+
+.transaction-button:hover {
+  background-color: #e9e9e9;
+  border-color: #999;
+}
+
+.transaction-button:focus {
+  outline: none;
+  border-color: #3b4f67;
+  box-shadow:#3b4f67;
+}
+
+/* Style for the options inside the dropdown */
+.transaction-button option {
+  padding: 8px;
+  background-color: #fff;
+  color: #333;
+}

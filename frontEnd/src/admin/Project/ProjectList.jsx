@@ -288,7 +288,7 @@ const ProjectList = ({
           }`}
           onClick={() => setActiveView("payment")}
         >
-          Payment
+          Transaction Status
         </button>
       </div>
 

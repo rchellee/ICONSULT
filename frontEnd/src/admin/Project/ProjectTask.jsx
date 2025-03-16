@@ -8,7 +8,7 @@ import PostsTab from "./PostsTab";
 import FilesTab from "./FilesTab";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
-import Transaction from "./Transaction"; // Import the new Transaction component
+import Transaction from "./Transaction"; 
 
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
