@@ -2436,7 +2436,8 @@ app.get("/projectReports", (req, res) => {
       id, clientId, projectName, status, contractPrice, startDate, endDate, actualFinish, 
       TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
-      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays,
+      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays, paymentStatus,
+      IF(endDate < CURDATE(), 1, 0) AS isOverdue
     FROM project
     WHERE isDeleted = 0
   `;
