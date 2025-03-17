@@ -6,14 +6,19 @@
 .review-admin {
   margin-left: 80px; /* Remove left margin */
   padding: 20px;
-  width: 100%; /* Ensure the width takes the full screen width */
 }
 
 .reviews-admin-list {
-  width: 80%;
-  max-width: 1200px;
-  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 45px;
 }
+
+.reviews-admin-list .review-box {
+  width: calc(50% - 10px); /* Two columns with some spacing */
+  margin-bottom: 15px;
+}
+
 
 .MuiFormControl-root {
   width: 200px;

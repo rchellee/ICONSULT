@@ -131,11 +131,11 @@ const AdminReview = () => {
               return (
                 <Paper
                   key={review.id}
-                  elevation={3}
+                  elevation={7}
                   style={{
                     padding: "20px",
                     marginBottom: "15px",
-                    maxWidth: "600px",
+                    maxWidth: "450px",
                     wordWrap: "break-word",
                     overflowWrap: "break-word",
                     height: "auto",

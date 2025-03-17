@@ -277,10 +277,7 @@ const ProjectList = ({
 
   return (
     <div className="project-list-wrapper">
-      <div className="layout-toggle-icons">
-        <LuLayoutGrid onClick={() => toggleLayout("list")} /> {/* grid */}
-        {/* <FaList onClick={() => toggleLayout("grid")} />  */}
-      </div>
+
 
       <div className="project-list">
         {/* Conditionally render grid or table layout */}

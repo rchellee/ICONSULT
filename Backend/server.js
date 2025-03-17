@@ -2405,7 +2405,14 @@ app.get("/clientsReports", (req, res) => {
 
     const clientsMap = new Map();
     data.forEach((row) => {
+    data.forEach((row) => {
       if (!clientsMap.has(row.id)) {
+        clientsMap.set(row.id, {
+          id: row.id,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          projects: [],
+        });
         clientsMap.set(row.id, {
           id: row.id,
           firstName: row.firstName,
@@ -2417,10 +2424,16 @@ app.get("/clientsReports", (req, res) => {
         clientsMap
           .get(row.id)
           .projects.push({ id: row.projectId, projectName: row.projectName });
+        clientsMap
+          .get(row.id)
+          .projects.push({ id: row.projectId, projectName: row.projectName });
       }
     });
 
     // Only return clients that have at least one active project
+    const filteredClients = Array.from(clientsMap.values()).filter(
+      (client) => client.projects.length > 0
+    );
     const filteredClients = Array.from(clientsMap.values()).filter(
       (client) => client.projects.length > 0
     );

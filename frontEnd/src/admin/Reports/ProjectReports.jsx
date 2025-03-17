@@ -17,6 +17,20 @@ import {
   Legend,
   Cell,
 } from "recharts";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Tooltip,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  Cell,
+} from "recharts";
 import "./ReportsTab.css";
 
 const ProjectReports = () => {
@@ -27,12 +41,22 @@ const ProjectReports = () => {
     endDate: "",
     clientId: "",
     year: "2025", // Default to 2025 when toggled to month
+    year: "2025", // Default to 2025 when toggled to month
   });
+
+  const [viewMode, setViewMode] = useState("month");
 
   const [viewMode, setViewMode] = useState("month");
 
   useEffect(() => {
     fetchClients();
+    fetchProjects(); // Fetch projects without year affecting all data
+  }, [filters.startDate, filters.endDate, filters.clientId]); // Removed filters.year
+
+  useEffect(() => {
+    console.log("Clients:", clients);
+    console.log("Projects:", projects);
+  }, [clients, projects]);
     fetchProjects(); // Fetch projects without year affecting all data
   }, [filters.startDate, filters.endDate, filters.clientId]); // Removed filters.year
 
@@ -60,13 +84,34 @@ const ProjectReports = () => {
           endDate: filters.endDate
             ? new Date(filters.endDate).toISOString().split("T")[0]
             : "",
+          startDate: filters.startDate
+            ? new Date(filters.startDate).toISOString().split("T")[0]
+            : "",
+          endDate: filters.endDate
+            ? new Date(filters.endDate).toISOString().split("T")[0]
+            : "",
           clientId: filters.clientId,
+          year: viewMode === "month" ? filters.year : "",
           year: viewMode === "month" ? filters.year : "",
         },
       });
       setProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects", error);
+    }
+  };
+
+  const fetchPaymentDeadlines = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/paymentDeadlines",
+        {
+          params: { year: filters.year }, // Fetch payment deadlines only
+        }
+      );
+      setPaymentDeadlines(response.data);
+    } catch (error) {
+      console.error("Error fetching payment deadlines", error);
     }
   };
 
@@ -94,6 +139,13 @@ const ProjectReports = () => {
         doc.save("project-report.pdf");
       }
     );
+    html2canvas(document.getElementById("project-summary"), { scale: 2 }).then(
+      (canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 10, 30, 180, 0);
+        doc.save("project-report.pdf");
+      }
+    );
   };
 
   const filteredProjects = projects.filter((p) => {
@@ -107,8 +159,25 @@ const ProjectReports = () => {
       (!filterEnd || projectEnd <= filterEnd)
     );
   });
+  const filteredProjects = projects.filter((p) => {
+    const projectStart = new Date(p.startDate);
+    const projectEnd = new Date(p.endDate);
+    const filterStart = filters.startDate ? new Date(filters.startDate) : null;
+    const filterEnd = filters.endDate ? new Date(filters.endDate) : null;
+
+    return (
+      (!filterStart || projectStart >= filterStart) &&
+      (!filterEnd || projectEnd <= filterEnd)
+    );
+  });
 
   const totalProjects = filteredProjects.length;
+  const projectsByClient = clients
+    .map((client) => ({
+      name: `${client.firstName} ${client.lastName}`,
+      value: filteredProjects.filter((p) => p.clientId === client.id).length,
+    }))
+    .filter((entry) => entry.value > 0); // Remove clients with 0 projects
   const projectsByClient = clients
     .map((client) => ({
       name: `${client.firstName} ${client.lastName}`,
@@ -184,6 +253,73 @@ const ProjectReports = () => {
       count: projects.filter((p) => p.paymentStatus === status).length,
     })
   );
+  const projectStatusCounts = ["Completed", "Ongoing", "Pending"].map(
+    (status) => ({
+      name: status,
+      value: filteredProjects.filter((p) => p.status === status).length,
+    })
+  );
+
+  const delayedProjects = filteredProjects
+    .filter((project) => project.isDelayed === 1)
+    .map((project) => ({
+      name: project.projectName,
+      daysDelayed: project.delayedDays, // Use delayedDays from backend
+    }));
+
+  const today = new Date();
+  const formatDate = (dateString, format) => {
+    const date = new Date(dateString);
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    if (format === "year") return date.getFullYear().toString();
+    if (format === "month") return months[date.getMonth()]; // Convert to month name
+    return date.toLocaleDateString("en-US");
+  };
+  const categorizePaymentStatus = (project) => {
+    const endDate = new Date(project.endDate);
+    if (project.paymentStatus === "Paid") return null; // Exclude fully paid projects
+    if (endDate < today) return "Overdue";
+    if ((endDate - today) / (1000 * 60 * 60 * 24) <= 14) return "Due Soon";
+    return "Not Paid";
+  };
+
+  const paymentDueProjects = projects
+    .map((p) => {
+      const category = categorizePaymentStatus(p);
+      return category
+        ? { name: p.projectName, status: category, endDate: formatDate(p.endDate) }
+        : null;
+    })
+    .filter(Boolean);
+
+  // const paymentDueProjects = projects.map((p) => {
+  //   const endDate = new Date(p.endDate);
+  //   const overdueDays =
+  //     p.paymentStatus !== "Paid" && endDate < today
+  //       ? Math.ceil((today - endDate) / (1000 * 60 * 60 * 24))
+  //       : 0;
+
+  //   return {
+  //     name: p.projectName,
+  //     paymentStatus: p.paymentStatus,
+  //     endDate: p.endDate,
+  //     overdueDays: overdueDays,
+  //   };
+  // });
 
   return (
     <div className="p-4">
@@ -202,7 +338,43 @@ const ProjectReports = () => {
         >
           Export PDF
         </button>
+      <div className="mt-4 flex space-x-4">
+        <CSVLink
+          data={projects}
+          filename="project-report.csv"
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Export CSV
+        </CSVLink>
+        <button
+          onClick={exportPDF}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Export PDF
+        </button>
       </div>
+      <input
+        type="date"
+        className="border p-2"
+        value={filters.startDate}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, startDate: e.target.value }))
+        }
+      />
+      <input
+        type="date"
+        className="border p-2"
+        value={filters.endDate}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, endDate: e.target.value }))
+        }
+      />
+
+      <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="bg-white p-4 shadow rounded-lg">
+          <h3 className="text-lg font-semibold">Total Projects</h3>
+          <p className="text-xl font-bold">{totalProjects}</p>
+        </div>
       <input
         type="date"
         className="border p-2"

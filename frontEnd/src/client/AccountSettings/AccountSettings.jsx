@@ -48,13 +48,7 @@ const AccountSettings = () => {
             <>
               <div className="account">
                 <h2>Account Setting</h2>
-                <div className="imagee">
-                  <img
-                    src={image}
-                    alt="image"
-                    className="account-settings-icon"
-                  />
-                </div>
+                
 
                 <div className="info-box">
                   <h3>Basic Information</h3>

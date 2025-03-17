@@ -1,12 +1,12 @@
 nav {
   background: #0a2e68;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
   padding: 0 100px;
+  z-index: 1000; /* Ensures it stays on top of other elements */
 }
+
 nav .logo {
   color: #fff;
   font-size: 30px;
