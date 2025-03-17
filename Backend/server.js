@@ -2228,7 +2228,7 @@ app.get("/appointmentsDashboard/stats", (req, res) => {
       condition = "YEAR(STR_TO_DATE(date, '%Y-%m-%d')) = YEAR(CURDATE())";
       break;
     default:
-      condition = "1=1"; 
+      condition = "1=1";
   }
   const sql = `
     SELECT 
@@ -2361,8 +2361,6 @@ app.get("/todaysTasks", (req, res) => {
   });
 });
 
-
-
 //REPORTS TAB
 //apointments
 app.get("/appointmentReports", (req, res) => {
@@ -2406,21 +2404,61 @@ app.get("/clientsReports", (req, res) => {
     if (err) return res.status(500).json(err);
 
     const clientsMap = new Map();
-    data.forEach(row => {
+    data.forEach((row) => {
       if (!clientsMap.has(row.id)) {
-        clientsMap.set(row.id, { id: row.id, firstName: row.firstName, lastName: row.lastName, projects: [] });
+        clientsMap.set(row.id, {
+          id: row.id,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          projects: [],
+        });
       }
       if (row.projectId) {
-        clientsMap.get(row.id).projects.push({ id: row.projectId, projectName: row.projectName });
+        clientsMap
+          .get(row.id)
+          .projects.push({ id: row.projectId, projectName: row.projectName });
       }
     });
 
     // Only return clients that have at least one active project
-    const filteredClients = Array.from(clientsMap.values()).filter(client => client.projects.length > 0);
+    const filteredClients = Array.from(clientsMap.values()).filter(
+      (client) => client.projects.length > 0
+    );
 
     return res.json(filteredClients);
   });
 });
+app.get("/projectReports", (req, res) => {
+  const { startDate, endDate, clientId, year, viewMode } = req.query;
+
+  let sql = `
+    SELECT 
+      id, clientId, projectName, status, contractPrice, startDate, endDate, actualFinish, 
+      TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
+      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
+      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays,
+    FROM project
+    WHERE isDeleted = 0
+  `;
+
+  if (startDate) sql += ` AND startDate >= '${startDate}'`;
+  if (endDate) sql += ` AND endDate <= '${endDate}'`;
+  if (clientId) sql += ` AND clientId = '${clientId}'`;
+
+  // Only apply the year filter if explicitly provided
+  if (viewMode === "month" && year && year !== "") {
+    sql += ` AND YEAR(startDate) = '${year}'`;
+  }
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Database Error:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    return res.json(data);
+  });
+});
+
 
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {
