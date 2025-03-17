@@ -1,12 +1,16 @@
 nav {
-  background: #171c24;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
   padding: 0 100px;
+  z-index: 1000; /* Ensures it stays on top of other elements */
 }
+
 nav .logo {
   color: #fff;
   font-size: 30px;

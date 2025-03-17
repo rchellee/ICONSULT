@@ -11,7 +11,7 @@ import { CiEdit } from "react-icons/ci";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AdminAccount.css";
-import password from "../../assets/admin.jpg";
+import password from "../../assets/passimg.png";
 
 const AdminAccount = () => {
   const [adminDetails, setAdminDetails] = useState(null);

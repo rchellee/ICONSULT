@@ -21,9 +21,9 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+.content-admin h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-top: 20px;
   color: #333;
   font-size: 24px;
 }
@@ -184,8 +184,8 @@ h2 {
 
 /* Style for the password image */
 .password-image-admin {
-  width: 200px; /* Adjust width as needed */
-  height: 300px; /* Adjust height as needed */
+  width: 134px; /* Adjust width as needed */
+  height: 146px; /* Adjust height as needed */
   object-fit: cover; /* Ensures the image doesn't stretch */
 }
 
