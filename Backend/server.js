@@ -2466,6 +2466,29 @@ app.get("/taskReports", (req, res) => {
     res.json(result);
   });
 });
+app.get("/ETReports", (req, res) => {
+  const sql = `
+    SELECT e.firstName, e.lastName, t.created_at, COUNT(t.id) AS task_count
+    FROM employee e
+    LEFT JOIN tasks t ON e.id = t.employee
+    GROUP BY e.id
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
+    res.json(result);
+  });
+});
+
+app.get("/employeeReports", (req, res) => {
+  const sql = "SELECT * FROM employee";
+  db.query(sql, (err, result) => {
+    if (err)
+      return res.json({ error: "Error fetching employee", details: err });
+    res.json(result);
+  });
+});
+
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {
   const sql = `
