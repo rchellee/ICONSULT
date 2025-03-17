@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { CSVLink } from "react-csv";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import {
   BarChart,
   Bar,
@@ -158,9 +161,61 @@ const TaskReports = () => {
     value: tasksPerProject[name],
   }));
 
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Task Reports", 14, 10);
+
+    const tableColumn = [
+      "Task Name",
+      "Project",
+      "Due Date",
+      "Status",
+      "Amount Paid",
+      "Fee",
+    ];
+    const tableRows = [];
+
+    tasks.forEach((task) => {
+      const projectName =
+        projects[task.project_id] || `Project ${task.project_id}`;
+      const taskData = [
+        task.task_name,
+        projectName,
+        new Date(task.due_date).toLocaleDateString(),
+        task.status,
+        task.amount,
+        task.task_fee,
+      ];
+      tableRows.push(taskData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+    });
+
+    doc.save("task-report.pdf");
+  };
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Task Reports</h2>
+      <div className="mt-4 flex space-x-4">
+        <CSVLink
+          data={tasks}
+          filename="task-report.csv"
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Export CSV
+        </CSVLink>
+
+        <button
+          onClick={exportPDF}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Export PDF
+        </button>
+      </div>
       <div className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold">Task Status</h3>
 
