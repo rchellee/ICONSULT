@@ -2459,8 +2459,13 @@ app.get("/projectReports", (req, res) => {
     return res.json(data);
   });
 });
-
-
+app.get("/taskReports", (req, res) => {
+  const sql = "SELECT * FROM tasks";
+  db.query(sql, (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
+    res.json(result);
+  });
+});
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {
   const sql = `
