@@ -4,7 +4,7 @@
   align-items: center; 
   margin-left: 125px; 
   margin-right: 125px;
-  margin-bottom: 20px; /* Space between header and table */
+  margin-bottom: 20px; 
 }
 
 .project-id {
@@ -16,7 +16,7 @@
 .create-task-button {
   display: flex;
   align-items: center;
-  gap: 5px; /* Space between text and icon */
+  gap: 5px; 
   background-color: #547099;
   color: white; 
   border: none;
@@ -39,7 +39,7 @@
 .progress-container {
   display: flex;
   align-items: center; 
-  gap: 10px; /* Space between progress text and bar */
+  gap: 10px; 
 }
 
 .progress-text {
@@ -51,19 +51,19 @@
 .details-container {
   margin-left: 125px; 
   margin-right: 125px; 
-  margin-bottom: 20px; /* Space between details and table */
+  margin-bottom: 20px; 
   position: relative;
 }
 
 .details-content {
   display: flex;
-  justify-content: space-between; /* Space between left and right content */
+  justify-content: space-between; 
   align-items: center; 
 }
 
 .detail-row {
   display: flex;
-  gap: 50px; /* Space between detail items */
+  gap: 50px; 
   align-items: center; 
 }
 
@@ -222,7 +222,7 @@
 
 .transaction-table th,
 .transaction-table td {
-  border-right: 1px solid #ccc; /* Vertical line between columns */
+  border-right: 1px solid #ccc;
   padding: 8px;
   text-align: left;
   color: #555;
@@ -230,7 +230,7 @@
 
 .transaction-table th:last-child,
 .transaction-table td:last-child {
-  border-right: none; /* Remove vertical line for the last column */
+  border-right: none;
 }
 
 .transaction-table th {
@@ -434,4 +434,36 @@ td.amount-cell {
 
 .dropdown-task button:hover {
   background-color: #f1f1f1; 
+}
+
+/* MOP Dropdown */
+.mop-dropdown {
+  width: 150px; 
+  max-width: 100%; 
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.mop-dropdown:hover {
+  background-color: #e9e9e9;
+  border-color: #999;
+}
+
+.mop-dropdown:focus {
+  outline: none;
+  border-color: #3b4f67;
+  box-shadow: 0 0 0 2px rgba(59, 79, 103, 0.2);
+}
+
+.mop-dropdown option {
+  padding: 8px;
+  background-color: #fff;
+  color: #333;
 }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./TaskCreate.css";
+import { MdAddCircleOutline } from "react-icons/md";
 
 const TaskCreateForm = ({ onClose, onCreate }) => {
   const [taskName, setTaskName] = useState("");
@@ -40,22 +41,23 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
   return (
     <div className="task-create-form-overlay">
       <div className="task-create-form">
-        <h2>Create New Task</h2>
+        <h2>Create Task</h2>
         <form onSubmit={handleSubmit}>
           {/* Information Section */}
           <div className="form-section">
             <h3>Information</h3>
             <div className="form-row">
-              <div className="form-group">
+              <div className="form-modal-field">
                 <label>Task Name:</label>
                 <input
                   type="text"
+                  placeholder="Enter"
                   value={taskName}
                   onChange={(e) => setTaskName(e.target.value)}
                   required
                 />
               </div>
-              <div className="form-group">
+              <div className="form-modal-field">
                 <label>Assign Employee:</label>
                 <select
                   value={assignedEmployee}
@@ -69,7 +71,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                   {/* Add more employees as needed */}
                 </select>
               </div>
-              <div className="form-group">
+              <div className="form-modal-field">
                 <label>Due Date:</label>
                 <input
                   type="date"
@@ -85,35 +87,38 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
           <div className="form-section">
             <h3>Sub-items</h3>
             <div className="form-row">
-              <div className="form-group">
+              <div className="form-modal-field">
                 <label>Task Fee:</label>
                 <input
                   type="number"
+                  placeholder="₱"
                   value={taskFee}
                   onChange={(e) => setTaskFee(e.target.value)}
                   required
+                  inputMode="numeric"
+                  style={{ width: "260px" }} 
                 />
               </div>
             </div>
 
             {/* Miscellaneous Items */}
             <div className="form-row">
-              <div className="form-group">
+              <div className="form-modal-field">
                 <label>Miscellaneous Name:</label>
                 <input
                   type="text"
-                  placeholder="Miscellaneous Name"
                   value={miscName}
                   onChange={(e) => setMiscName(e.target.value)}
                 />
               </div>
-              <div className="form-group">
+              <div className="form-modal-field">
                 <label>Miscellaneous Fee:</label>
                 <input
                   type="number"
-                  placeholder="Amount"
+                  placeholder="₱"
                   value={miscAmount}
                   onChange={(e) => setMiscAmount(e.target.value)}
+                  inputMode="numeric"
                 />
               </div>
               <button
@@ -121,7 +126,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                 className="add-misc-button"
                 onClick={handleAddMiscellaneous}
               >
-                +
+                <MdAddCircleOutline />
               </button>
             </div>
 
@@ -140,7 +145,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
             <button type="button" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit">Create Task</button>
+            <button type="submit">Create</button>
           </div>
         </form>
       </div>
@@ -148,4 +153,4 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
   );
 };
 
-export default TaskCreateForm;
+export default TaskCreateForm; 

@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useLayoutEffect, useState } from "react";
-import "./AccountingLedger.css";
+import React from "react";
+import "./AccountingLedger.css"; 
 
 const AccountingLedger = ({
   projects,
@@ -8,8 +8,6 @@ const AccountingLedger = ({
   tasksInfo,
   totalTasks,
 }) => {
-  const tableRef = useRef(null); // Ref to measure the table height
-  const [tableHeight, setTableHeight] = useState(0); // State to store the table height
 
   const generateTransactionId = () => {
     return `TX${Math.floor(Math.random() * 1000000)}`;
@@ -27,6 +25,7 @@ const AccountingLedger = ({
     })}`;
   };
 
+  // Calculate the total amount for all projects
   const calculateGrandTotal = () => {
     let total = 0;
     filteredProjects.forEach((project) => {
@@ -36,17 +35,11 @@ const AccountingLedger = ({
     return total;
   };
 
-  useLayoutEffect(() => {
-    if (tableRef.current) {
-      setTableHeight(tableRef.current.offsetHeight);
-    }
-  }, [filteredProjects]);
-
   return (
     <div className="accounting-ledger">
       <h2>Accounting Ledger</h2>
-      <div className="accounting-scroll" style={{ maxHeight: "400px", overflowY: "auto" }}>
-        <table className="accounting-table" ref={tableRef}>
+      <div className="">
+        <table className="accounting-table">
           <thead>
             <tr>
               <th>Project</th>
@@ -59,12 +52,14 @@ const AccountingLedger = ({
           </thead>
           <tbody>
             {filteredProjects.map((project) => {
+              // Calculate subtotal for the current project
               const professionalFee = parseFloat(project.contractPrice) || 0;
               const taskAmount = parseFloat(tasksInfo[project.id]?.total) || 0;
               const subtotal = professionalFee + taskAmount;
 
               return (
                 <React.Fragment key={project.id}>
+                  {/* Row for Professional Fee */}
                   <tr>
                     <td>{project.projectName}</td>
                     <td>{generateTransactionId()}</td>
@@ -73,26 +68,29 @@ const AccountingLedger = ({
                     <td>{formatDate(new Date())}</td>
                     <td>{generateModeOfPayment()}</td>
                   </tr>
+                  {/* Row for Task */}
                   <tr>
-                    <td></td>
-                    <td></td>
-                    <td>Task</td>
+                    <td></td> 
+                    <td></td> 
+                    <td>Task1</td>
                     <td>{formatAmount(taskAmount)}</td>
                     <td>{formatDate(new Date())}</td>
                     <td>{generateModeOfPayment()}</td>
                   </tr>
+                  {/* Subtotal Row for the Project */}
                   <tr className="subtotal-row">
-                    <td colSpan="3"></td>
+                    <td colSpan="3"></td> 
                     <td>{formatAmount(subtotal)}</td>
-                    <td colSpan="2"></td>
+                    <td colSpan="2"></td> 
                   </tr>
                 </React.Fragment>
               );
             })}
+            {/* Grand Total Row */}
             <tr className="grand-total-row">
               <td colSpan="3">Total</td>
               <td>{formatAmount(calculateGrandTotal())}</td>
-              <td colSpan="2"></td>
+              <td colSpan="2"></td> 
             </tr>
           </tbody>
         </table>
@@ -102,55 +100,3 @@ const AccountingLedger = ({
 };
 
 export default AccountingLedger;
-
-/* Updated CSS */
-.accounting-ledger {
-  position: relative;
-}
-
-.accounting-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 18px;
-  table-layout: fixed;
-  height: auto;
-  position: relative;
-  display: block;
-}
-
-.accounting-table th,
-.accounting-table td {
-  padding: 3px 10px;
-  border: none;
-  font-size: 15px;
-}
-
-.accounting-scroll {
-  overflow-y: auto;
-  max-height: 400px;
-  margin-top: 40px;
-  margin-left: 125px;
-  margin-right: 125px;
-  border-radius: 10px;
-  background-color: transparent;
-  padding: 10px;
-  border: none;
-}
-
-.accounting-scroll::-webkit-scrollbar {
-  width: 12px;
-}
-
-.accounting-scroll::-webkit-scrollbar-track {
-  background: #ccc;
-  border-radius: 10px;
-}
-
-.accounting-scroll::-webkit-scrollbar-thumb {
-  background-color: #547099;
-  border-radius: 10px;
-}
-
-.accounting-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: #365673;
-}
