@@ -70,20 +70,6 @@ const ProjectReports = () => {
     }
   };
 
-  const fetchPaymentDeadlines = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8081/paymentDeadlines",
-        {
-          params: { year: filters.year }, // Fetch payment deadlines only
-        }
-      );
-      setPaymentDeadlines(response.data);
-    } catch (error) {
-      console.error("Error fetching payment deadlines", error);
-    }
-  };
-
   const exportPDF = () => {
     const doc = new jsPDF();
     doc.text("Project Report", 20, 10);
@@ -168,21 +154,6 @@ const ProjectReports = () => {
         : null;
     })
     .filter(Boolean);
-
-  // const paymentDueProjects = projects.map((p) => {
-  //   const endDate = new Date(p.endDate);
-  //   const overdueDays =
-  //     p.paymentStatus !== "Paid" && endDate < today
-  //       ? Math.ceil((today - endDate) / (1000 * 60 * 60 * 24))
-  //       : 0;
-
-  //   return {
-  //     name: p.projectName,
-  //     paymentStatus: p.paymentStatus,
-  //     endDate: p.endDate,
-  //     overdueDays: overdueDays,
-  //   };
-  // });
 
   return (
     <div className="p-4">
