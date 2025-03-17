@@ -40,6 +40,7 @@
   font-style: normal;
   font-weight: normal;
   color: #5d6d90;
+  border-radius: 10px;
 }
 
 .form-modal-field input,
@@ -56,7 +57,6 @@
   width: 100%;
   padding: 12px;
   font-size: 16px;
-  border-radius: 4px;
   border: 1px solid #ccc;
   box-sizing: border-box;
   appearance: none; 
@@ -64,6 +64,7 @@
   -moz-appearance: none; 
   background: none; 
   margin-top: -1px;
+  border-radius: 10px;
 }
 
 .form-modal-actions {
@@ -121,13 +122,13 @@
   width: 100%;
   padding: 8px;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: 10px;
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
 
 .description-input {
-  width: 205%; 
+   
   height: 100px; 
   padding: 12px;
   font-size: 16px;
@@ -220,4 +221,94 @@
 
 .form-create-project-button:hover {
   background-color: #b0c2f8; 
+}
+
+/*prof fee, mop, tras id*/
+
+.form-modal-field-container {
+  display: flex;
+  gap: 20px; /* Adjust the gap between fields as needed */
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.form-modal-field-container .form-modal-field {
+  flex: 1; /* Ensures all fields take equal width */
+}
+
+.form-modal-field-container .form-modal-field input,
+.form-modal-field-container .form-modal-field select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.form-modal-field-container .form-modal-field select {
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  font-size: 15px;
+  line-height: 15px;
+  color: #333;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.dropdown-toggle span:first-child {
+  color: #303030; /* Light gray color for "Select MOP" */
+}
+
+.dropdown-icon {
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background: #f0f0f0;
 }

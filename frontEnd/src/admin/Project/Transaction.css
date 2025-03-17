@@ -209,6 +209,9 @@
   background-color: #365673;
 }
 
+
+
+
 /* Table Styles */
 .transaction-table {
   width: 100%; 
@@ -219,7 +222,7 @@
 
 .transaction-table th,
 .transaction-table td {
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #ccc; /* Vertical line between columns */
   padding: 8px;
   text-align: left;
   color: #555;
@@ -227,7 +230,7 @@
 
 .transaction-table th:last-child,
 .transaction-table td:last-child {
-  border-right: none; 
+  border-right: none; /* Remove vertical line for the last column */
 }
 
 .transaction-table th {
@@ -255,7 +258,6 @@
   font-weight: bold;
   color: #333;
 }
-
 
 td.amount-cell {
   text-align: right !important;

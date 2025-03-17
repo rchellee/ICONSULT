@@ -16,29 +16,17 @@ const ProjectForm = ({
   setDescription,
   contractPrice,
   setContractPrice,
-  downpayment,
-  setDownpayment,
   clients,
   onCancel,
   onSave,
   editingProjectId,
   existingCreatedAt,
 }) => {
-  const [downpaymentWarning, setDownpaymentWarning] = useState(false);
   const [feeWarning, setFeeWarning] = useState(false);
   const [validationError, setValidationError] = useState("");
-
-  
-
-  const handleDownpaymentChange = (e) => {
-    const value = e.target.value;
-    if (isNaN(value) && value !== "") {
-      setDownpaymentWarning(true);
-    } else {
-      setDownpaymentWarning(false);
-      setDownpayment(value);
-    }
-  };
+  const [transactionId, setTransactionId] = useState("");
+  const [modeOfPayment, setModeOfPayment] = useState(""); // Initialized as an empty string
+  const [isOpen, setIsOpen] = useState(false); // State to manage dropdown visibility
 
   const handleFeeChange = (e) => {
     const value = e.target.value;
@@ -52,7 +40,7 @@ const ProjectForm = ({
 
   const handleSave = () => {
     if (!projectName || !clientId || !startDate || !endDate || !description || !contractPrice) {
-      setValidationError("All fields except Downpayment are required.");
+      setValidationError("All fields except Transaction ID are required.");
       return;
     }
 
@@ -66,11 +54,17 @@ const ProjectForm = ({
       endDate,
       description,
       contractPrice,
-      downpayment,
-      createdAt,
+      transactionId,
+      modeOfPayment,
+      createdAt: existingCreatedAt || new Date().toISOString(), // Use existingCreatedAt or current timestamp
     };
 
     onSave(newProject);
+  };
+
+  const handleOptionClick = (value) => {
+    setModeOfPayment(value); // Update the selected value
+    setIsOpen(false); // Close the dropdown
   };
 
   return (
@@ -123,28 +117,60 @@ const ProjectForm = ({
             <label>End Date:</label>
             <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
           </div>
+        </div>
 
-          <div className="form-modal-field">
-            <label>Downpayment (Optional):</label>
-            <input type="text" placeholder="₱" value={downpayment} onChange={handleDownpaymentChange} />
-            {downpaymentWarning && <span className="warning-message">Invalid</span>}
-          </div>
-
+        <div className="form-modal-field-container">
           <div className="form-modal-field">
             <label>Professional Fee:</label>
-            <input type="text" placeholder="₱" value={contractPrice} onChange={handleFeeChange} />
+            <input
+              type="text"
+              placeholder="₱"
+              value={contractPrice}
+              onChange={handleFeeChange}
+            />
             {feeWarning && <span className="warning-message">Invalid</span>}
           </div>
 
           <div className="form-modal-field">
-            <label>Description:</label>
-            <textarea
-              placeholder="Describe your project"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="description-input"
+            <label>Transaction ID:</label>
+            <input
+              type="text"
+              placeholder="Enter Transaction ID"
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
             />
           </div>
+
+          <div className="form-modal-field">
+            <label>Mode of Payment: (MOP)</label>
+            <div className="custom-dropdown">
+              <div
+                className="dropdown-toggle"
+                onClick={() => setIsOpen(!isOpen)} // Toggle dropdown visibility
+              >
+                <span>{modeOfPayment ? modeOfPayment : "Select MOP"}</span>
+                <span className="dropdown-icon">▼</span> {/* Dropdown icon */}
+              </div>
+              {isOpen && (
+                <ul className="dropdown-menu">
+                  <li onClick={() => handleOptionClick("Select MOP")}>Select MOP</li>
+                  <li onClick={() => handleOptionClick("Cheque")}>Cheque</li>
+                  <li onClick={() => handleOptionClick("Online")}>Online</li>
+                  <li onClick={() => handleOptionClick("Cash")}>Cash</li>
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="form-modal-field">
+          <label>Description:</label>
+          <textarea
+            placeholder="Describe your project"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="description-input"
+          />
         </div>
 
         {validationError && <div className="validation-error">{validationError}</div>}

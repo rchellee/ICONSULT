@@ -266,9 +266,7 @@ const ListView = ({
               <th>Actual <br /> Start</th>
               <th>Actual <br /> Finish</th>
               <th>Professional <br /> Fee</th>
-              <th>Downpayment</th>
-              <th>Total</th>
-              <th>Payment <br /> Status</th>
+              <th>Amount</th>
               <th>Project <br /> Status</th>
               <th>Action</th>
             </tr>
@@ -325,15 +323,12 @@ const ListView = ({
                   <td className="right-align" title={formatCurrency(project.contractPrice)}>
                     {formatCurrency(project.contractPrice)}
                   </td>
-                  <td className="right-align"title={formatCurrency(project.downpayment)}>
-                    {formatCurrency(project.downpayment)}
-                  </td>
+                  
                   <td className="right-align" title={formatCurrency(totalTasks[project.id])}>
                     {formatCurrency(totalTasks[project.id])}
                   </td>
 
-                  {/* Payment Status */}
-                  <td>Paid</td>
+                 
 
                   {/* Status Dropdown */}
                   <td>

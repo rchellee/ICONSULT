@@ -114,6 +114,18 @@ const Transaction = ({ projectId }) => {
     setTransactions(updatedTransactions);
   };
 
+  const handleMOPChange = (taskIndex, subItemIndex, mop) => {
+    const updatedTransactions = [...transactions];
+    if (subItemIndex === -1) {
+      // Update MOP for the main task fee
+      updatedTransactions[taskIndex].mop = mop;
+    } else {
+      // Update MOP for the sub-item (miscellaneous)
+      updatedTransactions[taskIndex].subItems[subItemIndex].mop = mop;
+    }
+    setTransactions(updatedTransactions);
+  };
+
   const sortTransactions = (criteria) => {
     const sortedTransactions = [...transactions];
 
@@ -254,6 +266,7 @@ const Transaction = ({ projectId }) => {
               <th>Date Paid</th>
               <th>Past Due</th>
               <th>Status</th>
+              <th>Mode of Payment (MOP)</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -291,6 +304,7 @@ const Transaction = ({ projectId }) => {
                         </option>
                       </select>
                     </td>
+                    <td></td>
                     <td>
                       <div className="task-actions">
                         <button
@@ -319,7 +333,18 @@ const Transaction = ({ projectId }) => {
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
+                    <td>
+                      <select
+                        value={transaction.mop || ""}
+                        onChange={(e) => handleMOPChange(index, -1, e.target.value)}
+                        className="mop-dropdown"
+                      >
+                        <option value="">Select MOP</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Online">Online</option>
+                        <option value="Cheque">Cheque</option>
+                      </select>
+                    </td>
                   </tr>
 
                   {/* Sub-items (Miscellaneous) */}
@@ -333,7 +358,18 @@ const Transaction = ({ projectId }) => {
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td></td>
+                      <td>
+                        <select
+                          value={subItem.mop || ""}
+                          onChange={(e) => handleMOPChange(index, subIndex + 1, e.target.value)}
+                          className="mop-dropdown"
+                        >
+                          <option value="">Select MOP</option>
+                          <option value="Cash">Cash</option>
+                          <option value="Online">Online</option>
+                          <option value="Cheque">Cheque</option>
+                        </select>
+                      </td>
                     </tr>
                   ))}
 

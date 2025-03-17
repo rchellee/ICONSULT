@@ -21,6 +21,7 @@
     "@mui/icons-material": "^6.2.1",
     "@mui/material": "^6.1.8",
     "@sendgrid/mail": "^8.1.4",
+    "@tanstack/react-table": "^8.21.2",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
     "chart.js": "^4.4.7",
