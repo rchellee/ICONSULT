@@ -17,20 +17,6 @@ import {
   Legend,
   Cell,
 } from "recharts";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Tooltip,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Legend,
-  Cell,
-} from "recharts";
 import "./ReportsTab.css";
 
 const ProjectReports = () => {
@@ -41,22 +27,12 @@ const ProjectReports = () => {
     endDate: "",
     clientId: "",
     year: "2025", // Default to 2025 when toggled to month
-    year: "2025", // Default to 2025 when toggled to month
   });
-
-  const [viewMode, setViewMode] = useState("month");
 
   const [viewMode, setViewMode] = useState("month");
 
   useEffect(() => {
     fetchClients();
-    fetchProjects(); // Fetch projects without year affecting all data
-  }, [filters.startDate, filters.endDate, filters.clientId]); // Removed filters.year
-
-  useEffect(() => {
-    console.log("Clients:", clients);
-    console.log("Projects:", projects);
-  }, [clients, projects]);
     fetchProjects(); // Fetch projects without year affecting all data
   }, [filters.startDate, filters.endDate, filters.clientId]); // Removed filters.year
 
@@ -84,34 +60,13 @@ const ProjectReports = () => {
           endDate: filters.endDate
             ? new Date(filters.endDate).toISOString().split("T")[0]
             : "",
-          startDate: filters.startDate
-            ? new Date(filters.startDate).toISOString().split("T")[0]
-            : "",
-          endDate: filters.endDate
-            ? new Date(filters.endDate).toISOString().split("T")[0]
-            : "",
           clientId: filters.clientId,
-          year: viewMode === "month" ? filters.year : "",
           year: viewMode === "month" ? filters.year : "",
         },
       });
       setProjects(response.data);
     } catch (error) {
       console.error("Error fetching projects", error);
-    }
-  };
-
-  const fetchPaymentDeadlines = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8081/paymentDeadlines",
-        {
-          params: { year: filters.year }, // Fetch payment deadlines only
-        }
-      );
-      setPaymentDeadlines(response.data);
-    } catch (error) {
-      console.error("Error fetching payment deadlines", error);
     }
   };
 
@@ -139,26 +94,8 @@ const ProjectReports = () => {
         doc.save("project-report.pdf");
       }
     );
-    html2canvas(document.getElementById("project-summary"), { scale: 2 }).then(
-      (canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        doc.addImage(imgData, "PNG", 10, 30, 180, 0);
-        doc.save("project-report.pdf");
-      }
-    );
   };
 
-  const filteredProjects = projects.filter((p) => {
-    const projectStart = new Date(p.startDate);
-    const projectEnd = new Date(p.endDate);
-    const filterStart = filters.startDate ? new Date(filters.startDate) : null;
-    const filterEnd = filters.endDate ? new Date(filters.endDate) : null;
-
-    return (
-      (!filterStart || projectStart >= filterStart) &&
-      (!filterEnd || projectEnd <= filterEnd)
-    );
-  });
   const filteredProjects = projects.filter((p) => {
     const projectStart = new Date(p.startDate);
     const projectEnd = new Date(p.endDate);
@@ -178,81 +115,7 @@ const ProjectReports = () => {
       value: filteredProjects.filter((p) => p.clientId === client.id).length,
     }))
     .filter((entry) => entry.value > 0); // Remove clients with 0 projects
-  const projectsByClient = clients
-    .map((client) => ({
-      name: `${client.firstName} ${client.lastName}`,
-      value: filteredProjects.filter((p) => p.clientId === client.id).length,
-    }))
-    .filter((entry) => entry.value > 0); // Remove clients with 0 projects
 
-  const projectStatusCounts = ["Completed", "Ongoing", "Pending"].map(
-    (status) => ({
-      name: status,
-      value: filteredProjects.filter((p) => p.status === status).length,
-    })
-  );
-
-  const delayedProjects = filteredProjects
-    .filter((project) => project.isDelayed === 1)
-    .map((project) => ({
-      name: project.projectName,
-      daysDelayed: project.delayedDays, // Use delayedDays from backend
-    }));
-
-  const today = new Date();
-  const formatDate = (dateString, format) => {
-    const date = new Date(dateString);
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    if (format === "year") return date.getFullYear().toString();
-    if (format === "month") return months[date.getMonth()]; // Convert to month name
-    return date.toLocaleDateString("en-US");
-  };
-
-  const paymentDueProjects = projects
-    .filter((p) => p.paymentStatus !== "Paid")
-    .map((p) => ({
-      name: p.projectName,
-      categoryIndex:
-        p.dueCategory === "Overdue"
-          ? 2
-          : p.dueCategory === "Due in 1-2 Weeks"
-          ? 1
-          : 0, // Assign numeric index
-      dueDate: p.paymentDueDate, // Use the correct field from backend
-      overdueDays:
-        p.dueCategory === "Overdue"
-          ? Math.ceil(
-              (new Date() - new Date(p.paymentDueDate)) / (1000 * 60 * 60 * 24)
-            )
-          : 0,
-      daysRemaining:
-        p.dueCategory === "Due in 1-2 Weeks"
-          ? Math.ceil(
-              (new Date(p.paymentDueDate) - new Date()) / (1000 * 60 * 60 * 24)
-            )
-          : 0,
-    }));
-
-  const paymentStatusCounts = ["Paid", "Not Paid", "Partial Payment"].map(
-    (status) => ({
-      name: status,
-      count: projects.filter((p) => p.paymentStatus === status).length,
-    })
-  );
   const projectStatusCounts = ["Completed", "Ongoing", "Pending"].map(
     (status) => ({
       name: status,
@@ -306,21 +169,6 @@ const ProjectReports = () => {
     })
     .filter(Boolean);
 
-  // const paymentDueProjects = projects.map((p) => {
-  //   const endDate = new Date(p.endDate);
-  //   const overdueDays =
-  //     p.paymentStatus !== "Paid" && endDate < today
-  //       ? Math.ceil((today - endDate) / (1000 * 60 * 60 * 24))
-  //       : 0;
-
-  //   return {
-  //     name: p.projectName,
-  //     paymentStatus: p.paymentStatus,
-  //     endDate: p.endDate,
-  //     overdueDays: overdueDays,
-  //   };
-  // });
-
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Project Reports</h2>
@@ -338,43 +186,7 @@ const ProjectReports = () => {
         >
           Export PDF
         </button>
-      <div className="mt-4 flex space-x-4">
-        <CSVLink
-          data={projects}
-          filename="project-report.csv"
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Export CSV
-        </CSVLink>
-        <button
-          onClick={exportPDF}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Export PDF
-        </button>
       </div>
-      <input
-        type="date"
-        className="border p-2"
-        value={filters.startDate}
-        onChange={(e) =>
-          setFilters((prev) => ({ ...prev, startDate: e.target.value }))
-        }
-      />
-      <input
-        type="date"
-        className="border p-2"
-        value={filters.endDate}
-        onChange={(e) =>
-          setFilters((prev) => ({ ...prev, endDate: e.target.value }))
-        }
-      />
-
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        <div className="bg-white p-4 shadow rounded-lg">
-          <h3 className="text-lg font-semibold">Total Projects</h3>
-          <p className="text-xl font-bold">{totalProjects}</p>
-        </div>
       <input
         type="date"
         className="border p-2"
@@ -453,19 +265,24 @@ const ProjectReports = () => {
         className="bg-white p-4 shadow rounded-lg mt-4"
       >
         <h3 className="text-lg font-semibold">Payment Due Status</h3>
-        <LineChart width={1500} height={400} data={projects}>
+        <LineChart width={1500} height={400} data={paymentDueProjects}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="projectName" angle={-15} textAnchor="end" />
-          <YAxis type="category" dataKey="paymentStatus" />
-          <Tooltip />
+          <XAxis dataKey="name" angle={-15} textAnchor="end" />
+          <YAxis type="category" dataKey="status" />
+          <Tooltip
+            formatter={(value, name, props) => [
+              `${value}`,
+              `Due Date: ${props.payload.endDate}`,
+            ]}
+          />
           <Legend />
           <Line
             type="monotone"
-            dataKey="paymentStatus"
+            dataKey="status"
             stroke="#FF0000"
             name="Status"
+            dot={{ r: 0 }}
           />
-          <Line type="monotone" dataKey="endDate" stroke="#82ca9d" name="Due" />
         </LineChart>
       </div>
     </div>
