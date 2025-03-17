@@ -152,21 +152,37 @@ const ProjectReports = () => {
     if (format === "month") return months[date.getMonth()]; // Convert to month name
     return date.toLocaleDateString("en-US");
   };
+  const categorizePaymentStatus = (project) => {
+    const endDate = new Date(project.endDate);
+    if (project.paymentStatus === "Paid") return null; // Exclude fully paid projects
+    if (endDate < today) return "Overdue";
+    if ((endDate - today) / (1000 * 60 * 60 * 24) <= 14) return "Due Soon";
+    return "Not Paid";
+  };
 
-  const paymentDueProjects = projects.map((p) => {
-    const endDate = new Date(p.endDate);
-    const overdueDays =
-      p.paymentStatus !== "Paid" && endDate < today
-        ? Math.ceil((today - endDate) / (1000 * 60 * 60 * 24))
-        : 0;
+  const paymentDueProjects = projects
+    .map((p) => {
+      const category = categorizePaymentStatus(p);
+      return category
+        ? { name: p.projectName, status: category, endDate: formatDate(p.endDate) }
+        : null;
+    })
+    .filter(Boolean);
 
-    return {
-      name: p.projectName,
-      paymentStatus: p.paymentStatus,
-      endDate: p.endDate,
-      overdueDays: overdueDays,
-    };
-  });
+  // const paymentDueProjects = projects.map((p) => {
+  //   const endDate = new Date(p.endDate);
+  //   const overdueDays =
+  //     p.paymentStatus !== "Paid" && endDate < today
+  //       ? Math.ceil((today - endDate) / (1000 * 60 * 60 * 24))
+  //       : 0;
+
+  //   return {
+  //     name: p.projectName,
+  //     paymentStatus: p.paymentStatus,
+  //     endDate: p.endDate,
+  //     overdueDays: overdueDays,
+  //   };
+  // });
 
   return (
     <div className="p-4">
@@ -267,22 +283,20 @@ const ProjectReports = () => {
         <LineChart width={1500} height={400} data={paymentDueProjects}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" angle={-15} textAnchor="end" />
-          <YAxis type="category" dataKey="paymentStatus" />
-          <Tooltip />
+          <YAxis type="category" dataKey="status" />
+          <Tooltip
+            formatter={(value, name, props) => [
+              `${value}`,
+              `Due Date: ${props.payload.endDate}`,
+            ]}
+          />
           <Legend />
           <Line
             type="monotone"
-            dataKey="paymentStatus"
+            dataKey="status"
             stroke="#FF0000"
             name="Status"
-            dot={{ r: 0 }} // Hide dots when not hovering
-          />
-          <Line type="monotone" dataKey="endDate" stroke="#82ca9d" name="Due" />
-          <Line
-            type="monotone"
-            dataKey="overdueDays"
-            stroke="#FF0000"
-            name="Overdue"
+            dot={{ r: 0 }}
           />
         </LineChart>
       </div>
