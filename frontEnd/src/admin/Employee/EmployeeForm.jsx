@@ -103,7 +103,6 @@ const EmployeeForm = ({
 
   return (
     <div className="employee-home-page">
-      <Sidebar />
       <div className="employee-content">
         <form onSubmit={handleSubmit} className="employee-form-grid">
           {/* Name Section */}

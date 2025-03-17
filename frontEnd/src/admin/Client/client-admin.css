@@ -9,7 +9,7 @@
 .client-content {
   flex-grow: 2;
   margin-left: 105px;
-  height: 600px;
+  height: 700px;
   padding-top: 70px;
 }
 /************************** Client Management **************/
@@ -26,6 +26,7 @@ table {
   border-radius: 3px;
   overflow: hidden;
   margin: 0px auto;
+  background-color: #fbfbfb;
 }
 thead th {
   position: sticky;
@@ -33,7 +34,10 @@ thead th {
   background-color: #f8f9fa;
   z-index: 2;
 }
-
+table thead th {
+background-color: #eeecec;
+color:black;
+}
 table th,
 table td {
   padding: 15px 15px;

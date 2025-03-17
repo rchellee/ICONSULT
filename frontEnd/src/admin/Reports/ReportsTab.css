@@ -2,9 +2,10 @@
 
 .reports-tab-container {
   padding: 10px;
-  margin-left: 100px; /* Adjust if sidebar width changes */
+  margin-left: 80px; /* Adjust if sidebar width changes */
   transition: margin-left 0.3s ease;
   padding-top: 70px;
+  background-color: #f4f4f9;
 
 }
 
@@ -55,7 +56,6 @@ select:focus {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Auto-adjusting columns */
   gap: 16px; /* Space between elements */
-  background: #ffffff;
   padding: 16px;
 
   align-items: center;
