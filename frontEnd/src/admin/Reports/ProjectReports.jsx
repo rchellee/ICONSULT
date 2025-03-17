@@ -153,6 +153,21 @@ const ProjectReports = () => {
     return date.toLocaleDateString("en-US");
   };
 
+  const paymentDueProjects = projects.map((p) => {
+    const endDate = new Date(p.endDate);
+    const overdueDays =
+      p.paymentStatus !== "Paid" && endDate < today
+        ? Math.ceil((today - endDate) / (1000 * 60 * 60 * 24))
+        : 0;
+
+    return {
+      name: p.projectName,
+      paymentStatus: p.paymentStatus,
+      endDate: p.endDate,
+      overdueDays: overdueDays,
+    };
+  });
+
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Project Reports</h2>
@@ -249,14 +264,26 @@ const ProjectReports = () => {
         className="bg-white p-4 shadow rounded-lg mt-4"
       >
         <h3 className="text-lg font-semibold">Payment Due Status</h3>
-        <LineChart width={1500} height={400} data={projects}>
+        <LineChart width={1500} height={400} data={paymentDueProjects}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="projectName" angle={-15} textAnchor="end" />
+          <XAxis dataKey="name" angle={-15} textAnchor="end" />
           <YAxis type="category" dataKey="paymentStatus" />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="paymentStatus" stroke="#FF0000" name="Status" />
+          <Line
+            type="monotone"
+            dataKey="paymentStatus"
+            stroke="#FF0000"
+            name="Status"
+            dot={{ r: 0 }} // Hide dots when not hovering
+          />
           <Line type="monotone" dataKey="endDate" stroke="#82ca9d" name="Due" />
+          <Line
+            type="monotone"
+            dataKey="overdueDays"
+            stroke="#FF0000"
+            name="Overdue"
+          />
         </LineChart>
       </div>
     </div>
