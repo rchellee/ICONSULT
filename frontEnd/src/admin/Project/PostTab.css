@@ -1,4 +1,3 @@
-/* Navigation buttons */
 .top-button {
   display: flex;
   align-items: center;
@@ -62,31 +61,31 @@
   margin-top: 20px;
 }
 
-.create-task-button {
-  background-color: #9cadec; /* Background color */
-  color: white; /* Text color */
-  border: none; /* No border */
-  padding: 10px 16px; /* Adjust padding to fit the text and icon */
-  font-size: 18px; /* Adjust font size */
-  cursor: pointer; /* Pointer on hover */
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
-  display: inline-flex; /* Inline-flex for dynamic sizing */
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
-  gap: 8px; /* Space between icon and text */
+/*.create-task-button 
+  background-color: #9cadec; 
+  color: white; 
+  border: none; 
+  padding: 10px 16px; 
+  font-size: 18px; 
+  cursor: pointer; 
+  transition: background-color 0.3s ease, transform 0.3s ease; 
+  display: inline-flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
   position: absolute;
   right: -40px;
   top: 30px;
-  border-radius: 4px; /* Slightly rounded corners */
-}
+  border-radius: 4px; 
 
-.create-task-icon {
-  font-size: 24px; /* Icon size */
-}
 
-.create-task-button:hover {
-  background-color: #3a5b84; /* Change color on hover */
-}
+.create-task-icon 
+  font-size: 24px; 
+
+
+.create-task-button:hover 
+  background-color: #3a5b84; */
+ 
 
 
 /* Task Table Container */
@@ -229,29 +228,26 @@
   border-bottom: 1px dashed #ccc;
 }*/
 
-/* Align text to the right for amount fields */
+
 .align-right {
   text-align: right;
 }
 
-/* Slightly move the Amount label to the right */
 .amount-label {
   margin-left: 10px;
 }
 
-/* Remove dashed line for Task Name row */
 .task-detail-row:first-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-/* Remove dashed line for Miscellaneous row */
+
 .task-detail-row:nth-child(3) {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-/* Add bold styling and remove dashed line for the total row */
 .total-row {
   border-bottom: none;
   padding-bottom: 0;
@@ -296,11 +292,11 @@
   background-color: #ddd;
 }
 
-/*css for total amount of task*/
+
 .total-amount-container {
   display: flex;
-  align-items: center; /* Vertically align items */
-  margin-bottom: -40px; /* Add space between this and the table */
+  align-items: center; 
+  margin-bottom: -40px; 
   margin-right: 225px;
   margin-top: 20px;
   gap: 10px;

@@ -1,0 +1,35 @@
+.accounting-ledger {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .accounting-ledger h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .accounting-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: -500px; 
+  }
+  
+  .accounting-table th,
+  .accounting-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .accounting-table th {
+    background-color: #3b4f67;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .accounting-table tr:hover {
+    background-color: #f1f1f1;
+  }

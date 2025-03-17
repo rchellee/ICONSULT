@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ListView from "./ListView";
-import PaymentView from "./PaymentView"; // Ensure this component exists
+import AccountingLedger from "./AccountingLedger"; // Ensure this component exists
 import "./ListView.css";
 
 const ProjectList = ({
@@ -44,12 +44,6 @@ const ProjectList = ({
       return acc;
     }, {})
   );
-  const [paymentstatuses, setpaymentStatuses] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.paymentStatus || "Not Paid";
-      return acc;
-    }, {})
-  );
 
   const [tasksInfo, setTasksInfo] = useState({});
   const [totalTasks, setTotalTasks] = useState({});
@@ -58,7 +52,7 @@ const ProjectList = ({
   const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Update statuses, startDates, finishDates, and paymentstatuses when filteredProjects changes
+  // Update statuses, startDates, and finishDates when filteredProjects changes
   useEffect(() => {
     setStatuses(
       filteredProjects.reduce((acc, project) => {
@@ -75,12 +69,6 @@ const ProjectList = ({
     setFinishDates(
       filteredProjects.reduce((acc, project) => {
         acc[project.id] = project.actualFinish || null;
-        return acc;
-      }, {})
-    );
-    setpaymentStatuses(
-      filteredProjects.reduce((acc, project) => {
-        acc[project.id] = project.paymentStatus || "Not Paid";
         return acc;
       }, {})
     );
@@ -185,42 +173,6 @@ const ProjectList = ({
     fetchTotalPayments();
   }, [filteredProjects]);
 
-  // Function to handle payment status changes
-  const handlePaymentStatusChange = (projectId, newPaymentStatus) => {
-    const currentStatus = paymentstatuses[projectId];
-    const currentDate =
-      newPaymentStatus === "Paid" ? new Date().toISOString() : null;
-
-    setpaymentStatuses((prevpaymentStatuses) => ({
-      ...prevpaymentStatuses,
-      [projectId]: newPaymentStatus,
-    }));
-
-    fetch(`http://localhost:8081/paymentStat/${projectId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        paymentStatus: newPaymentStatus,
-        paymentDate: currentDate,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to update payment status");
-        return response.json();
-      })
-      .then((updatedProject) => {
-        console.log("Payment status updated successfully:", updatedProject);
-      })
-      .catch((error) => {
-        console.error("Error updating payment status:", error);
-        setpaymentStatuses((prevpaymentStatuses) => ({
-          ...prevpaymentStatuses,
-          [projectId]: currentStatus,
-        }));
-      });
-  };
-
-  // Functions to handle date changes
   const handleStartDateChange = (projectId, date) => {
     setStartDates((prevStartDates) => ({
       ...prevStartDates,
@@ -252,22 +204,14 @@ const ProjectList = ({
     setEditingProjectId(null);
   };
 
-  // Color mappings for statuses
   const statusColors = {
     Ongoing: "#F06292",
     Pending: "rgb(252, 118, 118)",
     Completed: "#3b4f67",
   };
 
-  const paymentstatusColors = {
-    Paid: "#3b4f67",
-    "Not Paid": "rgb(252, 118, 118)",
-    "Partial Payment": "#74C69D",
-  };
-
   const handleProjectClick = (projectId) => {
     console.log("Project clicked:", projectId);
-    // Add your logic here (e.g., show modal or additional details)
   };
 
   return (
@@ -284,11 +228,11 @@ const ProjectList = ({
         </button>
         <button
           className={`toggle-button ${
-            activeView === "payment" ? "active" : ""
+            activeView === "accounting" ? "active" : ""
           }`}
-          onClick={() => setActiveView("payment")}
+          onClick={() => setActiveView("accounting")}
         >
-          Transaction Status
+          Accounting Ledger
         </button>
       </div>
 
@@ -302,9 +246,6 @@ const ProjectList = ({
             statuses={statuses}
             statusColors={statusColors}
             handleStatusChange={handleStatusChange}
-            paymentstatuses={paymentstatuses}
-            paymentstatusColors={paymentstatusColors}
-            handlePaymentStatusChange={handlePaymentStatusChange}
             startDates={startDates}
             finishDates={finishDates}
             handleStartDateChange={handleStartDateChange}
@@ -318,7 +259,7 @@ const ProjectList = ({
             toggleDropdown={toggleDropdown}
           />
         ) : (
-          <PaymentView
+          <AccountingLedger
             projects={projects}
             filteredProjects={filteredProjects}
             setFilteredProjects={setFilteredProjects}
@@ -326,9 +267,6 @@ const ProjectList = ({
             statuses={statuses}
             statusColors={statusColors}
             handleStatusChange={handleStatusChange}
-            paymentstatuses={paymentstatuses}
-            paymentstatusColors={paymentstatusColors}
-            handlePaymentStatusChange={handlePaymentStatusChange}
             startDates={startDates}
             finishDates={finishDates}
             handleStartDateChange={handleStartDateChange}

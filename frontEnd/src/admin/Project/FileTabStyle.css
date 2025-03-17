@@ -86,8 +86,9 @@
 }
 
 .file-list-scrollable {
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 10px;
+  box-shadow: none;
 }
 
 
@@ -98,20 +99,23 @@
   border: none;
   height: 40px;
   border: none;
+  
 }
 
 .file-list th {
-  background-color: #143d58;
+  background-color: #eeecec;
   font-weight: bold;
+  
 }
 
 .file-list tr:hover {
-  background-color: #c1c1c1;
+  background-color: #f1f1f1;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  box-shadow: none;
 }
 
 th {
@@ -217,6 +221,30 @@ td {
   color: #888;
 }
 
+.name-header, .upload-date-header, .uploaded-by-header {
+  color: #333;
+}
 
+.files-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+  font-size: 30px;
+  color: #555;
+  appearance: none; /* Remove default browser styling */
+  -webkit-appearance: none; /* For Safari */
+  -moz-appearance: none; /* For Firefox */
+  padding: 0; /* Remove default padding */
+}
 
+.files-action:hover {
+  color: #000;
+  background: none; /* Ensure no background on hover */
+}
+
+/* Remove focus outline for better aesthetics */
+.files-action:focus {
+  outline: none;
+}
 

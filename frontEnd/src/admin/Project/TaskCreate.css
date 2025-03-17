@@ -1,0 +1,126 @@
+.task-create-form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .task-create-form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-create-form h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .form-section {
+    margin-bottom: 20px;
+  }
+  
+  .form-section h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    color: #555;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  
+  .add-misc-button {
+    background: #547099;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-misc-button:hover {
+    background: #0056b3;
+  }
+  
+  .misc-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+  }
+  
+  .misc-list li {
+    background: #f9f9f9;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .form-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .form-actions button[type="button"] {
+    background: #ccc;
+    color: #333;
+  }
+  
+  .form-actions button[type="button"]:hover {
+    background: #bbb;
+  }
+  
+  .form-actions button[type="submit"] {
+    background: #28a745;
+    color: white;
+  }
+  
+  .form-actions button[type="submit"]:hover {
+    background: #218838;
+  }

@@ -1,8 +1,63 @@
-import React, { useState } from "react";
-import "./Transaction.css"; // Import the CSS file
+import React, { useState, useEffect, useRef } from "react";
+import { IoCreateOutline } from "react-icons/io5";
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
+import TaskCreateForm from "./TaskCreateForm";
+import "./Transaction.css";
 
 const Transaction = ({ projectId }) => {
-  // Helper function to format amounts as ₱ 1,000.00
+  const [transactions, setTransactions] = useState([]);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [sortCriteria, setSortCriteria] = useState(null);
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
+
+  // Refs for dropdown containers
+  const statusDropdownRef = useRef(null);
+  const sortDropdownRef = useRef(null);
+
+  // Handle clicks outside dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close dropdown if clicked outside status dropdown
+      if (
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+
+      // Close dropdown if clicked outside sort dropdown
+      if (
+        sortDropdownRef.current &&
+        !sortDropdownRef.current.contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    // Attach the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleCreateTask = (newTask) => {
+    setTransactions([...transactions, newTask]);
+  };
+
+  const handleDeleteTask = (taskIndex) => {
+    const updatedTransactions = transactions.filter((_, index) => index !== taskIndex);
+    setTransactions(updatedTransactions);
+  };
+
+  const handleEditTask = (taskIndex) => {
+    console.log("Edit task:", transactions[taskIndex]);
+  };
+
   const formatAmount = (amount) => {
     return new Intl.NumberFormat("en-PH", {
       style: "currency",
@@ -12,7 +67,6 @@ const Transaction = ({ projectId }) => {
     }).format(amount);
   };
 
-  // Helper function to format dates as March 12, 2025
   const formatDate = (dateString) => {
     if (!dateString) return "Not set";
     const date = new Date(dateString);
@@ -23,7 +77,6 @@ const Transaction = ({ projectId }) => {
     });
   };
 
-  // Helper function to calculate past due days
   const calculatePastDueDays = (dueDate) => {
     if (!dueDate) return 0;
     const today = new Date();
@@ -33,232 +86,283 @@ const Transaction = ({ projectId }) => {
     return daysDiff > 0 ? daysDiff : 0;
   };
 
-  // Sample transaction data with task fees and miscellaneous items
-  const [transactions, setTransactions] = useState([
-    {
-      expenses: "Task 1",
-      taskFee: 500, // Task fee
-      dueDate: "2025-03-10", // Due date for the task
-      subItems: [
-        {
-          expenses: "Misc1",
-          amount: 300, // Miscellaneous amount
-        },
-        {
-          expenses: "Misc2",
-          amount: 300, // Miscellaneous amount
-        },
-      ],
-      datePaid: "", // Date paid for the entire task (subtotal row)
-      status: "", // Status for the entire task
-    },
-    {
-      expenses: "Task 2",
-      taskFee: 100, // Task fee
-      dueDate: "2025-03-15", // Due date for the task
-      subItems: [
-        {
-          expenses: "Misc1",
-          amount: 100, // Miscellaneous amount
-        },
-        {
-          expenses: "Misc2",
-          amount: 100, // Miscellaneous amount
-        },
-      ],
-      datePaid: "", // Date paid for the entire task (subtotal row)
-      status: "", // Status for the entire task
-    },
-  ]);
-
-  // Calculate total amount (Task Fee + Miscellaneous)
   const totalAmount = transactions.reduce((sum, transaction) => {
-    const taskFee = transaction.taskFee || 0;
-    const miscellaneousAmount = transaction.subItems
-      ? transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0)
-      : 0;
-    return sum + taskFee + miscellaneousAmount;
+    const subtotal = transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0);
+    return sum + subtotal;
   }, 0);
 
-  // Calculate total paid amount
   const totalPaid = transactions.reduce((sum, transaction) => {
     if (transaction.status === "Paid") {
-      const taskFee = transaction.taskFee || 0;
-      const miscellaneousAmount = transaction.subItems
-        ? transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0)
-        : 0;
-      return sum + taskFee + miscellaneousAmount;
+      const subtotal = transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0);
+      return sum + subtotal;
     }
     return sum;
   }, 0);
 
-  const paymentProgress = ((totalPaid / totalAmount) * 100).toFixed(2); // 2 decimal places
-  const [status, setStatus] = useState("Paid"); // Default status
-  const [partialPaymentDate, setPartialPaymentDate] = useState("");
-  const [paidDate, setPaidDate] = useState("");
-  const [overdueDays, setOverdueDays] = useState(0);
+  const paymentProgress = ((totalPaid / totalAmount) * 100).toFixed(2);
 
-  // Handle status change for the overall payment status
-  const handleStatusChange = (e) => {
-    const newStatus = e.target.value;
-    setStatus(newStatus);
-    const today = new Date().toISOString().split("T")[0];
-
-    // Set the date based on the selected status
-    if (newStatus === "Paid") {
-      setPaidDate(today); // Set current date as paid date
-      setPartialPaymentDate(""); // Clear partial payment date
-    } else if (newStatus === "Partial Payment") {
-      setPartialPaymentDate(today); // Set current date as partial payment date
-      setPaidDate(""); // Clear paid date
-    } else {
-      setPaidDate(""); // Clear paid date
-      setPartialPaymentDate(""); // Clear partial payment date
-    }
-
-    // Update overdue days if status is not "Paid"
-    if (newStatus !== "Paid") {
-      const dueDate = new Date("2025-03-16"); // Example due date
-      const timeDiff = new Date() - dueDate;
-      const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-      setOverdueDays(daysDiff > 0 ? daysDiff : 0);
-    } else {
-      setOverdueDays(0);
-    }
-  };
-
-  // Handle status change for a task
   const handleTaskStatusChange = (taskIndex, status) => {
     const updatedTransactions = [...transactions];
     updatedTransactions[taskIndex].status = status;
 
-    // If the status is "Paid," set the current date as the datePaid
     if (status === "Paid") {
       updatedTransactions[taskIndex].datePaid = new Date().toISOString().split("T")[0];
     } else {
-      updatedTransactions[taskIndex].datePaid = ""; // Clear datePaid if status is not "Paid"
+      updatedTransactions[taskIndex].datePaid = "";
     }
 
     setTransactions(updatedTransactions);
   };
 
+  const sortTransactions = (criteria) => {
+    const sortedTransactions = [...transactions];
+
+    switch (criteria) {
+      case "name-asc":
+        sortedTransactions.sort((a, b) => a.expenses.localeCompare(b.expenses));
+        break;
+      case "date-asc":
+        sortedTransactions.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+        break;
+      case "date-desc":
+        sortedTransactions.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+        break;
+      default:
+        break;
+    }
+
+    setTransactions(sortedTransactions);
+    setSortCriteria(criteria);
+    setOpenDropdown(null); // Close dropdown after sorting
+  };
+
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (filterStatus === "all") return true;
+    return transaction.status.toLowerCase() === filterStatus.toLowerCase();
+  });
+
+  // Handle dropdown toggle
+  const toggleDropdown = (dropdownName) => {
+    if (openDropdown === dropdownName) {
+      setOpenDropdown(null); // Close the dropdown if it's already open
+    } else {
+      setOpenDropdown(dropdownName); // Open the clicked dropdown
+    }
+  };
+
   return (
     <div>
-      {/* Header with Project ID, Progress, and Set Status */}
+      {/* Header with Project ID */}
       <div className="header-container">
         <h2 className="project-id">Project: {projectId}</h2>
-        
+        <button
+          className="create-task-button"
+          onClick={() => setShowTaskForm(true)}
+        >
+          Create
+          <IoCreateOutline className="create-task-icon" />
+        </button>
       </div>
+
+      {/* Task Creation Form */}
+      {showTaskForm && (
+        <TaskCreateForm
+          onClose={() => setShowTaskForm(false)}
+          onCreate={handleCreateTask}
+        />
+      )}
 
       {/* Details Section */}
       <div className="details-container">
-  
-  <div className="details-content">
-    <div className="detail-row">
-      <div className="detail-item partial-payment">
-        <span className="detail-label">Partial Payment:</span>
-        <span className="detail-value">--</span>
-      </div>
-      <div className="detail-item current-task">
-        <span className="detail-label">Current Task:</span>
-        <span className="detail-value">5</span>
-      </div>
-      <div className="detail-item past-dues">
-        <span className="detail-label">Past Dues:</span>
-        <span className="detail-value">10</span>
-      </div>
-      <div className="progress-container">
-          <span className="progress-text">Progress: {paymentProgress}%</span>
-          <div className="progress-bar">
-            <div
-              className="progress-bar-fill"
-              style={{ width: `${paymentProgress}%` }}
-            ></div>
+        <div className="details-content">
+          {/* Left-aligned details */}
+          <div className="detail-row">
+            <div className="detail-item partial-payment">
+              <span className="detail-label">Partial Payment:</span>
+              <span className="detail-value">--</span>
+            </div>
+            <div className="detail-item current-task">
+              <span className="detail-label">Current Task:</span>
+              <span className="detail-value">{transactions.length}</span>
+            </div>
+            <div className="detail-item past-dues">
+              <span className="detail-label">Past Dues:</span>
+              <span className="detail-value">
+                {transactions.filter((transaction) => calculatePastDueDays(transaction.dueDate) > 0).length}
+              </span>
+            </div>
+            <div className="progress-container">
+              <span className="progress-text">Progress: {paymentProgress}%</span>
+              <div className="progress-bar">
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${paymentProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right-aligned buttons */}
+          <div className="button-row">
+            <button className="export-button">Export</button>
+            <div className="status-task" ref={statusDropdownRef}>
+              <button
+                className="status-button"
+                onClick={() => toggleDropdown("status")}
+              >
+                Status
+              </button>
+              {openDropdown === "status" && (
+                <div className="dropdown-task">
+                  <button onClick={() => setFilterStatus("all")}>All</button>
+                  <button onClick={() => setFilterStatus("paid")}>Paid</button>
+                  <button onClick={() => setFilterStatus("unpaid")}>Unpaid</button>
+                  <button onClick={() => setFilterStatus("partial payment")}>Partial Payment</button>
+                  <button onClick={() => setFilterStatus("overdue")}>Overdue</button>
+                </div>
+              )}
+            </div>
+            <div className="sort-container" ref={sortDropdownRef}>
+              <button
+                className="sort-button"
+                onClick={() => toggleDropdown("sort")}
+              >
+                Sort
+              </button>
+              {openDropdown === "sort" && (
+                <div className="sort-dropdown">
+                  <button onClick={() => sortTransactions("name-asc")}>Name</button>
+                  <button onClick={() => sortTransactions("date-asc")}>Ascending</button>
+                  <button onClick={() => sortTransactions("date-desc")}>Descending</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-    </div>
-  </div>
-</div>
+      </div>
 
       {/* Transaction Table */}
-      <table className="transaction-table">
-        <thead>
-          <tr>
-            <th>Task</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Due Date</th>
-            <th>Date Paid</th>
-            <th>Past Due</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction, index) => {
-            // Calculate subtotal for the current task (Task Fee + Miscellaneous)
-            const subtotal = transaction.taskFee + transaction.subItems.reduce((sum, subItem) => sum + subItem.amount, 0);
+      <div className="table-task">
+        <table className="transaction-table">
+          <thead>
+            <tr>
+              <th>Task Name</th>
+              <th>Type</th>
+              <th>Assign Employee</th>
+              <th>Amount</th>
+              <th>Due Date</th>
+              <th>Date Paid</th>
+              <th>Past Due</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTransactions.map((transaction, index) => {
+              const subtotal = transaction.subItems.reduce((sum, subItem) => sum + subItem.amount, 0);
+              const pastDueDays = calculatePastDueDays(transaction.dueDate);
 
-            // Calculate past due days
-            const pastDueDays = calculatePastDueDays(transaction.dueDate);
+              return (
+                <React.Fragment key={index}>
+                  {/* Task Name Row */}
+                  <tr>
+                    <td>{transaction.expenses}</td>
+                    <td></td>
+                    <td>{transaction.assignedEmployee}</td>
+                    <td></td>
+                    <td>{formatDate(transaction.dueDate)}</td>
+                    <td>{formatDate(transaction.datePaid)}</td>
+                    <td>{pastDueDays > 0 ? `${pastDueDays} days` : "No"}</td>
+                    <td>
+                      <select
+                        value={transaction.status || ""}
+                        onChange={(e) => handleTaskStatusChange(index, e.target.value)}
+                        className="transaction-button"
+                      >
+                        <option value="">Select Status</option>
+                        <option value="Paid" disabled={transaction.status === "Partial Payment" || transaction.status === "Unpaid"}>
+                          Paid
+                        </option>
+                        <option value="Partial Payment" disabled={transaction.status === "Paid"}>
+                          Partial Payment
+                        </option>
+                        <option value="Unpaid" disabled={transaction.status === "Paid" || transaction.status === "Partial Payment"}>
+                          Unpaid
+                        </option>
+                      </select>
+                    </td>
+                    <td>
+                      <div className="task-actions">
+                        <button
+                          className="edit-task"
+                          onClick={() => handleEditTask(index)}
+                        >
+                          <AiOutlineEdit />
+                        </button>
+                        <button
+                          className="delete-task"
+                          onClick={() => handleDeleteTask(index)}
+                        >
+                          <MdOutlineDeleteOutline />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
 
-            return (
-              <React.Fragment key={index}>
-                {/* Parent Task */}
-                <tr>
-                  <td>{transaction.expenses}</td>
-                  <td>Task Fee</td>
-                  <td className="amount-cell">{formatAmount(transaction.taskFee)}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                {/* Sub-items (Miscellaneous) */}
-                {transaction.subItems &&
-                  transaction.subItems.map((subItem, subIndex) => (
+                  {/* Task Fee Row */}
+                  <tr>
+                    <td></td>
+                    <td>Task Fee</td>
+                    <td></td>
+                    <td className="amount-cell">{formatAmount(transaction.subItems[0].amount)}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+
+                  {/* Sub-items (Miscellaneous) */}
+                  {transaction.subItems.slice(1).map((subItem, subIndex) => (
                     <tr key={`sub-${subIndex}`}>
                       <td></td>
                       <td>{subItem.expenses}</td>
+                      <td></td>
                       <td className="amount-cell">{formatAmount(subItem.amount)}</td>
+                      <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
                     </tr>
                   ))}
-                {/* Subtotal Row for the Task */}
-                <tr className="subtotal-row">
-                  <td colSpan="2"></td>
-                  <td className="amount-cell">{formatAmount(subtotal)}</td>
-                  <td>{formatDate(transaction.dueDate)}</td>
-                  <td>{formatDate(transaction.datePaid)}</td>
-                  <td>{pastDueDays > 0 ? `${pastDueDays} days` : "No"}</td>
-                  <td>
-                    <select
-                      value={transaction.status || ""}
-                      onChange={(e) => handleTaskStatusChange(index, e.target.value)}
-                      className="transaction-button"
-                    >
-                      <option value="">Select Status</option>
-                      <option value="Paid">Paid</option>
-                      <option value="Unpaid">Partial Payment</option>
-                      <option value="Unpaid">Unpaid</option>
-                      <option value="Unpaid">Overdue</option>
-                    </select>
-                  </td>
-                </tr>
-              </React.Fragment>
-            );
-          })}
-          {/* Total row */}
-          <tr className="total-row">
-            <td>Total</td>
-            <td></td>
-            <td className="amount-cell">{formatAmount(totalAmount)}</td>
-            <td colSpan="4"></td>
-          </tr>
-        </tbody>
-      </table>
+
+                  {/* Subtotal Row for the Task */}
+                  <tr className="subtotal-row">
+                    <td colSpan="2"></td>
+                    <td></td>
+                    <td className="amount-cell">{formatAmount(subtotal)}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </React.Fragment>
+              );
+            })}
+            {/* Total row */}
+            <tr className="total-row">
+              <td>Total</td>
+              <td></td>
+              <td></td>
+              <td className="amount-cell">{formatAmount(totalAmount)}</td>
+              <td colSpan="4"></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

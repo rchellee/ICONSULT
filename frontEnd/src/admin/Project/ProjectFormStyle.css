@@ -1,4 +1,3 @@
-/* General Modal Styles */
 .form-modal-overlay {
   position: fixed;
   top: 0;
@@ -19,14 +18,14 @@
   width: 800px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 900px; /* Adjust as needed */
+  max-width: 900px; 
 }
 
 .form-modal-title {
-  text-align: left; /* Aligns the title to the left */
-  margin-bottom: 30px; /* Keeps the space below the title */
-  margin-left: 0; /* Optional: Adjusts the left margin */
-  font-weight: bold; /* Optional: Keeps the title bold */
+  text-align: left; 
+  margin-bottom: 30px; 
+  margin-left: 0; 
+  font-weight: bold; 
   color: #5d6d90;
 }
 
@@ -60,10 +59,10 @@
   border-radius: 4px;
   border: 1px solid #ccc;
   box-sizing: border-box;
-  appearance: none; /* Removes the dropdown icon */
-  -webkit-appearance: none; /* For Safari */
-  -moz-appearance: none; /* For Firefox */
-  background: none; /* Optional: Removes any background */
+  appearance: none; 
+  -webkit-appearance: none; 
+  -moz-appearance: none; 
+  background: none; 
   margin-top: -1px;
 }
 
@@ -101,7 +100,7 @@
   background-color: #dcdcdc;
 }
 
-/* Custom Layout for Your Form */
+
 .form-project-details {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,21 +127,21 @@
 }
 
 .description-input {
-  width: 205%; /* Full width of the parent container */
-  height: 100px; /* Adjust height as needed */
+  width: 205%; 
+  height: 100px; 
   padding: 12px;
   font-size: 16px;
   border-radius: 10px;
   border: 1px solid #ccc;
-  box-sizing: border-box; /* Ensures padding is included in the width */
+  box-sizing: border-box; 
 }
 
 .form-project-details .description-input {
-  grid-column: span 2; /* Make it span across both columns */
+  grid-column: span 2; 
 }
 
 .date-picker {
-  display: none; /* Hide the default date picker */
+  display: none; 
 }
 
 .custom-date-input {
@@ -190,8 +189,8 @@
 .form-create-cancel {
   display: flex;
   justify-content: center;
-  gap: 500px; /* Space between the buttons */
-  margin-top: 20px; /* Add space above the button group */
+  gap: 500px; 
+  margin-top: 20px; 
 }
 
 .form-cancel-project-button,
@@ -216,9 +215,9 @@
 }
 
 .form-cancel-project-button:hover {
-  background-color: #e0e0e0; /* Slightly darker gray on hover */
+  background-color: #e0e0e0; 
 }
 
 .form-create-project-button:hover {
-  background-color: #b0c2f8; /* Slightly darker green on hover */
+  background-color: #b0c2f8; 
 }
