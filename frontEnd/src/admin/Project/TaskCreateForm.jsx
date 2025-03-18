@@ -67,7 +67,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
         <form onSubmit={handleSubmit}>
           {/* Information Section */}
           <div className="form-section">
-            <h3>Information</h3>
+            <h3>Task Details</h3>
             <div className="form-row">
               <div className="form-modal-field">
                 <label>Task Name:</label>
@@ -131,7 +131,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
 
           {/* Sub-items Section */}
           <div className="form-section">
-            <h3>Sub-items</h3>
+            <h3>Payment Details</h3>
             <div className="form-row">
               <div className="form-modal-field">
                 <label>Task Fee:</label>
