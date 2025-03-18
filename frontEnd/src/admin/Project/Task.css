@@ -62,7 +62,6 @@
   border-bottom: transparent;
   cursor: pointer;
   position: relative;
-  
 }
 
 /* Style for individual tab buttons */
@@ -101,6 +100,3 @@
   margin-top: 80px;
   margin-left: 300px;
 }
-
-
-

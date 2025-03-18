@@ -2,20 +2,16 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 122px; 
-  display: inline-block; 
+  max-width: 122px; /* Adjust width as needed */
+  display: inline-block; /* Necessary for text-overflow to work */
 }
 
 .truncate:hover {
   overflow: visible;
-  white-space: normal; 
-  z-index: 1; 
+  white-space: normal; /* Allow text to wrap */
+  z-index: 1; /* Bring tooltip above other elements */
 }
 
-.project-management-page {
-  height: 100vh;
-  /*position: relative;*/
-}
 .content-project {
   margin-left: 100px;
   display: flex;
@@ -23,60 +19,127 @@
   height: 100%;
 }
 
-/*.posts-tab-content {
-  margin-left: 200px; /* eto yung distance sa sidebar 
-  padding: 40px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100%;
-}
-*/
-
 h1 {
   margin-top: 20px;
   margin-bottom: 10px;
   padding: 0;
 }
 
-
-
-
-
-.action-container {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  background-color: transparent;
-  position: absolute;
-  right: 0; 
-  margin-right: 50px;
-  margin-top: 20px;
-  
-  
-}
-
 .create-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background-color: #3b4f67;
+  background-color: #3a9b9a;
   color: white;
   border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  font-size: 20px;
+  margin-top: 30px; /*position ng new button*/
+  margin-left: auto;
+  margin-bottom: auto;
 }
 
 .create-button:hover {
-  background-color: #2c3a4d;
+  background-color: #51d1eb;
 }
 
-.icon {
-  font-size: 14px; 
+.create-button .icon {
+  margin-right: 8px;
 }
 
+/* LEFT SIDE PROJECT NAMES */
 
+/* Folder Title */
+.folder-title {
+  font-size: 20px; /* Make Folder title slightly larger */
+  font-weight: bold;
+  margin-bottom: 10px; /* Adjust space after the title */
+  position: relative;
+  top: 5px; /* Keep the folder title at the top */
+}
 
+/* Project Folders Section */
+.project-names-section {
+  padding: 15px;
+  position: absolute;
+  margin-left: 10px;
+  margin-top: 60px;
+  width: 250px; /* Adjust the width as needed */
+  background-color: transparent;
+  border-radius: 30px;
+}
+
+/* Scroll Container for Folders */
+.folders-scroll-container {
+  max-height: 700px; /* Set the max height of the scrollable area */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding-right: 10px; /* Ensure scrollbar doesn't overlap text */
+  position: relative;
+}
+
+/* Shift the scrollbar to the right */
+.folders-scroll-container::-webkit-scrollbar {
+  width: 12px; /* Adjust scrollbar width */
+}
+
+.folders-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #d7d5d5; /* Color of the scrollbar */
+  border-radius: 10px; /* Rounded edges for the scrollbar */
+}
+
+/* Move the scrollbar to the right by adding margin */
+.folders-scroll-container::-webkit-scrollbar {
+  margin-left: 10px; /* Move scrollbar to the right by adjusting this value */
+}
+
+/* Individual Folder Item */
+.project-name-item p {
+  font-size: 14px; /* Adjust font size for folder names */
+  padding: 12px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+  margin-bottom: 1px;
+  position: relative;
+}
+
+/* Hover Effect */
+.project-name-item:hover {
+  background-color: #d2cfcfc7;
+}
+
+/* No Border for Last Folder */
+.project-name-item:last-child {
+  border-bottom: none;
+}
+
+/* Additional Styling for Folder Search Box (if needed) */
+.search-box-container {
+  position: absolute;
+  /* Keeps the sort button inline */
+}
+
+/* search box */
+.search-box {
+  position: absolute;
+  bottom: 18px;
+  left: 600px;
+  width: 250%;
+  max-width: 500px;
+  height: 50px;
+  padding: 15px;
+  font-size: 15px;
+  border: 2px solid #3498db;
+  border-radius: 10px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+  top: -90px;
+}
+
+.search-box:focus {
+  border-color: #7fbcf6;
+  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5);
+}

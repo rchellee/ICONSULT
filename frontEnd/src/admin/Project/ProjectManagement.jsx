@@ -3,7 +3,7 @@ import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
 import { FaPlus } from "react-icons/fa";
 import Sidebar from "../sidebar";
-import pic4 from "../../assets/pic4.jpg";
+import pic4 from "../../assets/pic4.png";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectTask from "./ProjectTask";
@@ -32,7 +32,6 @@ const ProjectManagement = () => {
   const [downpayment, setDownpayment] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("Not Paid");
   const [filteredProjects, setFilteredProjects] = useState(projects);
-  
 
   useEffect(() => {
     const filtered = projects.filter((project) =>
@@ -92,12 +91,12 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending", 
+      status: "Pending", // Default status for new projects
       contractPrice,
       downpayment,
       totalPayment:
         parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
-      paymentStatus: "Not Paid", 
+      paymentStatus: "Not Paid", // Default payment status
     };
 
     fetch("http://localhost:8081/project", {
@@ -108,7 +107,7 @@ const ProjectManagement = () => {
       .then((response) => response.json())
       .then((newProject) => {
         setProjects([...projects, newProject]);
-        closeModal(); 
+        closeModal(); // Clear modal and reset form
       })
       .catch((error) => console.error("Error creating project:", error));
   };
@@ -131,14 +130,11 @@ const ProjectManagement = () => {
         ?.paymentStatus,
     };
 
-    fetch(
-      `http://localhost:8081/project/${editingProjectId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProjectData),
-      }
-    )
+    fetch(`http://localhost:8081/project/${editingProjectId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedProjectData),
+    })
       .then((response) => response.json())
       .then((updatedProject) => {
         setProjects(
@@ -146,11 +142,12 @@ const ProjectManagement = () => {
             project.id === editingProjectId ? updatedProject : project
           )
         );
-        closeModal(); 
+        closeModal(); // Clear modal and reset form
       })
       .catch((error) => console.error("Error updating project:", error));
   };
 
+  // Pass separate save functions to the ProjectForm component
   const handleSave = () => {
     if (editingProjectId) {
       updateExistingProject();
@@ -162,9 +159,9 @@ const ProjectManagement = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric", 
-      month: "long", 
-      day: "numeric", 
+      year: "numeric", // Full year (e.g., "2024")
+      month: "long", // Full month name (e.g., "January")
+      day: "numeric", // Day of the month (e.g., "6")
     });
   };
 
@@ -210,7 +207,7 @@ const ProjectManagement = () => {
       setDescription(projectToEdit.description);
       setContractPrice(projectToEdit.contractPrice || "");
       setDownpayment(projectToEdit.downpayment || "");
-      setPaymentStatus(projectToEdit.paymentStatus); 
+      setPaymentStatus(projectToEdit.paymentStatus); // Retain current payment status
       setEditingProjectId(projectId);
       openModal();
     }
@@ -218,14 +215,11 @@ const ProjectManagement = () => {
   };
 
   const handleDelete = (projectId) => {
-    fetch(
-      `http://localhost:8081/project/${projectId}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isDeleted: true }),
-      }
-    )
+    fetch(`http://localhost:8081/project/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isDeleted: true }),
+    })
       .then(() => {
         setProjects(projects.filter((project) => project.id !== projectId));
         toggleDropdown(null);
@@ -271,12 +265,11 @@ const ProjectManagement = () => {
       <Sidebar />
       <div className="project-management-page">
         <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
-        <div className="action-container">
-  <button className="create-button" onClick={openModal}>
-    <FaPlus className="icon" /> New
-  </button>
-</div>
-
+          <div className="header-actions">
+            <button className="create-button" onClick={openModal}>
+              <FaPlus className="icon" /> New
+            </button>
+          </div>
           {isModalOpen && (
             <ProjectForm
               projectName={projectName}
@@ -304,7 +297,6 @@ const ProjectManagement = () => {
               onCancel={closeModal}
               onSave={handleSave}
               editingProjectId={editingProjectId}
-              
             />
           )}
           {projects.length === 0 ? (

@@ -57,12 +57,9 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
         );
         if (response.ok) {
           const { project } = await response.json();
-          // Ensure the dates are in the correct format
-          const startDate = new Date(project.startDate).toISOString().split('T')[0];
-          const endDate = new Date(project.endDate).toISOString().split('T')[0];
           setProjectDates({
-            startDate,
-            endDate,
+            startDate: project.startDate,
+            endDate: project.endDate,
           });
         }
       } catch (error) {
@@ -72,20 +69,6 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
 
     fetchProjectDetails();
   }, [projectId]);
-
-  useEffect(() => {
-    // Ensure the dueDate is within the project's start and end dates
-    if (dueDate) {
-      const dueDateObj = new Date(dueDate);
-      const startDateObj = new Date(projectDates.startDate);
-      const endDateObj = new Date(projectDates.endDate);
-
-      if (dueDateObj < startDateObj || dueDateObj > endDateObj) {
-        // Reset dueDate if it's outside the project's date range
-        setDueDate("");
-      }
-    }
-  }, [dueDate, projectDates.startDate, projectDates.endDate]);
 
   useEffect(() => {
     const taskFeeValue = parseFloat(taskFee) || 0;
@@ -264,7 +247,12 @@ const TaskForm = ({ onCreate, onCancel, existingTask, projectId }) => {
                 id="dueDate"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                min={projectDates.startDate}
+                min={
+                  new Date().toISOString().split("T")[0] >
+                  projectDates.startDate
+                    ? new Date().toISOString().split("T")[0]
+                    : projectDates.startDate
+                }
                 max={projectDates.endDate}
                 required
               />
