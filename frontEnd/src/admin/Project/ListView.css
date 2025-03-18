@@ -32,6 +32,10 @@
   text-align: right;
 }
 
+.center-align{
+  text-align: center;
+}
+
 /* Custom Scrollbar for WebKit Browsers */
 .table-scroll-wrapper::-webkit-scrollbar {
   width: 12px; /* Width of the vertical scrollbar */
@@ -193,45 +197,24 @@
   background-color: #689dd6;
 }
 
-/*css for actual finish date picker*/
-
-.date-picker-input {
-  border: none; /* Removes the border */
-  background: transparent; /* Makes the background transparent */
-  outline: none; /* Removes focus outline */
-  padding: 0; /* Removes padding to eliminate box appearance */
-  width: auto; /* Prevents unnecessary stretching */
-  /* Centers the placeholder */
-  font-size: inherit; /* Keeps text styling consistent with the table */
-  cursor: auto; /* Indicates interactivity */
-}
-
-.date-picker-input::placeholder {
-  color: inherit; /* Matches the text color of the table */
-  opacity: 0.7; /* Makes placeholder text slightly dimmer */
-}
-
-.project-list-table td:nth-child(1), /* Project column */
+.project-list-table td:nth-child(1),
 .project-list-table td:nth-child(2) {
-  /* Client column */
-  max-width: 200px; /* Adjust this value to fit your design */
+  max-width: 200px; 
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Style the payment status dropdown */
 .payment-status-dropdown {
-  width: 100%; /* Make it fit the container */
+  width: 100%;
   padding: 8px;
   border-radius: 4px;
   font-size: 14px;
-  border: 1px solid #ccc; /* Light border for better visibility */
-  background-color: white; /* Set background to white */
+  border: 1px solid #ccc; 
+  background-color: white; 
   cursor: pointer;
   outline: none;
   width: 130px;
   color: #4a4a4a;
-  /*text-align: center;*/
   height: 35px;
 }
 
@@ -252,15 +235,10 @@
   -webkit-appearance: none; /* Remove the arrow for Safari */
   -moz-appearance: none; /* Remove the arrow for Firefox */
   appearance: none; /* Remove the arrow for other browsers */
-  background-image: none; /* Remove background image */
+  background-image: none; 
   border-radius: 100px;
 }
 
-
-
-/* Add a custom color for different payment statuses */
-
-/* Optional: Set the width of the dropdown's options dynamically */
 .payment-status-dropdown option {
   padding: 10px;
   background-color: rgb(255, 255, 255);
@@ -268,9 +246,9 @@
   border: none;
 }
 
-/* Style for Paid status to manually set width */
+
 .payment-status-dropdown.paid-status {
-  width: 90px; /* Set a fixed width for the Paid dropdown */
+  width: 90px; 
 }
 
 .status-completed {
@@ -281,8 +259,8 @@
 
 
 .paid-status {
-  background-color: #3b4f67; /* Desired color for Paid */
-  color: white; /* Optional: Ensure text contrast */
+  background-color: #3b4f67; 
+  color: white; 
 }
 
 
@@ -290,12 +268,10 @@
   position: relative;
 }
 
-
-
 .sorting-button {
   display: flex;
   gap: 10px;
-  align-items: center; /* Ensures all buttons are aligned at the same height */
+  align-items: center; 
   
   justify-content: flex-end;
   background-color: transparent;
@@ -311,8 +287,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* Ensures button stays centered */
-  height: 40px; /* Forces all containers to have the same height */
+  justify-content: center; 
+  height: 40px; 
 }
 
 .action-button {
@@ -326,10 +302,10 @@
   font-size: 14px;
   transition: background 0.3s ease-in-out;
   min-width: 120px;
-  height: 40px; /* Ensures all buttons are the same height */
+  height: 40px; 
   display: flex;
-  justify-content: center; /* Centers text horizontally */
-  align-items: center; /* Centers text vertically */
+  justify-content: center; 
+  align-items: center; 
   text-align: center;
   
 }
@@ -338,11 +314,9 @@
   background-color: #e2e2e2;
 }
 
-/* Dropdowns stay below the buttons and do not affect alignment */
-/* Dropdown container */
 .sorting-dropdown {
   position: absolute;
-  top: 100%; /* Ensures dropdown appears below the button */
+  top: 100%; 
   left: 0;
   background: white;
   border: none;
@@ -353,20 +327,20 @@
   flex-direction: column;
   min-width: 120px;
   padding: 5px 0;
-  opacity: 0; /* Start with 0 opacity */
-  transform: translateY(-10px); /* Start slightly above */
-  visibility: hidden; /* Hide initially */
+  opacity: 0; 
+  transform: translateY(-10px); 
+  visibility: hidden; 
   transition:
     opacity 0.3s ease,
     transform 0.3s ease,
     visibility 0.3s ease;
 }
 
-/* Dropdown container when visible */
+
 .sorting-dropdown.visible {
-  opacity: 1; /* Fully visible */
-  transform: translateY(0); /* Move to original position */
-  visibility: visible; /* Show dropdown */
+  opacity: 1; 
+  transform: translateY(0); 
+  visibility: visible;
 }
 
 /* Dropdown buttons */
@@ -387,28 +361,48 @@
 
 
 .sort-text {
-  font-size: 15px; /* Adjust the size as needed */
+  font-size: 15px; 
 }
 
 
 
-.button-group {
+.project-action {
   display: flex;
-  gap: 0; /* Adjust this value to control the spacing */
+  gap: 8; 
 }
 
-.button-group button {
-  margin: 0; /* Remove default margin */
-  padding: 0.25rem; /* Adjust padding if needed */
-  background-color: transparent; /* Remove background color */
-  border: none; /* Remove border if needed */
-  cursor: pointer; /* Ensure the cursor changes to a pointer on hover */
-  color: #000; /* Default icon color (change as needed) */
+.project-edit,
+.project-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  color: #333;
 }
 
-.button-group button:hover {
-  background-color: transparent; /* Ensure no background color on hover */
+.project-edit:hover {
+  color: #007bff;
+  background-color: transparent;
 }
+
+.project-delete:hover {
+  color: #dc3545;
+  background-color: transparent;
+}
+
+.project-edit svg,
+.project-delete svg {
+  font-size: 24px; 
+}
+
+
+
+
+
 
 
 .toggle-buttons {
@@ -430,39 +424,37 @@
   color: #3b4f67;
   font-size: 16px;
   cursor: pointer;
-  position: relative; /* Required for positioning the ::after pseudo-element */
+  position: relative; 
   transition: color 0.3s ease;
 }
 
 .toggle-button:hover {
-  color: #3b4f67; /* Keep the text color consistent on hover */
-  /* Remove or comment out the background-color property */
-  /* background-color: transparent; */
+  color: #3b4f67; 
 }
 
 .toggle-button.active {
-  color: #3b4f67; /* Active text color */
-  font-weight: bold; /* Optional: Make the text bold when active */
+  color: #3b4f67; 
+  font-weight: bold; 
 }
 
 .toggle-button.active::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -5px; /* Adjust this value to control the distance of the line from the button */
+  bottom: -5px;
   width: 100%;
-  height: 3px; /* Thickness of the line */
-  background: linear-gradient(90deg, #3b4f67, #74C69D); /* Gradient background */
-  border-radius: 2px; /* Rounded corners for the line */
-  box-shadow: 0 2px 5px rgba(59, 79, 103, 0.3); /* Subtle shadow */
-  animation: slideIn 0.3s ease; /* Animation for the line */
+  height: 3px; 
+  background: linear-gradient(90deg, #3b4f67, #74C69D);
+  border-radius: 2px; 
+  box-shadow: 0 2px 5px rgba(59, 79, 103, 0.3); 
+  animation: slideIn 0.3s ease; 
 }
 
 @keyframes slideIn {
   from {
-    transform: scaleX(0); /* Start with no width */
+    transform: scaleX(0); 
   }
   to {
-    transform: scaleX(1); /* Expand to full width */
+    transform: scaleX(1); 
   }
 }

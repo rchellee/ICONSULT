@@ -8,9 +8,10 @@ import "./Transaction.css";
 const Transaction = ({ projectId }) => {
   const [transactions, setTransactions] = useState([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [editingTask, setEditingTask] = useState(null); // Track which task is being edited
   const [sortCriteria, setSortCriteria] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
-  const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   // Refs for dropdown containers
   const statusDropdownRef = useRef(null);
@@ -19,7 +20,6 @@ const Transaction = ({ projectId }) => {
   // Handle clicks outside dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close dropdown if clicked outside status dropdown
       if (
         statusDropdownRef.current &&
         !statusDropdownRef.current.contains(event.target)
@@ -27,7 +27,6 @@ const Transaction = ({ projectId }) => {
         setOpenDropdown(null);
       }
 
-      // Close dropdown if clicked outside sort dropdown
       if (
         sortDropdownRef.current &&
         !sortDropdownRef.current.contains(event.target)
@@ -36,10 +35,7 @@ const Transaction = ({ projectId }) => {
       }
     };
 
-    // Attach the event listener
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup the event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -49,13 +45,23 @@ const Transaction = ({ projectId }) => {
     setTransactions([...transactions, newTask]);
   };
 
+  const handleEditTask = (taskIndex) => {
+    // Set the task to be edited and show the form
+    setEditingTask({ ...transactions[taskIndex], index: taskIndex });
+    setShowTaskForm(true);
+  };
+
+  const handleUpdateTask = (updatedTask) => {
+    const updatedTransactions = [...transactions];
+    updatedTransactions[updatedTask.index] = updatedTask;
+    setTransactions(updatedTransactions);
+    setShowTaskForm(false);
+    setEditingTask(null); // Reset editing state
+  };
+
   const handleDeleteTask = (taskIndex) => {
     const updatedTransactions = transactions.filter((_, index) => index !== taskIndex);
     setTransactions(updatedTransactions);
-  };
-
-  const handleEditTask = (taskIndex) => {
-    console.log("Edit task:", transactions[taskIndex]);
   };
 
   const formatAmount = (amount) => {
@@ -68,7 +74,7 @@ const Transaction = ({ projectId }) => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Not set";
+    if (!dateString) return "--";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -111,18 +117,6 @@ const Transaction = ({ projectId }) => {
       updatedTransactions[taskIndex].datePaid = "";
     }
 
-    setTransactions(updatedTransactions);
-  };
-
-  const handleMOPChange = (taskIndex, subItemIndex, mop) => {
-    const updatedTransactions = [...transactions];
-    if (subItemIndex === -1) {
-      // Update MOP for the main task fee
-      updatedTransactions[taskIndex].mop = mop;
-    } else {
-      // Update MOP for the sub-item (miscellaneous)
-      updatedTransactions[taskIndex].subItems[subItemIndex].mop = mop;
-    }
     setTransactions(updatedTransactions);
   };
 
@@ -169,18 +163,26 @@ const Transaction = ({ projectId }) => {
         <h2 className="project-id">Project: {projectId}</h2>
         <button
           className="create-task-button"
-          onClick={() => setShowTaskForm(true)}
+          onClick={() => {
+            setEditingTask(null); // Reset editing state
+            setShowTaskForm(true);
+          }}
         >
           Create
           <IoCreateOutline className="create-task-icon" />
         </button>
       </div>
 
-      {/* Task Creation Form */}
+      {/* Task Creation/Edit Form */}
       {showTaskForm && (
         <TaskCreateForm
-          onClose={() => setShowTaskForm(false)}
+          onClose={() => {
+            setShowTaskForm(false);
+            setEditingTask(null); // Reset editing state
+          }}
           onCreate={handleCreateTask}
+          onUpdate={handleUpdateTask}
+          taskToEdit={editingTask} // Pass the task to edit
         />
       )}
 
@@ -266,7 +268,6 @@ const Transaction = ({ projectId }) => {
               <th>Date Paid</th>
               <th>Past Due</th>
               <th>Status</th>
-              
               <th>Action</th>
             </tr>
           </thead>
@@ -285,7 +286,7 @@ const Transaction = ({ projectId }) => {
                     <td></td>
                     <td>{formatDate(transaction.dueDate)}</td>
                     <td>{formatDate(transaction.datePaid)}</td>
-                    <td>{pastDueDays > 0 ? `${pastDueDays} days` : "No"}</td>
+                    <td>{pastDueDays > 0 ? `${pastDueDays} days` : "--"}</td>
                     <td>
                       <select
                         value={transaction.status || ""}
@@ -304,7 +305,6 @@ const Transaction = ({ projectId }) => {
                         </option>
                       </select>
                     </td>
-                    <td></td>
                     <td>
                       <div className="task-actions">
                         <button
@@ -333,18 +333,6 @@ const Transaction = ({ projectId }) => {
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>
-                      <select
-                        value={transaction.mop || ""}
-                        onChange={(e) => handleMOPChange(index, -1, e.target.value)}
-                        className="mop-dropdown"
-                      >
-                        <option value="">Select MOP</option>
-                        <option value="Cash">Cash</option>
-                        <option value="Online">Online</option>
-                        <option value="Cheque">Cheque</option>
-                      </select>
-                    </td>
                   </tr>
 
                   {/* Sub-items (Miscellaneous) */}
@@ -358,7 +346,6 @@ const Transaction = ({ projectId }) => {
                       <td></td>
                       <td></td>
                       <td></td>
-                      
                     </tr>
                   ))}
 
@@ -367,7 +354,6 @@ const Transaction = ({ projectId }) => {
                     <td colSpan="2"></td>
                     <td></td>
                     <td className="amount-cell">{formatAmount(subtotal)}</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>

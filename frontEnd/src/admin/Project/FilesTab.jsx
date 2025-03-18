@@ -1,11 +1,11 @@
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
-import { IoMdDownload } from "react-icons/io"; // Import the download icon
+import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
 
 const FilesTab = ({ projectId }) => {
@@ -15,9 +15,18 @@ const FilesTab = ({ projectId }) => {
   const [uploading, setUploading] = useState(false);
   const [clientNames, setClientNames] = useState({});
   const [sortConfig, setSortConfig] = useState({
-    key: "name",
-    direction: "asc",
+    key: "name", // Default sort by name
+    direction: "asc", // Default ascending order
   });
+  const [showSortOptions, setShowSortOptions] = useState(false); // State to toggle sort options
+
+  // Create a ref for the file input
+  const fileInputRef = useRef(null);
+
+  // Function to trigger file input click
+  const handleUploadButtonClick = () => {
+    fileInputRef.current.click();
+  };
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -159,29 +168,15 @@ const FilesTab = ({ projectId }) => {
         ? a.original_name.localeCompare(b.original_name)
         : b.original_name.localeCompare(a.original_name);
     }
-    if (sortConfig.key === "upload_date") {
-      return sortConfig.direction === "asc"
-        ? new Date(a.upload_date) - new Date(b.upload_date)
-        : new Date(b.upload_date) - new Date(a.upload_date);
-    }
-    if (sortConfig.key === "uploaded_by") {
-      const nameA = clientNames[a.uploaded_by] || "Unknown";
-      const nameB = clientNames[b.uploaded_by] || "Unknown";
-      return sortConfig.direction === "asc"
-        ? nameA.localeCompare(nameB)
-        : nameB.localeCompare(nameA);
-    }
     return 0;
   });
 
-  const changeSort = (key) => {
-    setSortConfig((prevConfig) => ({
-      key,
-      direction:
-        prevConfig.key === key && prevConfig.direction === "asc"
-          ? "desc"
-          : "asc",
-    }));
+  const changeSort = (direction) => {
+    setSortConfig({
+      key: "name", // Always sort by name
+      direction: direction, // Set the direction (asc or desc)
+    });
+    setShowSortOptions(false); // Hide sort options after selection
   };
 
   if (loading) {
@@ -194,62 +189,57 @@ const FilesTab = ({ projectId }) => {
 
   return (
     <div className="files-tab-content">
-      <div className="upload-section">
-        <label className="upload-btn">
-          <MdOutlineFileUpload /> Upload
+      <div className="upload-files-section">
+        {/* Upload Button */}
+        <button className="upload-files-btn" onClick={handleUploadButtonClick}>
+          Upload <MdOutlineFileUpload />
+          {/* Hidden file input */}
           <input
             type="file"
             onChange={handleFileUpload}
             disabled={uploading}
             style={{ display: "none" }}
+            ref={fileInputRef} // Attach the ref
           />
-        </label>
+        </button>
+
+        {/* Sort Button */}
+        <div className="sort-files">
+          <button
+            className="sort-files-btn"
+            onClick={() => setShowSortOptions(!showSortOptions)}
+          >
+            Sort <FaArrowDown />
+          </button>
+          {showSortOptions && (
+            <div className="sort-files-options">
+              <button onClick={() => changeSort("asc")}>Name (A-Z)</button>
+              <button onClick={() => changeSort("asc")}>Ascending</button>
+              <button onClick={() => changeSort("desc")}>Descending</button>
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* File List Table */}
       <div className="file-list">
         {files.length > 0 && (
           <div className="file-list-scrollable">
             <table>
               <thead>
                 <tr>
-                  <th
-                    onClick={() => changeSort("name")}
-                    className="name-header"
-                  >
+                  <th onClick={() => changeSort("asc")} className="name-header">
                     <CiFileOn className="file-icon" />
                     Name{" "}
-                    {sortConfig.key === "name" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FaArrowUp />
-                      ) : (
-                        <FaArrowDown />
-                      ))}
+                    {sortConfig.direction === "asc" ? (
+                      <FaArrowUp />
+                    ) : (
+                      <FaArrowDown />
+                    )}
                   </th>
-                  <th
-                    onClick={() => changeSort("upload_date")}
-                    className="upload-date-header"
-                  >
-                    Upload Date{" "}
-                    {sortConfig.key === "upload_date" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FaArrowUp />
-                      ) : (
-                        <FaArrowDown />
-                      ))}
-                  </th>
-                  <th
-                    onClick={() => changeSort("uploaded_by")}
-                    className="uploaded-by-header"
-                  >
-                    Uploaded By{" "}
-                    {sortConfig.key === "uploaded_by" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FaArrowUp />
-                      ) : (
-                        <FaArrowDown />
-                      ))}
-                  </th>
-                  <th>Actions</th>
+                  <th className="upload-date-header">Upload Date</th>
+                  <th className="uploaded-by-header">Uploaded By</th>
+                  <th className="action-files">Actions</th>
                 </tr>
               </thead>
               <tbody>

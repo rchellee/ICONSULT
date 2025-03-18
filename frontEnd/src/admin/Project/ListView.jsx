@@ -263,10 +263,9 @@ const ListView = ({
               <th>Client</th>
               <th>Progress</th>
               <th>Planned <br /> Duration</th>
-              <th>Actual <br /> Start</th>
-              <th>Actual <br /> Finish</th>
               <th>Professional <br /> Fee</th>
               <th>Amount</th>
+              <th>Balance</th>
               <th>Project <br /> Status</th>
               <th>Action</th>
             </tr>
@@ -311,14 +310,6 @@ const ListView = ({
                     </div>
                   </td>
 
-                  {/* Actual Start and Finish */}
-                  <td title={startDate ? formatDate(startDate) : "--"}>
-                    {startDate ? formatDate(startDate) : "--"}
-                  </td>
-                  <td title={finishDate ? formatDate(finishDate) : "--"}>
-                    {finishDate ? formatDate(finishDate) : "--"}
-                  </td>
-
                   {/* Professional Fee, Downpayment, Total */}
                   <td className="right-align" title={formatCurrency(project.contractPrice)}>
                     {formatCurrency(project.contractPrice)}
@@ -328,7 +319,9 @@ const ListView = ({
                     {formatCurrency(totalTasks[project.id])}
                   </td>
 
-                 
+                  <td className="center-align">
+                    <div>--</div>
+                  </td>
 
                   {/* Status Dropdown */}
                   <td>
@@ -393,10 +386,10 @@ const ListView = ({
 
                   {/* Action Buttons */}
                   <td>
-                    <div className="button-group">
+                    <div className="project-action">
                       {/* Edit Button */}
                       <button
-                        className="btn-edit"
+                        className="project-edit"
                         onClick={(e) => handleEditClick(e, project.id)}
                       >
                       <AiOutlineEdit style={{ fontSize: "1.5rem" }} /> 
@@ -404,7 +397,7 @@ const ListView = ({
 
                      {/* Delete Button */}
                       <button
-                        className="btn-delete"
+                        className="project-delete"
                         onClick={(e) => handleDeleteClick(e, project.id)}
                       >
                         <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} />

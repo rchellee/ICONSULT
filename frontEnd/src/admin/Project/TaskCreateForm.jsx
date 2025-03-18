@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./TaskCreate.css";
 import { MdAddCircleOutline } from "react-icons/md";
 
-const TaskCreateForm = ({ onClose, onCreate }) => {
+const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   const [taskName, setTaskName] = useState("");
   const [taskFee, setTaskFee] = useState(0);
   const [dueDate, setDueDate] = useState("");
@@ -10,8 +10,21 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
   const [subItems, setSubItems] = useState([]);
   const [miscName, setMiscName] = useState("");
   const [miscAmount, setMiscAmount] = useState(0);
-  const [transactionId, setTransactionId] = useState(""); // New state for Transaction ID
-  const [modeOfPayment, setModeOfPayment] = useState(""); // New state for Mode of Payment
+  const [transactionId, setTransactionId] = useState("");
+  const [modeOfPayment, setModeOfPayment] = useState("");
+
+  // Pre-fill form fields if editing
+  useEffect(() => {
+    if (taskToEdit) {
+      setTaskName(taskToEdit.expenses);
+      setDueDate(taskToEdit.dueDate);
+      setAssignedEmployee(taskToEdit.assignedEmployee);
+      setTransactionId(taskToEdit.transactionId);
+      setModeOfPayment(taskToEdit.modeOfPayment);
+      setSubItems(taskToEdit.subItems);
+      setTaskFee(taskToEdit.subItems[0].amount); // Task fee is the first sub-item
+    }
+  }, [taskToEdit]);
 
   const handleAddMiscellaneous = () => {
     if (miscName && miscAmount > 0) {
@@ -29,23 +42,28 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
       dueDate,
       assignedEmployee,
       subItems: [
-        { expenses: "Task Fee", amount: parseFloat(taskFee) }, // Task fee as the first sub-item
-        ...subItems, // Include additional miscellaneous items
+        { expenses: "Task Fee", amount: parseFloat(taskFee) },
+        ...subItems,
       ],
-      transactionId, // Include Transaction ID
-      modeOfPayment, // Include Mode of Payment
-      datePaid: "",
-      status: "",
+      transactionId,
+      modeOfPayment,
+      datePaid: taskToEdit ? taskToEdit.datePaid : "", // Preserve datePaid if editing
+      status: taskToEdit ? taskToEdit.status : "", // Preserve status if editing
+      index: taskToEdit ? taskToEdit.index : null, // Include index if editing
     };
 
-    onCreate(newTask);
+    if (taskToEdit) {
+      onUpdate(newTask); // Call onUpdate if editing
+    } else {
+      onCreate(newTask); // Call onCreate if creating a new task
+    }
     onClose();
   };
 
   return (
     <div className="task-create-form-overlay">
       <div className="task-create-form">
-        <h2>Create Task</h2>
+        <h2>{taskToEdit ? "Update Task" : "Create Task"}</h2>
         <form onSubmit={handleSubmit}>
           {/* Information Section */}
           <div className="form-section">
@@ -72,7 +90,6 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                   <option value="Employee 1">Employee 1</option>
                   <option value="Employee 2">Employee 2</option>
                   <option value="Employee 3">Employee 3</option>
-                  {/* Add more employees as needed */}
                 </select>
               </div>
               <div className="form-modal-field">
@@ -107,7 +124,6 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                   <option value="Cash">Cash</option>
                   <option value="Credit Card">Credit Card</option>
                   <option value="Bank Transfer">Bank Transfer</option>
-                  {/* Add more modes of payment as needed */}
                 </select>
               </div>
             </div>
@@ -126,7 +142,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                   onChange={(e) => setTaskFee(e.target.value)}
                   required
                   inputMode="numeric"
-                  style={{ width: "260px" }} 
+                  style={{ width: "260px" }}
                 />
               </div>
             </div>
@@ -163,7 +179,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
 
             {/* Display Added Miscellaneous Items */}
             <ul className="misc-list">
-              {subItems.map((item, index) => (
+              {subItems.slice(1).map((item, index) => (
                 <li key={index}>
                   {item.expenses} - {item.amount}
                 </li>
@@ -176,7 +192,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
             <button type="button" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit">Create</button>
+            <button type="submit">{taskToEdit ? "Update" : "Create"}</button>
           </div>
         </form>
       </div>
