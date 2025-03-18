@@ -1,6 +1,7 @@
+
 .employee-home-page {
   display: flex;
-  padding-top: 70px;
+  padding-top: 90px;
   background-color: #f4f4f9;
 }
 
@@ -78,6 +79,7 @@ button:hover {
 table {
   width: 100%;
   border-collapse: collapse;
+ background-color: #fbfbfb;
 }
 
 th,
@@ -88,7 +90,7 @@ td {
 th {
   background-color: #4763a9;
   font-weight: bold;
-  color: white;
+  color: rgb(2, 2, 2);
 }
 
 td {
@@ -99,7 +101,9 @@ td {
 tr:hover td {
   background-color: #f9f9f9;
 }
-
+table thead th {
+  background-color: #eeecec;
+}
 /****************** Action Dropdown */
 .action-dropdown {
   position: relative;
@@ -651,33 +655,13 @@ select:focus {
   background-color: #0d3771;
 }
 /******************* Month and year sorting ******************/
-
-/* Style for the filter section */
-.employee-filter-section {
+/* --------------- sorting client ------------ */
+.sorting-button-container {
+  position: relative;
   display: flex;
-  gap: 5px;
-  margin-bottom: 2px;
+  flex-direction: column;
   align-items: center;
-  padding: 3px;
+  justify-content: center; /* Ensures button stays centered */
+  height: 40px; /* Forces all containers to have the same height */
 }
-
-/* Style for the dropdowns */
-.employee-filter-section select {
-  padding: 2px;
-  font-size: 0.65rem;
-  border-radius: 4px;
-  cursor: pointer;
-  max-width: 70px;
-}
-
-.employee-filter-section select:hover {
-  border-color: #888;
-  background-color: #f1f1f1;
-}
-
-/* Improved spacing and alignment */
-.employee-filter-section label {
-  font-size: 0.75rem;
-  font-weight: bold;
-  color: #333;
-}
+/* =----------------------------------------- */

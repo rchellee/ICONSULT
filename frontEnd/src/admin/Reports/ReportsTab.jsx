@@ -26,7 +26,7 @@ const ReportsTab = () => {
 
           <div className="reports-select">
             <select
-              className="reports-select-type"
+              className="border p-2 text-sm w-40 ml-auto"
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
             >

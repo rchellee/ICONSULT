@@ -26,16 +26,17 @@ table {
   overflow: hidden;
   margin: 0px auto;
   background-color: #fbfbfb;
+  color:black;
 }
 thead th {
   position: sticky;
   top: 0;
-  background-color: #f8f9fa;
+  background-color: #eeecec;
   z-index: 2;
 }
 table thead th {
 background-color: #eeecec;
-color:black;
+
 }
 table th,
 table td {
@@ -58,7 +59,7 @@ table tr:hover {
   transition: background 0.3s ease-in-out;
 }
 .th-client {
-  color: #ffff;
+  color: black;
 }
 
 table td {
@@ -489,7 +490,16 @@ button i {
 button:hover {
   opacity: 0.8;
 }
-
+/* --------------- sorting client ------------ */
+.sorting-button-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Ensures button stays centered */
+  height: 40px; /* Forces all containers to have the same height */
+}
+/* =----------------------------------------- */
 /* Toast */
 .toast-progress {
   height: 5px;

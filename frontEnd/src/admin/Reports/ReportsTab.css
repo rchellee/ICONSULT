@@ -6,7 +6,6 @@
   transition: margin-left 0.3s ease;
   padding-top: 70px;
   background-color: #f4f4f9;
-  justify-content: center;
 
 }
 
@@ -539,106 +538,6 @@ select:focus {
 
 
 /* ------------------------------- Revenue ------------------------------ */
-/* General Page Styling */
-.revenue-p-4 {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: #f4f4f4;
-}
-
-/* Summary Box */
-#revenue-summary {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-  width: 50%;
-  margin-bottom: 20px;
-}
-
-/* Graph Grid Layout */
-.revenue-graph-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  justify-content: center;
-  width: 100%;
-  max-width: 1200px;
-}
-
-/* Individual Graph Box */
-.revenue-graph-box {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  border: 2px solid #ddd;
-  width: 100%;
-}
-
-/* Graph Title */
-.graph-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #222;
-}
-
-/* Adjusting Chart Sizes */
-.small-chart {
-  max-width: 400px;
-  margin: auto;
-}
-
-.large-chart {
-  max-width: 800px;
-  margin: auto;
-}
-
-/* Export Buttons */
-.revenue-export-buttons {
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.revenue-export-buttons button,
-.revenue-export-buttons a {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  text-decoration: none;
-  text-align: center;
-}
-
-.revenue-export-buttons button:hover,
-.revenue-export-buttons a:hover {
-  background-color: #0056b3;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .revenue-graph-container {
-    grid-template-columns: 1fr;
-  }
-
-  #revenue-summary {
-    width: 80%;
-  }
-}
 
 /* -------------------------------------------------------- */
 .overview-statistics {
