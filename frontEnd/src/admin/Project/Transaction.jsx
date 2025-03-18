@@ -266,7 +266,7 @@ const Transaction = ({ projectId }) => {
               <th>Date Paid</th>
               <th>Past Due</th>
               <th>Status</th>
-              <th>Mode of Payment (MOP)</th>
+              
               <th>Action</th>
             </tr>
           </thead>
@@ -358,18 +358,7 @@ const Transaction = ({ projectId }) => {
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td>
-                        <select
-                          value={subItem.mop || ""}
-                          onChange={(e) => handleMOPChange(index, subIndex + 1, e.target.value)}
-                          className="mop-dropdown"
-                        >
-                          <option value="">Select MOP</option>
-                          <option value="Cash">Cash</option>
-                          <option value="Online">Online</option>
-                          <option value="Cheque">Cheque</option>
-                        </select>
-                      </td>
+                      
                     </tr>
                   ))}
 

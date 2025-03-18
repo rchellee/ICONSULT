@@ -10,6 +10,8 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
   const [subItems, setSubItems] = useState([]);
   const [miscName, setMiscName] = useState("");
   const [miscAmount, setMiscAmount] = useState(0);
+  const [transactionId, setTransactionId] = useState(""); // New state for Transaction ID
+  const [modeOfPayment, setModeOfPayment] = useState(""); // New state for Mode of Payment
 
   const handleAddMiscellaneous = () => {
     if (miscName && miscAmount > 0) {
@@ -30,6 +32,8 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
         { expenses: "Task Fee", amount: parseFloat(taskFee) }, // Task fee as the first sub-item
         ...subItems, // Include additional miscellaneous items
       ],
+      transactionId, // Include Transaction ID
+      modeOfPayment, // Include Mode of Payment
       datePaid: "",
       status: "",
     };
@@ -81,6 +85,32 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                 />
               </div>
             </div>
+
+            {/* Transaction ID and Mode of Payment */}
+            <div className="form-row">
+              <div className="form-modal-field tras-id">
+                <label>Transaction ID:</label>
+                <input
+                  type="text"
+                  placeholder="Enter"
+                  value={transactionId}
+                  onChange={(e) => setTransactionId(e.target.value)}
+                />
+              </div>
+              <div className="form-modal-field mop">
+                <label>Mode of Payment:</label>
+                <select
+                  value={modeOfPayment}
+                  onChange={(e) => setModeOfPayment(e.target.value)}
+                >
+                  <option value="">Select Mode of Payment</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  {/* Add more modes of payment as needed */}
+                </select>
+              </div>
+            </div>
           </div>
 
           {/* Sub-items Section */}
@@ -121,6 +151,7 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
                   inputMode="numeric"
                 />
               </div>
+
               <button
                 type="button"
                 className="add-misc-button"
@@ -153,4 +184,4 @@ const TaskCreateForm = ({ onClose, onCreate }) => {
   );
 };
 
-export default TaskCreateForm; 
+export default TaskCreateForm;
