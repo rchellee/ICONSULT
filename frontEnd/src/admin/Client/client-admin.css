@@ -558,3 +558,37 @@ button:hover {
   margin: 0 10px;
   font-size: 14px;
 }
+/******************* Month and year sorting ******************/
+.client-filters-section {
+  display: flex;
+  justify-content: flex-end; /* Aligns buttons to the right */
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.client-filters-section select {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  align-items: center;
+}
+
+.client-filters-section select:hover {
+  filter: brightness(90%);
+}
+
+.client-filters-section select option {
+  color: black; /* Ensures options remain readable */
+}
+
+
+.add-client-btn:hover {
+  filter: brightness(90%);
+}
+/* =----------------------------------------- */

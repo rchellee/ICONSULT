@@ -2,13 +2,11 @@
 .employee-home-page {
   display: flex;
   padding-top: 90px;
-  background-color: #f4f4f9;
 }
 
 .employee-content {
   flex-grow: 2;
   padding-left: 100px;
-  background-color: #f4f4f9;
 }
 .top-bar {
   width: 100%;
@@ -655,13 +653,36 @@ select:focus {
   background-color: #0d3771;
 }
 /******************* Month and year sorting ******************/
-/* --------------- sorting client ------------ */
-.sorting-button-container {
-  position: relative;
+.employee-filters-section {
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end; /* Aligns buttons to the right */
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.employee-filters-section select {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
   align-items: center;
-  justify-content: center; /* Ensures button stays centered */
-  height: 40px; /* Forces all containers to have the same height */
+}
+
+.employee-filters-section select:hover {
+  filter: brightness(90%);
+}
+
+.employee-filters-section select option {
+  color: black; /* Ensures options remain readable */
+}
+
+
+.add-employee-btn:hover {
+  filter: brightness(90%);
 }
 /* =----------------------------------------- */

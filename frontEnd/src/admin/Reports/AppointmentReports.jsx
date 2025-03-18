@@ -70,8 +70,10 @@ const exportPDF = async () => {
     { id: "summary-section", title: "Appointment Summary" },
     { id: "appointments-client", title: "Appointments per Client", description: "This chart shows the number of appointments per client." },
     { id: "appointments-platform", title: "Appointments by Platform", description: "This chart shows how appointments are distributed across different platforms." },
-    { id: "appointments-consultation", title: "Appointments by Consultation Type", description: "This chart categorizes appointments based on the type of consultation." },
+    { id: "app-appointments-consultation", title: "Appointments by Consultation Type", description: "This chart categorizes appointments based on the type of consultation." },
   ];
+
+  window.scrollTo(0, 0); // Ensure all sections are visible
 
   for (let i = 0; i < elements.length; i++) {
     const { id, title, description } = elements[i];
@@ -80,20 +82,29 @@ const exportPDF = async () => {
     if (!section) continue;
 
     try {
-      const canvas = await html2canvas(section, { scale: 2 }); // Wait for canvas capture
+      await new Promise((resolve) => setTimeout(resolve, 800)); // Allow charts to fully render
+
+      const canvas = await html2canvas(section, {
+        scale: 3, // Higher quality
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        willReadFrequently: true, // Better performance
+        logging: true,
+      });
+
       const imgData = canvas.toDataURL("image/png");
 
       if (currentPage > 1) doc.addPage();
       doc.text(title, 10, 10);
       if (description) doc.text(description, 10, 20);
-      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
+      doc.addImage(imgData, "PNG", 10, 30, 180, 120); // Adjust size for better visibility
       currentPage++;
     } catch (error) {
       console.error(`Error capturing ${id}:`, error);
     }
   }
 
-  doc.save("appointment-report.pdf"); // Ensure it only saves after all images are added
+  doc.save("appointment-report.pdf");
 };
 
   const filteredAppointments = filters.clientId
