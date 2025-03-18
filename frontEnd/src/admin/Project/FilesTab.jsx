@@ -1,9 +1,11 @@
+import { MdOutlineDeleteOutline } from "react-icons/md";
+import { AiOutlineEdit } from "react-icons/ai";
 import React, { useState, useEffect } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
+import { IoMdDownload } from "react-icons/io"; // Import the download icon
 import "./FileTabStyle.css";
 
 const FilesTab = ({ projectId }) => {
@@ -11,7 +13,6 @@ const FilesTab = ({ projectId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [activeFileId, setActiveFileId] = useState(null);
   const [clientNames, setClientNames] = useState({});
   const [sortConfig, setSortConfig] = useState({
     key: "name",
@@ -88,6 +89,7 @@ const FilesTab = ({ projectId }) => {
       setUploading(false);
     }
   };
+
   const handleDelete = async (fileId) => {
     try {
       const response = await fetch(`http://localhost:8081/files/${fileId}`, {
@@ -106,13 +108,38 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
-  const toggleActions = (fileId) => {
-    setActiveFileId(activeFileId === fileId ? null : fileId);
+  const handleRename = async (fileId, currentName) => {
+    const newName = prompt("Enter new file name:", currentName);
+    if (newName && newName !== currentName) {
+      try {
+        const response = await fetch(`http://localhost:8081/files/${fileId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ original_name: newName }),
+        });
+
+        if (response.ok) {
+          setFiles((prevFiles) =>
+            prevFiles.map((file) =>
+              file.id === fileId ? { ...file, original_name: newName } : file
+            )
+          );
+          console.log("File renamed successfully.");
+        } else {
+          const errorData = await response.json();
+          console.error("Error renaming file:", errorData.message);
+        }
+      } catch (error) {
+        console.error("Error renaming file:", error);
+      }
+    }
   };
 
   const getFileIcon = (fileName) => {
     if (!fileName) {
-      return <FaFile className="file-type-icon" />; // Default icon for missing file names
+      return <FaFile className="file-type-icon" />;
     }
     const fileExtension = fileName.split(".").pop().toLowerCase();
 
@@ -182,12 +209,13 @@ const FilesTab = ({ projectId }) => {
       <div className="file-list">
         {files.length > 0 && (
           <div className="file-list-scrollable">
-            {" "}
-            {/* Scrollable container */}
             <table>
               <thead>
                 <tr>
-                  <th onClick={() => changeSort("name")}>
+                  <th
+                    onClick={() => changeSort("name")}
+                    className="name-header"
+                  >
                     <CiFileOn className="file-icon" />
                     Name{" "}
                     {sortConfig.key === "name" &&
@@ -197,7 +225,10 @@ const FilesTab = ({ projectId }) => {
                         <FaArrowDown />
                       ))}
                   </th>
-                  <th onClick={() => changeSort("upload_date")}>
+                  <th
+                    onClick={() => changeSort("upload_date")}
+                    className="upload-date-header"
+                  >
                     Upload Date{" "}
                     {sortConfig.key === "upload_date" &&
                       (sortConfig.direction === "asc" ? (
@@ -206,7 +237,10 @@ const FilesTab = ({ projectId }) => {
                         <FaArrowDown />
                       ))}
                   </th>
-                  <th onClick={() => changeSort("uploaded_by")}>
+                  <th
+                    onClick={() => changeSort("uploaded_by")}
+                    className="uploaded-by-header"
+                  >
                     Uploaded By{" "}
                     {sortConfig.key === "uploaded_by" &&
                       (sortConfig.direction === "asc" ? (
@@ -215,7 +249,7 @@ const FilesTab = ({ projectId }) => {
                         <FaArrowDown />
                       ))}
                   </th>
-                  <th></th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -248,41 +282,27 @@ const FilesTab = ({ projectId }) => {
                     </td>
                     <td>
                       <button
-                        className={`action-file ${
-                          activeFileId === file.id ? "active" : ""
-                        }`}
-                        onClick={() => toggleActions(file.id)}
+                        className="files-action"
+                        onClick={() => {
+                          const downloadLink =
+                            file.webContentLink ||
+                            `http://localhost:8081/uploads/${file.original_name}`;
+                          const a = document.createElement("a");
+                          a.href = downloadLink;
+                          a.download = file.original_name;
+                          document.body.appendChild(a);
+                          a.click();
+                          document.body.removeChild(a);
+                        }}
                       >
-                        <BsThreeDotsVertical />
+                        <IoMdDownload /> {/* Download icon */}
                       </button>
-
-                      {activeFileId === file.id && (
-                        <div className="file-actions-popup click-delete-edit">
-                          <button
-                            className="delete-btn"
-                            onClick={() => handleDelete(file.id)}
-                          >
-                            Delete
-                          </button>
-                          <button
-                            className="delete-btn"
-                            onClick={() => {
-                              // Triggering download by clicking the button
-                              const downloadLink =
-                                file.webContentLink ||
-                                `http://localhost:8081/uploads/${file.original_name}`;
-                              const a = document.createElement("a");
-                              a.href = downloadLink;
-                              a.download = file.original_name; // This will suggest a file name for the download
-                              document.body.appendChild(a);
-                              a.click();
-                              document.body.removeChild(a); // Clean up
-                            }}
-                          >
-                            Download
-                          </button>
-                        </div>
-                      )}
+                      <button
+                        className="files-action"
+                        onClick={() => handleDelete(file.id)}
+                      >
+                        <MdOutlineDeleteOutline /> {/* Delete icon */}
+                      </button>
                     </td>
                   </tr>
                 ))}

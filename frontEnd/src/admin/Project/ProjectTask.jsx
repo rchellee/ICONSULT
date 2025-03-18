@@ -8,13 +8,14 @@ import PostsTab from "./PostsTab";
 import FilesTab from "./FilesTab";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
+import Transaction from "./Transaction";
 
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
   const { searchTerm } = useContext(SearchContext);
   const [selectedProjectId, setSelectedProjectId] = useState(projectId);
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState("transactions"); // Default to "transactions" tab
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tasks, setTasks] = useState([]);
 
@@ -35,10 +36,6 @@ const ProjectTask = ({ onBack }) => {
   };
 
   const handleCancelForm = () => setShowTaskForm(false);
-  useEffect(() => {
-    console.log("Project ID in ProjectTask:", projectId);
-    // Fetch or perform actions based on projectId
-  }, [projectId]);
 
   return (
     <div>
@@ -47,14 +44,13 @@ const ProjectTask = ({ onBack }) => {
       <div className="project-task-container">
         <div className="home-button-container"></div>
 
-        {/* Tab Navigation */}
         <div className="project-task-tabs">
-          {/* Tab Buttons */}
+          {/* Reordered tabs: Transaction History first, Documents second */}
           <button
-            className={activeTab === "posts" ? "active" : ""}
-            onClick={() => handleTabClick("posts")}
+            className={activeTab === "transactions" ? "active" : ""}
+            onClick={() => handleTabClick("transactions")}
           >
-            Task
+            Task 
           </button>
           <button
             className={activeTab === "files" ? "active" : ""}
@@ -66,20 +62,13 @@ const ProjectTask = ({ onBack }) => {
 
         {/* Tab Content */}
         <div className="project-task-content">
-          {/* Posts Tab */}
-          {activeTab === "posts" && (
+          {/* Transaction History Tab */}
+          {activeTab === "transactions" && (
             <ErrorBoundary>
-              <PostsTab
-                projectId={projectId}
-                tasks={tasks}
-                setShowTaskForm={setShowTaskForm}
-                showTaskForm={showTaskForm}
-                handleCreateTask={handleCreateTask}
-                handleCancelForm={handleCancelForm}
-                setTasks={setTasks}
-              />
+              <Transaction projectId={projectId} />
             </ErrorBoundary>
           )}
+          {/* Documents Tab */}
           {activeTab === "files" && <FilesTab projectId={projectId} />}
         </div>
       </div>

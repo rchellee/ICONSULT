@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ListView.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { MdOutlineArrowDropDown } from "react-icons/md";
-import { FaSort, FaMoneyBillWave, FaExclamationTriangle } from "react-icons/fa";
 import { TbArrowsSort } from "react-icons/tb";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineDeleteOutline } from "react-icons/md";
@@ -201,7 +198,7 @@ const ListView = ({
   };
 
   return (
-    <div>
+    <div className="eto-parent">
       {/* Button Container */}
       <div className="sorting-button">
         <div className="sorting-button-container">
@@ -256,6 +253,9 @@ const ListView = ({
 
       {/* Table */}
       <div className="table-scroll-wrapper">
+        <div className="title-project">
+          <h1>Your Projects</h1>
+        </div>
         <table className="project-list-table">
           <thead>
             <tr>
@@ -266,9 +266,7 @@ const ListView = ({
               <th>Actual <br /> Start</th>
               <th>Actual <br /> Finish</th>
               <th>Professional <br /> Fee</th>
-              <th>Downpayment</th>
-              <th>Total</th>
-              <th>Payment <br /> Status</th>
+              <th>Amount</th>
               <th>Project <br /> Status</th>
               <th>Action</th>
             </tr>
@@ -325,15 +323,12 @@ const ListView = ({
                   <td className="right-align" title={formatCurrency(project.contractPrice)}>
                     {formatCurrency(project.contractPrice)}
                   </td>
-                  <td className="right-align"title={formatCurrency(project.downpayment)}>
-                    {formatCurrency(project.downpayment)}
-                  </td>
+                  
                   <td className="right-align" title={formatCurrency(totalTasks[project.id])}>
                     {formatCurrency(totalTasks[project.id])}
                   </td>
 
-                  {/* Payment Status */}
-                  <td>Paid</td>
+                 
 
                   {/* Status Dropdown */}
                   <td>
@@ -398,24 +393,24 @@ const ListView = ({
 
                   {/* Action Buttons */}
                   <td>
-  <div className="button-group">
-    {/* Edit Button */}
-    <button
-      className="btn-edit"
-      onClick={(e) => handleEditClick(e, project.id)}
-    >
-      <AiOutlineEdit style={{ fontSize: "1.5rem" }} /> {/* Apply style here */}
-    </button>
+                    <div className="button-group">
+                      {/* Edit Button */}
+                      <button
+                        className="btn-edit"
+                        onClick={(e) => handleEditClick(e, project.id)}
+                      >
+                      <AiOutlineEdit style={{ fontSize: "1.5rem" }} /> 
+                      </button>
 
-    {/* Delete Button */}
-    <button
-      className="btn-delete"
-      onClick={(e) => handleDeleteClick(e, project.id)}
-    >
-      <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} /> {/* Apply style here */}
-    </button>
-  </div>
-</td>
+                     {/* Delete Button */}
+                      <button
+                        className="btn-delete"
+                        onClick={(e) => handleDeleteClick(e, project.id)}
+                      >
+                        <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               );
             })}

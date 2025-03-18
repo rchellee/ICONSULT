@@ -1,0 +1,169 @@
+.task-create-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.task-create-form {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 700px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-create-form h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #5d6d90;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #5d6d90;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.form-modal-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-modal-field label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  font-style: normal;
+  font-weight: normal;
+  color: #5d6d90;
+  border-radius: 10px;
+}
+
+.form-modal-field input,
+.form-modal-field select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.form-modal-field select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px; 
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  height: 40px; 
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+}
+
+.add-misc-button {
+  background: none;
+  color: #5d6d90;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none; 
+}
+
+.add-misc-button:hover {
+ 
+  color: #2c3a4d;
+  outline: none; 
+  background: none; 
+}
+
+.add-misc-button:focus {
+  outline: none;
+}
+
+.add-misc-button svg {
+  margin-top: -10px; 
+}
+
+.misc-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.misc-list li {
+  background: #f9f9f9;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.form-actions button[type="button"] {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.form-actions button[type="button"]:hover {
+  background: #e0e0e0; 
+}
+
+.form-actions button[type="submit"] {
+  background: #d3deff;
+  color: rgb(0, 0, 0);
+}
+
+.form-actions button[type="submit"]:hover {
+  background: #b0c2f8; 
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; 
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none; 
+  margin: 0;
+}
