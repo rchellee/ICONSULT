@@ -14,31 +14,44 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 
 const EmployeeReports = () => {
   const [employees, setEmployees] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
-    department: "",
-    jobTitle: "",
+    year: "All",
+    month: "All",
   });
-
-  useEffect(() => {
-    fetchEmployees();
-  }, [filters]);
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/employeeReports", {
-        params: filters,
-      });
-      setEmployees(response.data);
+      const response = await axios.get("http://localhost:8081/employeeReports");
+      console.log("API Response:", response.data); // Debugging
+      setEmployees(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error("Error fetching employees", error);
+      console.error("Error fetching employee reports", error);
+      setEmployees([]); // Ensure employees is always an array
     }
   };
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/ETReports");
+      console.log("Task API Response:", response.data); // Debugging
+      setTasks(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching task reports", error);
+      setTasks([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+    fetchTasks();
+  }, []);
 
   const exportPDF = () => {
     const doc = new jsPDF();
@@ -52,79 +65,64 @@ const EmployeeReports = () => {
     );
   };
 
+  const filteredTasks = tasks.filter((task) => {
+    if (!task.created_at) return false; // Ensure created_at exists
+
+    const taskDate = new Date(task.created_at);
+    const taskYear = taskDate.getFullYear();
+    const taskMonth = taskDate.toLocaleString("default", { month: "long" });
+
+    return (
+      (filters.year === "All" || taskYear.toString() === filters.year) &&
+      (filters.month === "All" || taskMonth === filters.month)
+    );
+  });
+
   const totalEmployees = employees.length;
-  const newHires = employees.filter(
-    (e) => new Date(e.hireDate).getMonth() === new Date().getMonth()
-  ).length;
-
-  const employeesByDepartment = employees.reduce((acc, emp) => {
-    acc[emp.department] = (acc[emp.department] || 0) + 1;
-    return acc;
-  }, {});
-
-  const employeesByJobTitle = employees.reduce((acc, emp) => {
-    acc[emp.jobTitle] = (acc[emp.jobTitle] || 0) + 1;
-    return acc;
-  }, {});
+  const taskData = filteredTasks.map((task) => ({
+    name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
+    tasks: task.task_count || 0,
+  }));
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Employee Reports</h2>
+      {/* Filters */}
       <div className="flex space-x-4 mb-4">
-        <input
-          type="date"
+        <select
           className="border p-2"
-          onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-        />
-        <input
-          type="date"
+          value={filters.year}
+          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+        >
+          <option value="All">All Years</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+        </select>
+        <select
           className="border p-2"
-          onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Department"
-          className="border p-2"
-          onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Job Title"
-          className="border p-2"
-          onChange={(e) => setFilters({ ...filters, jobTitle: e.target.value })}
-        />
-      </div>
-
-      <div id="report-section" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Total Employees: {totalEmployees}</h3>
-        <h3 className="text-lg font-semibold">New Hires This Month: {newHires}</h3>
-
-        <h3 className="text-lg font-semibold mt-4">Employees by Department</h3>
-        <PieChart width={400} height={400}>
-          <Pie
-            data={Object.entries(employeesByDepartment).map(([name, value]) => ({ name, value }))}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={150}
-          >
-            {Object.keys(employeesByDepartment).map((_, index) => (
-              <Cell key={`cell-${index}`} fill={["#8884d8", "#82ca9d"][index % 2]} />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
-
-        <h3 className="text-lg font-semibold mt-4">Employees by Job Title</h3>
-        <BarChart width={600} height={400} data={Object.entries(employeesByJobTitle).map(([name, value]) => ({ name, value }))}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
-        </BarChart>
+          value={filters.month}
+          onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+        >
+          <option value="All">All Months</option>
+          {[
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ].map((month) => (
+            <option key={month} value={month}>
+              {month}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mt-4 flex space-x-4">
@@ -141,6 +139,30 @@ const EmployeeReports = () => {
         >
           Export PDF
         </button>
+      </div>
+      <div className="bg-white p-4 shadow rounded-lg">
+        <h3 className="text-lg font-semibold">
+          Total Employees: {employees.length}
+        </h3>
+      </div>
+      <div className="mt-6 bg-white p-4 shadow rounded-lg">
+        <h3 className="text-lg font-semibold mb-2">
+          Tasks Assigned to Each Employee
+        </h3>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            layout="vertical"
+            data={taskData}
+            margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis dataKey="name" type="category" width={150} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="tasks" fill="#8884d8" name="Number of Tasks" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

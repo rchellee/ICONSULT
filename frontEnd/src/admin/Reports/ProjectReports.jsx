@@ -70,20 +70,6 @@ const ProjectReports = () => {
     }
   };
 
-  const fetchPaymentDeadlines = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8081/paymentDeadlines",
-        {
-          params: { year: filters.year }, // Fetch payment deadlines only
-        }
-      );
-      setPaymentDeadlines(response.data);
-    } catch (error) {
-      console.error("Error fetching payment deadlines", error);
-    }
-  };
-
   const exportPDF = () => {
     const doc = new jsPDF();
     doc.text("Project Report", 20, 10);
