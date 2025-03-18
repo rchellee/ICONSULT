@@ -167,3 +167,28 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none; 
   margin: 0;
 }
+
+.tras-id,
+.mop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tras-id input,
+.mop select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.mop select {
+  height: 40px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+}
