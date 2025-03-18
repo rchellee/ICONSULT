@@ -11,6 +11,7 @@ import RevenueReports from "./RevenueReports";
 import ProjectReports from "./ProjectReports";
 import EmployeeReports from "./EmployeeReports";
 import TaskReports from "./TaskReports";
+import ReviewReports from "./ReviewReports";
 import "./ReportsTab.css";
 
 const ReportsTab = () => {
@@ -35,6 +36,7 @@ const ReportsTab = () => {
               <option value="projects">Projects Reports</option>
               <option value="tasks">Task Reports</option>
               <option value="employees">Employees Reports</option>
+              <option value="reviews">Reviews Reports</option>
               <option value="payments">Financial Reports</option>
             </select>
           </div>
@@ -44,6 +46,7 @@ const ReportsTab = () => {
           {reportType === "payments" && <RevenueReports />}
           {reportType === "projects" && <ProjectReports />}
           {reportType === "tasks" && <TaskReports />}
+          {reportType === "reviews" && <ReviewReports />}
           {reportType === "employees" && <EmployeeReports />}
         </div>
       </div>
