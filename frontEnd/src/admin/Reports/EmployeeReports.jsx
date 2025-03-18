@@ -85,8 +85,7 @@ const EmployeeReports = () => {
   }));
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Employee Reports</h2>
+    <div className="employee-p-4">
       {/* Filters */}
       <div className="flex space-x-4 mb-4">
         <select
@@ -145,7 +144,8 @@ const EmployeeReports = () => {
           Total Employees: {employees.length}
         </h3>
       </div>
-      <div className="mt-6 bg-white p-4 shadow rounded-lg">
+
+      <div className="employee-graph-container">
         <h3 className="text-lg font-semibold mb-2">
           Tasks Assigned to Each Employee
         </h3>

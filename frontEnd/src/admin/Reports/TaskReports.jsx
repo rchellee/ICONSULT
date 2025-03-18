@@ -198,13 +198,13 @@ const TaskReports = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Task Reports</h2>
-      <div className="mt-4 flex space-x-4">
+    <div className="tasks-p-4">
+
+      <div className="tasks-graph-container">
         <CSVLink
           data={tasks}
           filename="task-report.csv"
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="tasks-graph-grid"
         >
           Export CSV
         </CSVLink>
@@ -216,8 +216,8 @@ const TaskReports = () => {
           Export PDF
         </button>
       </div>
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Task Status</h3>
+      <div className="tasks-graph-container">
+        <h3>Task Status</h3>
 
         {/* Year Filter */}
         <select
@@ -266,7 +266,8 @@ const TaskReports = () => {
           <Legend />
         </PieChart>
       </div>
-      <div className="bg-white p-4 shadow rounded-lg mt-4">
+
+      <div className="tasks-graph-container">
         <h3 className="text-lg font-semibold">Tasks Per Project</h3>
         {/* Year Filter */}
         <select
@@ -294,7 +295,7 @@ const TaskReports = () => {
             </option>
           ))}
         </select>
-        <BarChart width={1600} height={400} data={projectTaskData}>
+        <BarChart width={1100} height={400} data={projectTaskData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
@@ -303,7 +304,8 @@ const TaskReports = () => {
           <Bar dataKey="value" fill="#82ca9d" name="Task Count" />
         </BarChart>
       </div>
-      <div className="bg-white p-4 shadow rounded-lg mt-4">
+      
+      <div className="tasks-graph-container">
         <h3 className="text-lg font-semibold">Task Due</h3>
         <select
           className="mb-4 p-2 border rounded"

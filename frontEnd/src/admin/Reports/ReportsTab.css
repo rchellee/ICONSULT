@@ -6,6 +6,7 @@
   transition: margin-left 0.3s ease;
   padding-top: 70px;
   background-color: #f4f4f9;
+  justify-content: center;
 
 }
 
@@ -26,18 +27,11 @@
   margin-left: 16px;
 }
 
-.mb-4 {
-  margin-bottom: 16px;
-}
-
 select {
   border: 1px solid #ccc;
-  padding: 8px;
   font-size: 14px;
-  width: 160px;
-  border-radius: 4px;
-  background-color: #fff;
-  cursor: pointer;
+  width: 200px;
+    background-color: #fff;
 }
 
 select:focus {
@@ -48,16 +42,14 @@ select:focus {
 .reports-content {
   background: #fff;
   padding: 20px;
-  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 /* Filter Container with Grid */
 .filter-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Auto-adjusting columns */
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Auto-adjusting columns */
   gap: 16px; /* Space between elements */
   padding: 16px;
-
   align-items: center;
 }
 
@@ -67,7 +59,6 @@ select:focus {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.3s ease-in-out;
 }
@@ -102,7 +93,7 @@ select:focus {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 56px;
+
 }
 
 /* ===== Summary Text Styling ===== */
@@ -119,15 +110,6 @@ select:focus {
   color: #3498DB;
 }
 
-/* ===== Responsive Design ===== */
-@media (max-width: 768px) {
-  #summary-section {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-
 /* ===== Charts Section Styling ===== */
 .app-charts-container {
   display: grid;
@@ -140,7 +122,6 @@ select:focus {
 .app-chart-box {
   background: #ffffff;
   padding: 24px;
-  border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e1e1e1;
   margin-bottom: 24px;
@@ -175,7 +156,6 @@ select:focus {
 
 .app-chart-scroll::-webkit-scrollbar-thumb {
   background-color: #888;
-  border-radius: 10px;
 }
 
 .app-chart-scroll::-webkit-scrollbar-track {
@@ -233,7 +213,6 @@ select:focus {
 .clients-summary-card {
   background: white;
   padding: 20px;
-  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   font-weight: bold;
@@ -256,7 +235,6 @@ select:focus {
 .clients-chart-container {
   background: white;
   padding: 20px;
-  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
@@ -268,7 +246,6 @@ select:focus {
 .clients-year-selector select {
   padding: 5px;
   font-size: 16px;
-  border-radius: 5px;
   border: 1px solid #ccc;
 }
 
@@ -276,7 +253,6 @@ select:focus {
 .clients-chart-card {
   background: white;
   padding: 20px;
-  border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
@@ -290,10 +266,9 @@ select:focus {
 
 /* ----------------------------- Project --------------------------- */
 /* General Page Styling */
-.p-4 {
+.project-p-4 {
   padding: 20px;
   background-color: #f4f6f9;
-  min-height: 100vh;
   font-family: "Arial", sans-serif;
 }
 
@@ -309,7 +284,6 @@ select:focus {
 .project-filter-input {
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 6px;
   font-size: 14px;
   min-width: 150px;
   width: 100%;
@@ -333,7 +307,6 @@ select:focus {
   flex: 1;
   background: white;
   padding: 15px;
-  border-radius: 10px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   margin-right: 15px;
@@ -368,7 +341,6 @@ select:focus {
 .project-chart-box {
   background: white;
   padding: 20px;
-  border-radius: 10px;
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
@@ -412,41 +384,263 @@ select:focus {
     max-width: 100%;
   }
 }
-/* ---------------------------------------------------------------- */
 
-/* ---- Responsive Design ---- */
-@media (max-width: 768px) {
-  .charts-container {
+/* ------------------------------ tasks report ----------------------- */
+/* General Styles */
+.tasks-p-4 {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.text-xl {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Graph Container */
+.tasks-graph-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.graph-box {
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+}
+
+.graph-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+/* Adjusting chart sizes */
+.small-chart {
+  max-width: 400px;
+  margin: auto;
+}
+
+.large-chart {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .graph-grid {
     grid-template-columns: 1fr;
   }
-}
 
-/* ---- Responsive Design ---- */
-@media (max-width: 768px) {
-  .clients-month-container {
-    padding: 15px;
-  }
-
-  .chart-box, .table-box {
-    padding: 15px;
-  }
-
-  .year-selector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .year-dropdown {
+  .graph-box {
     width: 100%;
   }
+}
+/* -------------------------- Employees -------------------------- */
+/* General Styles */
+ .employee-p-4 {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
 
-  .styled-table th, .styled-table td {
-    font-size: 14px;
+.text-xl {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Graph Container */
+.graph-container, .employee-graph-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+/* Grid Layout for Graphs */
+.graph-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.graph-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  border: 2px solid #ddd;
+}
+
+.graph-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+/* Adjusting chart sizes */
+.small-chart {
+  max-width: 400px;
+  margin: auto;
+}
+
+.large-chart {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .graph-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .graph-box {
+    width: 100%;
   }
 }
 
-/* ---------------------------------------------------- */
+
+/* ------------------------------- Revenue ------------------------------ */
+/* General Page Styling */
+.revenue-p-4 {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Summary Box */
+#revenue-summary {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  width: 50%;
+  margin-bottom: 20px;
+}
+
+/* Graph Grid Layout */
+.revenue-graph-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Individual Graph Box */
+.revenue-graph-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 2px solid #ddd;
+  width: 100%;
+}
+
+/* Graph Title */
+.graph-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+/* Adjusting Chart Sizes */
+.small-chart {
+  max-width: 400px;
+  margin: auto;
+}
+
+.large-chart {
+  max-width: 800px;
+  margin: auto;
+}
+
+/* Export Buttons */
+.revenue-export-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.revenue-export-buttons button,
+.revenue-export-buttons a {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.revenue-export-buttons button:hover,
+.revenue-export-buttons a:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .revenue-graph-container {
+    grid-template-columns: 1fr;
+  }
+
+  #revenue-summary {
+    width: 80%;
+  }
+}
+
+/* -------------------------------------------------------- */
 .overview-statistics {
   display: flex;
   flex-wrap: wrap;
@@ -460,7 +654,6 @@ select:focus {
   text-align: center;
   background-color: #fff;
   border: 1px solid #eaeaea;
-  border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -513,7 +706,6 @@ select:focus {
   background-color: #007bff;
   color: #fff;
   text-decoration: none;
-  border-radius: 5px;
   font-size: 1rem;
   transition: background-color 0.3s ease;
 }
@@ -529,7 +721,6 @@ select:focus {
   text-align: center;
   background-color: #fff;
   border: 1px solid #eaeaea;
-  border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -569,7 +760,6 @@ select:focus {
   background-color: #ffffff; /* Green background color */
   color: rgb(50, 50, 50);
   border: none; /* Remove border */
-  border-radius: 5px; /* Rounded corners */
   cursor: pointer; /* Change cursor to pointer on hover */
   transition: background-color 0.3s; /* Smooth transition for background color */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

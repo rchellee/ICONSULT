@@ -42,7 +42,7 @@ nav .navbar {
 nav .navbar .logo a {
   font-weight: 500;
   font-size: 35px;
-  color: #4070f4;
+  color: white;
 }
 nav.sticky .navbar .logo a {
   color: #fff;
@@ -58,7 +58,7 @@ nav .navbar .menu li {
 .navbar .menu a {
   font-size: 18px;
   font-weight: 500;
-  color: #0e2431;
+  color: white;
   padding: 6px 0;
   transition: all 0.4s ease;
 }
@@ -69,10 +69,10 @@ nav.sticky .menu a {
   color: #fff;
 }
 nav.sticky .menu a:hover {
-  color: #0e2431;
+  color: white;
 }
 .navbar .media-icons a {
-  color: #4070f4;
+  color: white;
   font-size: 18px;
   margin: 0 6px;
 }
@@ -314,7 +314,7 @@ section .button button:hover {
   transition: all 0.4s ease;
 }
 .services .boxes .box:hover {
-  background: #4070f4;
+  background: #0a2e68;
   color: #fff;
 }
 .services .boxes .box .icon {
@@ -358,7 +358,7 @@ section .button button:hover {
 }
 /* Footer CSS */
 footer {
-  background: #4070f4;
+  background: #0a2e68;
   padding: 15px 0;
   text-align: center;
   font-family: "Poppins", sans-serif;

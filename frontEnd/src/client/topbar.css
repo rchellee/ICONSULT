@@ -44,11 +44,11 @@ nav form .search-data {
   width: 100%;
   height: 100%;
   padding: 0 10px;
-  color: #fff;
+  color: black;
   font-size: 17px;
   border: none;
   font-weight: 500;
-  background: none;
+  background: lightgray;
 }
 nav form button {
   padding: 0 15px;

@@ -2489,7 +2489,6 @@ app.get("/employeeReports", (req, res) => {
   });
 });
 
-
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {
   const sql = `

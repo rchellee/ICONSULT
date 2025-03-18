@@ -8,7 +8,7 @@ import {
   Bar,
   PieChart,
   Pie,
-  Cell,
+  Cell, 
   Tooltip,
   XAxis,
   YAxis,
@@ -84,7 +84,7 @@ const RevenueReports = () => {
   }));
 
   return (
-    <div className="p-4">
+    <div className="revenue-p-4">
       <div className="flex space-x-4 mb-4">
         <input type="date" className="border p-2" onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
         <input type="date" className="border p-2" onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
