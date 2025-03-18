@@ -2405,14 +2405,7 @@ app.get("/clientsReports", (req, res) => {
 
     const clientsMap = new Map();
     data.forEach((row) => {
-    data.forEach((row) => {
       if (!clientsMap.has(row.id)) {
-        clientsMap.set(row.id, {
-          id: row.id,
-          firstName: row.firstName,
-          lastName: row.lastName,
-          projects: [],
-        });
         clientsMap.set(row.id, {
           id: row.id,
           firstName: row.firstName,
@@ -2424,16 +2417,10 @@ app.get("/clientsReports", (req, res) => {
         clientsMap
           .get(row.id)
           .projects.push({ id: row.projectId, projectName: row.projectName });
-        clientsMap
-          .get(row.id)
-          .projects.push({ id: row.projectId, projectName: row.projectName });
       }
     });
 
     // Only return clients that have at least one active project
-    const filteredClients = Array.from(clientsMap.values()).filter(
-      (client) => client.projects.length > 0
-    );
     const filteredClients = Array.from(clientsMap.values()).filter(
       (client) => client.projects.length > 0
     );
@@ -2449,7 +2436,8 @@ app.get("/projectReports", (req, res) => {
       id, clientId, projectName, status, contractPrice, startDate, endDate, actualFinish, 
       TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
-      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays,
+      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays, paymentStatus,
+      IF(endDate < CURDATE(), 1, 0) AS isOverdue
     FROM project
     WHERE isDeleted = 0
   `;
@@ -2471,6 +2459,7 @@ app.get("/projectReports", (req, res) => {
     return res.json(data);
   });
 });
+
 
 // Fetch client count per month
 app.get("/clients/monthly", (req, res) => {

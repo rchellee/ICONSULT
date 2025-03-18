@@ -62,64 +62,39 @@ const AppointmentReports = () => {
     }
   };
 
-  const exportPDF = () => {
-    const doc = new jsPDF("p", "mm", "a4");
+const exportPDF = async () => {
+  const doc = new jsPDF("p", "mm", "a4");
+  let currentPage = 1;
 
-    const elements = [
-      { id: "summary-section", title: "Appointment Summary" },
-      {
-        id: "appointments-client",
-        title: "Appointments per Client",
-        description: "This chart shows the number of appointments per client.",
-      },
-      {
-        id: "appointments-platform",
-        title: "Appointments by Platform",
-        description:
-          "This chart shows how appointments are distributed across different platforms.",
-      },
-      {
-        id: "appointments-consultation",
-        title: "Appointments by Consultation Type",
-        description:
-          "This chart categorizes appointments based on the type of consultation.",
-      },
-    ];
+  const elements = [
+    { id: "summary-section", title: "Appointment Summary" },
+    { id: "appointments-client", title: "Appointments per Client", description: "This chart shows the number of appointments per client." },
+    { id: "appointments-platform", title: "Appointments by Platform", description: "This chart shows how appointments are distributed across different platforms." },
+    { id: "appointments-consultation", title: "Appointments by Consultation Type", description: "This chart categorizes appointments based on the type of consultation." },
+  ];
 
-    let currentPage = 1;
+  for (let i = 0; i < elements.length; i++) {
+    const { id, title, description } = elements[i];
+    const section = document.getElementById(id);
 
-    const captureElement = (element, title, description, callback) => {
-      const section = document.getElementById(element);
-      if (!section) return;
+    if (!section) continue;
 
-      html2canvas(section, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
+    try {
+      const canvas = await html2canvas(section, { scale: 2 }); // Wait for canvas capture
+      const imgData = canvas.toDataURL("image/png");
 
-        if (currentPage > 1) doc.addPage(); // Add a new page for each section
-        doc.text(title, 10, 10);
-        if (description) {
-          doc.text(description, 10, 20);
-        }
-        doc.addImage(imgData, "PNG", 10, 30, 180, 0); // Fit to page
-        currentPage++;
+      if (currentPage > 1) doc.addPage();
+      doc.text(title, 10, 10);
+      if (description) doc.text(description, 10, 20);
+      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
+      currentPage++;
+    } catch (error) {
+      console.error(`Error capturing ${id}:`, error);
+    }
+  }
 
-        callback();
-      });
-    };
-
-    let index = 0;
-    const processNext = () => {
-      if (index < elements.length) {
-        const { id, title, description } = elements[index];
-        index++;
-        captureElement(id, title, description, processNext);
-      } else {
-        doc.save("appointment-report.pdf");
-      }
-    };
-
-    processNext();
-  };
+  doc.save("appointment-report.pdf"); // Ensure it only saves after all images are added
+};
 
   const filteredAppointments = filters.clientId
     ? appointments.filter((a) => a.client_id == filters.clientId)
@@ -232,16 +207,16 @@ const AppointmentReports = () => {
       </div>
 
   {/* Charts Section */}
-<div id="report-content" className="charts-container">
+<div id="report-content" className="app-charts-container">
 
   {/* Appointments per Client */}
   {!filters.clientId && (
-    <div className="chart-box">
-      <h3 className="chart-title">Appointments per Client</h3>
-      <p className="chart-description">
+    <div className="app-chart-box">
+      <h3 className="app-chart-title">Appointments per Client</h3>
+      <p className="app-chart-description">
         Overview of client appointments in percentage format.
       </p>
-      <div className="chart-scroll">
+      <div className="app-chart-scroll">
         <PieChart width={600} height={350}>
           <Pie
             data={appointmentsByClient}
@@ -263,12 +238,12 @@ const AppointmentReports = () => {
   )}
 
   {/* Appointments by Platform */}
-  <div className="chart-box">
-    <h3 className="chart-title">Appointments by Platform</h3>
-    <p className="chart-description">
+  <div className="app-chart-box">
+    <h3 className="app-chart-title">Appointments by Platform</h3>
+    <p className="app-chart-description">
       Distribution of appointments across various platforms.
     </p>
-    <div className="chart-scroll">
+    <div className="app-chart-scroll">
       <BarChart width={700} height={350} data={appointmentsByPlatform}>
         <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
         <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -287,12 +262,12 @@ const AppointmentReports = () => {
 </div>
 
 {/* Appointments by Consultation Type */}
-<div id="appointments-consultation" className="chart-box">
-  <h3 className="chart-title">Consultation Type Overview</h3>
-  <p className="chart-description">
+<div id="app-appointments-consultation" className="app-chart-box">
+  <h3 className="app-chart-title">Consultation Type Overview</h3>
+  <p className="app-chart-description">
     Breakdown of appointments by consultation type.
   </p>
-  <div className="chart-scroll">
+  <div className="app-chart-scroll">
     <BarChart width={1400} height={450} data={appointmentsByConsultationType}>
       <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
       <XAxis dataKey="name" angle={-20} textAnchor="end" interval={0} height={120} tick={{ fontSize: 12 }} />

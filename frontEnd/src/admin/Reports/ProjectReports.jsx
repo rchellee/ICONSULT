@@ -171,121 +171,101 @@ const ProjectReports = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Project Reports</h2>
-      <div className="mt-4 flex space-x-4">
-        <CSVLink
-          data={projects}
-          filename="project-report.csv"
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Export CSV
-        </CSVLink>
-        <button
-          onClick={exportPDF}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Export PDF
-        </button>
-      </div>
-      <input
-        type="date"
-        className="border p-2"
-        value={filters.startDate}
-        onChange={(e) =>
-          setFilters((prev) => ({ ...prev, startDate: e.target.value }))
-        }
-      />
-      <input
-        type="date"
-        className="border p-2"
-        value={filters.endDate}
-        onChange={(e) =>
-          setFilters((prev) => ({ ...prev, endDate: e.target.value }))
-        }
-      />
+   {/* Export Buttons */}
+   <div className="export-buttons">
+    <CSVLink
+      data={projects}
+      filename="project-report.csv"
+      className="bg-green-500 text-white px-4 py-2 rounded"
+    >
+      Export CSV
+    </CSVLink>
+    <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">
+      Export PDF
+    </button>
+  </div>
 
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        <div className="bg-white p-4 shadow rounded-lg">
-          <h3 className="text-lg font-semibold">Total Projects</h3>
-          <p className="text-xl font-bold">{totalProjects}</p>
-        </div>
-      </div>
+        {/* Filters */}
+  <div className="project-filter-container">
+    <input
+      type="date"
+      className="project-filter-input"
+      value={filters.startDate}
+      onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+    />
+    <input
+      type="date"
+      className="project-filter-input"
+      value={filters.endDate}
+      onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+    />
+  </div>
 
-      <div id="projects-status" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Projects by Status</h3>
-        <BarChart width={1000} height={500} data={projectStatusCounts}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#8884d8" />
-        </BarChart>
-      </div>
-
-      <div
-        id="delayed-projects-chart"
-        className="bg-white p-4 shadow rounded-lg mt-4"
-      >
-        <h3 className="text-lg font-semibold">Overdue Projects</h3>
-        <BarChart width={600} height={300} data={delayedProjects}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="daysDelayed" fill="#FF0000" name="Days Delayed" />
-        </BarChart>
-      </div>
-
-      <div id="projects-client" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Projects per Client</h3>
-        <PieChart width={1000} height={500}>
-          <Pie
-            data={projectsByClient}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={250}
-          >
-            {projectsByClient.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={["#8884d8", "#82ca9d"][index % 2]}
-              />
-            ))}
-          </Pie>
-          <Tooltip />
-        </PieChart>
-      </div>
-
-      <div
-        id="payment-due-chart"
-        className="bg-white p-4 shadow rounded-lg mt-4"
-      >
-        <h3 className="text-lg font-semibold">Payment Due Status</h3>
-        <LineChart width={1500} height={400} data={paymentDueProjects}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" angle={-15} textAnchor="end" />
-          <YAxis type="category" dataKey="status" />
-          <Tooltip
-            formatter={(value, name, props) => [
-              `${value}`,
-              `Due Date: ${props.payload.endDate}`,
-            ]}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="status"
-            stroke="#FF0000"
-            name="Status"
-            dot={{ r: 0 }}
-          />
-        </LineChart>
-      </div>
+  {/* Summary Section */}
+  <div className="summary-container">
+    <div className="summary-box">
+      <h3 className="summary-title">Total Projects</h3>
+      <p className="summary-value">{totalProjects}</p>
     </div>
+  </div>
+
+  <div className="project-charts-container">
+  {/* Projects by Status */}
+  <div className="project-chart-box">
+    <h3 className="project-chart-title">Projects by Status</h3>
+    <BarChart width={500} height={300} data={projectStatusCounts}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="value" fill="#8884d8" />
+    </BarChart>
+  </div>
+
+  {/* Overdue Projects */}
+  <div className="project-chart-box">
+    <h3 className="project-chart-title">Overdue Projects</h3>
+    <BarChart width={500} height={300} data={delayedProjects}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="daysDelayed" fill="#FF0000" name="Days Delayed" />
+    </BarChart>
+  </div>
+
+  <div className="chart-row">
+    {/* Projects per Client (Smaller) */}
+    <div className="project-chart-box small-chart">
+      <h3 className="project-chart-title">Projects per Client</h3>
+      <PieChart width={400} height={300}>
+        <Pie data={projectsByClient} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
+          {projectsByClient.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={["#8884d8", "#82ca9d"][index % 2]} />
+          ))}
+        </Pie>
+        <Tooltip />
+      </PieChart>
+    </div>
+
+    {/* Payment Due Status (Bigger) */}
+    <div className="project-chart-box large-chart">
+      <h3 className="project-chart-title">Payment Due Status</h3>
+      <LineChart width={900} height={300} data={paymentDueProjects}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" angle={-15} textAnchor="end" />
+        <YAxis type="category" dataKey="status" />
+        <Tooltip formatter={(value, name, props) => [`${value}`, `Due Date: ${props.payload.endDate}`]} />
+        <Legend />
+        <Line type="monotone" dataKey="status" stroke="#FF0000" name="Status" dot={{ r: 0 }} />
+      </LineChart>
+    </div>
+  </div>
+</div>
+</div>
+
   );
 };
 
