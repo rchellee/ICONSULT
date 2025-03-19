@@ -655,8 +655,7 @@ select:focus {
 /******************* Month and year sorting ******************/
 .employee-filters-section {
   display: flex;
-  justify-content: flex-end; /* Aligns buttons to the right */
-  gap: 10px;
+  justify-content: flex-end; 
   margin-bottom: 15px;
 }
 

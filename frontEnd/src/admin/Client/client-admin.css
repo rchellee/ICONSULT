@@ -561,9 +561,8 @@ button:hover {
 /******************* Month and year sorting ******************/
 .client-filters-section {
   display: flex;
-  justify-content: flex-end; /* Aligns buttons to the right */
-  gap: 10px;
-  margin-bottom: 15px;
+  justify-content: flex-end; 
+  margin-bottom: 10px;
 }
 
 .client-filters-section select {
