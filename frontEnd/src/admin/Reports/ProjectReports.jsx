@@ -26,16 +26,15 @@ const ProjectReports = () => {
     startDate: "",
     endDate: "",
     clientId: "",
-    year: "2025",
+    year: "2025", // Default to 2025 when toggled to month
   });
-  const [selectedReport, setSelectedReport] = useState("");
-  const [exportOption, setExportOption] = useState("");
+
   const [viewMode, setViewMode] = useState("month");
 
   useEffect(() => {
     fetchClients();
     fetchProjects(); // Fetch projects without year affecting all data
-  }, [filters.startDate, filters.endDate, filters.clientId]);
+  }, [filters.startDate, filters.endDate, filters.clientId]); // Removed filters.year
 
   useEffect(() => {
     console.log("Clients:", clients);
@@ -71,29 +70,16 @@ const ProjectReports = () => {
     }
   };
 
-  const exportPDF = async () => {
-    const doc = new jsPDF("p", "mm", "a4");
-    const sections = {
-      "Total Projects": "summary-container",
-      "Projects by Status": "projects-status",
-      "Overdue Projects": "overdue-projects",
-      "Projects per Client": "projects-client",
-      "Payment Due Status": "payment-status",
-    };
-
-    const sectionId = sections[selectedReport];
-    if (!sectionId) return;
-    const section = document.getElementById(sectionId);
-
-    try {
-      const canvas = await html2canvas(section, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      doc.text(selectedReport, 10, 10);
-      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
-      doc.save("project-report.pdf");
-    } catch (error) {
-      console.error(`Error capturing ${sectionId}:`, error);
-    }
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Project Report", 20, 10);
+    html2canvas(document.getElementById("project-summary"), { scale: 2 }).then(
+      (canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 10, 30, 180, 0);
+        doc.save("project-report.pdf");
+      }
+    );
   };
 
   const filteredProjects = projects.filter((p) => {
@@ -164,166 +150,108 @@ const ProjectReports = () => {
     .map((p) => {
       const category = categorizePaymentStatus(p);
       return category
-        ? {
-            name: p.projectName,
-            status: category,
-            endDate: formatDate(p.endDate),
-          }
+        ? { name: p.projectName, status: category, endDate: formatDate(p.endDate) }
         : null;
     })
     .filter(Boolean);
 
-  const handleExport = () => {
-    if (exportOption === "Total Projects") {
-      exportPDF();
-    } else if (exportOption === "Projects by Status") {
-      exportPDF();
-    } else if (exportOption === "Overdue Projects") {
-      exportPDF();
-    } else if (exportOption === "Projects per Client") {
-      exportPDF();
-    } else if (exportOption === "Payment Due Status") {
-      exportPDF();
-    }
-  };
-
   return (
     <div className="project-p-4">
-      <div className="export-dropdown">
-        <select
-          className="export-select"
-          value={selectedReport}
-          onChange={(e) => setSelectedReport(e.target.value)}
-        >
-          <option value="">Select Report Type</option>
-          <option value="Total Projects">Total Projects</option>
-          <option value="Projects by Status">Projects by Status</option>
-          <option value="Overdue Projects">Overdue Projects</option>
-          <option value="Projects per Client">Projects per Client</option>
-          <option value="Payment Due Status">Payment Due Status</option>
-        </select>
+   {/* Export Buttons */}
+   <div className="export-buttons">
+    <CSVLink
+      data={projects}
+      filename="project-report.csv"
+      className="bg-green-500 text-white px-4 py-2 rounded"
+    >
+      Export CSV
+    </CSVLink>
+    <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">
+      Export PDF
+    </button>
+  </div>
 
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={projects}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="export-button"
-            >
-              Export CSV
-            </CSVLink>
-            <button onClick={exportPDF} className="export-button">
-              Export PDF
-            </button>
-          </>
-        )}
-      </div>
+        {/* Filters */}
+  <div className="project-filter-container">
+    <input
+      type="date"
+      className="project-filter-input"
+      value={filters.startDate}
+      onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+    />
+    <input
+      type="date"
+      className="project-filter-input"
+      value={filters.endDate}
+      onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+    />
+  </div>
 
-      {/* Filters */}
-      <div className="project-filter-container">
-        <input
-          type="date"
-          className="project-filter-input"
-          value={filters.startDate}
-          onChange={(e) =>
-            setFilters({ ...filters, startDate: e.target.value })
-          }
-        />
-        <input
-          type="date"
-          className="project-filter-input"
-          value={filters.endDate}
-          onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-        />
-      </div>
-
-      {/* Summary Section */}
-      <div className="summary-container">
-        <div className="summary-box">
-          <h3 className="summary-title">Total Projects</h3>
-          <p className="summary-value">{totalProjects}</p>
-        </div>
-      </div>
-
-      <div className="project-charts-container">
-        {/* Projects by Status */}
-        <div className="project-chart-box">
-          <h3 className="project-chart-title">Projects by Status</h3>
-          <BarChart width={500} height={300} data={projectStatusCounts}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#8884d8" />
-          </BarChart>
-        </div>
-
-        {/* Overdue Projects */}
-        <div className="project-chart-box">
-          <h3 className="project-chart-title">Overdue Projects</h3>
-          <BarChart width={500} height={300} data={delayedProjects}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="daysDelayed" fill="#FF0000" name="Days Delayed" />
-          </BarChart>
-        </div>
-
-        <div className="chart-row">
-          {/* Projects per Client (Smaller) */}
-          <div className="project-chart-box small-chart">
-            <h3 className="project-chart-title">Projects per Client</h3>
-            <PieChart width={400} height={300}>
-              <Pie
-                data={projectsByClient}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-              >
-                {projectsByClient.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={["#8884d8", "#82ca9d"][index % 2]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </div>
-
-          {/* Payment Due Status (Bigger) */}
-          <div className="project-chart-box large-chart">
-            <h3 className="project-chart-title">Payment Due Status</h3>
-            <LineChart width={900} height={300} data={paymentDueProjects}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" angle={-15} textAnchor="end" />
-              <YAxis type="category" dataKey="status" />
-              <Tooltip
-                formatter={(value, name, props) => [
-                  `${value}`,
-                  `Due Date: ${props.payload.endDate}`,
-                ]}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="status"
-                stroke="#FF0000"
-                name="Status"
-                dot={{ r: 0 }}
-              />
-            </LineChart>
-          </div>
-        </div>
-      </div>
+  {/* Summary Section */}
+  <div className="summary-container">
+    <div className="summary-box">
+      <h3 className="summary-title">Total Projects</h3>
+      <p className="summary-value">{totalProjects}</p>
     </div>
+  </div>
+
+  <div className="project-charts-container">
+  {/* Projects by Status */}
+  <div className="project-chart-box">
+    <h3 className="project-chart-title">Projects by Status</h3>
+    <BarChart width={500} height={300} data={projectStatusCounts}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="value" fill="#8884d8" />
+    </BarChart>
+  </div>
+
+  {/* Overdue Projects */}
+  <div className="project-chart-box">
+    <h3 className="project-chart-title">Overdue Projects</h3>
+    <BarChart width={500} height={300} data={delayedProjects}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="daysDelayed" fill="#FF0000" name="Days Delayed" />
+    </BarChart>
+  </div>
+
+  <div className="chart-row">
+    {/* Projects per Client (Smaller) */}
+    <div className="project-chart-box small-chart">
+      <h3 className="project-chart-title">Projects per Client</h3>
+      <PieChart width={400} height={300}>
+        <Pie data={projectsByClient} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
+          {projectsByClient.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={["#8884d8", "#82ca9d"][index % 2]} />
+          ))}
+        </Pie>
+        <Tooltip />
+      </PieChart>
+    </div>
+
+    {/* Payment Due Status (Bigger) */}
+    <div className="project-chart-box large-chart">
+      <h3 className="project-chart-title">Payment Due Status</h3>
+      <LineChart width={900} height={300} data={paymentDueProjects}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" angle={-15} textAnchor="end" />
+        <YAxis type="category" dataKey="status" />
+        <Tooltip formatter={(value, name, props) => [`${value}`, `Due Date: ${props.payload.endDate}`]} />
+        <Legend />
+        <Line type="monotone" dataKey="status" stroke="#FF0000" name="Status" dot={{ r: 0 }} />
+      </LineChart>
+    </div>
+  </div>
+</div>
+</div>
+
   );
 };
 

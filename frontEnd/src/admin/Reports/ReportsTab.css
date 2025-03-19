@@ -43,22 +43,36 @@ select:focus {
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-/*------------------------- Filter Container with Grid ------------------*/
+/* Filter Container with Grid */
 .filter-container {
-  display: flex;
-  justify-content: flex-end; 
-  gap: 8px; 
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Auto-adjusting columns */
+  gap: 16px; /* Space between elements */
   padding: 16px;
+  align-items: center;
 }
 
+/* Input and Select Styling */
+.filter-input,
 .filter-select {
-  width: auto; 
+  width: 100%;
   padding: 10px;
+  border: 1px solid #ccc;
   font-size: 14px;
-  font-weight: bold; 
-  text-align-last: center; 
-  direction: rtl; 
-  background-color: #f4f4f9;
+  transition: border-color 0.3s ease-in-out;
+}
+
+/* Hover and Focus Effects */
+.filter-input:hover,
+.filter-select:hover {
+  border-color: #007bff;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.3);
 }
 
 /* Responsive Design */

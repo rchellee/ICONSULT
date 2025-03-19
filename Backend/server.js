@@ -2392,24 +2392,6 @@ app.get("/appointmentReports", (req, res) => {
     return res.json(data);
   });
 });
-app.get("/appointmentYears", (req, res) => {
-  const sql = `
-    SELECT DISTINCT YEAR(STR_TO_DATE(date, '%Y-%m-%d')) AS year
-    FROM appointments
-    ORDER BY year ASC
-  `;
-
-  db.query(sql, (err, data) => {
-    if (err) {
-      console.error("Error fetching appointment years:", err);
-      return res
-        .status(500)
-        .json({ message: "Failed to fetch years", error: err });
-    }
-    return res.json(data.map((row) => row.year));
-  });
-});
-
 //clients
 app.get("/clientsReports", (req, res) => {
   const sql = `

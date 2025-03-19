@@ -20,7 +20,6 @@ import {
 const EmployeeReports = () => {
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [selectedReport, setSelectedReport] = useState("");
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -54,27 +53,16 @@ const EmployeeReports = () => {
     fetchTasks();
   }, []);
 
-  const exportPDF = async () => {
-    const doc = new jsPDF("p", "mm", "a4");
-    const sections = {
-      "Tasks Assigned to Each Employee": "tasks-assigned-section",
-      "Tasks completed vs. pending per employee": "tasks-status-section",
-      "Employee workload distribution": "workload-section",
-    };
-
-    const sectionId = sections[selectedReport];
-    if (!sectionId) return;
-    const section = document.getElementById(sectionId);
-
-    try {
-      const canvas = await html2canvas(section, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      doc.text(selectedReport, 10, 10);
-      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
-      doc.save("employee-report.pdf");
-    } catch (error) {
-      console.error(`Error capturing ${sectionId}:`, error);
-    }
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Employee Report", 20, 10);
+    html2canvas(document.getElementById("report-section"), { scale: 2 }).then(
+      (canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 10, 20, 180, 0);
+        doc.save("employee-report.pdf");
+      }
+    );
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -137,44 +125,20 @@ const EmployeeReports = () => {
       </div>
 
       <div className="mt-4 flex space-x-4">
-        <select
-          className="bg-gray-200 text-black px-4 py-2 rounded"
-          value={selectedReport}
-          onChange={(e) => setSelectedReport(e.target.value)}
+        <CSVLink
+          data={employees}
+          filename="employee-report.csv"
+          className="bg-green-500 text-white px-4 py-2 rounded"
         >
-          <option value="">Select Report Type</option>
-          <option value="Tasks Assigned to Each Employee">
-            Tasks Assigned to Each Employee
-          </option>
-          <option value="Tasks completed vs. pending per employee">
-            Tasks completed vs. pending per employee
-          </option>
-          <option value="Employee workload distribution">
-            Employee workload distribution
-          </option>
-        </select>
-
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={employees}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export CSV
-            </CSVLink>
-            <button
-              onClick={exportPDF}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Export PDF
-            </button>
-          </>
-        )}
+          Export CSV
+        </CSVLink>
+        <button
+          onClick={exportPDF}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Export PDF
+        </button>
       </div>
-
       <div className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold">
           Total Employees: {employees.length}
