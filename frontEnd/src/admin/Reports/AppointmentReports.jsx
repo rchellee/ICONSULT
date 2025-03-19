@@ -3,7 +3,7 @@ import axios from "axios";
 import { CSVLink } from "react-csv";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import {
   BarChart,
   Bar,
@@ -92,32 +92,6 @@ const AppointmentReports = () => {
     "December",
   ];
 
-  const exportPDF = async () => {
-    const doc = new jsPDF("p", "mm", "a4");
-    let currentPage = 1;
-    const sections = {
-      "Total Appointments": "summary-section",
-      "Appointments This Month": "summary-section",
-      "Appointments per Client": "appointments-client",
-      "Appointments by Platform": "appointments-platform",
-      "Consultation Type Overview": "appointments-consultation",
-    };
-
-    const sectionId = sections[selectedReport];
-    if (!sectionId) return;
-    const section = document.getElementById(sectionId);
-
-    try {
-      const canvas = await html2canvas(section, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      doc.text(selectedReport, 10, 10);
-      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
-      doc.save("appointment-report.pdf");
-    } catch (error) {
-      console.error(`Error capturing ${sectionId}:`, error);
-    }
-  };
-
   const filteredAppointments = appointments.filter((a) => {
     const appointmentDate = new Date(a.date);
     const appointmentYear = appointmentDate.getFullYear().toString();
@@ -178,6 +152,124 @@ const AppointmentReports = () => {
       .length,
   }));
 
+  const groupAppointmentsByClient = () => {
+    return clients.map((client) => ({
+      id: client.id,
+      name: `${client.firstName} ${client.lastName}`,
+      appointments: appointments
+        .filter((a) => a.client_id === client.id)
+        .map((a) => `${a.date} - ${a.consultationType}`),
+    }));
+  };
+
+  const groupAppointmentsByPlatform = () => {
+    return [
+      "In-Person",
+      "Zoom",
+      "Google Meet",
+      "Phone Call",
+      "Microsoft Teams",
+    ].map((platform) => ({
+      platform,
+      appointments: appointments
+        .filter((a) => a.platform === platform)
+        .map((a) => `${a.date} - ${a.client_id}`),
+    }));
+  };
+
+  const groupAppointmentsByConsultationType = () => {
+    return [
+      "Strategic Planning Consultation",
+      "Corporate Governance Review",
+      "Business Process Improvement",
+      "Risk Management Consultation",
+      "Organizational Development Advisory",
+      "Financial Advisory",
+      "Accounting Consultation",
+      "Legal Advisory",
+      "Tax Advisory",
+      "Payroll System Setup Consultation",
+      "Employee Benefits and Compliance Advisory",
+      "Startup Planning",
+      "Business Structuring and Licensing Advisory",
+      "Business Name Registration",
+      "SEC/DTI/Mayor’s Permit Assistance",
+      "Compliance Consultation",
+      "Follow up",
+      "Others",
+    ].map((type) => ({
+      consultationType: type,
+      appointments: appointments
+        .filter((a) => a.consultationType === type)
+        .map((a) => `${a.date} - ${a.client_id}`),
+    }));
+  };
+
+  const exportPDF = async () => {
+    const doc = new jsPDF("landscape", "mm", "a4");
+
+    doc.setFontSize(11);
+    doc.text(selectedReport, 10, 10);
+
+    let yPos = 20;
+
+    // Table headers
+    const headers = [
+      [
+        "Client Name",
+        "Date",
+        "Time",
+        "Email",
+        "Contact",
+        "Platform",
+        "Consultation Type",
+        "Date Created",
+      ],
+    ];
+    const data = filteredAppointments.map((a) => [
+      `${a.name}`,
+      a.date,
+      a.time,
+      a.email,
+      a.contact,
+      a.platform,
+      a.consultationType,
+      a.created_at,
+    ]);
+
+    // Ensure autoTable function is used correctly
+    autoTable(doc, {
+      startY: yPos,
+      head: headers,
+      body: data,
+      styles: { fontSize: 10 },
+    });
+
+    // Save the PDF
+    doc.save("appointment-report.pdf");
+  };
+  // const exportCSVData =
+  //   selectedReport === "Appointments This Month"
+  //     ? appointments.filter(
+  //         (a) =>
+  //           new Date(a.date).getMonth() === new Date().getMonth() &&
+  //           new Date(a.date).getFullYear() === new Date().getFullYear()
+  //       )
+  //     : appointments;
+
+  const getExportCSVData = () => {
+    switch (selectedReport) {
+      case "Appointments per Client":
+        return groupAppointmentsByClient();
+      case "Appointments by Platform":
+        return groupAppointmentsByPlatform();
+      case "Consultation Type Overview":
+        return groupAppointmentsByConsultationType();
+      default:
+        return appointments;
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="filter-container">
@@ -232,7 +324,7 @@ const AppointmentReports = () => {
         {selectedReport && (
           <>
             <CSVLink
-              data={appointments}
+              data={getExportCSVData()}
               filename={`${selectedReport
                 .replace(/\s+/g, "_")
                 .toLowerCase()}.csv`}
