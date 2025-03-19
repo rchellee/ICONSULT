@@ -21,18 +21,22 @@ import "./ReportsTab.css";
 const AppointmentReports = () => {
   const [appointments, setAppointments] = useState([]);
   const [clients, setClients] = useState([]);
+  const [years, setYears] = useState([]);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
     clientId: "",
     consultationType: "",
     platform: "",
+    year: "All",
+    month: "All",
   });
   const [selectedReport, setSelectedReport] = useState("");
 
   useEffect(() => {
     fetchClients();
     fetchAppointments();
+    fetchYears();
   }, [filters]);
 
   const fetchClients = async () => {
@@ -62,6 +66,32 @@ const AppointmentReports = () => {
     }
   };
 
+  const fetchYears = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/appointmentYears"
+      );
+      setYears(response.data);
+    } catch (error) {
+      console.error("Error fetching years", error);
+    }
+  };
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   const exportPDF = async () => {
     const doc = new jsPDF("p", "mm", "a4");
     let currentPage = 1;
@@ -88,9 +118,16 @@ const AppointmentReports = () => {
     }
   };
 
-  const filteredAppointments = filters.clientId
-    ? appointments.filter((a) => a.client_id == filters.clientId)
-    : appointments;
+  const filteredAppointments = appointments.filter((a) => {
+    const appointmentDate = new Date(a.date);
+    const appointmentYear = appointmentDate.getFullYear().toString();
+    const appointmentMonth = months[appointmentDate.getMonth()];
+
+    return (
+      (filters.year === "All" || filters.year === appointmentYear) &&
+      (filters.month === "All" || filters.month === appointmentMonth)
+    );
+  });
 
   const totalAppointments = filteredAppointments.length;
 
@@ -144,27 +181,28 @@ const AppointmentReports = () => {
   return (
     <div className="p-4">
       <div className="filter-container">
-        <input
-          type="date"
-          className="filter-input"
-          onChange={(e) =>
-            setFilters({ ...filters, startDate: e.target.value })
-          }
-        />
-        <input
-          type="date"
-          className="filter-input"
-          onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-        />
         <select
           className="filter-select"
-          value={filters.clientId}
-          onChange={(e) => setFilters({ ...filters, clientId: e.target.value })}
+          value={filters.year}
+          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
         >
-          <option value="">All Clients</option>
-          {clients.map((client) => (
-            <option key={client.id} value={client.id}>
-              {client.firstName} {client.lastName}
+          <option value="All">All Years</option>
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="filter-select"
+          value={filters.month}
+          onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+        >
+          <option value="All">All Months</option>
+          {months.map((month) => (
+            <option key={month} value={month}>
+              {month}
             </option>
           ))}
         </select>
@@ -211,7 +249,6 @@ const AppointmentReports = () => {
           </>
         )}
       </div>
-
       <div id="summary-section">
         <div className="summary-box">
           <h2 className="summary-title">Total Appointments</h2>
