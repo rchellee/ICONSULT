@@ -257,48 +257,38 @@ const AppointmentReports = () => {
   //       )
   //     : appointments;
 
-  const getExportCSVData = () => {
-    switch (selectedReport) {
-      case "Appointments per Client":
-        return groupAppointmentsByClient();
-      case "Appointments by Platform":
-        return groupAppointmentsByPlatform();
-      case "Consultation Type Overview":
-        return groupAppointmentsByConsultationType();
-      default:
-        return appointments;
-    }
-  };
+  
 
   return (
     <div className="p-4">
-      <div className="filter-container">
-        <select
-          className="filter-select"
-          value={filters.year}
-          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-        >
-          <option value="All">All Years</option>
-          {years.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+<div className="filter-container">
+  <select
+    className="filter-select"
+    value={filters.year}
+    onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+  >
+    <option value="All">All Years</option>
+    {years.map((year) => (
+      <option key={year} value={year}>
+        {year}
+      </option>
+    ))}
+  </select>
 
-        <select
-          className="filter-select"
-          value={filters.month}
-          onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-        >
-          <option value="All">All Months</option>
-          {months.map((month) => (
-            <option key={month} value={month}>
-              {month}
-            </option>
-          ))}
-        </select>
-      </div>
+  <select
+    className="filter-select"
+    value={filters.month}
+    onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+  >
+    <option value="All">All Months</option>
+    {months.map((month) => (
+      <option key={month} value={month}>
+        {month}
+      </option>
+    ))}
+  </select>
+</div>
+
       <div className="mt-4 flex space-x-4">
         <select
           className="bg-gray-200 text-black px-4 py-2 rounded"
@@ -324,7 +314,7 @@ const AppointmentReports = () => {
         {selectedReport && (
           <>
             <CSVLink
-              data={getExportCSVData()}
+              data={exportCSVData}
               filename={`${selectedReport
                 .replace(/\s+/g, "_")
                 .toLowerCase()}.csv`}
