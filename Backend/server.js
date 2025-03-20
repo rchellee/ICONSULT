@@ -2393,11 +2393,8 @@ app.get("/appointmentReports", (req, res) => {
   });
 });
 app.get("/appointmentYears", (req, res) => {
-  const sql = `
-    SELECT DISTINCT YEAR(STR_TO_DATE(date, '%Y-%m-%d')) AS year
-    FROM appointments
-    ORDER BY year ASC
-  `;
+  const sql =
+    "SELECT DISTINCT YEAR(STR_TO_DATE(date, '%Y-%m-%d')) AS year FROM appointments ORDER BY year DESC";
 
   db.query(sql, (err, data) => {
     if (err) {
@@ -2406,7 +2403,7 @@ app.get("/appointmentYears", (req, res) => {
         .status(500)
         .json({ message: "Failed to fetch years", error: err });
     }
-    return res.json(data.map((row) => row.year));
+    res.json(data.map((row) => row.year)); // Send an array of years
   });
 });
 
