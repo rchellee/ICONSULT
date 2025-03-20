@@ -18,21 +18,14 @@ import {
 import "./ReportsTab.css";
 
 const ReviewReports = () => {
-  const [revenues, setRevenues] = useState([]);
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    clientId: "",
-    projectId: "",
-  });
+  const [selectedReport, setSelectedReport] = useState("");
 
   useEffect(() => {
     fetchClients();
     fetchProjects();
-    fetchRevenues();
-  }, [filters]);
+  }, []);
 
   const fetchClients = async () => {
     try {
@@ -52,82 +45,109 @@ const ReviewReports = () => {
     }
   };
 
-  const fetchRevenues = async () => {
-    try {
-      const response = await axios.get("http://localhost:8081/revenueReports", {
-        params: filters,
-      });
-      setRevenues(response.data);
-    } catch (error) {
-      console.error("Error fetching revenue data", error);
-    }
-  };
-
   const exportPDF = () => {
     const doc = new jsPDF();
-    doc.text("Revenue Report", 10, 10);
-    html2canvas(document.getElementById("revenue-chart")).then((canvas) => {
+    doc.text("Review Reports", 10, 10);
+    html2canvas(document.getElementById("review-chart")).then((canvas) => {
       doc.addImage(canvas.toDataURL("image/png"), "PNG", 10, 20, 180, 100);
-      doc.save("revenue-report.pdf");
+      doc.save("review-report.pdf");
     });
   };
 
-  const totalRevenue = revenues.reduce((sum, r) => sum + r.amount, 0);
-  const revenueByClient = clients.map((client) => ({
-    name: `${client.firstName} ${client.lastName}`,
-    value: revenues.filter((r) => r.clientId === client.id).reduce((sum, r) => sum + r.amount, 0),
-  }));
-  
-  const revenueByProject = projects.map((project) => ({
-    name: project.name,
-    value: revenues.filter((r) => r.projectId === project.id).reduce((sum, r) => sum + r.amount, 0),
-  }));
+  // Mock Data for Average Client Rating (Example for a long list)
+  const averageClientRatings = [
+    { name: "Project A", rating: 4.2 },
+    { name: "Project B", rating: 3.8 },
+    { name: "Project C", rating: 4.5 },
+    { name: "Project D", rating: 3.9 },
+    { name: "Project E", rating: 4.7 },
+    { name: "Project F", rating: 3.5 },
+    { name: "Project G", rating: 4.6 },
+    { name: "Project H", rating: 3.2 },
+    { name: "Project I", rating: 4.9 },
+    { name: "Project J", rating: 4.1 },
+    { name: "Project K", rating: 3.8 },
+    { name: "Project L", rating: 4.0 },
+  ];
+
+  // Mock Data for Number of Reviews per Project (Example for a long list)
+  const reviewsPerProject = [
+    { name: "Project A", reviews: 120 },
+    { name: "Project B", reviews: 95 },
+    { name: "Project C", reviews: 150 },
+    { name: "Project D", reviews: 80 },
+    { name: "Project E", reviews: 110 },
+    { name: "Project F", reviews: 140 },
+    { name: "Project G", reviews: 125 },
+    { name: "Project H", reviews: 85 },
+    { name: "Project I", reviews: 130 },
+    { name: "Project J", reviews: 90 },
+    { name: "Project K", reviews: 100 },
+    { name: "Project L", reviews: 105 },
+  ];
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Revenue Reports</h2>
-      <div className="flex space-x-4 mb-4">
-        <input type="date" className="border p-2" onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
-        <input type="date" className="border p-2" onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
-        <select className="border p-2" onChange={(e) => setFilters({ ...filters, clientId: e.target.value })}>
-          <option value="">All Clients</option>
-          {clients.map((client) => <option key={client.id} value={client.id}>{client.firstName} {client.lastName}</option>)}
+    <div className="review-p-4">
+      {/* Select Report Type */}
+      <div className="review-filter-buttons">
+        <select
+          className="bg-gray-200 text-black px-4 py-2 rounded"
+          value={selectedReport}
+          onChange={(e) => setSelectedReport(e.target.value)}
+        >
+          <option value="">Select Report Type</option>
+          <option value="Average Client Rating">Average Client Rating</option>
+          <option value="Number of Reviews per Project">Number of Reviews per Project</option>
         </select>
-        <select className="border p-2" onChange={(e) => setFilters({ ...filters, projectId: e.target.value })}>
-          <option value="">All Projects</option>
-          {projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}
-        </select>
+
+        {selectedReport && (
+          <div className="export-buttons">
+            <CSVLink
+              data={selectedReport === "Average Client Rating" ? averageClientRatings : reviewsPerProject}
+              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.csv`}
+              className="csv-button"
+            >
+              Export CSV
+            </CSVLink>
+
+            <button onClick={exportPDF} className="pdf-button">
+              Export PDF
+            </button>
+          </div>
+        )}
       </div>
 
-      <div id="revenue-summary" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Total Revenue: ${totalRevenue.toFixed(2)}</h3>
-      </div>
+      {/* Reports Grid */}
+      <div className="review-grid">
+        {/* Average Client Rating (Scrollable) */}
+        <div className="chart-container">
+          <h3>Average Client Rating</h3>
+          <div className="scrollable-chart">
+            <BarChart width={1000} height={300} data={averageClientRatings}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="rating" fill="#8884d8" />
+            </BarChart>
+          </div>
+        </div>
 
-      <div id="revenue-chart" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Revenue by Client</h3>
-        <PieChart width={800} height={400}>
-          <Pie data={revenueByClient} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={150}>
-            {revenueByClient.map((entry, index) => <Cell key={`cell-${index}`} fill={["#8884d8", "#82ca9d"][index % 2]} />)}
-          </Pie>
-          <Tooltip />
-        </PieChart>
-      </div>
-
-      <div id="revenue-project-chart" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Revenue by Project</h3>
-        <BarChart width={800} height={400} data={revenueByProject}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#82ca9d" />
-        </BarChart>
-      </div>
-
-      <div className="mt-4 flex space-x-4">
-        <CSVLink data={revenues} filename="revenue-report.csv" className="bg-green-500 text-white px-4 py-2 rounded">Export CSV</CSVLink>
-        <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">Export PDF</button>
+        {/* Number of Reviews per Project (Scrollable) */}
+        <div className="chart-container">
+          <h3>Number of Reviews per Project</h3>
+          <div className="scrollable-chart">
+            <BarChart width={1000} height={300} data={reviewsPerProject}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="reviews" fill="#82ca9d" />
+            </BarChart>
+          </div>
+        </div>
       </div>
     </div>
   );
