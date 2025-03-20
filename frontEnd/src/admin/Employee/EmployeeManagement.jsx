@@ -139,13 +139,13 @@ const EmployeeManagement = () => {
                 </button>
               <div className="employee-filters-section">
             <select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
-              <option value="">All Months</option>
+              <option value="">Months</option>
               {months.map((month, index) => (
                 <option key={index} value={month}>{month}</option>
               ))}
             </select>
             <select onChange={(e) => setSelectedYear(e.target.value)} value={selectedYear}>
-              <option value="">All Years</option>
+              <option value="">Year</option>
               {years.map((year, index) => (
                 <option key={index} value={year}>{year}</option>
               ))}

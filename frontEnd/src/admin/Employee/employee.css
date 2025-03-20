@@ -656,7 +656,7 @@ select:focus {
 .employee-filters-section {
   display: flex;
   justify-content: flex-end; 
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .employee-filters-section select {

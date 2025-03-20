@@ -166,7 +166,7 @@ const AppointmentReports = () => {
     return [
       "In-Person",
       "Zoom",
-      "Google Meet",
+      "Google Meet",  
       "Phone Call",
       "Microsoft Teams",
     ].map((platform) => ({
@@ -265,7 +265,7 @@ const AppointmentReports = () => {
           value={filters.year}
           onChange={(e) => setFilters({ ...filters, year: e.target.value })}
         >
-          <option value="All">All Years</option>
+          <option value="All">Year</option>
           {years.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -278,7 +278,7 @@ const AppointmentReports = () => {
           value={filters.month}
           onChange={(e) => setFilters({ ...filters, month: e.target.value })}
         >
-          <option value="All">All Months</option>
+          <option value="All">Month</option>
           {months.map((month) => (
             <option key={month} value={month}>
               {month}
