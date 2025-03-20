@@ -13,7 +13,6 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   const [transactionId, setTransactionId] = useState("");
   const [modeOfPayment, setModeOfPayment] = useState("");
 
-  // Pre-fill form fields if editing
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
@@ -34,6 +33,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
     }
   };
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -47,15 +47,15 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
       ],
       transactionId,
       modeOfPayment,
-      datePaid: taskToEdit ? taskToEdit.datePaid : "", // Preserve datePaid if editing
-      status: taskToEdit ? taskToEdit.status : "", // Preserve status if editing
-      index: taskToEdit ? taskToEdit.index : null, // Include index if editing
+      datePaid: taskToEdit ? taskToEdit.datePaid : "",
+      status: taskToEdit ? taskToEdit.status : "", 
+      index: taskToEdit ? taskToEdit.index : null, 
     };
 
     if (taskToEdit) {
-      onUpdate(newTask); // Call onUpdate if editing
+      onUpdate(newTask); 
     } else {
-      onCreate(newTask); // Call onCreate if creating a new task
+      onCreate(newTask); 
     }
     onClose();
   };
@@ -112,6 +112,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                   placeholder="Enter"
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
+                  required
                 />
               </div>
               <div className="form-modal-field mop">
@@ -119,6 +120,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 <select
                   value={modeOfPayment}
                   onChange={(e) => setModeOfPayment(e.target.value)}
+                  required
                 >
                   <option value="">Select Mode of Payment</option>
                   <option value="Cash">Cash</option>
@@ -145,6 +147,13 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                   style={{ width: "260px" }}
                 />
               </div>
+              <button
+                type="button"
+                className="add-taskfee-btn"
+                
+              >
+                <MdAddCircleOutline />
+              </button>
             </div>
 
             {/* Miscellaneous Items */}

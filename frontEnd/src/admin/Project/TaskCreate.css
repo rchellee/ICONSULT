@@ -82,6 +82,66 @@
   background: none;
 }
 
+.add-taskfee-button {
+  background: none;
+  color: #5d6d90;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none; 
+}
+
+.add-taskfee-button:hover {
+ 
+  color: #2c3a4d;
+  outline: none; 
+  background: none; 
+}
+
+.add-taskfee-button:focus {
+  outline: none;
+}
+
+.add-taskfee-button svg {
+  margin-top: -10px; 
+}
+
+.add-taskfee-btn {
+  background: none;
+  color: #5d6d90;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none; 
+}
+
+.add-taskfee-btn:hover {
+ 
+  color: #2c3a4d;
+  outline: none; 
+  background: none; 
+}
+
+.add-taskfee-btn:focus {
+  outline: none;
+}
+
+.add-taskfee-btn svg {
+  margin-top: -10px; 
+}
+
+/*misc button*/
+
 .add-misc-button {
   background: none;
   color: #5d6d90;
@@ -110,6 +170,8 @@
 .add-misc-button svg {
   margin-top: -10px; 
 }
+
+
 
 .misc-list {
   list-style: none;
