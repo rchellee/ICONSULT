@@ -36,7 +36,6 @@ const ReportsTab = () => {
               <option value="employees">Employees Reports</option>
               <option value="reviews">Reviews Reports</option>
               <option value="payments">Financial Reports</option>
-              <option value="review">Review Reports</option>
             </select>
           </div>
 

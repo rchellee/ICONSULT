@@ -608,7 +608,7 @@ const AppointmentReports = () => {
 
       <div className="mt-4 flex space-x-4">
         <select
-          className="bg-gray-200 text-black px-4 py-2 rounded"
+          className="app-report-type"
           value={selectedReport}
           onChange={(e) => setSelectedReport(e.target.value)}
         >

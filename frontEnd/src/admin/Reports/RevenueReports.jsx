@@ -25,6 +25,7 @@ const RevenueReports = () => {
     month: "All",
     year: new Date().getFullYear(),
   });
+  const [selectedReport, setSelectedReport] = useState("");
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -82,7 +83,6 @@ const RevenueReports = () => {
     { name: "Pending", value: 40000 },
   ];
 
-  // Mock Clients for Payments per Client Bar Graph
   const paymentsPerClient = [
     { name: "John Doe", amount: 50000 },
     { name: "Jane Smith", amount: 42000 },
@@ -113,46 +113,53 @@ const RevenueReports = () => {
 
   return (
     <div className="revenue-p-4">
-      {/* Sorting Buttons */}
-      <div className="revenue-filter-buttons">
+      {/* Report Type Selection */}
+      <div className="filter-buttons">
         <select
-          value={filters.year}
-          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          className="revenue-report-type"
+          value={selectedReport}
+          onChange={(e) => setSelectedReport(e.target.value)}
         >
+          <option value="">Select Report Type</option>
+          <option value="Total Revenue">Total Revenue</option>
+          <option value="Pending vs Received Payments">Pending vs Received Payments</option>
+          <option value="Payments per Client">Payments per Client</option>
+          <option value="Revenue per Project">Revenue per Project</option>
+          <option value="Overdue Payments">Overdue Payments</option>
+        </select>
+
+        {selectedReport && (
+          <>
+            <CSVLink
+              data={revenues}
+              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.csv`}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Export CSV
+            </CSVLink>
+
+            <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">
+              Export PDF
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Sorting Buttons */}
+      <div className="filter-buttons">
+        <select value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })}>
           <option value="All">Year</option>
           {[2023, 2024, 2025].map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
+            <option key={year} value={year}>{year}</option>
           ))}
         </select>
 
-        <select
-          value={filters.month}
-          onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-        >
+        <select value={filters.month} onChange={(e) => setFilters({ ...filters, month: e.target.value })}>
           <option value="All">Month</option>
           {months.map((month) => (
-            <option key={month} value={month}>
-              {month}
-            </option>
+            <option key={month} value={month}>{month}</option>
           ))}
         </select>
-      </div>
-
-      {/* Revenue Summary */}
-      <div id="revenue-summary" className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Total Revenue: ${totalRevenue.toFixed(2)}</h3>
-      </div>
-
-      {/* Export Buttons */}
-      <div className="mt-4 flex space-x-4">
-        <CSVLink data={revenues} filename="revenue-report.csv" className="bg-green-500 text-white px-4 py-2 rounded">
-          Export CSV
-        </CSVLink>
-        <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">
-          Export PDF
-        </button>
       </div>
 
       {/* Reports Grid */}
@@ -168,6 +175,7 @@ const RevenueReports = () => {
             <Tooltip />
           </PieChart>
         </div>
+
           {/* Overdue Payments */}
     <div className="chart-container">
     <h3>Overdue Payments</h3>
@@ -181,8 +189,8 @@ const RevenueReports = () => {
     </PieChart>
   </div>
 
-    {/* Total Revenue per Project */}
-    <div className="chart-container">
+   {/* Total Revenue per Project */}
+   <div className="chart-container">
     <h3>Total Revenue per Project</h3>
     <BarChart width={700} height={400} data={totalPerProject}>
       <XAxis dataKey="name" />
@@ -210,7 +218,7 @@ const RevenueReports = () => {
 
         <div className="chart-container scrollable-chart">
           <h3>Payments per Client</h3>
-          <BarChart width={1100} height={400} data={paymentsPerClient}>
+          <BarChart width={1700} height={400} data={paymentsPerClient}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -220,7 +228,6 @@ const RevenueReports = () => {
           </BarChart>
         </div>
       </div>
-    
   );
 };
 
