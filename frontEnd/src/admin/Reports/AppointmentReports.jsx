@@ -152,33 +152,127 @@ const AppointmentReports = () => {
       .length,
   }));
 
-  const groupAppointmentsByClient = () => {
-    return clients.map((client) => ({
-      id: client.id,
-      name: `${client.firstName} ${client.lastName}`,
-      appointments: appointments
-        .filter((a) => a.client_id === client.id)
-        .map((a) => `${a.date} - ${a.consultationType}`),
-    }));
+  const formatAppointmentsthisMonthCSV = () => {
+    let csvData = [];
+
+    // Add headers
+    csvData.push([
+      "Client Name",
+      "Date",
+      "Time",
+      "Email",
+      "Consultation Type",
+      "Company Name",
+      "Platform",
+    ]);
+
+    // Filter appointments for the current month
+    const currentMonthAppointments = appointments.filter((a) => {
+      const appointmentDate = new Date(a.date);
+      return (
+        appointmentDate.getMonth() === new Date().getMonth() &&
+        appointmentDate.getFullYear() === new Date().getFullYear()
+      );
+    });
+
+    // Populate CSV data
+    currentMonthAppointments.forEach((a) => {
+      csvData.push([
+        a.name,
+        a.date,
+        a.time,
+        a.email,
+        a.consultationType,
+        a.companyName,
+        a.platform,
+      ]);
+    });
+
+    return csvData;
   };
 
-  const groupAppointmentsByPlatform = () => {
-    return [
+  const formatAppointmentsPerClientCSV = () => {
+    let csvData = [];
+
+    clients.forEach((client) => {
+      const clientAppointments = appointments.filter(
+        (a) => a.client_id === client.id
+      );
+
+      if (clientAppointments.length > 0) {
+        csvData.push([`${client.firstName} ${client.lastName}`]); // Add client name as a row
+        csvData.push([
+          "Date",
+          "Time",
+          "Email",
+          "Consultation Type",
+          "Company Name",
+        ]); // Headers
+
+        clientAppointments.forEach((a) => {
+          csvData.push([
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatAppointmentsByPlatformCSV = () => {
+    let csvData = [];
+
+    const platforms = [
       "In-Person",
       "Zoom",
       "Google Meet",
       "Phone Call",
       "Microsoft Teams",
-    ].map((platform) => ({
-      platform,
-      appointments: appointments
-        .filter((a) => a.platform === platform)
-        .map((a) => `${a.date} - ${a.client_id}`),
-    }));
-  };
+    ];
 
-  const groupAppointmentsByConsultationType = () => {
-    return [
+    platforms.forEach((platform) => {
+      const platformAppointments = appointments.filter(
+        (a) => a.platform === platform
+      );
+
+      if (platformAppointments.length > 0) {
+        csvData.push([platform]); // Add platform name as a row
+        csvData.push([
+          "Name",
+          "Date",
+          "Time",
+          "Email",
+          "Consultation Type",
+          "Company Name",
+        ]); // Headers
+
+        platformAppointments.forEach((a) => {
+          csvData.push([
+            a.name,
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatConsultationTypeCSV = () => {
+    let csvData = [];
+
+    const consultationTypes = [
       "Strategic Planning Consultation",
       "Corporate Governance Review",
       "Business Process Improvement",
@@ -197,65 +291,290 @@ const AppointmentReports = () => {
       "Compliance Consultation",
       "Follow up",
       "Others",
-    ].map((type) => ({
-      consultationType: type,
-      appointments: appointments
-        .filter((a) => a.consultationType === type)
-        .map((a) => `${a.date} - ${a.client_id}`),
-    }));
+    ];
+
+    consultationTypes.forEach((type) => {
+      const typeAppointments = appointments.filter(
+        (a) => a.consultationType === type
+      );
+
+      if (typeAppointments.length > 0) {
+        csvData.push([type]); // Add consultation type as a row
+        csvData.push([
+          "Name",
+          "Date",
+          "Time",
+          "Email",
+          "Consultation Type",
+          "Company Name",
+        ]); // Headers
+
+        typeAppointments.forEach((a) => {
+          csvData.push([
+            a.name,
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
   };
 
   const exportPDF = async () => {
     const doc = new jsPDF("landscape", "mm", "a4");
-
     doc.setFontSize(11);
     doc.text(selectedReport, 10, 10);
 
     let yPos = 20;
 
-    // Table headers
-    const headers = [
-      [
-        "Client Name",
-        "Date",
-        "Time",
-        "Email",
-        "Contact",
-        "Platform",
-        "Consultation Type",
-        "Date Created",
-      ],
-    ];
-    const data = filteredAppointments.map((a) => [
-      `${a.name}`,
-      a.date,
-      a.time,
-      a.email,
-      a.contact,
-      a.platform,
-      a.consultationType,
-      a.created_at,
-    ]);
+    const chartElement = document.getElementById("chart-container");
 
-    // Ensure autoTable function is used correctly
-    autoTable(doc, {
-      startY: yPos,
-      head: headers,
-      body: data,
-      styles: { fontSize: 10 },
-    });
+    if (chartElement) {
+      try {
+        // Capture chart as an image
+        const canvas = await html2canvas(chartElement);
+        const imgData = canvas.toDataURL("image/png");
 
-    // Save the PDF
-    doc.save("appointment-report.pdf");
+        // Add image to the PDF
+        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
+        yPos += 90; // Adjust position for the table
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
+    }
+
+    if (selectedReport === "Total Appointments") {
+      const headers = [
+        [
+          "Client Name",
+          "Date",
+          "Time",
+          "Email",
+          "Contact",
+          "Consultation Type",
+          "Description",
+          "Company Name",
+          "Platform",
+          "Date Created",
+        ],
+      ];
+      const data = appointments.map((a) => [
+        a.name,
+        a.date,
+        a.time,
+        a.email,
+        a.contact,
+        a.consultationType,
+        a.additionalInfo,
+        a.companyName,
+        a.platform,
+        a.created_at,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 10 },
+      });
+    }
+
+    if (selectedReport === "Appointments This Month") {
+      // Filter appointments for the current month
+      const currentMonthAppointments = appointments.filter((a) => {
+        const appointmentDate = new Date(a.date);
+        return (
+          appointmentDate.getMonth() === new Date().getMonth() &&
+          appointmentDate.getFullYear() === new Date().getFullYear()
+        );
+      });
+
+      const headers = [
+        ["Date", "Time", "Email", "Consultation Type", "Company Name"],
+      ];
+      const data = currentMonthAppointments.map((a) => [
+        a.date,
+        a.time,
+        a.email,
+        a.consultationType,
+        a.companyName,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 10 },
+      });
+    }
+
+    if (selectedReport === "Appointments per Client") {
+      clients.forEach((client) => {
+        const clientAppointments = appointments.filter(
+          (a) => a.client_id === client.id
+        );
+
+        if (clientAppointments.length > 0) {
+          doc.setFontSize(12);
+          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            ["Date", "Time", "Email", "Consultation Type", "Company Name"],
+          ];
+          const data = clientAppointments.map((a) => [
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 10 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+
+    if (selectedReport === "Appointments by Platform") {
+      const platforms = [
+        "In-Person",
+        "Zoom",
+        "Google Meet",
+        "Phone Call",
+        "Microsoft Teams",
+      ];
+
+      platforms.forEach((platform) => {
+        const platformAppointments = appointments.filter(
+          (a) => a.platform === platform
+        );
+
+        if (platformAppointments.length > 0) {
+          doc.setFontSize(12);
+          doc.text(platform, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            [
+              "Name",
+              "Date",
+              "Time",
+              "Email",
+              "Consultation Type",
+              "Company Name",
+            ],
+          ];
+          const data = platformAppointments.map((a) => [
+            a.name,
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 10 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+
+    if (selectedReport === "Consultation Type Overview") {
+      const consultationTypes = [
+        "Strategic Planning Consultation",
+        "Corporate Governance Review",
+        "Business Process Improvement",
+        "Risk Management Consultation",
+        "Organizational Development Advisory",
+        "Financial Advisory",
+        "Accounting Consultation",
+        "Legal Advisory",
+        "Tax Advisory",
+        "Payroll System Setup Consultation",
+        "Employee Benefits and Compliance Advisory",
+        "Startup Planning",
+        "Business Structuring and Licensing Advisory",
+        "Business Name Registration",
+        "SEC/DTI/Mayor’s Permit Assistance",
+        "Compliance Consultation",
+        "Follow up",
+        "Others",
+      ];
+
+      consultationTypes.forEach((type) => {
+        const typeAppointments = appointments.filter(
+          (a) => a.consultationType === type
+        );
+
+        if (typeAppointments.length > 0) {
+          doc.setFontSize(12);
+          doc.text(type, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            [
+              "Name",
+              "Date",
+              "Time",
+              "Email",
+              "Consultation Type",
+              "Company Name",
+            ],
+          ];
+          const data = typeAppointments.map((a) => [
+            a.name,
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 10 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+
+    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
-  // const exportCSVData =
-  //   selectedReport === "Appointments This Month"
-  //     ? appointments.filter(
-  //         (a) =>
-  //           new Date(a.date).getMonth() === new Date().getMonth() &&
-  //           new Date(a.date).getFullYear() === new Date().getFullYear()
-  //       )
-  //     : appointments;
+
+  let exportCSVData = [];
+
+  if (selectedReport === "Appointments per Client") {
+    exportCSVData = formatAppointmentsPerClientCSV();
+  } else if (selectedReport === "Appointments This Month") {
+    exportCSVData = formatAppointmentsthisMonthCSV();
+  } else if (selectedReport === "Appointments by Platform") {
+    exportCSVData = formatAppointmentsByPlatformCSV();
+  } else if (selectedReport === "Consultation Type Overview") {
+    exportCSVData = formatConsultationTypeCSV();
+  } else {
+    exportCSVData = appointments; // Default case for Total Appointments & Appointments This Month
+  }
 
   return (
     <div className="p-4">
@@ -320,6 +639,7 @@ const AppointmentReports = () => {
             >
               Export CSV
             </CSVLink>
+
             <button
               onClick={exportPDF}
               className="bg-red-500 text-white px-4 py-2 rounded"
