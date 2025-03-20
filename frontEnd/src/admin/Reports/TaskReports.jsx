@@ -41,6 +41,7 @@ const TaskReports = () => {
     "November",
     "December",
   ];
+  const [selectedReport, setSelectedReport] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -112,35 +113,6 @@ const TaskReports = () => {
     overdueTasksByMonth[monthName] += 1;
   });
 
-  const overdueTaskData = months.map((month) => ({
-    month,
-    count: overdueTasksByMonth[month],
-  }));
-
-  const taskDueData = tasks.map((task) => ({
-    task_name: task.task_name,
-    due_date: new Date(task.due_date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-  }));
-
-  const taskStatusCounts = ["Pending", "Ongoing", "Completed"].map(
-    (status) => ({
-      name: status,
-      value: tasks.filter((task) => task.status === status).length,
-    })
-  );
-
-  const paymentStatusCounts = ["Paid", "Not Paid"].map((status) => ({
-    name: status,
-    value: tasks.filter((task) =>
-      status === "Paid"
-        ? task.amount >= task.task_fee
-        : task.amount < task.task_fee
-    ).length,
-  }));
-
   const filteredTasksForProjects = tasks.filter((task) => {
     const taskDate = new Date(task.due_date);
     const matchesYear = taskDate.getFullYear() === statusYear;
@@ -161,63 +133,59 @@ const TaskReports = () => {
     value: tasksPerProject[name],
   }));
 
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Task Reports", 14, 10);
+  const exportPDF = async () => {
+    if (!selectedReport) return;
+    const doc = new jsPDF("p", "mm", "a4");
+    const section = document.getElementById(selectedReport);
+    if (!section) return;
 
-    const tableColumn = [
-      "Task Name",
-      "Project",
-      "Due Date",
-      "Status",
-      "Amount Paid",
-      "Fee",
-    ];
-    const tableRows = [];
-
-    tasks.forEach((task) => {
-      const projectName =
-        projects[task.project_id] || `Project ${task.project_id}`;
-      const taskData = [
-        task.task_name,
-        projectName,
-        new Date(task.due_date).toLocaleDateString(),
-        task.status,
-        task.amount,
-        task.task_fee,
-      ];
-      tableRows.push(taskData);
-    });
-
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-    });
-
-    doc.save("task-report.pdf");
+    try {
+      const canvas = await html2canvas(section, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+      doc.text(selectedReport, 10, 10);
+      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
+      doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+    } catch (error) {
+      console.error(`Error capturing ${selectedReport}:`, error);
+    }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Task Reports</h2>
+    <div className="tasks-p-4">
       <div className="mt-4 flex space-x-4">
-        <CSVLink
-          data={tasks}
-          filename="task-report.csv"
-          className="bg-green-500 text-white px-4 py-2 rounded"
+        <select
+          className="bg-gray-200 text-black px-4 py-2 rounded"
+          value={selectedReport}
+          onChange={(e) => setSelectedReport(e.target.value)}
         >
-          Export CSV
-        </CSVLink>
+          <option value="">Select Report Type</option>
+          <option value="Task Status">Task Status</option>
+          <option value="Tasks Per Project">Tasks Per Project</option>
+          <option value="Task Due">Task Due</option>
+        </select>
 
-        <button
-          onClick={exportPDF}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Export PDF
-        </button>
+        {selectedReport && (
+          <>
+            <CSVLink
+              data={tasks}
+              filename={`${selectedReport
+                .replace(/\s+/g, "_")
+                .toLowerCase()}.csv`}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Export CSV
+            </CSVLink>
+            <button
+              onClick={exportPDF}
+              className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              Export PDF
+            </button>
+          </>
+        )}
       </div>
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Task Status</h3>
+      <div className="tasks-graph-container">
+        <h3>Task Status</h3>
 
         {/* Year Filter */}
         <select
@@ -266,7 +234,8 @@ const TaskReports = () => {
           <Legend />
         </PieChart>
       </div>
-      <div className="bg-white p-4 shadow rounded-lg mt-4">
+
+      <div className="tasks-graph-container">
         <h3 className="text-lg font-semibold">Tasks Per Project</h3>
         {/* Year Filter */}
         <select
@@ -294,7 +263,7 @@ const TaskReports = () => {
             </option>
           ))}
         </select>
-        <BarChart width={1600} height={400} data={projectTaskData}>
+        <BarChart width={1100} height={400} data={projectTaskData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
@@ -303,7 +272,8 @@ const TaskReports = () => {
           <Bar dataKey="value" fill="#82ca9d" name="Task Count" />
         </BarChart>
       </div>
-      <div className="bg-white p-4 shadow rounded-lg mt-4">
+
+      <div className="tasks-graph-container">
         <h3 className="text-lg font-semibold">Task Due</h3>
         <select
           className="mb-4 p-2 border rounded"

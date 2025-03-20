@@ -24,18 +24,11 @@
   margin-left: 16px;
 }
 
-.mb-4 {
-  margin-bottom: 16px;
-}
-
 select {
   border: 1px solid #ccc;
-  padding: 8px;
   font-size: 14px;
-  width: 160px;
-  border-radius: 4px;
+  width: 200px;
   background-color: #fff;
-  cursor: pointer;
 }
 
 select:focus {
@@ -46,44 +39,24 @@ select:focus {
 .reports-content {
   background: #fff;
   padding: 20px;
-  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-/* Filter Container with Grid */
+/*------------------------- Filter Container with Grid ------------------*/
 .filter-container {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(200px, 1fr)
-  ); /* Auto-adjusting columns */
-  gap: 16px; /* Space between elements */
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
   padding: 16px;
-
-  align-items: center;
 }
 
-/* Input and Select Styling */
-.filter-input,
 .filter-select {
-  width: 100%;
+  width: auto;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
   font-size: 14px;
-  transition: border-color 0.3s ease-in-out;
-}
-
-/* Hover and Focus Effects */
-.filter-input:hover,
-.filter-select:hover {
-  border-color: #007bff;
-}
-
-.filter-input:focus,
-.filter-select:focus {
-  outline: none;
-  border-color: #0056b3;
-  box-shadow: 0 0 5px rgba(0, 91, 187, 0.3);
+  font-weight: bold;
+  text-align-last: center;
+  direction: rtl;
+  background-color: #f4f4f9;
 }
 
 /* Responsive Design */
@@ -102,7 +75,6 @@ select:focus {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 56px;
 }
 
 /* ===== Summary Text Styling ===== */
@@ -119,16 +91,8 @@ select:focus {
   color: #3498db;
 }
 
-/* ===== Responsive Design ===== */
-@media (max-width: 768px) {
-  #summary-section {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
 /* ===== Charts Section Styling ===== */
-.charts-container {
+.app-charts-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
@@ -136,10 +100,9 @@ select:focus {
 }
 
 /* ===== Chart Box Styling ===== */
-.chart-box {
+.app-chart-box {
   background: #ffffff;
   padding: 24px;
-  border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #e1e1e1;
   margin-bottom: 24px;
@@ -148,54 +111,53 @@ select:focus {
 }
 
 /* ===== Chart Title & Description ===== */
-.chart-title {
+.app-chart-title {
   font-size: 20px;
   font-weight: 700;
   color: #2c3e50;
   margin-bottom: 8px;
 }
 
-.chart-description {
+.app-chart-description {
   font-size: 14px;
   color: #555;
   margin-bottom: 15px;
 }
 
 /* ===== Scrollable Chart Container ===== */
-.chart-scroll {
+.app-chart-scroll {
   overflow-x: auto;
   padding-bottom: 10px;
 }
 
 /* Custom Scrollbar */
-.chart-scroll::-webkit-scrollbar {
+.app-chart-scroll::-webkit-scrollbar {
   height: 6px;
 }
 
-.chart-scroll::-webkit-scrollbar-thumb {
+.app-chart-scroll::-webkit-scrollbar-thumb {
   background-color: #888;
-  border-radius: 10px;
 }
 
-.chart-scroll::-webkit-scrollbar-track {
+.app-chart-scroll::-webkit-scrollbar-track {
   background-color: #f0f0f0;
 }
 
 /* ===== Pie Chart Labels (Hide 0%) ===== */
-.recharts-pie-label-text {
+.app-recharts-pie-label-text {
   font-size: 12px;
   font-weight: 600;
   fill: #555;
 }
 
 /* ===== Bar Hover Effect ===== */
-.recharts-bar-rectangle:hover {
+.app-recharts-bar-rectangle:hover {
   opacity: 0.8;
   transition: opacity 0.2s ease-in-out;
 }
 
 /* ===== Pie Chart Animation ===== */
-.recharts-pie-sector:hover {
+.app-recharts-pie-sector:hover {
   transform: scale(1.01);
   transition: transform 0.2s ease-in-out;
 }
@@ -213,169 +175,353 @@ select:focus {
 }
 
 /* --------------------- Clients ---------------------------- */
-/* ---- Main Container ---- */
-.clients-month-container {
+/* Main Reports Container */
+.clients-reports-container {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
-  background: linear-gradient(to right, #f9f9f9, #ffffff);
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
-  margin: auto;
 }
 
-/* ---- Chart Box ---- */
-.chart-box {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* ---- Titles ---- */
-.chart-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 15px;
-}
-
-/* ---- Year Dropdown ---- */
-.year-selector {
-  margin-bottom: 15px;
-}
-
-.year-selector label {
-  font-weight: bold;
-  margin-right: 10px;
-  color: #555;
-}
-
-.year-dropdown {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  background: #fff;
-  transition: 0.3s;
-}
-
-.year-dropdown:hover {
-  border-color: #4caf50;
-}
-
-/* ---- Table Box ---- */
-.table-box {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* ---- Styled Table ---- */
-.styled-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.styled-table th,
-.styled-table td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.styled-table th {
-  background: #13436c;
-  color: white;
-  font-weight: bold;
-}
-
-.styled-table tr:nth-child(even) {
-  background: #f9f9f9;
-}
-
-/* ---- Project List ---- */
-.project-list {
-  padding-left: 15px;
-  list-style-type: disc;
-  color: #333;
-}
-
-.no-projects {
-  color: red;
-  font-style: italic;
-}
-/* ---- Main Chart Container ---- */
-.client-scharts-container {
+/* Summary Grid */
+.clients-summary-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
-  padding: 20px;
-  background: linear-gradient(to right, #f9f9f9, #ffffff);
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 1200px;
-  margin: auto;
 }
 
-/* ---- Chart Boxes ---- */
-.clients-chart-box {
+/* Summary Cards */
+.clients-summary-card {
   background: white;
   padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-weight: bold;
+}
+
+.clients-summary-card p {
+  font-size: 24px;
+  margin-top: 10px;
+  color: #007bff;
+}
+
+/* Clients Grid */
+.clients-clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+/* Chart Container */
+.clients-chart-container {
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-/* ---- Titles ---- */
-.client-chart-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
+.clients-year-selector {
   margin-bottom: 15px;
 }
 
-/* ---- Responsive Design ---- */
-@media (max-width: 768px) {
-  .charts-container {
+.clients-year-selector select {
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+}
+
+/* Individual Chart Cards */
+.clients-chart-card {
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .clients-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* ---- Responsive Design ---- */
-@media (max-width: 768px) {
-  .clients-month-container {
-    padding: 15px;
-  }
+/* ----------------------------- Project --------------------------- */
+/* General Page Styling */
+.project-p-4 {
+  padding: 20px;
+  background-color: #f4f6f9;
+  font-family: "Arial", sans-serif;
+}
 
-  .chart-box,
-  .table-box {
-    padding: 15px;
-  }
+/* Filters Section */
+.project-filter-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  justify-content: flex-start;
+  align-items: center;
+}
 
-  .year-selector {
-    display: flex;
+.project-filter-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  min-width: 150px;
+  width: 100%;
+  background: white;
+  transition: all 0.2s;
+}
+
+.project-filter-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Summary Section */
+.summary-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.summary-box {
+  flex: 1;
+  background: white;
+  padding: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-right: 15px;
+}
+
+.summary-box:last-child {
+  margin-right: 0;
+}
+
+.summary-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+}
+
+.summary-value {
+  font-size: 26px;
+  font-weight: bold;
+  color: #007bff;
+  margin-top: 8px;
+}
+
+/* Charts Layout */
+.project-charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 20px;
+  margin-top: 10px;
+}
+
+/* Standard Chart Box */
+.project-chart-box {
+  background: white;
+  padding: 20px;
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Chart Titles */
+.project-chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.chart-row {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Projects per Client (Smaller) */
+.small-chart {
+  flex: 1;
+  max-width: 70%;
+}
+
+/* Payment Due Status (Bigger) */
+.large-chart {
+  flex: 2;
+  max-width: 800%;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .chart-row {
     flex-direction: column;
     align-items: center;
   }
 
-  .year-dropdown {
-    width: 100%;
-  }
-
-  .styled-table th,
-  .styled-table td {
-    font-size: 14px;
+  .small-chart,
+  .large-chart {
+    max-width: 100%;
   }
 }
 
-/* ---------------------------------------------------- */
+/* ------------------------------ tasks report ----------------------- */
+/* General Styles */
+.tasks-p-4 {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.text-xl {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Graph Container */
+.tasks-graph-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.graph-box {
+  background: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+}
+
+.graph-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+/* Adjusting chart sizes */
+.small-chart {
+  max-width: 400px;
+  margin: auto;
+}
+
+.large-chart {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .graph-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .graph-box {
+    width: 100%;
+  }
+}
+/* -------------------------- Employees -------------------------- */
+/* General Styles */
+.employee-p-4 {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.text-xl {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Graph Container */
+.graph-container,
+.employee-graph-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+/* Grid Layout for Graphs */
+.graph-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.graph-box {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  border: 2px solid #ddd;
+}
+
+.graph-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+/* Adjusting chart sizes */
+.small-chart {
+  max-width: 400px;
+  margin: auto;
+}
+
+.large-chart {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .graph-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .graph-box {
+    width: 100%;
+  }
+}
+
+/* ------------------------------- Revenue ------------------------------ */
+
+/* -------------------------------------------------------- */
 .overview-statistics {
   display: flex;
   flex-wrap: wrap;
@@ -389,7 +535,6 @@ select:focus {
   text-align: center;
   background-color: #fff;
   border: 1px solid #eaeaea;
-  border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -442,7 +587,6 @@ select:focus {
   background-color: #007bff;
   color: #fff;
   text-decoration: none;
-  border-radius: 5px;
   font-size: 1rem;
   transition: background-color 0.3s ease;
 }
@@ -458,7 +602,6 @@ select:focus {
   text-align: center;
   background-color: #fff;
   border: 1px solid #eaeaea;
-  border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -498,7 +641,6 @@ select:focus {
   background-color: #ffffff; /* Green background color */
   color: rgb(50, 50, 50);
   border: none; /* Remove border */
-  border-radius: 5px; /* Rounded corners */
   cursor: pointer; /* Change cursor to pointer on hover */
   transition: background-color 0.3s; /* Smooth transition for background color */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

@@ -3,8 +3,7 @@ import axios from "axios";
 import { CSVLink } from "react-csv";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-// import "jspdf-autotable";
-
+import autoTable from "jspdf-autotable";
 import {
   BarChart,
   Bar,
@@ -22,17 +21,22 @@ import "./ReportsTab.css";
 const AppointmentReports = () => {
   const [appointments, setAppointments] = useState([]);
   const [clients, setClients] = useState([]);
+  const [years, setYears] = useState([]);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
     clientId: "",
     consultationType: "",
     platform: "",
+    year: "All",
+    month: "All",
   });
+  const [selectedReport, setSelectedReport] = useState("");
 
   useEffect(() => {
     fetchClients();
     fetchAppointments();
+    fetchYears();
   }, [filters]);
 
   const fetchClients = async () => {
@@ -52,7 +56,7 @@ const AppointmentReports = () => {
           params: {
             startDate: filters.startDate,
             endDate: filters.endDate,
-            clientId: filters.clientId, // Pass clientId
+            clientId: filters.clientId,
           },
         }
       );
@@ -62,68 +66,42 @@ const AppointmentReports = () => {
     }
   };
 
-  const exportPDF = () => {
-    const doc = new jsPDF("p", "mm", "a4");
-
-    const elements = [
-      { id: "summary-section", title: "Appointment Summary" },
-      {
-        id: "appointments-client",
-        title: "Appointments per Client",
-        description: "This chart shows the number of appointments per client.",
-      },
-      {
-        id: "appointments-platform",
-        title: "Appointments by Platform",
-        description:
-          "This chart shows how appointments are distributed across different platforms.",
-      },
-      {
-        id: "appointments-consultation",
-        title: "Appointments by Consultation Type",
-        description:
-          "This chart categorizes appointments based on the type of consultation.",
-      },
-    ];
-
-    let currentPage = 1;
-
-    const captureElement = (element, title, description, callback) => {
-      const section = document.getElementById(element);
-      if (!section) return;
-
-      html2canvas(section, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-
-        if (currentPage > 1) doc.addPage(); // Add a new page for each section
-        doc.text(title, 10, 10);
-        if (description) {
-          doc.text(description, 10, 20);
-        }
-        doc.addImage(imgData, "PNG", 10, 30, 180, 0); // Fit to page
-        currentPage++;
-
-        callback();
-      });
-    };
-
-    let index = 0;
-    const processNext = () => {
-      if (index < elements.length) {
-        const { id, title, description } = elements[index];
-        index++;
-        captureElement(id, title, description, processNext);
-      } else {
-        doc.save("appointment-report.pdf");
-      }
-    };
-
-    processNext();
+  const fetchYears = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/appointmentYears"
+      );
+      setYears(response.data);
+    } catch (error) {
+      console.error("Error fetching years", error);
+    }
   };
 
-  const filteredAppointments = filters.clientId
-    ? appointments.filter((a) => a.client_id == filters.clientId)
-    : appointments;
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const filteredAppointments = appointments.filter((a) => {
+    const appointmentDate = new Date(a.date);
+    const appointmentYear = appointmentDate.getFullYear().toString();
+    const appointmentMonth = months[appointmentDate.getMonth()];
+
+    return (
+      (filters.year === "All" || filters.year === appointmentYear) &&
+      (filters.month === "All" || filters.month === appointmentMonth)
+    );
+  });
 
   const totalAppointments = filteredAppointments.length;
 
@@ -174,35 +152,183 @@ const AppointmentReports = () => {
       .length,
   }));
 
+  const groupAppointmentsByClient = () => {
+    return clients.map((client) => ({
+      id: client.id,
+      name: `${client.firstName} ${client.lastName}`,
+      appointments: appointments
+        .filter((a) => a.client_id === client.id)
+        .map((a) => `${a.date} - ${a.consultationType}`),
+    }));
+  };
+
+  const groupAppointmentsByPlatform = () => {
+    return [
+      "In-Person",
+      "Zoom",
+      "Google Meet",
+      "Phone Call",
+      "Microsoft Teams",
+    ].map((platform) => ({
+      platform,
+      appointments: appointments
+        .filter((a) => a.platform === platform)
+        .map((a) => `${a.date} - ${a.client_id}`),
+    }));
+  };
+
+  const groupAppointmentsByConsultationType = () => {
+    return [
+      "Strategic Planning Consultation",
+      "Corporate Governance Review",
+      "Business Process Improvement",
+      "Risk Management Consultation",
+      "Organizational Development Advisory",
+      "Financial Advisory",
+      "Accounting Consultation",
+      "Legal Advisory",
+      "Tax Advisory",
+      "Payroll System Setup Consultation",
+      "Employee Benefits and Compliance Advisory",
+      "Startup Planning",
+      "Business Structuring and Licensing Advisory",
+      "Business Name Registration",
+      "SEC/DTI/Mayor’s Permit Assistance",
+      "Compliance Consultation",
+      "Follow up",
+      "Others",
+    ].map((type) => ({
+      consultationType: type,
+      appointments: appointments
+        .filter((a) => a.consultationType === type)
+        .map((a) => `${a.date} - ${a.client_id}`),
+    }));
+  };
+
+  const exportPDF = async () => {
+    const doc = new jsPDF("landscape", "mm", "a4");
+
+    doc.setFontSize(11);
+    doc.text(selectedReport, 10, 10);
+
+    let yPos = 20;
+
+    // Table headers
+    const headers = [
+      [
+        "Client Name",
+        "Date",
+        "Time",
+        "Email",
+        "Contact",
+        "Platform",
+        "Consultation Type",
+        "Date Created",
+      ],
+    ];
+    const data = filteredAppointments.map((a) => [
+      `${a.name}`,
+      a.date,
+      a.time,
+      a.email,
+      a.contact,
+      a.platform,
+      a.consultationType,
+      a.created_at,
+    ]);
+
+    // Ensure autoTable function is used correctly
+    autoTable(doc, {
+      startY: yPos,
+      head: headers,
+      body: data,
+      styles: { fontSize: 10 },
+    });
+
+    // Save the PDF
+    doc.save("appointment-report.pdf");
+  };
+  // const exportCSVData =
+  //   selectedReport === "Appointments This Month"
+  //     ? appointments.filter(
+  //         (a) =>
+  //           new Date(a.date).getMonth() === new Date().getMonth() &&
+  //           new Date(a.date).getFullYear() === new Date().getFullYear()
+  //       )
+  //     : appointments;
+
   return (
     <div className="p-4">
       <div className="filter-container">
-        <input
-          type="date"
-          className="filter-input"
-          onChange={(e) =>
-            setFilters({ ...filters, startDate: e.target.value })
-          }
-        />
-        <input
-          type="date"
-          className="filter-input"
-          onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-        />
         <select
           className="filter-select"
-          value={filters.clientId}
-          onChange={(e) => setFilters({ ...filters, clientId: e.target.value })}
+          value={filters.year}
+          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
         >
-          <option value="">All Clients</option>
-          {clients.map((client) => (
-            <option key={client.id} value={client.id}>
-              {client.firstName} {client.lastName}
+          <option value="All">All Years</option>
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="filter-select"
+          value={filters.month}
+          onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+        >
+          <option value="All">All Months</option>
+          {months.map((month) => (
+            <option key={month} value={month}>
+              {month}
             </option>
           ))}
         </select>
       </div>
 
+      <div className="mt-4 flex space-x-4">
+        <select
+          className="bg-gray-200 text-black px-4 py-2 rounded"
+          value={selectedReport}
+          onChange={(e) => setSelectedReport(e.target.value)}
+        >
+          <option value="">Select Report Type</option>
+          <option value="Total Appointments">Total Appointments</option>
+          <option value="Appointments This Month">
+            Appointments This Month
+          </option>
+          <option value="Appointments per Client">
+            Appointments per Client
+          </option>
+          <option value="Appointments by Platform">
+            Appointments by Platform
+          </option>
+          <option value="Consultation Type Overview">
+            Consultation Type Overview
+          </option>
+        </select>
+
+        {selectedReport && (
+          <>
+            <CSVLink
+              data={exportCSVData}
+              filename={`${selectedReport
+                .replace(/\s+/g, "_")
+                .toLowerCase()}.csv`}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Export CSV
+            </CSVLink>
+            <button
+              onClick={exportPDF}
+              className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              Export PDF
+            </button>
+          </>
+        )}
+      </div>
       <div id="summary-section">
         <div className="summary-box">
           <h2 className="summary-title">Total Appointments</h2>
@@ -214,33 +340,16 @@ const AppointmentReports = () => {
         </div>
       </div>
 
-      {/* Button  */}
-      <div className="mt-4 flex space-x-4">
-        <CSVLink
-          data={appointments}
-          filename="appointment-report.csv"
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Export CSV
-        </CSVLink>
-        <button
-          onClick={exportPDF}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Export PDF
-        </button>
-      </div>
-
       {/* Charts Section */}
-      <div id="report-content" className="charts-container">
+      <div id="report-content" className="app-charts-container">
         {/* Appointments per Client */}
         {!filters.clientId && (
-          <div className="chart-box">
-            <h3 className="chart-title">Appointments per Client</h3>
-            <p className="chart-description">
+          <div className="app-chart-box">
+            <h3 className="app-chart-title">Appointments per Client</h3>
+            <p className="app-chart-description">
               Overview of client appointments in percentage format.
             </p>
-            <div className="chart-scroll">
+            <div className="app-chart-scroll">
               <PieChart width={600} height={350}>
                 <Pie
                   data={appointmentsByClient}
@@ -271,12 +380,12 @@ const AppointmentReports = () => {
         )}
 
         {/* Appointments by Platform */}
-        <div className="chart-box">
-          <h3 className="chart-title">Appointments by Platform</h3>
-          <p className="chart-description">
+        <div className="app-chart-box">
+          <h3 className="app-chart-title">Appointments by Platform</h3>
+          <p className="app-chart-description">
             Distribution of appointments across various platforms.
           </p>
-          <div className="chart-scroll">
+          <div className="app-chart-scroll">
             <BarChart width={700} height={350} data={appointmentsByPlatform}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -294,12 +403,12 @@ const AppointmentReports = () => {
       </div>
 
       {/* Appointments by Consultation Type */}
-      <div id="appointments-consultation" className="chart-box">
-        <h3 className="chart-title">Consultation Type Overview</h3>
-        <p className="chart-description">
+      <div id="app-appointments-consultation" className="app-chart-box">
+        <h3 className="app-chart-title">Consultation Type Overview</h3>
+        <p className="app-chart-description">
           Breakdown of appointments by consultation type.
         </p>
-        <div className="chart-scroll">
+        <div className="app-chart-scroll">
           <BarChart
             width={1400}
             height={450}
