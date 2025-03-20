@@ -2445,7 +2445,7 @@ app.get("/projectReports", (req, res) => {
 
   let sql = `
     SELECT 
-      id, clientId, projectName, status, contractPrice, startDate, endDate, actualFinish, 
+      id, clientId, projectName, clientName, description, status, contractPrice, startDate, endDate, created_at, actualFinish, 
       TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays, paymentStatus,

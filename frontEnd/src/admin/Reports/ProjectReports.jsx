@@ -187,6 +187,142 @@ const ProjectReports = () => {
     }
   };
 
+  const formatProjectsbyStatusCSV = () => {
+    let csvData = [];
+
+    const status = ["Pending", "Ongoing", "Completed"];
+
+    status.forEach((status) => {
+      const statusProjects = projects.filter((p) => p.status === status);
+
+      if (statusProjects.length > 0) {
+        csvData.push([status]);
+        csvData.push([
+          "Project Name",
+          "Client Name",
+          "Description",
+          "Start Date",
+          "End Date",
+          "Date Created",
+        ]);
+
+        statusProjects.forEach((p) => {
+          csvData.push([
+            p.projectName,
+            p.clientName,
+            p.description,
+            p.startDate,
+            p.endDate,
+            p.created_at,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatOverdueProjectsCSV = () => {
+    let csvData = [["Overdue Projects"]]; // Title row
+    csvData.push([
+      "Project Name",
+      "Client Name",
+      "Description",
+      "Start Date",
+      "End Date",
+    ]); // Header row
+
+    const overdueProjects = projects.filter((p) => p.isDelayed === 1);
+
+    overdueProjects.forEach((p) => {
+      csvData.push([
+        p.projectName,
+        p.clientName,
+        p.description,
+        p.startDate,
+        p.endDate,
+      ]);
+    });
+
+    return csvData;
+  };
+  const formatProjectsperClientCSV = () => {
+    let csvData = [["Projects per Client"]]; // Title row
+
+    clients.forEach((client) => {
+      const clientProjects = projects.filter((p) => p.clientId === client.id);
+
+      if (clientProjects.length > 0) {
+        csvData.push([client.firstName + " " + client.lastName]); // Client name
+        csvData.push([
+          "Project Name",
+          "Description",
+          "Start Date",
+          "End Date",
+          "Created At",
+        ]); // Column headers
+
+        clientProjects.forEach((p) => {
+          csvData.push([
+            p.projectName,
+            p.description,
+            p.startDate,
+            p.endDate,
+            p.created_at,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatPaymentDueStatusCSV = () => {
+    let csvData = [["Payment Due Status"]];
+
+    const categories = ["Due Soon", "Overdue", "Not Paid"];
+
+    categories.forEach((category) => {
+      const categoryProjects = projects.filter(
+        (p) => categorizePaymentStatus(p) === category
+      );
+
+      if (categoryProjects.length > 0) {
+        csvData.push([category]); // Add category heading
+        csvData.push([
+          "Project Name",
+          "Client Name",
+          "Description",
+          "End Date",
+        ]); // Add headers
+
+        categoryProjects.forEach((p) => {
+          csvData.push([p.projectName, p.clientName, p.description, p.endDate]);
+        });
+
+        csvData.push([]); // Add a blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+
+  let exportCSVData = [];
+
+  if (selectedReport === "Projects by Status") {
+    exportCSVData = formatProjectsbyStatusCSV();
+  } else if (selectedReport === "Overdue Projects") {
+    exportCSVData = formatOverdueProjectsCSV();
+  } else if (selectedReport === "Projects per Client") {
+    exportCSVData = formatProjectsperClientCSV();
+  } else if (selectedReport === "Payment Due Status") {
+    exportCSVData = formatPaymentDueStatusCSV();
+  } else {
+    exportCSVData = projects; // Default case for Total Appointments & Appointments This Month
+  }
+
   return (
     <div className="project-p-4">
       <div className="export-dropdown">
@@ -206,7 +342,7 @@ const ProjectReports = () => {
         {selectedReport && (
           <>
             <CSVLink
-              data={projects}
+              data={exportCSVData}
               filename={`${selectedReport
                 .replace(/\s+/g, "_")
                 .toLowerCase()}.csv`}
@@ -301,7 +437,7 @@ const ProjectReports = () => {
           {/* Payment Due Status (Bigger) */}
           <div className="project-chart-box large-chart">
             <h3 className="project-chart-title">Payment Due Status</h3>
-            <LineChart width={900} height={300} data={paymentDueProjects}>
+            <LineChart width={1500} height={300} data={paymentDueProjects}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" angle={-15} textAnchor="end" />
               <YAxis type="category" dataKey="status" />

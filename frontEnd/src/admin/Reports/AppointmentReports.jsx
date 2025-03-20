@@ -190,7 +190,6 @@ const AppointmentReports = () => {
 
     return csvData;
   };
-
   const formatAppointmentsPerClientCSV = () => {
     let csvData = [];
 
