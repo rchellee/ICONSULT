@@ -4,9 +4,6 @@ import { CSVLink } from "react-csv";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {
-  PieChart,
-  Pie,
-  Cell,
   BarChart,
   Bar,
   XAxis,
@@ -23,6 +20,7 @@ const EmployeeReports = () => {
   const [selectedReport, setSelectedReport] = useState("");
   const [taskStatusFilter, setTaskStatusFilter] = useState("All");
   const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [tasksForSelectedEmployee, setTasksForSelectedEmployee] = useState([]);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -33,21 +31,34 @@ const EmployeeReports = () => {
   const fetchEmployees = async () => {
     try {
       const response = await axios.get("http://localhost:8081/employeeReports");
-      console.log("API Response:", response.data); // Debugging
       setEmployees(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching employee reports", error);
-      setEmployees([]); // Ensure employees is always an array
+      setEmployees([]);
     }
   };
+
   const fetchTasks = async () => {
     try {
       const response = await axios.get("http://localhost:8081/ETReports");
-      console.log("Task API Response:", response.data); // Debugging
       setTasks(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching task reports", error);
       setTasks([]);
+    }
+  };
+
+  const fetchTasksForEmployee = async (employeeId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8081/tasksForEmployee/${employeeId}`
+      );
+      setTasksForSelectedEmployee(
+        Array.isArray(response.data) ? response.data : []
+      );
+    } catch (error) {
+      console.error("Error fetching tasks for employee", error);
+      setTasksForSelectedEmployee([]);
     }
   };
 
@@ -56,29 +67,19 @@ const EmployeeReports = () => {
     fetchTasks();
   }, []);
 
-  const exportPDF = async () => {
-    const doc = new jsPDF("p", "mm", "a4");
-    const sections = {
-      "Tasks Assigned to Each Employee": "tasks-assigned-section",
-      "Tasks completed vs. pending per employee": "tasks-status-section",
-      "Employee workload distribution": "workload-section",
-    };
-
-    const sectionId = sections[selectedReport];
-    if (!sectionId) return;
-    const section = document.getElementById(sectionId);
-
-    try {
-      const canvas = await html2canvas(section, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      doc.text(selectedReport, 10, 10);
-      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
-      doc.save("employee-report.pdf");
-    } catch (error) {
-      console.error(`Error capturing ${sectionId}:`, error);
+  useEffect(() => {
+    if (employees.length > 0) {
+      setSelectedEmployee(employees[0].id);
     }
-  };
+  }, [employees]);
 
+  useEffect(() => {
+    if (selectedEmployee) {
+      fetchTasksForEmployee(selectedEmployee);
+    }
+  }, [selectedEmployee]);
+
+  // Filter tasks for the "Tasks Assigned to Each Employee" chart
   const filteredTasks = tasks.filter((task) => {
     if (!task.created_at) return false;
     const taskDate = new Date(task.created_at);
@@ -92,62 +93,119 @@ const EmployeeReports = () => {
       (taskStatusFilter === "Ongoing" &&
         task.status?.toLowerCase() !== "completed");
 
-    const employeeMatch =
-      selectedEmployee === "" || task.employee_id === selectedEmployee;
-
     return (
       statusMatch &&
-      employeeMatch &&
       (filters.year === "All" || taskYear === filters.year) &&
       (filters.month === "All" || taskMonth === filters.month)
     );
   });
 
+  // Map tasks for the "Tasks Assigned to Each Employee" chart
   const taskData = filteredTasks.map((task) => ({
     name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
     tasks: task.task_count || 0,
   }));
 
+  const formatTasksAssignedtoEachEmployeeCSV = () => {
+    let csvData = [];
+
+    employees.forEach((employee) => {
+      const employeesTasks = tasks.filter((e) => e.employee === employee.id);
+
+      if (employeesTasks.length > 0) {
+        csvData.push([
+          `${employee.firstName} ${employee.lastName} - ${employeesTasks.length} task`,
+        ]); // Add employee name and task count
+
+        // Completed Tasks
+        const completedTasks = employeesTasks.filter(
+          (task) => task.status?.toLowerCase() === "completed"
+        );
+        if (completedTasks.length > 0) {
+          csvData.push(["Completed"]);
+          csvData.push(["Task name", "due_date", "amount"]);
+          completedTasks.forEach((task) => {
+            csvData.push([task.task_name, task.due_date, task.amount]);
+          });
+        }
+
+        // Ongoing Tasks
+        const ongoingTasks = employeesTasks.filter(
+          (task) => task.status?.toLowerCase() !== "completed"
+        );
+        if (ongoingTasks.length > 0) {
+          csvData.push(["Ongoing"]);
+          csvData.push(["Task name", "due_date", "amount"]);
+          ongoingTasks.forEach((task) => {
+            csvData.push([task.task_name, task.due_date, task.amount]);
+          });
+        }
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+
+  const formatTasksforSelectedEmployeeCSV = () => {
+    let csvData = [];
+
+    // Group tasks by employee
+    const tasksByEmployee = tasksForSelectedEmployee.reduce((acc, task) => {
+      const employeeName = `${task.firstName} ${task.lastName}`;
+      if (!acc[employeeName]) {
+        acc[employeeName] = [];
+      }
+      acc[employeeName].push(task);
+      return acc;
+    }, {});
+
+    // Populate CSV data
+    Object.entries(tasksByEmployee).forEach(([employeeName, tasks]) => {
+      // Add employee name
+      csvData.push([employeeName]);
+
+      // Add task details for the employee
+      tasks.forEach((task) => {
+        csvData.push([
+          "",
+          task.task_name,
+          task.due_date,
+          task.amount,
+          task.status,
+        ]);
+      });
+
+      csvData.push([]); // Add a blank row for spacing
+    });
+
+    return csvData;
+  };
+
+  let exportCSVData = [];
+
+  if (selectedReport === "Tasks Assigned to Each Employee") {
+    exportCSVData = formatTasksAssignedtoEachEmployeeCSV();
+  } else if (selectedReport === "Tasks for Selected Employee") {
+    exportCSVData = formatTasksforSelectedEmployeeCSV();
+  } else {
+    exportCSVData = employees; // Default case for Total Appointments & Appointments This Month
+  }
+  const exportPdf = () => {
+    const input = document.getElementById("report-container"); // Ensure this matches your report div's ID
+
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
+      pdf.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+    });
+  };
+
   return (
     <div className="employee-p-4">
       {/* Filters */}
-      <div className="flex space-x-4 mb-4">
-        <select
-          className="border p-2"
-          value={filters.year}
-          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-        >
-          <option value="All">All Years</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-        </select>
-        <select
-          className="border p-2"
-          value={filters.month}
-          onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-        >
-          <option value="All">All Months</option>
-          {[
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-          ].map((month) => (
-            <option key={month} value={month}>
-              {month}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="mt-4 flex space-x-4">
         <select
           className="bg-gray-200 text-black px-4 py-2 rounded"
@@ -155,21 +213,19 @@ const EmployeeReports = () => {
           onChange={(e) => setSelectedReport(e.target.value)}
         >
           <option value="">Select Report Type</option>
+          <option value="Total Employees">Total Employees</option>
           <option value="Tasks Assigned to Each Employee">
             Tasks Assigned to Each Employee
           </option>
-          <option value="Tasks completed vs. pending per employee">
-            Tasks completed vs. pending per employee
-          </option>
-          <option value="Employee workload distribution">
-            Employee workload distribution
+          <option value="Tasks for Selected Employee">
+            Tasks for Selected Employee
           </option>
         </select>
 
         {selectedReport && (
           <>
             <CSVLink
-              data={employees}
+              data={exportCSVData}
               filename={`${selectedReport
                 .replace(/\s+/g, "_")
                 .toLowerCase()}.csv`}
@@ -178,7 +234,7 @@ const EmployeeReports = () => {
               Export CSV
             </CSVLink>
             <button
-              onClick={exportPDF}
+              onClick={exportPdf}
               className="bg-red-500 text-white px-4 py-2 rounded"
             >
               Export PDF
@@ -197,15 +253,52 @@ const EmployeeReports = () => {
         <h3 className="text-lg font-semibold mb-2">
           Tasks Assigned to Each Employee
         </h3>
-        <select
-          className="border p-2 mb-4"
-          value={taskStatusFilter}
-          onChange={(e) => setTaskStatusFilter(e.target.value)}
-        >
-          <option value="All">All Tasks</option>
-          <option value="Completed">Completed</option>
-          <option value="Ongoing">Ongoing</option>
-        </select>
+        <div className="flex space-x-4 mb-4">
+          <select
+            className="border p-2"
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          >
+            <option value="All">All Years</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
+          <select
+            className="border p-2"
+            value={filters.month}
+            onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+          >
+            <option value="All">All Months</option>
+            {[
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+            ].map((month) => (
+              <option key={month} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border p-2 mb-4"
+            value={taskStatusFilter}
+            onChange={(e) => setTaskStatusFilter(e.target.value)}
+          >
+            <option value="All">All Tasks</option>
+            <option value="Completed">Completed</option>
+            <option value="Ongoing">Ongoing</option>
+          </select>
+        </div>
+
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             layout="vertical"
@@ -221,42 +314,52 @@ const EmployeeReports = () => {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex space-x-4 mb-4">
-        <select
-          className="border p-2"
-          value={selectedEmployee}
-          onChange={(e) => setSelectedEmployee(e.target.value)}
-        >
-          <option value="">All Employees</option>
-          {employees.map((emp) => (
-            <option
-              key={emp.id}
-              value={emp.id}
-            >{`${emp.firstName} ${emp.lastName}`}</option>
-          ))}
-        </select>
-        <select
-          className="border p-2"
-          value={taskStatusFilter}
-          onChange={(e) => setTaskStatusFilter(e.target.value)}
-        >
-          <option value="All">All Tasks</option>
-          <option value="Completed">Completed</option>
-          <option value="Ongoing">Ongoing</option>
-        </select>
-      </div>
       <div className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold">Tasks for Selected Employee</h3>
-        <ResponsiveContainer width={1400} height={400}>
+        <div className="flex space-x-4 mb-4">
+          <select
+            className="border p-2"
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+          >
+            {employees.map((emp) => (
+              <option
+                key={emp.id}
+                value={emp.id}
+              >{`${emp.firstName} ${emp.lastName}`}</option>
+            ))}
+          </select>
+        </div>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart
             layout="vertical"
-            data={filteredTasks}
+            data={tasksForSelectedEmployee}
             margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
             <YAxis dataKey="task_name" type="category" width={150} />
-            <Tooltip />
+            <Tooltip
+              content={({ payload }) => {
+                if (payload && payload.length) {
+                  const task = payload[0].payload;
+                  return (
+                    <div className="bg-white p-2 border rounded shadow">
+                      <p className="text-xs text-gray-600">
+                        Status: {task.status}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Amount: {task.amount}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Task Due: {task.due_date}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
             <Legend />
             <Bar dataKey="amount" fill="#8884d8" name="Task Amount" />
           </BarChart>

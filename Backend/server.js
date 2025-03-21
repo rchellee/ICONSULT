@@ -2494,12 +2494,24 @@ app.get("/ETReports", (req, res) => {
     res.json(result);
   });
 });
-
 app.get("/employeeReports", (req, res) => {
   const sql = "SELECT * FROM employee";
   db.query(sql, (err, result) => {
     if (err)
       return res.json({ error: "Error fetching employee", details: err });
+    res.json(result);
+  });
+});
+app.get("/tasksForEmployee/:employeeId", (req, res) => {
+  const { employeeId } = req.params;
+  const sql = `
+    SELECT t.task_name, t.due_date, t.status, t.amount
+    FROM tasks t
+    WHERE t.employee = ?
+    ORDER BY t.due_date
+  `;
+  db.query(sql, [employeeId], (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
     res.json(result);
   });
 });
