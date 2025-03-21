@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CSVLink } from "react-csv";
+import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import {
   BarChart,
   Bar,
@@ -21,6 +22,7 @@ import {
 const TaskReports = () => {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState({});
+  const [employees, setEmployees] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState("All");
@@ -32,6 +34,7 @@ const TaskReports = () => {
   useEffect(() => {
     fetchTasks();
     fetchProjects();
+    fetchEmployees();
   }, []);
 
   const fetchTasks = async () => {
@@ -56,10 +59,18 @@ const TaskReports = () => {
     }
   };
 
-  const uniqueYears = [
-    "All",
-    ...new Set(tasks.map((task) => new Date(task.due_date).getFullYear())),
-  ].sort();
+  const fetchEmployees = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/employeeReports");
+      const employeeData = response.data.reduce((acc, emp) => {
+        acc[emp.id] = `${emp.firstName} ${emp.lastName}`;
+        return acc;
+      }, {});
+      setEmployees(employeeData);
+    } catch (error) {
+      console.error("Error fetching employees", error);
+    }
+  };
 
   const months = [
     "All",
@@ -155,31 +166,365 @@ const TaskReports = () => {
     value: tasksPerProject[name],
   }));
 
-  const unpaidTasks = tasks.filter((task) => task.paymentStatus === "Not Paid");
-  const unpaidTaskData = unpaidTasks.map((task) => ({
-    name: task.task_name,
-    amount: task.amount,
-    due_date: new Date(task.due_date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-  }));
+  const formatTaskbyStatusCSV = () => {
+    let csvData = [];
+
+    const status = ["Ongoing", "Completed"];
+
+    status.forEach((status) => {
+      const statusTasks = tasks.filter((t) => t.status === status);
+
+      if (statusTasks.length > 0) {
+        csvData.push([status]);
+        csvData.push([
+          "Task Name",
+          "Project Name",
+          "Assigned Employee",
+          "Miscellaneous",
+          "Status",
+          "Task Fee",
+          "Total Amount",
+          "Task Due",
+          "Task Completed",
+          "Date Created",
+        ]);
+
+        statusTasks.forEach((t) => {
+          csvData.push([
+            t.task_name,
+            projects[t.project_id] || `Project ${t.project_id}`,
+            employees[t.employee] || `Employee ${t.employee}`,
+            t.miscellaneous,
+            t.status,
+            t.task_fee,
+            t.amount,
+            t.due_date,
+            t.actual_finish,
+            t.created_at,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatTasksPerProjectCSV = () => {
+    let csvData = [];
+
+    // Group tasks by project
+    const tasksByProject = {};
+    tasks.forEach((task) => {
+      const projectName =
+        projects[task.project_id] || `Project ${task.project_id}`;
+      if (!tasksByProject[projectName]) {
+        tasksByProject[projectName] = [];
+      }
+      tasksByProject[projectName].push(task);
+    });
+
+    // Loop through projects and their tasks
+    Object.keys(tasksByProject).forEach((projectName) => {
+      csvData.push([projectName]); // Add project name as a row header
+
+      csvData.push([
+        "Task Name",
+        "Assigned Employee",
+        "Miscellaneous",
+        "Status",
+        "Task Fee",
+        "Total Amount",
+        "Task Due",
+        "Task Completed",
+        "Date Created",
+      ]);
+
+      tasksByProject[projectName].forEach((task) => {
+        csvData.push([
+          task.task_name,
+          employees[task.employee] || `Employee ${task.employee}`,
+          task.miscellaneous,
+          task.status,
+          task.task_fee,
+          task.amount,
+          task.due_date,
+          task.actual_finish,
+          task.created_at,
+        ]);
+      });
+
+      csvData.push([]); // Blank row for spacing
+    });
+
+    return csvData;
+  };
+  const formatTaskDueCSV = () => {
+    let csvData = [];
+
+    // Group tasks by Year & Month
+    const tasksByMonthYear = tasks.reduce((acc, task) => {
+      const taskDate = new Date(task.due_date);
+      const year = taskDate.getFullYear();
+      const month = months[taskDate.getMonth() + 1]; // Get month name
+
+      const key = `${month} ${year}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(task);
+      return acc;
+    }, {});
+
+    // Loop through each Month-Year and format CSV
+    Object.keys(tasksByMonthYear).forEach((monthYear) => {
+      csvData.push([monthYear]); // Section header
+      csvData.push([
+        "Task Name",
+        "Project Name",
+        "Assigned Employee",
+        "Miscellaneous",
+        "Status",
+        "Task Fee",
+        "Total Amount",
+        "Due Date",
+        "Actual Finish",
+        "Created At",
+      ]); // Column headers
+
+      tasksByMonthYear[monthYear].forEach((task) => {
+        csvData.push([
+          task.task_name,
+          projects[task.project_id] || `Project ${task.project_id}`,
+          employees[task.employee] || `Employee ${task.employee}`,
+          task.miscellaneous || "N/A",
+          task.status,
+          task.task_fee || 0,
+          task.amount || 0,
+          task.due_date,
+          task.actual_finish || "N/A",
+          task.created_at,
+        ]);
+      });
+
+      csvData.push([]); // Blank row for spacing
+    });
+
+    return csvData;
+  };
+  const formatTaskPaymentStatusCSV = () => {
+    let csvData = [["Projects per Client"]]; // Title row
+
+    clients.forEach((client) => {
+      const clientProjects = projects.filter((p) => p.clientId === client.id);
+
+      if (clientProjects.length > 0) {
+        csvData.push([client.firstName + " " + client.lastName]); // Client name
+        csvData.push([
+          "Project Name",
+          "Description",
+          "Start Date",
+          "End Date",
+          "Created At",
+        ]); // Column headers
+
+        clientProjects.forEach((p) => {
+          csvData.push([
+            p.projectName,
+            p.description,
+            p.startDate,
+            p.endDate,
+            p.created_at,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+
+  let exportCSVData = [];
+
+  if (selectedReport === "Task Status") {
+    exportCSVData = formatTaskbyStatusCSV();
+  } else if (selectedReport === "Tasks Per Project") {
+    exportCSVData = formatTasksPerProjectCSV();
+  } else if (selectedReport === "Task Due") {
+    exportCSVData = formatTaskDueCSV();
+  } else if (selectedReport === "Task Payment Status") {
+    exportCSVData = formatTaskPaymentStatusCSV();
+  } else {
+    exportCSVData = projects;
+  }
 
   const exportPDF = async () => {
-    if (!selectedReport) return;
-    const doc = new jsPDF("p", "mm", "a4");
-    const section = document.getElementById(selectedReport);
-    if (!section) return;
+    const doc = new jsPDF("landscape", "mm", "a4");
+    doc.setFontSize(10);
+    doc.text(selectedReport, 10, 10);
 
-    try {
-      const canvas = await html2canvas(section, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      doc.text(selectedReport, 10, 10);
-      doc.addImage(imgData, "PNG", 10, 30, 180, 0);
-      doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
-    } catch (error) {
-      console.error(`Error capturing ${selectedReport}:`, error);
+    let yPos = 20;
+
+    const chartElement = document.getElementById("chart-container");
+
+    if (chartElement) {
+      try {
+        // Capture chart as an image
+        const canvas = await html2canvas(chartElement);
+        const imgData = canvas.toDataURL("image/png");
+
+        // Add image to the PDF
+        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
+        yPos += 90; // Adjust position for the table
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
     }
+
+    if (selectedReport === "Total Projects") {
+      const headers = [
+        [
+          "Project Name",
+          "Client Name",
+          "Description",
+          "Status",
+          "Project Start",
+          "Project End",
+          "Actual Finish",
+          "Date Created",
+        ],
+      ];
+      const data = projects.map((p) => [
+        p.projectName,
+        p.clientName,
+        p.description,
+        p.status,
+        p.startDate,
+        p.endDate,
+        p.actualFinish,
+        p.created_at,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
+      });
+    }
+
+    if (selectedReport === "Projects by Status") {
+      const statuses = ["Pending", "Ongoing", "Completed"];
+
+      statuses.forEach((status) => {
+        const projectStatus = projects.filter((p) => p.status === status);
+
+        if (projectStatus.length > 0) {
+          doc.setFontSize(12);
+          doc.text(status, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            [
+              "Project Name",
+              "Client Name",
+              "Description",
+              "Status",
+              "Project Start",
+              "Project End",
+              "Actual Finish",
+              "Date Created",
+            ],
+          ];
+          const data = projectStatus.map((p) => [
+            p.projectName,
+            p.clientName,
+            p.description,
+            p.status,
+            p.startDate,
+            p.endDate,
+            p.actualFinish,
+            p.created_at,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 8 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+
+    if (selectedReport === "Overdue Projects") {
+      const headers = [
+        [
+          "Project Name",
+          "Client Name",
+          "Description",
+          "Status",
+          "End Date",
+          "Days Overdue",
+        ],
+      ];
+      const overdueProjects = projects
+        .filter((p) => p.isDelayed === 1)
+        .map((p) => [
+          p.projectName,
+          p.clientName,
+          p.description,
+          p.status,
+          p.endDate,
+          p.delayedDays, // Ensure this field exists in your backend response
+        ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: overdueProjects,
+        styles: { fontSize: 8 },
+      });
+    }
+
+    if (selectedReport === "Projects per Client") {
+      clients.forEach((client) => {
+        const clientProjects = projects.filter((p) => p.clientId === client.id);
+
+        if (clientProjects.length > 0) {
+          doc.setFontSize(12);
+          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            [
+              "Project Name",
+              "Description",
+              "Start Date",
+              "End Date",
+              "Created At",
+            ],
+          ];
+          const data = clientProjects.map((p) => [
+            p.projectName,
+            p.description,
+            p.startDate,
+            p.endDate,
+            p.created_at,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 8 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+
+    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
 
   return (
@@ -194,12 +539,13 @@ const TaskReports = () => {
           <option value="Task Status">Task Status</option>
           <option value="Tasks Per Project">Tasks Per Project</option>
           <option value="Task Due">Task Due</option>
+          <option value="Task Payment Status">Task Payment Status</option>
         </select>
 
         {selectedReport && (
           <>
             <CSVLink
-              data={tasks}
+              data={exportCSVData}
               filename={`${selectedReport
                 .replace(/\s+/g, "_")
                 .toLowerCase()}.csv`}
@@ -216,7 +562,7 @@ const TaskReports = () => {
           </>
         )}
       </div>
-      
+
       <div className="tasks-graph-container">
         <h3>Task Status</h3>
 
