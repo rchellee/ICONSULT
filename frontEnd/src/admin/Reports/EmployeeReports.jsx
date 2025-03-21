@@ -21,6 +21,8 @@ const EmployeeReports = () => {
   const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [selectedReport, setSelectedReport] = useState("");
+  const [taskStatusFilter, setTaskStatusFilter] = useState("All");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -78,19 +80,29 @@ const EmployeeReports = () => {
   };
 
   const filteredTasks = tasks.filter((task) => {
-    if (!task.created_at) return false; // Ensure created_at exists
-
+    if (!task.created_at) return false;
     const taskDate = new Date(task.created_at);
-    const taskYear = taskDate.getFullYear();
+    const taskYear = taskDate.getFullYear().toString();
     const taskMonth = taskDate.toLocaleString("default", { month: "long" });
 
+    const statusMatch =
+      taskStatusFilter === "All" ||
+      (taskStatusFilter === "Completed" &&
+        task.status?.toLowerCase() === "completed") ||
+      (taskStatusFilter === "Ongoing" &&
+        task.status?.toLowerCase() !== "completed");
+
+    const employeeMatch =
+      selectedEmployee === "" || task.employee_id === selectedEmployee;
+
     return (
-      (filters.year === "All" || taskYear.toString() === filters.year) &&
+      statusMatch &&
+      employeeMatch &&
+      (filters.year === "All" || taskYear === filters.year) &&
       (filters.month === "All" || taskMonth === filters.month)
     );
   });
 
-  const totalEmployees = employees.length;
   const taskData = filteredTasks.map((task) => ({
     name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
     tasks: task.task_count || 0,
@@ -185,6 +197,15 @@ const EmployeeReports = () => {
         <h3 className="text-lg font-semibold mb-2">
           Tasks Assigned to Each Employee
         </h3>
+        <select
+          className="border p-2 mb-4"
+          value={taskStatusFilter}
+          onChange={(e) => setTaskStatusFilter(e.target.value)}
+        >
+          <option value="All">All Tasks</option>
+          <option value="Completed">Completed</option>
+          <option value="Ongoing">Ongoing</option>
+        </select>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             layout="vertical"
@@ -197,6 +218,47 @@ const EmployeeReports = () => {
             <Tooltip />
             <Legend />
             <Bar dataKey="tasks" fill="#8884d8" name="Number of Tasks" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex space-x-4 mb-4">
+        <select
+          className="border p-2"
+          value={selectedEmployee}
+          onChange={(e) => setSelectedEmployee(e.target.value)}
+        >
+          <option value="">All Employees</option>
+          {employees.map((emp) => (
+            <option
+              key={emp.id}
+              value={emp.id}
+            >{`${emp.firstName} ${emp.lastName}`}</option>
+          ))}
+        </select>
+        <select
+          className="border p-2"
+          value={taskStatusFilter}
+          onChange={(e) => setTaskStatusFilter(e.target.value)}
+        >
+          <option value="All">All Tasks</option>
+          <option value="Completed">Completed</option>
+          <option value="Ongoing">Ongoing</option>
+        </select>
+      </div>
+      <div className="bg-white p-4 shadow rounded-lg">
+        <h3 className="text-lg font-semibold">Tasks for Selected Employee</h3>
+        <ResponsiveContainer width={1400} height={400}>
+          <BarChart
+            layout="vertical"
+            data={filteredTasks}
+            margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis type="number" />
+            <YAxis dataKey="task_name" type="category" width={150} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="amount" fill="#8884d8" name="Task Amount" />
           </BarChart>
         </ResponsiveContainer>
       </div>

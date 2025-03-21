@@ -2393,12 +2393,15 @@ app.get("/appointmentReports", (req, res) => {
   });
 });
 app.get("/appointmentYears", (req, res) => {
-  const sql = "SELECT DISTINCT YEAR(STR_TO_DATE(date, '%Y-%m-%d')) AS year FROM appointments ORDER BY year DESC";
+  const sql =
+    "SELECT DISTINCT YEAR(STR_TO_DATE(date, '%Y-%m-%d')) AS year FROM appointments ORDER BY year DESC";
 
   db.query(sql, (err, data) => {
     if (err) {
       console.error("Error fetching appointment years:", err);
-      return res.status(500).json({ message: "Failed to fetch years", error: err });
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch years", error: err });
     }
     res.json(data.map((row) => row.year)); // Send an array of years
   });
@@ -2480,7 +2483,7 @@ app.get("/taskReports", (req, res) => {
 });
 app.get("/ETReports", (req, res) => {
   const sql = `
-    SELECT e.firstName, e.lastName, t.created_at, COUNT(t.id) AS task_count
+    SELECT e.firstName, e.lastName, t.created_at, t.status, t.amount, t.due_date, t.task_name, COUNT(t.id) AS task_count
     FROM employee e
     LEFT JOIN tasks t ON e.id = t.employee
     GROUP BY e.id
