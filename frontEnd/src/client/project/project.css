@@ -26,7 +26,10 @@ h1 {
 
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); /* Flexibility for responsive design */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(400px, 1fr)
+  ); /* Flexibility for responsive design */
   gap: 20px;
   justify-content: flex-start;
   align-items: flex-start;
@@ -42,7 +45,7 @@ h1 {
   background-color: #f3f3f3;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 20px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -55,8 +58,8 @@ h1 {
 }
 
 .logo-box {
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   background-color: #0078d4;
   color: white;
   display: flex;
@@ -70,19 +73,21 @@ h1 {
 
 .project-title {
   margin: 10px 0 0 0;
-  font-size: 26px;
+  font-size: 19px;
   font-weight: bold;
   color: #333;
 }
 
-.project-info {
-  margin-left: 10px;
-}
-
 .project-info p {
   margin: 5px 0;
-  color: #555;
-  font-size: 16px;
+  color: #163e69;
+  font-size: 19px;
+}
+.project-info .icon-with-gap {
+  margin-right: 2rem; /* Adjust this value as needed for spacing */
+  display: inline-flex;
+  align-items: center; /* Ensures proper alignment */
+  gap: 0.5rem; /* Space between the icon and the text */
 }
 
 .project-info p:first-child {
@@ -90,7 +95,7 @@ h1 {
 }
 
 .project-info p:last-child {
-  margin-left: 75px;
+  margin-left: 24px;
 }
 
 /* Specific styles for Projects Toggle */

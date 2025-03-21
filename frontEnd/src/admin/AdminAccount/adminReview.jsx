@@ -3,11 +3,9 @@ import {
   Box,
   Typography,
   Paper,
-  Button,
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   Avatar,
   Rating,
   Link,
@@ -101,8 +99,13 @@ const AdminReview = () => {
       <Sidebar />
 
       <div className="review-admin">
-        <FormControl style={{ marginBottom: "20px", minWidth: 200, backgroundColor: "white"}}>
-          
+        <FormControl
+          style={{
+            marginBottom: "20px",
+            minWidth: 200,
+            backgroundColor: "white",
+          }}
+        >
           <Select
             value={filterRating}
             onChange={(e) => setFilterRating(e.target.value)}
@@ -128,21 +131,28 @@ const AdminReview = () => {
               return (
                 <Paper
                   key={review.id}
-                  elevation={3}
+                  elevation={7}
                   style={{
                     padding: "20px",
                     marginBottom: "15px",
-                    maxWidth: "600px",
+                    maxWidth: "450px",
                     wordWrap: "break-word",
                     overflowWrap: "break-word",
                     height: "auto",
                     whiteSpace: "normal",
-                    
                   }}
                 >
-                  <Box display="flex" flexDirection="column" alignItems="flex-start">
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="flex-start"
+                  >
                     {/* Rating and Date Section */}
-                    <Box display="flex" justifyContent="space-between" width="100%">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      width="100%"
+                    >
                       <Box display="flex" alignItems="center">
                         <Rating
                           name="rating"
@@ -150,16 +160,20 @@ const AdminReview = () => {
                           readOnly
                           precision={0.5}
                         />
-                        <Typography 
-                      variant="body1" style={{ marginTop: "10px", marginLeft: "50px", fontStyle: 'italic' }}
-                    >
-                      January 16, 2025
-                    </Typography>
+                        <Typography
+                          variant="body1"
+                          style={{
+                            marginTop: "10px",
+                            marginLeft: "50px",
+                            fontStyle: "italic",
+                          }}
+                        >
+                          January 16, 2025
+                        </Typography>
                       </Box>
                     </Box>
 
                     {/* User Information Section */}
-                    
                     <Box display="flex" alignItems="center" marginTop="10px">
                       <Avatar style={{ marginRight: "10px" }}>
                         {getClientName(review.client_id)
@@ -172,7 +186,10 @@ const AdminReview = () => {
                     </Box>
 
                     {/* Project Name Section */}
-                    <Typography variant="body1" style={{ marginTop: "10px", marginLeft: "50px" }}>
+                    <Typography
+                      variant="body1"
+                      style={{ marginTop: "10px", marginLeft: "50px" }}
+                    >
                       {getProjectName(review.project_id)}
                     </Typography>
 
@@ -189,16 +206,17 @@ const AdminReview = () => {
                       }}
                     >
                       <strong>{displayComment}</strong>
-                      {review.comment.length > MAX_COMMENT_LENGTH && !isExpanded && (
-                        <Link
-                          component="button"
-                          variant="body2"
-                          onClick={() => toggleReadMore(review.id)}
-                          style={{ marginLeft: "10px", cursor: "pointer" }}
-                        >
-                          Read More
-                        </Link>
-                      )}
+                      {review.comment.length > MAX_COMMENT_LENGTH &&
+                        !isExpanded && (
+                          <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => toggleReadMore(review.id)}
+                            style={{ marginLeft: "10px", cursor: "pointer" }}
+                          >
+                            Read More
+                          </Link>
+                        )}
                       {isExpanded && (
                         <Link
                           component="button"
@@ -216,15 +234,14 @@ const AdminReview = () => {
             })
           ) : (
             <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            // Full height of the viewport
-            width="90vw"  // Full width of the viewport
-          >
-            <Typography variant="body1">No reviews available.</Typography>
-          </Box>
-          
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              // Full height of the viewport
+              width="90vw" // Full width of the viewport
+            >
+              <Typography variant="body1">No reviews available.</Typography>
+            </Box>
           )}
         </div>
       </div>

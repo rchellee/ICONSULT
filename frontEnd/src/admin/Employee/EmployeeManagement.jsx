@@ -1,18 +1,24 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import EmployeeForm from "./EmployeeForm";
 import EmployeeDetails from "./EmployeeDetails";
 import "./employee.css";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
+import { format } from "date-fns";
 
 const EmployeeManagement = () => {
+  const { searchTerm } = useContext(SearchContext);
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [toastVisible, setToastVisible] = useState(false); // State for toast visibility
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toastVisible, setToastVisible] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const isValidDate = (date) => !isNaN(new Date(date).getTime());
 
-  // Fetch employees from the database when the component mounts
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -27,6 +33,24 @@ const EmployeeManagement = () => {
     fetchEmployees();
   }, []);
 
+  useEffect(() => {
+    setSearchQuery(searchTerm.toLowerCase());
+  }, [searchTerm]);
+
+  const months = [
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+  ];
+
+  const years = Array.from(new Set(employees.map(emp => new Date(emp.modified_date).getFullYear())));
+
+  const filteredEmployees = employees.filter((employee) => {
+    const employeeDate = new Date(employee.modified_date);
+    const matchesMonth = selectedMonth ? months[employeeDate.getMonth()] === selectedMonth : true;
+    const matchesYear = selectedYear ? employeeDate.getFullYear().toString() === selectedYear : true;
+    const matchesStatus = selectedStatus ? employee.status === selectedStatus : true;
+    return matchesMonth && matchesYear && matchesStatus && `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchQuery);
+  });
+
   const viewEmployeeDetails = (employee) => {
     setSelectedEmployee(employee);
   };
@@ -34,6 +58,15 @@ const EmployeeManagement = () => {
   const goBackToList = () => {
     setSelectedEmployee(null);
     setShowForm(false);
+  };
+
+  const updateEmployee = (updatedEmployee) => {
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((employee) =>
+        employee.id === updatedEmployee.id ? updatedEmployee : employee
+      )
+    );
+    setSelectedEmployee(updatedEmployee);
   };
 
   const toggleStatus = async (employeeId, currentStatus) => {
@@ -69,26 +102,6 @@ const EmployeeManagement = () => {
     return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
   };
 
-  // Function to generate random background color
-  const generateRandomColor = () => {
-    const colors = [
-      "#FF5733",
-      "#33FF57",
-      "#3357FF",
-      "#FF33A8",
-      "#FFC300",
-      "#A833FF",
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
-  };
-
-  // Filter employees based on search term
-  const filteredEmployees = employees.filter((employee) =>
-    `${employee.firstName} ${employee.lastName}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
   const handleEmployeeAdded = () => {
     setToastVisible(true);
     setTimeout(() => setToastVisible(false), 3000); // Auto-hide after 3 seconds
@@ -97,36 +110,52 @@ const EmployeeManagement = () => {
   return (
     <div>
       <Topbar />
+      <Sidebar />
       <div className="employee-home-page">
-        <Sidebar />
         <div className="employee-content">
           {showForm ? (
             <EmployeeForm
               employees={employees}
               setEmployees={setEmployees}
               toggleForm={() => setShowForm(false)}
-              onEmployeeAdded={handleEmployeeAdded} // Callback for adding employee
+              onEmployeeAdded={handleEmployeeAdded}
+              goBack={goBackToList}
             />
           ) : selectedEmployee ? (
             <EmployeeDetails
               employee={selectedEmployee}
+              updateEmployee={updateEmployee}
+              showToast={() => setToastVisible(true)}
+              hideToast={() => setToastVisible(false)}
               goBack={goBackToList}
             />
           ) : (
             <>
-              <button
-                onClick={() => setShowForm(true)}
-                className="add-employee-btn"
-              >
-                Add Employee
-              </button>
-              <input
-                type="text"
-                placeholder="Search employee"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-bar"
-              />
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="add-employee-btn"
+                >
+                  Add Employee
+                </button>
+              <div className="employee-filters-section">
+            <select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
+              <option value="">All Months</option>
+              {months.map((month, index) => (
+                <option key={index} value={month}>{month}</option>
+              ))}
+            </select>
+            <select onChange={(e) => setSelectedYear(e.target.value)} value={selectedYear}>
+              <option value="">All Years</option>
+              {years.map((year, index) => (
+                <option key={index} value={year}>{year}</option>
+              ))}
+            </select>
+            <select onChange={(e) => setSelectedStatus(e.target.value)} value={selectedStatus}>
+              <option value="">Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
               {filteredEmployees.length === 0 ? (
                 <p>No matching employees found.</p>
               ) : (
@@ -134,35 +163,32 @@ const EmployeeManagement = () => {
                   <thead>
                     <tr>
                       <th>Name</th>
+                      <th>Email</th>
+                      <th>Position</th>
                       <th>Status</th>
-                      <th>Role</th>
+                      <th>Date Added</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredEmployees.map((employee, index) => (
                       <tr key={index}>
                         <td onClick={() => viewEmployeeDetails(employee)}>
-                          <div
-                            className="initials-circle"
-                            style={{ backgroundColor: generateRandomColor() }}
-                          >
+                          <div className="initials-circle">
                             {getInitials(employee.firstName, employee.lastName)}
                           </div>
                           {employee.firstName} {employee.lastName}
                         </td>
-                        <td>
-                          <label className="toggle-btn">
-                            <input
-                              type="checkbox"
-                              checked={employee.status === "active"}
-                              onChange={() =>
-                                toggleStatus(employee.id, employee.status)
-                              }
-                            />
-                            <span className="slider"></span>
-                          </label>
+                        <td>{employee.email_add}</td>
+                        <td>{employee.role}</td>
+                        <td>{employee.status}</td>
+                                                <td>
+                          {isValidDate(employee.modified_date)
+                            ? format(
+                                new Date(employee.modified_date),
+                                "MMMM dd, yyyy" 
+                              )
+                            : "N/A"}
                         </td>
-                        <td>{employee.role || "role 1"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -177,14 +203,10 @@ const EmployeeManagement = () => {
                 <i className="fas fa-solid fa-check check"></i>
                 <div className="message">
                   <div className="text text-2">
-                    Success, your employee has been added.
+                    Success, employee details have been saved.
                   </div>
                 </div>
               </div>
-              <i
-                className="fa-solid fa-xmark close"
-                onClick={() => setToastVisible(false)}
-              ></i>
               <div className="progress active"></div>
             </div>
           )}

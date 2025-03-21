@@ -1,23 +1,5 @@
-/* General styles */
-body {
-  font-family: "Poppins", sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f9;
-  color: #333;
-  font-size: 0.90rem; 
-}
-
-.client-home-page {
-  /* display: flex; */
-  height: 100%;
-  font-family: "Poppins", sans-serif;
-  font-size: 0.90rem; 
-
-}
-
 .content-client {
-  margin-left: 100px; 
+  margin-left: 100px;
   padding: 40px 20px 20px;
   display: flex;
   flex: 1;
@@ -65,7 +47,7 @@ h3 {
 .project-item {
   border-radius: 2px;
   padding: 10px;
-  font-size: 0.90rem; 
+  font-size: 0.9rem;
 }
 
 .progress-bar {
@@ -82,8 +64,6 @@ h3 {
   text-align: center;
   line-height: 13px;
 }
-
-
 
 .project-modal-button:hover {
   background-color: #2980b9;
@@ -103,9 +83,7 @@ h3 {
 
 .task-item:last-child {
   border-bottom: none;
-  
 }
-
 
 /* Modal styles */
 .modal-overlay {
@@ -127,7 +105,6 @@ h3 {
   padding: 20px;
   border-radius: 2px;
   z-index: 1000;
-
 }
 
 .modal-content ul {
@@ -146,7 +123,7 @@ h3 {
 /* Summary */
 .dashboard-summary {
   display: flex;
-  justify-content:center;
+  justify-content: center;
   margin-bottom: 10px;
 }
 
@@ -161,13 +138,20 @@ h3 {
 
 /* See More / Close Span Button */
 
-
 span {
   cursor: pointer;
-
 }
 
 span:hover {
-  
   color: #2980b9;
+}
+
+.notification-item.unread {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.notification-item.read {
+  background-color: #fff;
+  font-weight: normal;
 }

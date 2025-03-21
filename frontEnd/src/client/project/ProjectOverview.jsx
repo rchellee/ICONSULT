@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./overview.css";
+import Payment from "./payment";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -14,6 +15,8 @@ function ProjectOverview({ projectId }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [isPaymentOverlayOpen, setIsPaymentOverlayOpen] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState({});
 
   useEffect(() => {
     axios
@@ -51,7 +54,12 @@ function ProjectOverview({ projectId }) {
   const remainingPayment = totalPayment - (project?.downpayment || 0);
 
   const handlePaymentClick = () => {
-    navigate("/payment", { state: { projectId, amount: remainingPayment } });
+    setPaymentDetails({ projectId, amount: remainingPayment });
+    setIsPaymentOverlayOpen(true);
+  };
+
+  const closePaymentOverlay = () => {
+    setIsPaymentOverlayOpen(false);
   };
 
   const handleReviewClick = () => {
@@ -80,7 +88,6 @@ function ProjectOverview({ projectId }) {
               {project.endDate ? formatDate(project.endDate) : "N/A"}
             </span>
           </p>
-          {/* Updated Status row */}
           <p className="status-row" style={{ marginTop: "-10px" }}>
             <strong>Status:</strong> {project.status}
           </p>
@@ -113,7 +120,8 @@ function ProjectOverview({ projectId }) {
             )}
           </div>
 
-          {project.paymentStatus === "Paid" &&
+          {remainingPayment <= 0 &&
+            project.paymentStatus === "Paid" &&
             project.status === "Completed" &&
             !project.isReview && (
               <button
@@ -128,6 +136,17 @@ function ProjectOverview({ projectId }) {
         </div>
       ) : (
         <p>No project details found.</p>
+      )}
+      {isPaymentOverlayOpen && (
+        <div className="overlay">
+          <div className="overlay-content">
+            <Payment
+              projectId={paymentDetails.projectId}
+              amount={paymentDetails.amount}
+              onClose={closePaymentOverlay}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

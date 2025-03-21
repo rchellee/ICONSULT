@@ -1,369 +1,497 @@
-body {
+/* Google Font CDN Link */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Ubuntu:wght@400;500;700&display=swap");
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow-y: auto; /* Ensures vertical scrolling */
-  height: auto; /* Allows content to expand */
-}
-
-html {
-  scroll-behavior: smooth; /* Optional: Smooth scrolling */
-}
-
-/* Header Styles */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-  position: fixed;
-  width: 100%; 
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  background-color: rgb(255, 255, 255); 
-  padding-top: 50px;
-}
-
-/* Welcome to iconsult */
-.services-text {
-  color: #3a9b9a; 
-  font-weight: bold; 
-}
-
-
-/* Navbar Styles */
-.navbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  background-color: transparent;
-  margin-left: -100px;
-  padding-right: 50px;
-  margin-top: 10px; 
-}
-
-/* Logo Styles */
-.logo {
-  position: absolute;
-  left: 20px;
-  top: 4px; 
-}
-
-.logo-img {
-  height: 80px;
-  width: auto;
-  
-  margin-left: 100px;
-}
-.logo-topbar {
-  position: absolute;
-  left: 1px;
-  top: 4px; 
-}
-
-.logo-topbar-img {
-  height: 54px;
-  width: auto;
-}
-
-/* Navbar Links */
-.nav-links {
-  display: flex;
-  align-items: center;
-}
-
-.nav-link {
   text-decoration: none;
-  color: #333;
-  margin-left: 50px;
-  font-size: 1em;
+  scroll-behavior: smooth;
 }
-
-.nav-link:hover {
-  color: #007bff;
+/* Custom Scroll Bar CSS */
+::-webkit-scrollbar {
+  width: 10px;
 }
-
-/* Login Button Styles */
-.login-btn {
-  width: 200px; 
-  padding: 12px 10px; 
-  font-size: 1em; 
-  color: #fff;
-  background-color: #395176;
-  border: none;
-  border-radius: 5px; 
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  text-align: center; 
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
 }
-
-.login-btn:hover {
-  background-color: #51d1eb; 
+::-webkit-scrollbar-thumb {
+  background: #6e93f7;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
-
-
-
-
-
-
-.hero {
-  display: flex;
-  flex-direction: column; 
-  height: auto; 
-  justify-content: center;
-  align-items: center;
-  background-color: transparent; 
-  padding: 0;
-  width: 100%; 
-  box-sizing: border-box;
-  min-height: 100vh; 
+::-webkit-scrollbar-thumb:hover {
+  background: #4070f4;
 }
+/* navbar styling */
+nav {
+  width: 100%;
+  padding: 10px 0;
+  z-index: 998;
+  transition: all 0.3s ease;
+  font-family: "Ubuntu", sans-serif;
+  background: #0a2e68;
 
-/* Hero content layout */
-.hero-content {
+}
+nav .navbar {
+  width: 90%;
   display: flex;
   justify-content: space-between;
-  width: 100%; 
-  max-width: 1200px; 
   align-items: center;
-  padding: 0 20px; 
-  box-sizing: border-box;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  margin: auto;
 }
-
-/* Left section */
-.i-left {
-  flex: 1;
-  padding-left: -100px; 
-  max-width: 50%; 
+nav .navbar .logo a {
+  font-weight: 500;
+  font-size: 35px;
+  color: white;
+}
+nav.sticky .navbar .logo a {
+  color: #fff;
+}
+nav .navbar .menu {
   display: flex;
-  flex-direction: column; 
-  justify-content: center; 
-  margin-right: px; /* Add margin to the right for spacing */
+  position: relative;
 }
-
-/* Right section */
-.i-right {
-  position: relative; 
-  transform: scale(1.4); 
-  right: 20%; 
-  
+nav .navbar .menu li {
+  list-style: none;
+  margin: 0 8px;
 }
-
-.i-right img {
-  margin-left: 100px; /* Adjust this value to move the image more or less */
+.navbar .menu a {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  padding: 6px 0;
+  transition: all 0.4s ease;
 }
-
-/* i-name styling */
-.i-name {
-  display: flex;
-  flex-direction:row; 
-  width: 100%;
+.navbar .menu a:hover {
+  color: #4070f4;
 }
-
-.i-name  {
-  white-space: nowrap; 
-  display: block; 
-  font-size: 2.5rem;
+nav.sticky .menu a {
+  color: #fff;
 }
-
-.i-name:first-child {
-  font-weight: bold;
-  font-size: 50px; 
+nav.sticky .menu a:hover {
+  color: white;
 }
-
-.i-name :last-child {
-  font-weight: lighter;
-  font-size: 30px; 
-  margin-top: 10px;
+.navbar .media-icons a {
+  color: white;
+  font-size: 18px;
+  margin: 0 6px;
 }
-
-.choose-us-text {
-  display: block;     
-  text-align: center;  
-  font-size: 2rem;     
-  color: #1f4971;     
-  margin: 20px 0;    
-  font-weight: bold; 
-  width: 100%; 
+nav.sticky .media-icons a {
+  color: #fff;
 }
-
-/* Swipe Boxes */
-.services h2 {
-  font-size: 2.5rem; 
-  text-align: center; 
-  margin-bottom: 20px; 
-}
-
-.swipe-box-container {
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-}
-
-.swipe-boxes {
-  display: flex;
-  justify-content: flex-start; 
-  align-items: center; 
-  overflow-x: auto; 
-  scroll-snap-type: x mandatory; 
-  -webkit-overflow-scrolling: touch; 
-  padding: 0 20px;
-  width: calc(100% - 40px); 
-}
-
-/* Adjusted Swipe Box */
-.swipe-box {
-  flex: 0 0 calc(20% - 20px);
-  height: 200px;
-  margin: 20px;
-  padding: 20px;
-  background-color: #d1f1ff;
-  border-radius: 8px;
-  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.1), 4px 0 8px rgba(0, 0, 0, 0.1);
-  scroll-snap-align: start;
-  transition: transform 0.2s, background-color 0.3s, color 0.3s;
-  display: flex;
-  flex-direction: column; /* Add this */
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-}
-
-.swipe-icon {
-  font-size: 2rem;
-  margin-bottom: 10px; /* Space between the icon and text */
-  color: #274a60;
-}
-
-.swipe-box:hover .swipe-icon {
-  color: #ffffff;
-}
-
-
-/* Hover Effect */
-.swipe-box:hover {
-  background-color: #7eb3de; 
-  color: #ffffff;
-  transform: scale(1.05); 
-}
-
-/* Hide scrollbar for Webkit browsers */
-.swipe-boxes::-webkit-scrollbar {
-  display: none; 
-}
-
-/* Button Styles */
-.scroll-btn {
-  width: 50px; 
-  height: 50px; 
-  border-radius: 50%; 
-  border: none; 
-  background-color: #3a9b9a; 
-  color: white; 
-  font-size: 1.5rem; 
-  cursor: pointer; 
-  transition: background-color 0.3s ease, transform 0.2s ease; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-}
-
-/* Hover Effect */
-.scroll-btn:hover {
-  background-color: #51d1eb; 
-  transform: scale(1.1); 
-}
-
-/* Swipe Buttons Container */
-.swipe-buttons {
-  display: flex;
-  justify-content: space-between; 
-  align-items: center; 
-  margin-top: 10px; 
-  width: 100%; 
-}
-
-.swipe-button {
-  margin: 0 10px; 
-}
-
-
-
-
-
-/* Container for pic3 */
-.pic-container {
-  display: flex; /* Flexbox for side-by-side layout */
-  align-items: center; /* Align items vertically centered */
-  justify-content: center; /* Center the image and text horizontally */
-  margin-top: 100px; /* Adds space above the image */
-}
-
-/* Adjust image size and positioning */
-.pic3-img {
-  max-width: 500px; /* Reduce the image size */
-  width: 100%; /* Ensures the image is responsive */
-  object-fit: contain; /* Ensures the image maintains aspect ratio */
-  margin-right: 10px; /* Reduce space between the image and text */
-}
-
-/* Text styling for pic3 */
-.pic3-text {
-  max-width: 800px; /* Optional: limit the width of the text */
-  text-align: left; /* Align text to the left */
-  display: flex; /* Use flexbox for inline alignment */
-  flex-direction: column; /* Stack text elements vertically */
-  align-items: flex-start; /* Align text to the left */
-}
-
-/* Heading style */
-.pic3-text h2 {
-  margin: 0; /* Remove default margin */
-  font-weight: bold; /* Make the heading bold */
-  margin-top: -80px;
-}
-
-/* Paragraph style */
-.pic3-text p {
-  margin: 5px 0 0 0; /* Adjust margin to bring the paragraph closer to the heading */
-  display: inline; /* Keep the paragraph inline */
+/* Side Navigation Menu Button CSS */
+nav .menu-btn,
+.navbar .menu .cancel-btn {
+  position: absolute;
+  color: #fff;
+  right: 30px;
+  top: 20px;
   font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: none;
+}
+nav .menu-btn {
+  color: #4070f4;
+}
+nav.sticky .menu-btn {
+  color: #fff;
+}
+.navbar .menu .menu-btn {
+  color: #fff;
+}
+/* home section styling */
+.home {
+  height: 100vh;
+  width: 100%;
+  background: url("assets/5.png") no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: "Ubuntu", sans-serif;
+}
+.home .home-content {
+  width: 90%;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.home .text-one {
+  font-size: 25px;
+  color: #0e2431;
+}
+.home .text-two {
+  color: #0e2431;
+  font-size: 75px;
+  font-weight: 600;
+  margin-left: -3px;
+}
+.home .text-three {
+  font-size: 40px;
+  margin: 5px 0;
+  color: #4070f4;
+}
+.home .text-four {
+  font-size: 23px;
+  margin: 5px 0;
+  color: #0e2431;
+}
+.home .button-landing {
+  margin: 14px 0;
+}
+.home .button-landing button {
+  outline: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 25px;
+  font-weight: 400;
+  background: #4070f4;
+  color: #fff;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.4s ease;
+}
+.home .button-landing button:hover {
+  border-color: #4070f4;
+  background-color: #fff;
+  color: #4070f4;
+}
+/* About Section Styling */
+/* Those Elements Where We Have Apply Same CSS,
+ I'm Selecting Directly 'Section Tag' and 'Class'  */
+section {
+  padding-top: 40px;
+}
+section .content {
+  width: 80%;
+  margin: 40px auto;
+  font-family: "Poppins", sans-serif;
+}
+.about .about-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+section .title {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+section .title span {
+  color: #0e2431;
+  font-size: 30px;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 8px;
+}
+section .title span::before,
+section .title span::after {
+  content: "";
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: #4070f4;
+  left: 0;
+  bottom: 0;
+}
+section .title span::after {
+  bottom: -7px;
+  width: 70%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.about .about-details .left {
+  width: 45%;
+}
+.about .left img {
+  height: 400px;
+  width: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.about-details .right {
+  width: 55%;
+}
+section .topic {
+  color: #0e2431;
+  font-size: 25px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.about-details .right p {
+  text-align: justify;
+  color: #0e2431;
+}
+section .button {
+  margin: 16px 0;
+}
+section .button button {
+  outline: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 25px;
+  font-weight: 400;
+  background: #4070f4;
+  color: #fff;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+section .button button:hover {
+  border-color: #4070f4;
+  background-color: #fff;
+  color: #4070f4;
+}
+/* My Skills CSS */
+.skills {
+  background: #f0f8ff;
+}
+.skills .content {
+  padding: 40px 0;
+}
+.skills .skills-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.skills-details .text {
+  width: 50%;
+}
+.skills-details p {
+  color: #0e2431;
+  text-align: justify;
+}
+.skills .skills-details .experience {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+.skills-details .experience .num {
+  color: #0e2431;
+  font-size: 80px;
+}
+.skills-details .experience .exp {
+  color: #0e2431;
+  margin-left: 20px;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 6px;
+}
+.skills-details .boxes {
+  width: 45%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.skills-details .box {
+  width: calc(100% / 2 - 20px);
+  margin: 20px 0;
+}
+.skills-details .boxes .topic {
+  font-size: 20px;
+  color: #4070f4;
+}
+.skills-details .boxes .per {
+  font-size: 60px;
+  color: #4070f4;
+}
+/* My Services CSS */
+.services .boxes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.services .boxes .box {
+  margin: 20px 0;
+  width: calc(100% / 3 - 20px);
+  text-align: center;
+  border-radius: 12px;
+  padding: 30px 10px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
+  cursor: default;
+  transition: all 0.4s ease;
+}
+.services .boxes .box:hover {
+  background: #0a2e68;
+  color: #fff;
+}
+.services .boxes .box .icon {
+  height: 50px;
+  width: 50px;
+  background: #4070f4;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 50px;
+  font-size: 18px;
+  color: #fff;
+  margin: 0 auto 10px auto;
+  transition: all 0.4s ease;
 }
 
-
-
-
-/* Learn More Button Styles */
-.learn-more-btn {
-  margin-top: 20px; /* Adds space above the button */
-  padding: 10px 20px; /* Button padding */
-  font-size: 18px; /* Font size of the button text */
-  color: #fff; /* Text color */
-  background-color: #3a9b9a; /* Button background color */
-  border: none; /* No border */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease; /* Transition for hover effect */
+.boxes .box:hover .icon {
+  background-color: #fff;
+  color: #4070f4;
 }
-
-.learn-more-btn:hover {
-  background-color: #51d1eb; /* Change background on hover */
+.services .boxes .box:hover .topic,
+.services .boxes .box:hover p {
+  color: #0e2431;
+  transition: all 0.4s ease;
 }
-
-
-
-body, html {
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* Change this to 'auto' if present */
+.services .boxes .box:hover .topic,
+.services .boxes .box:hover p {
+  color: #fff;
 }
-
-
-.hero, .services {
-  min-height: 100vh; /* At least viewport height */
+/* Contact Me CSS */
+.contact {
+  background: #f0f8ff;
+}
+.contact .content {
+  margin: 0 auto;
+  padding: 30px 0;
+}
+.contact .text {
+  width: 80%;
+  text-align: center;
+  margin: auto;
+}
+/* Footer CSS */
+footer {
+  background: #0a2e68;
+  padding: 15px 0;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+}
+footer .text span {
+  font-size: 17px;
+  font-weight: 400;
+  color: #fff;
+}
+footer .text span a {
+  font-weight: 500;
+  color: #fff;
+}
+footer .text span a:hover {
+  text-decoration: underline;
+}
+/* Scroll TO Top Button CSS */
+.scroll-button a {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: #fff;
+  background: #4070f4;
+  padding: 7px 12px;
+  font-size: 18px;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.15);
+  display: none;
+}
+/* Responsive Media Query */
+@media (max-width: 1190px) {
+  section .content {
+    width: 85%;
+  }
+}
+@media (max-width: 1000px) {
+  .about .about-details {
+    justify-content: center;
+    flex-direction: column;
+  }
+  .about .about-details .left {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .about-details .right {
+    width: 90%;
+    margin: 40px 0;
+  }
+  .services .boxes .box {
+    margin: 20px 0;
+    width: calc(100% / 2 - 20px);
+  }
+}
+@media (max-width: 900px) {
+  .about .left img {
+    height: 350px;
+    width: 350px;
+  }
+}
+@media (max-width: 750px) {
+  nav .navbar {
+    width: 90%;
+  }
+  nav .navbar .menu {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    background: #0e2431;
+    height: 100vh;
+    max-width: 400px;
+    width: 100%;
+    padding-top: 60px;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.5s ease;
+  }
+  .navbar.active .menu {
+    left: 0;
+  }
+  nav .navbar .menu a {
+    font-size: 23px;
+    display: block;
+    color: #fff;
+    margin: 10px 0;
+  }
+  nav.sticky .menu a:hover {
+    color: #4070f4;
+  }
+  nav .navbar .media-icons {
+    display: none;
+  }
+  nav .menu-btn,
+  .navbar .menu .cancel-btn {
+    display: block;
+  }
+  .home .text-two {
+    font-size: 65px;
+  }
+  .home .text-three {
+    font-size: 35px;
+  }
+  .skills .skills-details {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .skills-details .text {
+    width: 100%;
+    margin-bottom: 50px;
+  }
+  .skills-details .boxes {
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  .services .boxes .box {
+    margin: 20px 0;
+    width: 100%;
+  }
+  .contact .text {
+    width: 100%;
+  }
+}
+@media (max-width: 500px) {
+  .home .text-two {
+    font-size: 55px;
+  }
+  .home .text-three {
+    font-size: 33px;
+  }
+  .skills-details .boxes .per {
+    font-size: 50px;
+    color: #4070f4;
+  }
 }

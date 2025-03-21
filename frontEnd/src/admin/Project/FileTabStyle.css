@@ -264,6 +264,9 @@ td {
   background: none; 
 }
 
+.upload-btn input {
+  display: none; /* Hides the default file input */
+}
 
 .files-action:focus {
   outline: none;

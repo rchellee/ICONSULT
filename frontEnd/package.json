@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tailwindcss -i ./css/input.css -o ../dist/output.css",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
     "bootstrap": "^5.3.3",
     "frontend": "file:",
     "react": "^18.3.1",

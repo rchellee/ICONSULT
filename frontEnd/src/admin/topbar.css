@@ -1,110 +1,268 @@
-/* Topbar styles */
-.topbar {
-    background-color: #d1bfbf;
-    height: 300px !important; /* Increased height */
+nav {
+  background: #0a2e68;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 100px;
+  z-index: 1000; /* Ensures it stays on top of other elements */
+}
+
+nav .logo {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  margin-left: 15px;
+}
+nav .nav-items {
+  display: flex;
+  padding: 0 0 0 40px;
+}
+nav .nav-items li {
+  list-style: none;
+  padding: 0 15px;
+}
+nav .nav-items li a {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  text-decoration: none;
+}
+nav .nav-items li a:hover {
+  color: #ff3d00;
+}
+nav form {
+  display: flex;
+  height: 40px;
+  padding: 2px;
+  background: #1e232b;
+  min-width: 18% !important;
+  border-radius: 2px;
+  border: 1px solid rgba(155, 155, 155, 0.2);
+}
+nav form .search-data {
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  color: black;
+  font-size: 17px;
+  border: none;
+  font-weight: 500;
+  background: lightgray;
+}
+nav form button {
+  padding: 0 15px;
+  color: #fff;
+  font-size: 17px;
+  background: #ff3d00;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+}
+nav form button:hover {
+  background: #e63600;
+}
+nav .menu-icon,
+nav .cancel-icon,
+nav .search-icon {
+  width: 40px;
+  text-align: center;
+  margin: 0 50px;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+}
+nav .menu-icon span,
+nav .cancel-icon,
+nav .search-icon {
+  display: none;
+}
+.css-1toxriw-MuiList-root-MuiMenu-list {
+  top: 100%;
+  padding: 14px;
+
+  width: 315px;
+}
+
+.sub-menu-wrap {
+  position: absolute;
+  top: 100%;
+  right: 10%;
+  width: 320px;
+}
+
+.sub-menu {
+  background: #fff;
+  padding: 20px;
+  margin: 10px;
+}
+
+.user-pic {
+  width: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-right: 30px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info h3 {
+  font-weight: 500;
+}
+
+.user-info img {
+  width: 50px;
+  border-radius: 50%;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+.sub-menu hr {
+  border: 0;
+  height: 1px;
+  width: 100%;
+  background: #ccc;
+  margin: 15px 0 10px;
+}
+
+.sub-menu-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #525252;
+  margin: 12px 18px;
+}
+
+.sub-menu-link p {
+  width: 100%;
+}
+
+.sub-menu-link img {
+  width: 40px;
+  background: #e5e5e5;
+  border-radius: 50%;
+  padding: 8px;
+  margin-right: 15px;
+}
+.sub-menu-link span {
+  font-size: 22px;
+  transition: transform 0.5s;
+}
+.sub-menu-link:hover span {
+  transform: translateX(5px);
+}
+.sub-menu-link:hover p {
+  font-weight: 600;
+}
+@media (max-width: 1245px) {
+  nav {
+    padding: 0 50px;
   }
-  
-  .MuiAppBar-root {
-    background-color: #ffffff !important; /* Ensure the background color is applied */
-    height: 100px !important; /* Override the default height */
-    border-bottom: 1px solid #d1d1d1 !important; /* Add a 10px solid border with a light gray color */
-    box-shadow: none !important; /* Remove any shadow effect */
+}
+@media (max-width: 1140px) {
+  nav {
+    padding: 0px;
   }
-  
-  
-  /* Toolbar customizations */
-  .MuiToolbar-root {
-    min-height: 100px !important; /* Adjust toolbar height */
-    padding-left: 16px;
-    padding-right: 16px;
+  nav .logo {
+    flex: 2;
+    text-align: center;
   }
-  
-  /* Logo styles */
-  .logo-topbar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    margin-left: 10px;
+  nav .nav-items {
+    position: fixed;
+    z-index: 99;
+    top: 70px;
+    width: 100%;
+    left: -100%;
+    height: 100%;
+    padding: 10px 50px 0 50px;
+    text-align: center;
+    background: #14181f;
+    display: inline-block;
+    transition: left 0.3s ease;
   }
-  
-  .logo-topbar-img {
-    height: 100px; /* Adjust logo size */
-    width: auto;
+  nav .nav-items.active {
+    left: 0px;
   }
-  
-  /* Typography for the admin username */
-  .topbar-username {
+  nav .nav-items li {
+    line-height: 40px;
+    margin: 30px 0;
+  }
+  nav .nav-items li a {
+    font-size: 20px;
+  }
+  nav form {
+    position: absolute;
+    top: 80px;
+    right: 50px;
+    opacity: 0;
+    pointer-events: none;
+    transition: top 0.3s ease, opacity 0.1s ease;
+  }
+  nav form.active {
+    top: 95px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  nav form:before {
+    position: absolute;
+    content: "";
+    top: -13px;
+    right: 0px;
+    width: 0;
+    height: 0;
+    z-index: -1;
+    border: 10px solid transparent;
+    border-bottom-color: #1e232b;
+    margin: -20px 0 0;
+  }
+  nav form:after {
+    position: absolute;
+    content: "";
+    height: 60px;
+    padding: 2px;
+    background: #1e232b;
+    border-radius: 2px;
+    min-width: calc(100% + 20px);
+    z-index: -2;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  nav .menu-icon {
+    display: block;
+  }
+  nav .search-icon,
+  nav .menu-icon span {
+    display: block;
+  }
+  nav .menu-icon span.hide,
+  nav .search-icon.hide {
+    display: none;
+  }
+  nav .cancel-icon.show {
+    display: block;
+  }
+}
+
+@media (max-width: 980px) {
+  nav .menu-icon,
+  nav .cancel-icon,
+  nav .search-icon {
+    margin: 0 20px;
+  }
+  nav form {
+    right: 30px;
+  }
+}
+@media (max-width: 350px) {
+  nav .menu-icon,
+  nav .cancel-icon,
+  nav .search-icon {
+    margin: 0 10px;
     font-size: 16px;
-    color: #143d58;
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
   }
-  
-  /* Avatar and Menu */
-  .avatar-button {
-    padding: 0;
-  }
-  
-  .avatar-button img {
-    width: 40px; /* Adjust avatar size */
-    height: 40px;
-  }
-  
-  .menu-item {
-    font-size: 14px;
-    color: #0056b3;
-  }
-  
-  
-  /* Additional Styling for Folder Search Box (if needed) */
-
-/* Search box styles */
-.search-box-topbar {
-    width: 70%; /* Adjust width for desired size */
-    max-width: 600px; /* Max width to prevent the search bar from getting too wide */
-    height: 60px !important; /* Set height */
-    padding: 20px; /* Adjust padding for larger space inside */
-    font-size: 20px; /* Increase font size */
-    border: 3px solid #1e88e5 !important; /* Set initial border color */
-    border-radius: 25px !important; /* Apply rounded corners */
-    outline: none;
-    box-sizing: border-box;
-    background: #fff;
-    margin: 0 auto; /* Centers the search box */
-    display: block; /* Ensures the box is treated as a block element */
-  }
-  
-  /* Add a hover effect for the border color */
-  .search-box-topbar:hover {
-    border-color: #7fbcf6 !important; /* Force change on hover */
-  }
-  
-  /* Add focus effect to the border */
-  .search-box-topbar:focus {
-    border-color: #007dea !important; /* Change the border color when focused */
-    box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Add a light shadow for emphasis */
-  }
-  
-
-  .home-topbar-icon {
-    font-size: 30px; /* Adjust the size of the icon */
-    color: #323232; /* Set the icon color */
-    margin-left: 15px; /* Space it out from the logo */
-    cursor: pointer; /* Make it clickable */
-    transition: color 0.3s ease; /* Add smooth transition effect */
-    align-items: flex-start;
-    margin: 600px    /* Push the icon to the right */
-    
-  }
-  
-  .home-topbar-icon:hover {
-    color: #0056b3; /* Change color on hover */
-  }
-  
-  
-  
-  
-  
-  
+}

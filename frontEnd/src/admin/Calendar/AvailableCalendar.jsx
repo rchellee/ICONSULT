@@ -4,7 +4,8 @@ import "./calendar.css";
 const AvailableCalendar = ({ availableDates, onDateSelect }) => {
   const [currDate, setCurrDate] = useState(new Date());
   const [days, setDays] = useState([]);
-  const [selectedDates, setSelectedDates] = useState([]); // Track multiple selected dates
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [appointments, setAppointments] = useState([]);
 
   const months = [
     "January",
@@ -20,6 +21,16 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
     "November",
     "December",
   ];
+
+  useEffect(() => {
+    // Fetch appointments from the backend
+    fetch("http://localhost:8081/appointments")
+      .then((response) => response.json())
+      .then((data) => {
+        setAppointments(data);
+      })
+      .catch((error) => console.error("Error fetching appointments:", error));
+  }, []);
 
   const renderCalendar = () => {
     const year = currDate.getFullYear();
@@ -97,9 +108,13 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
     onDateSelect(dateStr); // Trigger the callback with the selected date
   };
 
+  const getAppointmentsForDate = (dateStr) => {
+    return appointments.filter((appointment) => appointment.date === dateStr);
+  };
+
   useEffect(() => {
     renderCalendar();
-  }, [currDate, availableDates]);
+  }, [currDate, availableDates, appointments]);
 
   return (
     <div className="wrapper-admin">
@@ -131,35 +146,52 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
           ))}
         </ul>
         <ul className="days">
-          {days.map((day, index) => (
-            <li
-              key={index}
-              className={`${
-                day.currentMonth
-                  ? day.available
-                    ? selectedDates.includes(day.dateStr)
-                      ? "selected"
-                      : "available"
-                    : day.fullyBooked
-                    ? "fully-booked"
-                    : "inactive" // For past or unavailable dates
-                  : "inactive" // For out-of-month dates
-              }`}
-              onClick={() => {
-                if (day.currentMonth && day.available) {
-                  handleDateClick(day.dateStr);
-                }
-              }}
-              style={{
-                backgroundColor: selectedDates.includes(day.dateStr)
-                  ? "#85a8ee" // Selected date background color
-                  : "#fbfbfb", // Original background color for available dates
-                color: day.currentMonth && !day.available ? "#aaa" : "inherit", // Gray for inactive dates
-              }}
-            >
-              {day.date}
-            </li>
-          ))}
+          {days.map((day, index) => {
+            const dateStr = `${currDate.getFullYear()}-${String(
+              currDate.getMonth() + 1
+            ).padStart(2, "0")}-${String(day.date).padStart(2, "0")}`;
+            const dayAppointments = getAppointmentsForDate(dateStr);
+
+            return (
+              <li
+                key={index}
+                className={`${
+                  day.currentMonth
+                    ? day.available
+                      ? "available"
+                      : day.fullyBooked
+                      ? "fully-booked"
+                      : "inactive"
+                    : "inactive"
+                }`}
+                onClick={() => {
+                  if (day.currentMonth && day.available) {
+                    handleDateClick(dateStr);
+                  }
+                }}
+                style={{
+                  backgroundColor: day.available ? "#fbfbfb" : "#eaeaea",
+                  color:
+                    day.currentMonth && !day.available ? "#aaa" : "inherit",
+                }}
+              >
+                {day.date}
+                {dayAppointments.length > 0 && (
+                  <div className="appointments-tooltip">
+                    {dayAppointments.map((appointment, idx) => (
+                      <div
+                        key={idx}
+                        className="appointment-item"
+                        title={`Client: ${appointment.name} - ${appointment.time}`}
+                      >
+                        <span>{appointment.time}</span> - {appointment.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

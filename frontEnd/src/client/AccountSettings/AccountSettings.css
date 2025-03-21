@@ -2,47 +2,25 @@
   width: 60%; /* Adjust the width of the content to be 60% of the screen width */
   max-width: 800px; /* Optional: limits the width to a maximum value */
   box-sizing: border-box; /* Ensures padding doesn't affect the total width */
-
 }
-
 
 /*to make it progressive margin is flex start then add yung padding*/
 
-.account-setting .content {
+.account-settings .content {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding-left: 10px; 
-  width: calc(100% - 250px); 
+  padding-left: 10px;
+  width: calc(100% - 250px);
   margin-left: flex-start;
-  margin-top: auto;
-  height: 100vh; 
+  margin-top: 1px;
+  height: 100vh;
   overflow: hidden;
 }
 
-.account-setting {
+.account-settings h2 {
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Center horizontally */
-  justify-content: flex-start; /* Align at the top */
-  margin-top: 10px; /* To prevent overlap with the topbar */
-  padding-top: -100px; /* Optional padding for spacing */
-  width: 100%; /* Ensure the container takes full width */
-  overflow-y: auto; 
-  max-height: 80vh; 
-}
-
-.account-setting h2,
-.account-setting p {
-  margin-top: -60; /* Remove top margin to bring the elements up */
-}
-
-
-.account-setting h2{
-  display: flex;
-  justify-content: flex-start; 
-  
-  margin-top: 60px;
+  justify-content: flex-start;
 }
 
 /* Info-box styles */
@@ -50,7 +28,7 @@
   width: 10;
   border-collapse: collapse;
   border: none;
-  box-shadow: none; 
+  box-shadow: none;
   background-color: transparent;
 }
 
@@ -58,7 +36,7 @@
   padding: 8px 12px;
   vertical-align: middle;
   font-size: 17px;
-  border: none; 
+  border: none;
   background-color: transparent;
 }
 
@@ -67,7 +45,6 @@
   font-weight: normal;
   background-color: transparent;
 }
-
 
 .info-box table td:last-child {
   width: 100%; /* Adjust this value to resize the value column */
@@ -83,9 +60,9 @@
   border-radius: 8px; /* Rounded corners */
 }
 
-
 /* Remove alternate row background color */
-table tr:nth-child(even), table tr:nth-child(odd) {
+table tr:nth-child(even),
+table tr:nth-child(odd) {
   background-color: transparent; /* Set to transparent to remove any color */
 }
 
@@ -118,35 +95,10 @@ table tr {
   margin-top: -10px;
 }
 
-.account-setting-icon {
+.account-settings-icon {
   width: 200px;
   height: 150px;
   margin-left: 600px;
-  margin-top: -80px;
+  margin-top: -140px;
   padding: 16px;
 }
-
-
-.update-profile-button {
-  background-color: #00aae8; /* Custom primary color */
-  color: #ffffff; /* Text color */
-  font-size: 16px; /* Adjust font size */
-  padding: 10px 20px; /* Adjust padding */
-  border-radius: 5px; /* Rounded corners */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow */
-  text-transform: uppercase; /* Make text uppercase */
-  transition: background-color 0.3s, transform 0.2s; /* Add hover effects */
-  margin-top: 20px;
-}
-
-.update-profile-button:hover {
-  background-color: #007add; /* Darker shade on hover */
-  transform: translateY(-2px); /* Slight lift effect */
-}
-
-.update-profile-button:active {
-  background-color: #0d47a1; /* Even darker shade on click */
-  transform: translateY(0); /* Reset lift effect */
-}
-
-

@@ -2,7 +2,12 @@
   display: flex;
   flex-direction: column; /* Stack appointments and calendar vertically on smaller screens */
   gap: 1px;
-  font-size: 0.90rem; 
+  font-size: 0.9rem;
+}
+
+.sidebar-container {
+  overflow-y: auto;
+  width: 310px;
 }
 
 .appointments-and-calendar {
@@ -14,7 +19,7 @@
 .appointments-details {
   display: flex;
   flex-direction: column;
-  height: 75vh; /* Make it match the calendar height */
+
   overflow: hidden; /* Prevent entire container from scrolling */
 }
 
@@ -25,10 +30,10 @@
 
 .appointment-item {
   margin-bottom: 10px;
-  justify-content: space-between; 
-  align-items: center; 
-  border-bottom: 1px solid #eaeaea; 
-  color: #090909; 
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eaeaea;
+  color: #090909;
 }
 
 .appointment-item:last-child {
@@ -37,17 +42,17 @@
 
 .appointment-item p {
   margin: 0;
-  font-size: 0.85rem; 
-  color: #0a0a0a; 
+  font-size: 0.85rem;
+  color: #0a0a0a;
 }
 
 .upcoming-appointments,
 .completed-appointments {
-  margin: 10px 0; 
+  margin: 10px 0;
   border-radius: 5px;
-  overflow-y: auto; 
+  overflow-y: auto;
   width: 300px;
-  max-height: calc(75vh - 60px); 
+  max-height: calc(75vh - 60px);
 }
 .upcoming-appointments button,
 .completed-appointments button {
@@ -57,25 +62,23 @@
   border-radius: 5px;
   cursor: pointer;
   margin-bottom: 10px;
-  background-color: #f6f6f6  ;
+  background-color: #f6f6f6;
 }
 
 /* Button new appointment */
 .new-appointment-button {
-  display: inline-block; 
-  text-decoration: none; 
-  transition: all 0.3s ease; 
+  display: inline-block;
+  text-decoration: none;
+  transition: all 0.3s ease;
   color: black;
 }
-.new-appointment-button  {
-  transition: color 0.3s ease; 
+.new-appointment-button {
+  transition: color 0.3s ease;
 }
 
 .new-appointment-button:hover {
-  color: #100933; 
+  color: #100933;
 }
 .new-appointment-button button:active {
   transform: scale(1);
 }
-
-

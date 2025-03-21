@@ -1,22 +1,16 @@
-// AccountSettings.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; 
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AccountSettings.css";
 import { IoMdArrowDropright } from "react-icons/io";
 import image from "../../assets/image.png";
-import ChangePassword from "./ChangePassword"; 
-import { CiEdit } from "react-icons/ci";
-import UpdateProfileForm from "./UpdateProfileForm"; 
+import ChangePassword from "./ChangePassword"; // Import the new component
 
 const AccountSettings = () => {
   const [clientDetails, setClientDetails] = useState(null);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [message, setMessage] = useState("");
-  const [isFormVisible, setIsFormVisible] = useState(false); // State to control visibility of the update form
   const clientId = localStorage.getItem("clientId");
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClientDetails = async () => {
@@ -44,39 +38,17 @@ const AccountSettings = () => {
     fetchClientDetails();
   }, []);
 
-  const handleUpdateProfile = () => {
-    setIsFormVisible(true); // Show the floating form when the "UPDATE PROFILE" button is clicked
-  };
-
-  const handleCloseForm = () => {
-    setIsFormVisible(false); // Close the floating form
-  };
-
   return (
     <div>
       <Topbar />
       <Sidebar />
-      <div className="account-setting">
+      <div className="account-settings">
         {!isUpdatingPassword ? (
           clientDetails && (
             <>
               <div className="account">
                 <h2>Account Setting</h2>
-                <p>
-                  Personal info and options to manage it.<br />
-                  See the summary of your profiles.
-                </p>
-                <button className="update-profile-button" onClick={handleUpdateProfile}>
-                  <CiEdit /> UPDATE PROFILE
-                </button>
-
-                <div className="imagee">
-                  <img
-                    src={image}
-                    alt="image"
-                    className="account-setting-icon"
-                  />
-                </div>
+                
 
                 <div className="info-box">
                   <h3>Basic Information</h3>
@@ -92,22 +64,6 @@ const AccountSettings = () => {
                       <tr>
                         <td>Username</td>
                         <td className="no-bg">{clientDetails.username}</td>
-                      </tr>
-                      <tr>
-                        <td>Age</td>
-                        <td className="no-bg">20</td>
-                      </tr>
-                      <tr>
-                        <td>Gender</td>
-                        <td className="no-bg">Female</td>
-                      </tr>
-                      <tr>
-                        <td>Nationality</td>
-                        <td className="no-bg">Filipino</td>
-                      </tr>
-                      <tr>
-                        <td>Home</td>
-                        <td>{clientDetails?.address}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -134,16 +90,12 @@ const AccountSettings = () => {
                   <table>
                     <tbody>
                       <tr>
-                        <td>Company Name</td>
-                        <td>Not Set</td>
+                        <td>Home</td>
+                        <td>{clientDetails.address}</td>
                       </tr>
                       <tr>
-                        <td>Position</td>
-                        <td>Not Set</td>
-                      </tr>
-                      <tr>
-                        <td>Company Contact Number</td>
-                        <td>Not Set</td>
+                        <td>Company</td>
+                        <td>{clientDetails.companyName}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -173,11 +125,6 @@ const AccountSettings = () => {
           />
         )}
       </div>
-
-      {/* Floating Update Profile Form */}
-      {isFormVisible && (
-        <UpdateProfileForm clientDetails={clientDetails} handleCloseForm={handleCloseForm} />
-      )}
     </div>
   );
 };

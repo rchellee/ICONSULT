@@ -95,11 +95,8 @@ const ChangePassword = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
-                
               />
-              <i
-                onClick={togglePasswordVisibility}
-              >
+              <i onClick={togglePasswordVisibility}>
                 <FaLock className="icon" />
               </i>
             </div>
@@ -111,9 +108,7 @@ const ChangePassword = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
-              <i
-                onClick={togglePasswordVisibility}
-              >
+              <i onClick={togglePasswordVisibility}>
                 <FaLock className="icon" />
               </i>
             </div>

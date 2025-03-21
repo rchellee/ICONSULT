@@ -7,155 +7,255 @@
   font-family: "Poppins", sans-serif;
 }
 
-body {
-  background: #f0f4ff;
-}
-
-
-
 .admin-home-page {
   display: flex;
   transition: margin-left 0.4s ease;
+  padding-top: 70px;
 }
+/******************** Dashboard *********************/
 
 .dashboard-content-admin {
   margin-left: 85px;
-  padding: 15px;
+  padding: 10px;
   flex-grow: 1;
-  background-color: #f9f9f9;
-  min-height: 100vh;
   overflow-y: auto;
-  font-family: Arial, sans-serif;
-}
-
-h2 {
-  font-size: 1.8rem;
+  font-family: "Inter", sans-serif;
   color: #333;
-  margin-bottom: 20px;
+  padding: 40px;
+}
+.dashboard-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 24px;
 }
 
+/* ---- Minimalist Metric Cards ---- */
 .metrics-container {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 4fr));
+  gap: 1px;
 }
 
 .metric-card {
-  flex: 1;
-  min-width: 200px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  background: white;
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+  position: relative;
+  cursor: pointer;
 }
-
-.metric-card h3 {
-  font-size: 1.2rem;
-  color: #007bff;
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
-
-.metric-card p {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.metric-card .view-details {
-  display: inline-block;
-  margin-top: 10px;
-  color: #007bff;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.metric-card .view-details:hover {
-  text-decoration: underline;
-}
-
-.recent-activity-section {
-  margin-top: 40px;
-}
-
-.activity-list {
-  list-style: none;
-  padding: 0;
-}
-
-.activity-list li {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+.metric-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
-.activity-list li p {
-  margin: 0;
+.metric-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #333;
 }
 
+.metric-card p {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-top: 10px;
+}
+/*-------------------------------Grid Layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+  gap: 20px;
+  margin-top: 20px;
+}
+.filters-section,
+.recent-activity-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6e6e6;
+  height: 450px;
+}
+
+.filters-section .filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/*----------------Icon----------- */
+
+.filter-buttons button {
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filter-icon {
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  color: black;
+}
+
+/*------------------ Recent Activity */
+.recent-activity-section {
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  height: 547px; /* Adjust height as needed */
+  overflow-y: auto; /* Enables vertical scrolling when content overflows */
+}
+
+/* Recent Activity List */
+.activity-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual Activity Item */
+.activity-list li {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.activity-list li:hover {
+  transform: translateY(-3px); /* Add a hover effect for interactivity */
+}
+
+/* Activity Time */
 .activity-list li span {
   font-size: 0.9rem;
-  color: #666;
+  color: #888;
+  margin-top: 5px;
+  display: block;
+}
+/* ---- Dropdown ---- */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 10;
 }
 
-.quick-links-section {
-  margin-top: 40px;
-}
-
-.quick-links-container {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.quick-link {
-  display: inline-block;
-  background-color: #007bff;
-  color: #fff;
-  text-decoration: none;
+.dropdown-menu button {
+  display: block;
   padding: 10px 15px;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+/* admin.css */
+
+.metric-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  text-align: center;
+  position: relative;
 }
 
-.quick-link:hover {
-  background-color: #0056b3;
+.filter-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
-.content {
-  margin-left: 85px;
+/*---------------------------- left section */
+
+.left-grid {
+  display: grid;
+  grid-template-rows: 1fr 1fr; /* Two equal columns */
+  gap: 20px;
+}
+.appointments-section,
+.tasks-section {
+  background: #f9f9f9;
   padding: 20px;
-  transition: margin-left 0.4s ease;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-/* Admin logo */
-.sidebar .sidebar-header img {
-  width: 42px;
-  border-radius: 50%;
+.appointment-item,
+.task-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+.scrollable-tasks {
+  max-height: 200px; /* Adjust height as needed */
+  overflow-y: auto;
+  padding: 5px; /* Optional: Add padding for better aesthetics */
+  border: 1px solid #ddd; /* Optional: Add a border for separation */
+  border-radius: 4px; /* Optional: Add rounded corners */
 }
 
-/* Sidebar Container */
+/********************* Sidebar Styling *******************/
 .sidebar {
   position: fixed;
   left: 0;
   height: 100%;
-  width: 85px; /* Default collapsed width */
+  width: 85px;
+  background: #fff;
+  border-right: 1px solid #e6e6e6;
   display: flex;
   flex-direction: column;
-  background: #f3f3f3;
-  padding: 15px 10px;
-  border-right: 1px solid #d1d1d1;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
   transition: width 0.3s ease;
 }
 
-/* Sidebar Links */
+.sidebar .sidebar-header img {
+  width: 50px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+/********************* Sidebar Links *********************/
 .sidebar-links {
   list-style: none;
   padding: 0;
@@ -334,5 +434,181 @@ h2 {
   opacity: 1;
   visibility: visible;
 }
+.months-dropdown {
+  position: absolute;
+  top: 40px; /* Adjust based on your layout */
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  z-index: 999;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
+.months-dropdown button {
+  padding: 8px 15px;
+  margin: 5px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
+.months-dropdown button:hover {
+  background-color: #ddd;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Mobile Devices (<= 600px) */
+@media only screen and (max-width: 600px) {
+  /* Reduce Sidebar width */
+  .sidebar {
+    width: 50px;
+  }
+
+  /* Dashboard Content */
+  .dashboard-content-admin {
+    margin-left: 50px; /* Adjust for the collapsed sidebar */
+    padding: 20px;
+  }
+
+  /* Grid Layout: 1 column for small devices */
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  /* Collapse Left Grid Items to Stack Vertically */
+  .left-grid {
+    grid-template-rows: 1fr; /* Stacks the grid items vertically */
+  }
+
+  /* Font Size Adjustments */
+  .dashboard-title {
+    font-size: 24px;
+  }
+
+  .metric-card h3 {
+    font-size: 1rem;
+  }
+
+  .metric-card p {
+    font-size: 1.5rem;
+  }
+
+  /* Adjust Button and Icon Sizes */
+  .filter-buttons button {
+    font-size: 0.9rem;
+  }
+
+  .filter-icon,
+  .logout-btn .icon {
+    font-size: 20px;
+  }
+
+  /* Sidebar Links Text */
+  .sidebar-links a span {
+    display: none; /* Hide text labels in collapsed sidebar */
+  }
+
+  .sidebar.collapsed .sidebar-links a {
+    justify-content: center;
+  }
+}
+
+/* Tablet Devices (<= 768px) */
+@media only screen and (max-width: 768px) {
+  /* Adjust the Sidebar */
+  .sidebar {
+    width: 70px;
+  }
+
+  .sidebar .hamburger-menu {
+    display: none;
+  }
+
+  .dashboard-content-admin {
+    margin-left: 70px; /* Adjust for the smaller sidebar */
+  }
+
+  /* Grid Layout: 1 column for tablets */
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  /* Left Grid: Stack appointments and tasks vertically */
+  .left-grid {
+    grid-template-rows: 1fr; /* Stacks the grid items vertically */
+  }
+
+  /* Adjust Font Sizes */
+  .dashboard-title {
+    font-size: 26px;
+  }
+
+  .metric-card h3 {
+    font-size: 1rem;
+  }
+
+  .metric-card p {
+    font-size: 1.6rem;
+  }
+
+  .filter-buttons button {
+    font-size: 1rem;
+  }
+
+  .filter-icon,
+  .logout-btn .icon {
+    font-size: 22px;
+  }
+}
+
+/* Desktop Devices (> 768px) */
+@media only screen and (min-width: 769px) {
+  /* Ensure Sidebar is wide enough */
+  .sidebar {
+    width: 85px;
+  }
+
+  .dashboard-content-admin {
+    margin-left: 85px;
+  }
+
+  /* Grid Layout: 2 columns for desktop */
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr); /* Two equal columns */
+  }
+
+  /* Left Grid for Appointments and Tasks */
+  .left-grid {
+    grid-template-rows: 1fr 1fr; /* Two equal columns */
+  }
+
+  .dashboard-title {
+    font-size: 28px;
+  }
+
+  .metric-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .metric-card p {
+    font-size: 2rem;
+  }
+}
+
+/* Larger Desktop (>= 1200px) */
+@media only screen and (min-width: 1200px) {
+  .dashboard-content-admin {
+    padding: 14px;
+  }
+
+  .grid-container {
+    gap: 30px;
+  }
+
+  .metric-card {
+    padding: 30px;
+    font-size: 1.2rem;
+  }
+}

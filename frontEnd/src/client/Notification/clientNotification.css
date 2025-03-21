@@ -1,75 +1,71 @@
 .content-consultation {
   margin-left: 85px;
-  padding: 20px;
+  padding-top: 70px;
   transition: margin-left 0.4s ease;
 }
 
 .content-notification {
-    margin-left: 85px;
-    padding: 20px;
-    transition: margin-left 0.4s ease;
-  }
+  margin-left: 85px;
+  padding: 20px;
+  transition: margin-left 0.4s ease;
+}
 
+.notification-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
 
-  .notification-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-  }
-  
-  .notification-item {
-    padding: 15px;
-    border-bottom: 1px solid #cccaca;  /* Adds a line between notifications */
-    background-color: #f2f2f2;  /* Light background for notifications */
-  }
-  
-  .notification-item:hover {
-    background-color: #e4e2e2;  /* Change background on hover */
-  }
-  
-  .notification-item.read {
-    background-color: #f2f2f2;   /* Lighter background for read notifications */
-    color:gray;
-  }
-  
-  .notification-item.unread {
-    color:black;  /* Bold text for unread notifications */
-  }
-  
-  .notification-time {
-    font-size: 12px;
-    color: #888;
-    margin-top: 5px;
-  }
-  
-  .no-notifications {
-    text-align: center;
-    color: #888;
-  }
-  
-  h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-  }
-  
-  .filter-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .filter-button {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .filter-button.active {
-    background-color: #042749;
-    color: #fff;
-  }
-  
+.notification-item {
+  padding: 15px;
+  border-bottom: 1px solid #cccaca; /* Adds a line between notifications */
+  background-color: #f2f2f2; /* Light background for notifications */
+}
 
-  
+.notification-item:hover {
+  background-color: #e4e2e2; /* Change background on hover */
+}
+
+.notification-item.read {
+  background-color: #f2f2f2; /* Lighter background for read notifications */
+  color: gray;
+}
+
+.notification-item.unread {
+  color: black; /* Bold text for unread notifications */
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+.no-notifications {
+  text-align: center;
+  color: #888;
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.filter-button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.filter-button.active {
+  background-color: #042749;
+  color: #fff;
+}

@@ -12,9 +12,7 @@ import {
 } from "@mui/material";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
-import  "./review.css";
-
-
+import "./review.css";
 
 function Review() {
   const [rating, setRating] = useState(0);
@@ -34,7 +32,6 @@ function Review() {
       </Typography>
     );
   }
-
 
   const handleRatingChange = (event) => {
     setRating(Number(event.target.value));
@@ -78,7 +75,7 @@ function Review() {
         <Sidebar />
         <Box
           flex="1"
-          p={4}
+          p={5}
           display="flex"
           flexDirection="column"
           justifyContent="center"
@@ -86,12 +83,11 @@ function Review() {
           bgcolor="#f9f9f9"
           minHeight="100vh"
         >
-          <Typography 
-          variant="h4" 
-          gutterBottom
-          sx={{ mt: -20, fontWeight: "bold" }} 
-       
-          className="leave-review-title"
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ mt: -20, fontWeight: "bold" }}
+            className="leave-review-title"
           >
             Leave a Review
           </Typography>
@@ -120,7 +116,7 @@ function Review() {
           <Box
             component="form"
             onSubmit={handleSubmit}
-            className="review-form-box" 
+            className="review-form-box"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -142,7 +138,7 @@ function Review() {
               value={rating}
               onChange={(event, newValue) => setRating(newValue)}
               className="custom-rating"
-              size="large"
+              size="medium"
               sx={{ alignSelf: "center" }}
             />
             <TextField

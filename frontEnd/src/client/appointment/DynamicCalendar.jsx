@@ -6,13 +6,24 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
   const [days, setDays] = useState([]);
 
   const months = [
-    "January", "February", "March", "April", "May", "June", "July",
-    "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const renderCalendar = () => {
     const year = currDate.getFullYear();
     const month = currDate.getMonth();
+    const currentDate = new Date();
 
     const firstDayOfMonth = new Date(year, month, 1).getDay();
     const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
@@ -31,14 +42,21 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
 
     // Current month's dates
     for (let i = 1; i <= lastDateOfMonth; i++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+        i
+      ).padStart(2, "0")}`;
       const status = availableDates[dateStr] || null; // Get status if defined
+
+      // Check if the date is in the past
+      const isPast = new Date(dateStr) < currentDate;
+
       calendarDays.push({
         date: i,
         currentMonth: true,
-        available: status === "available",
+        available: status === "available" && !isPast, // Disable past dates
         fullyBooked: status === "fully-booked",
         dateStr,
+        isPast,
       });
     }
 
@@ -52,7 +70,11 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
 
   const changeMonth = (direction) => {
     setCurrDate((prev) => {
-      const newDate = new Date(prev.getFullYear(), prev.getMonth() + direction, 1);
+      const newDate = new Date(
+        prev.getFullYear(),
+        prev.getMonth() + direction,
+        1
+      );
       return newDate;
     });
   };
@@ -104,7 +126,9 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
               key={index}
               className={`${
                 day.currentMonth
-                  ? day.available
+                  ? day.isPast
+                    ? "inactive" // Apply 'inactive' style for past dates
+                    : day.available
                     ? "available"
                     : day.fullyBooked
                     ? "fully-booked"
@@ -112,7 +136,10 @@ const DynamicCalendar = ({ availableDates, onDateSelect }) => {
                   : "inactive"
               }`}
               onClick={() =>
-                day.currentMonth && day.available && onDateSelect(day.dateStr)
+                day.currentMonth &&
+                !day.isPast &&
+                day.available &&
+                onDateSelect(day.dateStr)
               }
             >
               {day.date}

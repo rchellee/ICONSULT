@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Box,
   TextField,
   Button,
 } from "@mui/material";
@@ -8,13 +7,14 @@ import { CiEdit } from "react-icons/ci";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AdminAccount.css";
-import password from "../../assets/password.png";
+import password from "../../assets/passimg.png";
 
 const AdminAccount = () => {
   const [adminDetails, setAdminDetails] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [updatedDetails, setUpdatedDetails] = useState({});
   const [message, setMessage] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
 
   useEffect(() => {
     const fetchAdminDetails = async () => {
@@ -27,10 +27,12 @@ const AdminAccount = () => {
           setUpdatedDetails(data);
         } else {
           setMessage("Failed to fetch admin details.");
+          setOpenDialog(true);
         }
       } catch (error) {
         console.error("Error fetching admin details:", error);
         setMessage("An unexpected error occurred.");
+        setOpenDialog(true);
       }
     };
     fetchAdminDetails();
@@ -51,10 +53,16 @@ const AdminAccount = () => {
       } else {
         setMessage("Failed to update admin details.");
       }
+      setOpenDialog(true);
     } catch (error) {
       console.error("Error updating admin details:", error);
       setMessage("An unexpected error occurred.");
+      setOpenDialog(true);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   return (
@@ -78,13 +86,17 @@ const AdminAccount = () => {
                   <div className="admin-detail-row">
                     <span className="label-admin">Username</span>
                     <p>
-                      Your Username is <span className="value-admin">{adminDetails.username}</span>
+                      Username:{" "}
+                      <span className="value-admin">
+                        {adminDetails.username}
+                      </span>
                     </p>
                   </div>
                   <div className="admin-detail-row">
                     <span className="label-admin">Email Address</span>
                     <p>
-                      Your Email is <span className="value-admin">{adminDetails.email}</span>
+                      Email:{" "}
+                      <span className="value-admin">{adminDetails.email}</span>
                     </p>
                   </div>
                   <div className="admin-detail-row">
@@ -96,7 +108,7 @@ const AdminAccount = () => {
                   <Button
                     variant="contained"
                     onClick={() => setEditMode(true)}
-                    style={{ marginTop: "10px" }} // Adjust the margin to move button up
+                    style={{ marginTop: "10px" }}
                   >
                     <CiEdit /> UPDATE PROFILE
                   </Button>
@@ -161,13 +173,27 @@ const AdminAccount = () => {
                   </div>
                 </div>
               )}
-              {message && <p>{message}</p>}
             </div>
           ) : (
             <p>Loading...</p>
           )}
         </div>
       </div>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>
+          {message.startsWith("Failed") || message.startsWith("An unexpected")
+            ? "Error"
+            : "Success"}
+        </DialogTitle>
+        <DialogContent>
+          <p>{message}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

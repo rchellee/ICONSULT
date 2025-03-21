@@ -13,7 +13,11 @@ const Modal = ({ title, children, onClose }) => {
         aria-modal="true"
       >
         <h2 id="modal-title">{title}</h2>
-        <button className="modal-close" onClick={onClose} aria-label="Close Modal">
+        <button
+          className="modal-close"
+          onClick={onClose}
+          aria-label="Close Modal"
+        >
           &times;
         </button>
         <div className="modal-body">{children}</div>

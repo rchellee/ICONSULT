@@ -22,6 +22,7 @@ const Availability = () => {
   const [selectedDates, setSelectedDates] = useState([]);
   const [existingDates, setExistingDates] = useState({});
   const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
   const times = [
     "07:00 AM",
@@ -59,6 +60,12 @@ const Availability = () => {
         console.error("Error fetching existing availability:", error);
         setLoading(false);
       });
+  }, []);
+  useEffect(() => {
+    fetch("http://localhost:8081/appointments")
+      .then((response) => response.json())
+      .then((data) => setAppointments(data))
+      .catch((error) => console.error("Error fetching appointments:", error));
   }, []);
 
   const handleDateSelect = (dateStr) => {
@@ -107,6 +114,15 @@ const Availability = () => {
   };
 
   const handleDelete = (date) => {
+    const hasAppointments = appointments.some(
+      (appointment) => appointment.date === date
+    );
+    if (hasAppointments) {
+      alert(
+        "You cannot delete this availability because there are appointments scheduled on this date."
+      );
+      return;
+    }
     if (
       window.confirm(
         `Are you sure you want to delete availability for ${date}?`
@@ -177,6 +193,13 @@ const Availability = () => {
       });
   };
 
+  const getFilteredDates = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return Object.entries(existingDates).filter(([date]) => {
+      return new Date(date) > new Date(today);
+    });
+  };
+
   // Return loading state or render the availability component
   if (loading) {
     return <Typography variant="h6">Loading...</Typography>;
@@ -189,7 +212,7 @@ const Availability = () => {
         <Sidebar />
         <div className="content-availability">
           <h3>Set Your Availability</h3>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "70px" }}>
             <AvailableCalendar
               availableDates={{ ...existingDates }}
               onDateSelect={handleDateSelect}
@@ -197,6 +220,7 @@ const Availability = () => {
             <Box
               sx={{
                 width: 600,
+                height: 600,
                 padding: 2,
                 border: "1px solid #ccc",
                 borderRadius: 4,
@@ -204,7 +228,7 @@ const Availability = () => {
               }}
             >
               <strong>
-                <h6>Selected Dates & Time</h6>
+                <h4>Selected Dates and Time</h4>
               </strong>
 
               {selectedDates.length > 0 ? (
@@ -283,19 +307,19 @@ const Availability = () => {
                 <Typography variant="h7">No dates selected.</Typography>
               )}
               <strong>
-                <h6>Availability:</h6>
+                <h4>Availability:</h4>
               </strong>
               <List
                 sx={{
-                  maxHeight: 300, 
-                  overflowY: "auto", 
-                  backgroundColor: "#ffffff", 
-                  border: "1px solid #ccc", 
+                  maxHeight: 370,
+                  overflowY: "auto",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #ccc",
                   borderRadius: 4,
                   padding: 1,
                 }}
               >
-                {Object.entries(existingDates)
+                {getFilteredDates()
                   .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // Sort by date
                   .map(([date, { start_time, end_time }]) => (
                     <ListItem

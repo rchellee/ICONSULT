@@ -1,18 +1,7 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Poppins', sans-serif;
-  background-color: #f4f4f4;
-}
-
 .appointment-form-container {
   max-width: 1100px;
-  margin: 40px auto; /* Center horizontally */
   padding: 0;
+  margin-left: 250px;
 }
 
 .content-calendar {
@@ -151,12 +140,22 @@ header .current-date {
   background: #e0e0e0;
 }
 
+.fully-booked {
+  background-color: #f8d7da;
+  color: #721c24;
+  cursor: not-allowed;
+}
+
+.fully-booked:hover {
+  background-color: #f5c6cb;
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .calendar-container {
     grid-template-columns: repeat(4, 1fr); /* Adjust for smaller screens */
   }
-  
+
   .calendar-time-container {
     flex-direction: column;
     gap: 10px;
