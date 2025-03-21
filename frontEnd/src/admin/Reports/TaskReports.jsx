@@ -21,26 +21,12 @@ import {
 const TaskReports = () => {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState({});
+  const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const uniqueYears = [
-    ...new Set(tasks.map((task) => new Date(task.due_date).getFullYear())),
-  ].sort();
+  const [selectedMonth, setSelectedMonth] = useState("All");
+  const [selectedProject, setSelectedProject] = useState("All");
   const [statusYear, setStatusYear] = useState(new Date().getFullYear());
   const [statusMonth, setStatusMonth] = useState("All");
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
   const [selectedReport, setSelectedReport] = useState("");
 
   useEffect(() => {
@@ -70,6 +56,41 @@ const TaskReports = () => {
     }
   };
 
+  const uniqueYears = [
+    "All",
+    ...new Set(tasks.map((task) => new Date(task.due_date).getFullYear())),
+  ].sort();
+
+  const months = [
+    "All",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const filteredTasks = tasks.filter((task) => {
+    const taskDate = new Date(task.due_date);
+    const matchesYear =
+      selectedYear === "All" || taskDate.getFullYear() === selectedYear;
+    const matchesMonth =
+      selectedMonth === "All" ||
+      months[taskDate.getMonth() + 1] === selectedMonth;
+    const matchesStatus =
+      selectedStatus === "All" || task.status === selectedStatus;
+    const matchesProject =
+      selectedProject === "All" || task.project_id === Number(selectedProject);
+    return matchesYear && matchesMonth && matchesStatus && matchesProject;
+  });
+
   const filteredTaskStatusCounts = ["Pending", "Ongoing", "Completed"].map(
     (status) => ({
       name: status,
@@ -82,6 +103,11 @@ const TaskReports = () => {
       }).length,
     })
   );
+
+  const taskPaymentData = filteredTasks.map((task) => ({
+    name: task.task_name,
+    amount: task.amount,
+  }));
 
   const filteredTaskDueData = tasks
     .filter(
@@ -114,11 +140,7 @@ const TaskReports = () => {
   });
 
   const filteredTasksForProjects = tasks.filter((task) => {
-    const taskDate = new Date(task.due_date);
-    const matchesYear = taskDate.getFullYear() === statusYear;
-    const matchesMonth =
-      statusMonth === "All" || months[taskDate.getMonth()] === statusMonth;
-    return matchesYear && matchesMonth;
+    return selectedStatus === "All" || task.status === selectedStatus;
   });
 
   const tasksPerProject = filteredTasksForProjects.reduce((acc, task) => {
@@ -131,6 +153,16 @@ const TaskReports = () => {
   const projectTaskData = Object.keys(tasksPerProject).map((name) => ({
     name,
     value: tasksPerProject[name],
+  }));
+
+  const unpaidTasks = tasks.filter((task) => task.paymentStatus === "Not Paid");
+  const unpaidTaskData = unpaidTasks.map((task) => ({
+    name: task.task_name,
+    amount: task.amount,
+    due_date: new Date(task.due_date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    }),
   }));
 
   const exportPDF = async () => {
@@ -184,35 +216,9 @@ const TaskReports = () => {
           </>
         )}
       </div>
+      
       <div className="tasks-graph-container">
         <h3>Task Status</h3>
-
-        {/* Year Filter */}
-        <select
-          className="mb-2 p-2 border rounded"
-          value={statusYear}
-          onChange={(e) => setStatusYear(Number(e.target.value))}
-        >
-          {uniqueYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
-
-        {/* Month Filter */}
-        <select
-          className="mb-4 p-2 border rounded ml-2"
-          value={statusMonth}
-          onChange={(e) => setStatusMonth(e.target.value)}
-        >
-          <option value="All">All Months</option>
-          {months.map((month, index) => (
-            <option key={index} value={month}>
-              {month}
-            </option>
-          ))}
-        </select>
 
         <PieChart width={400} height={400}>
           <Pie
@@ -237,32 +243,17 @@ const TaskReports = () => {
 
       <div className="tasks-graph-container">
         <h3 className="text-lg font-semibold">Tasks Per Project</h3>
-        {/* Year Filter */}
+
         <select
-          className="mb-2 p-2 border rounded"
-          value={statusYear}
-          onChange={(e) => setStatusYear(Number(e.target.value))}
+          className="mb-4 p-2 border rounded"
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
         >
-          {uniqueYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
+          <option value="All">All Status</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Completed">Completed</option>
         </select>
 
-        {/* Month Filter */}
-        <select
-          className="mb-4 p-2 border rounded ml-2"
-          value={statusMonth}
-          onChange={(e) => setStatusMonth(e.target.value)}
-        >
-          <option value="All">All Months</option>
-          {months.map((month, index) => (
-            <option key={index} value={month}>
-              {month}
-            </option>
-          ))}
-        </select>
         <BarChart width={1100} height={400} data={projectTaskData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
@@ -275,17 +266,6 @@ const TaskReports = () => {
 
       <div className="tasks-graph-container">
         <h3 className="text-lg font-semibold">Task Due</h3>
-        <select
-          className="mb-4 p-2 border rounded"
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(Number(e.target.value))}
-        >
-          {uniqueYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
 
         <LineChart width={1000} height={300} data={filteredTaskDueData}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -300,6 +280,43 @@ const TaskReports = () => {
             name="Due Date"
           />
         </LineChart>
+      </div>
+
+      <div className="tasks-graph-container">
+        <div className="mb-4">
+          <label className="mr-2">Filter by Status:</label>
+          <select
+            className="p-2 border rounded"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+          >
+            <option value="All">All</option>
+            <option value="Completed">Paid (Completed)</option>
+            <option value="Ongoing">Not Paid (Ongoing)</option>
+          </select>
+          <label className="mr-2">Filter by Project:</label>
+          <select
+            className="p-2 border rounded"
+            value={selectedProject}
+            onChange={(e) => setSelectedProject(e.target.value)}
+          >
+            <option value="All">All Projects</option>
+            {Object.entries(projects).map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <h3 className="text-lg font-semibold">Task Payment Status</h3>
+        <BarChart width={1100} height={400} data={taskPaymentData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip formatter={(value) => [`Amount: $${value}`]} />
+          <Legend />
+          <Bar dataKey="amount" fill="#FF0000" name="Amount" />
+        </BarChart>
       </div>
     </div>
   );
