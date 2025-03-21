@@ -8,10 +8,11 @@ import "./Transaction.css";
 const Transaction = ({ projectId }) => {
   const [transactions, setTransactions] = useState([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [editingTask, setEditingTask] = useState(null); // Track which task is being edited
+  const [editingTask, setEditingTask] = useState(null);
   const [sortCriteria, setSortCriteria] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [expandedTasks, setExpandedTasks] = useState(new Set());
 
   // Refs for dropdown containers
   const statusDropdownRef = useRef(null);
@@ -46,7 +47,6 @@ const Transaction = ({ projectId }) => {
   };
 
   const handleEditTask = (taskIndex) => {
-    // Set the task to be edited and show the form
     setEditingTask({ ...transactions[taskIndex], index: taskIndex });
     setShowTaskForm(true);
   };
@@ -56,7 +56,7 @@ const Transaction = ({ projectId }) => {
     updatedTransactions[updatedTask.index] = updatedTask;
     setTransactions(updatedTransactions);
     setShowTaskForm(false);
-    setEditingTask(null); // Reset editing state
+    setEditingTask(null);
   };
 
   const handleDeleteTask = (taskIndex) => {
@@ -125,13 +125,13 @@ const Transaction = ({ projectId }) => {
 
     switch (criteria) {
       case "name-asc":
-        sortedTransactions.sort((a, b) => a.expenses.localeCompare(b.expenses));
+        sortedTransactions.sort((a, b) => a.expenses.localeCompare(b.expenses)); // Sort by task name A-Z
         break;
       case "date-asc":
-        sortedTransactions.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+        sortedTransactions.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)); // Sort by date ascending
         break;
       case "date-desc":
-        sortedTransactions.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+        sortedTransactions.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate)); // Sort by date descending
         break;
       default:
         break;
@@ -139,21 +139,35 @@ const Transaction = ({ projectId }) => {
 
     setTransactions(sortedTransactions);
     setSortCriteria(criteria);
-    setOpenDropdown(null); // Close dropdown after sorting
+    setOpenDropdown(null);
   };
 
   const filteredTransactions = transactions.filter((transaction) => {
     if (filterStatus === "all") return true;
-    return transaction.status.toLowerCase() === filterStatus.toLowerCase();
+    if (filterStatus === "paid") return transaction.status === "Paid";
+    if (filterStatus === "unpaid") return transaction.status === "Unpaid";
+    return true;
   });
+  
 
   // Handle dropdown toggle
   const toggleDropdown = (dropdownName) => {
     if (openDropdown === dropdownName) {
-      setOpenDropdown(null); // Close the dropdown if it's already open
+      setOpenDropdown(null);
     } else {
-      setOpenDropdown(dropdownName); // Open the clicked dropdown
+      setOpenDropdown(dropdownName);
     }
+  };
+
+  // Toggle task details visibility
+  const toggleTaskDetails = (taskIndex) => {
+    const newExpandedTasks = new Set(expandedTasks);
+    if (newExpandedTasks.has(taskIndex)) {
+      newExpandedTasks.delete(taskIndex); // Collapse if already expanded
+    } else {
+      newExpandedTasks.add(taskIndex); // Expand the clicked task
+    }
+    setExpandedTasks(newExpandedTasks);
   };
 
   return (
@@ -164,7 +178,7 @@ const Transaction = ({ projectId }) => {
         <button
           className="create-task-button"
           onClick={() => {
-            setEditingTask(null); // Reset editing state
+            setEditingTask(null);
             setShowTaskForm(true);
           }}
         >
@@ -178,11 +192,11 @@ const Transaction = ({ projectId }) => {
         <TaskCreateForm
           onClose={() => {
             setShowTaskForm(false);
-            setEditingTask(null); // Reset editing state
+            setEditingTask(null);
           }}
           onCreate={handleCreateTask}
           onUpdate={handleUpdateTask}
-          taskToEdit={editingTask} // Pass the task to edit
+          taskToEdit={editingTask}
         />
       )}
 
@@ -191,10 +205,6 @@ const Transaction = ({ projectId }) => {
         <div className="details-content">
           {/* Left-aligned details */}
           <div className="detail-row">
-            <div className="detail-item partial-payment">
-              <span className="detail-label">Partial Payment:</span>
-              <span className="detail-value">--</span>
-            </div>
             <div className="detail-item current-task">
               <span className="detail-label">Current Task:</span>
               <span className="detail-value">{transactions.length}</span>
@@ -228,12 +238,11 @@ const Transaction = ({ projectId }) => {
               </button>
               {openDropdown === "status" && (
                 <div className="dropdown-task">
-                  <button onClick={() => setFilterStatus("all")}>All</button>
-                  <button onClick={() => setFilterStatus("paid")}>Paid</button>
-                  <button onClick={() => setFilterStatus("unpaid")}>Unpaid</button>
-                  <button onClick={() => setFilterStatus("partial payment")}>Partial Payment</button>
-                  <button onClick={() => setFilterStatus("overdue")}>Overdue</button>
-                </div>
+                <button onClick={() => setFilterStatus("all")}>All</button>
+                <button onClick={() => setFilterStatus("paid")}>Paid</button>
+                <button onClick={() => setFilterStatus("unpaid")}>Unpaid</button>
+              </div>
+              
               )}
             </div>
             <div className="sort-container" ref={sortDropdownRef}>
@@ -262,11 +271,10 @@ const Transaction = ({ projectId }) => {
             <tr>
               <th>Task Name</th>
               <th>Type</th>
-              <th>Assign Employee</th>
               <th>Amount</th>
+              <th>Assign Employee</th>
               <th>Due Date</th>
               <th>Date Paid</th>
-              <th>Past Due</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -281,12 +289,23 @@ const Transaction = ({ projectId }) => {
                   {/* Task Name Row */}
                   <tr>
                     <td>{transaction.expenses}</td>
-                    <td></td>
+                    <td>
+                      <button
+                        className="dropdown-toggle"
+                        onClick={() => toggleTaskDetails(index)}
+                      >
+                        {expandedTasks.has(index) ? "▼" : "▶"} Consultancy Fee
+                      </button>
+                    </td>
+                    <td className="amount-cell">
+                      {expandedTasks.has(index)
+                        ? formatAmount(transaction.subItems[0].amount) // Show only Consultancy Fee when expanded
+                        : formatAmount(subtotal) // Show total when collapsed
+                      }
+                    </td>
                     <td>{transaction.assignedEmployee}</td>
-                    <td></td>
                     <td>{formatDate(transaction.dueDate)}</td>
                     <td>{formatDate(transaction.datePaid)}</td>
-                    <td>{pastDueDays > 0 ? `${pastDueDays} days` : "--"}</td>
                     <td>
                       <select
                         value={transaction.status || ""}
@@ -323,42 +342,33 @@ const Transaction = ({ projectId }) => {
                     </td>
                   </tr>
 
-                  {/* Task Fee Row */}
-                  <tr>
-                    <td></td>
-                    <td>Task Fee</td>
-                    <td></td>
-                    <td className="amount-cell">{formatAmount(transaction.subItems[0].amount)}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-
                   {/* Sub-items (Miscellaneous) */}
-                  {transaction.subItems.slice(1).map((subItem, subIndex) => (
-                    <tr key={`sub-${subIndex}`}>
+                  {expandedTasks.has(index) &&
+                    transaction.subItems.slice(1).map((subItem, subIndex) => (
+                      <tr key={`sub-${subIndex}`}>
+                        <td></td>
+                        <td>{subItem.expenses}</td>
+                        <td className="amount-cell">{formatAmount(subItem.amount)}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    ))}
+
+                  {/* Subtotal Row for the Task */}
+                  {expandedTasks.has(index) && (
+                    <tr className="subtotal-row">
+                      <td colSpan="2"></td>
+                      <td className="amount-cell">{formatAmount(subtotal)}</td>
                       <td></td>
-                      <td>{subItem.expenses}</td>
-                      <td></td>
-                      <td className="amount-cell">{formatAmount(subItem.amount)}</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
                     </tr>
-                  ))}
-
-                  {/* Subtotal Row for the Task */}
-                  <tr className="subtotal-row">
-                    <td colSpan="2"></td>
-                    <td></td>
-                    <td className="amount-cell">{formatAmount(subtotal)}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
+                  )}
                 </React.Fragment>
               );
             })}
@@ -366,8 +376,8 @@ const Transaction = ({ projectId }) => {
             <tr className="total-row">
               <td>Total</td>
               <td></td>
-              <td></td>
               <td className="amount-cell">{formatAmount(totalAmount)}</td>
+              <td></td>
               <td colSpan="4"></td>
               <td></td>
             </tr>

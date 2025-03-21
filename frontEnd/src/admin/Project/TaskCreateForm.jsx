@@ -13,6 +13,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   const [transactionId, setTransactionId] = useState("");
   const [modeOfPayment, setModeOfPayment] = useState("");
 
+  // Pre-fill form if editing a task
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
@@ -25,6 +26,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
     }
   }, [taskToEdit]);
 
+  // Add a miscellaneous item
   const handleAddMiscellaneous = () => {
     if (miscName && miscAmount > 0) {
       setSubItems([...subItems, { expenses: miscName, amount: parseFloat(miscAmount) }]);
@@ -33,7 +35,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
     }
   };
 
-
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -48,16 +50,16 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
       transactionId,
       modeOfPayment,
       datePaid: taskToEdit ? taskToEdit.datePaid : "",
-      status: taskToEdit ? taskToEdit.status : "", 
-      index: taskToEdit ? taskToEdit.index : null, 
+      status: taskToEdit ? taskToEdit.status : "",
+      index: taskToEdit ? taskToEdit.index : null,
     };
 
     if (taskToEdit) {
-      onUpdate(newTask); 
+      onUpdate(newTask); // Update task if editing
     } else {
-      onCreate(newTask); 
+      onCreate(newTask); // Create new task if not editing
     }
-    onClose();
+    onClose(); // Close the form
   };
 
   return (
@@ -65,7 +67,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
       <div className="task-create-form">
         <h2>{taskToEdit ? "Update Task" : "Create Task"}</h2>
         <form onSubmit={handleSubmit}>
-          {/* Information Section */}
+          {/* Task Details Section */}
           <div className="form-section">
             <h3>Task Details</h3>
             <div className="form-row">
@@ -79,6 +81,60 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                   required
                 />
               </div>
+              <div className="form-modal-field">
+                <label>Consultancy Fee:</label>
+                <input
+                  type="number"
+                  placeholder="₱"
+                  value={taskFee}
+                  onChange={(e) => setTaskFee(e.target.value)}
+                  required
+                  inputMode="numeric"
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-modal-field">
+                <label>Miscellaneous Name:</label>
+                <input
+                  type="text"
+                  value={miscName}
+                  onChange={(e) => setMiscName(e.target.value)}
+                />
+              </div>
+              <div className="form-modal-field">
+                <label>Miscellaneous Fee:</label>
+                <input
+                  type="number"
+                  placeholder="₱"
+                  value={miscAmount}
+                  onChange={(e) => setMiscAmount(e.target.value)}
+                  inputMode="numeric"
+                />
+              </div>
+              <button
+                type="button"
+                className="add-misc-button"
+                onClick={handleAddMiscellaneous}
+              >
+                <MdAddCircleOutline />
+              </button>
+            </div>
+
+            {/* Display Added Miscellaneous Items */}
+            <div className="misc-list-container">
+              <ul className="misc-list">
+                {subItems.map((item, index) => (
+                  <li key={index}>
+                    <span>{item.expenses}</span>
+                    <span>₱{item.amount}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="form-row">
               <div className="form-modal-field">
                 <label>Assign Employee:</label>
                 <select
@@ -102,10 +158,13 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 />
               </div>
             </div>
+          </div>
 
-            {/* Transaction ID and Mode of Payment */}
+          {/* Payment Details Section */}
+          <div className="form-section">
+            <h3>Payment Details</h3>
             <div className="form-row">
-              <div className="form-modal-field tras-id">
+              <div className="form-modal-field">
                 <label>Transaction ID:</label>
                 <input
                   type="text"
@@ -115,85 +174,20 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                   required
                 />
               </div>
-              <div className="form-modal-field mop">
-                <label>Mode of Payment:</label>
+              <div className="form-modal-field">
+                <label>Mode of Payment (MOP): </label>
                 <select
                   value={modeOfPayment}
                   onChange={(e) => setModeOfPayment(e.target.value)}
                   required
                 >
-                  <option value="">Select Mode of Payment</option>
+                  <option value="">Select (MOP)</option>
                   <option value="Cash">Cash</option>
                   <option value="Credit Card">Credit Card</option>
                   <option value="Bank Transfer">Bank Transfer</option>
                 </select>
               </div>
             </div>
-          </div>
-
-          {/* Sub-items Section */}
-          <div className="form-section">
-            <h3>Payment Details</h3>
-            <div className="form-row">
-              <div className="form-modal-field">
-                <label>Task Fee:</label>
-                <input
-                  type="number"
-                  placeholder="₱"
-                  value={taskFee}
-                  onChange={(e) => setTaskFee(e.target.value)}
-                  required
-                  inputMode="numeric"
-                  style={{ width: "260px" }}
-                />
-              </div>
-              <button
-                type="button"
-                className="add-taskfee-btn"
-                
-              >
-                <MdAddCircleOutline />
-              </button>
-            </div>
-
-            {/* Miscellaneous Items */}
-            <div className="form-row">
-              <div className="form-modal-field">
-                <label>Miscellaneous Name:</label>
-                <input
-                  type="text"
-                  value={miscName}
-                  onChange={(e) => setMiscName(e.target.value)}
-                />
-              </div>
-              <div className="form-modal-field">
-                <label>Miscellaneous Fee:</label>
-                <input
-                  type="number"
-                  placeholder="₱"
-                  value={miscAmount}
-                  onChange={(e) => setMiscAmount(e.target.value)}
-                  inputMode="numeric"
-                />
-              </div>
-
-              <button
-                type="button"
-                className="add-misc-button"
-                onClick={handleAddMiscellaneous}
-              >
-                <MdAddCircleOutline />
-              </button>
-            </div>
-
-            {/* Display Added Miscellaneous Items */}
-            <ul className="misc-list">
-              {subItems.slice(1).map((item, index) => (
-                <li key={index}>
-                  {item.expenses} - {item.amount}
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* Form Actions */}
