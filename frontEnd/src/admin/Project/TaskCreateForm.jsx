@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./TaskCreate.css";
 import { MdAddCircleOutline } from "react-icons/md";
+import { IoIosCloseCircleOutline } from "react-icons/io"; // Import the close icon
 
 const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   const [taskName, setTaskName] = useState("");
-  const [taskFee, setTaskFee] = useState(0);
+  const [taskFee, setTaskFee] = useState(""); 
   const [dueDate, setDueDate] = useState("");
   const [assignedEmployee, setAssignedEmployee] = useState("");
   const [subItems, setSubItems] = useState([]);
   const [miscName, setMiscName] = useState("");
-  const [miscAmount, setMiscAmount] = useState(0);
+  const [miscAmount, setMiscAmount] = useState(""); 
   const [transactionId, setTransactionId] = useState("");
   const [modeOfPayment, setModeOfPayment] = useState("");
 
@@ -17,12 +18,12 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
+      setTaskFee(taskToEdit.subItems[0].amount.toString()); 
       setDueDate(taskToEdit.dueDate);
       setAssignedEmployee(taskToEdit.assignedEmployee);
       setTransactionId(taskToEdit.transactionId);
       setModeOfPayment(taskToEdit.modeOfPayment);
-      setSubItems(taskToEdit.subItems);
-      setTaskFee(taskToEdit.subItems[0].amount); // Task fee is the first sub-item
+      setSubItems(taskToEdit.subItems.slice(1)); 
     }
   }, [taskToEdit]);
 
@@ -31,8 +32,14 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
     if (miscName && miscAmount > 0) {
       setSubItems([...subItems, { expenses: miscName, amount: parseFloat(miscAmount) }]);
       setMiscName("");
-      setMiscAmount(0);
+      setMiscAmount("");
     }
+  };
+
+  // Remove a miscellaneous item
+  const handleRemoveMiscellaneous = (index) => {
+    const updatedSubItems = subItems.filter((_, i) => i !== index); // Filter out the item to remove
+    setSubItems(updatedSubItems);
   };
 
   // Handle form submission
@@ -44,7 +51,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
       dueDate,
       assignedEmployee,
       subItems: [
-        { expenses: "Task Fee", amount: parseFloat(taskFee) },
+        { expenses: "Task Fee", amount: parseFloat(taskFee) || 0 }, 
         ...subItems,
       ],
       transactionId,
@@ -55,11 +62,11 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
     };
 
     if (taskToEdit) {
-      onUpdate(newTask); // Update task if editing
+      onUpdate(newTask);
     } else {
-      onCreate(newTask); // Create new task if not editing
+      onCreate(newTask); 
     }
-    onClose(); // Close the form
+    onClose(); 
   };
 
   return (
@@ -99,6 +106,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 <label>Miscellaneous Name:</label>
                 <input
                   type="text"
+                  placeholder="Enter"
                   value={miscName}
                   onChange={(e) => setMiscName(e.target.value)}
                 />
@@ -124,14 +132,23 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
 
             {/* Display Added Miscellaneous Items */}
             <div className="misc-list-container">
-              <ul className="misc-list">
+              <div className="misc-grid">
                 {subItems.map((item, index) => (
-                  <li key={index}>
-                    <span>{item.expenses}</span>
-                    <span>₱{item.amount}</span>
-                  </li>
+                  <div key={index} className="misc-item">
+                    <div className="misc-details">
+                      <span className="misc-name">{item.expenses}</span>
+                      <span className="misc-price">₱{item.amount}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="remove-misc-button"
+                      onClick={() => handleRemoveMiscellaneous(index)}
+                    >
+                      <IoIosCloseCircleOutline />
+                    </button>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
 
             <div className="form-row">

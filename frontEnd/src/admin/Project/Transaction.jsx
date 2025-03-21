@@ -9,8 +9,6 @@ const Transaction = ({ projectId }) => {
   const [transactions, setTransactions] = useState([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [sortCriteria, setSortCriteria] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("all");
   const [openDropdown, setOpenDropdown] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState(new Set());
 
@@ -120,36 +118,6 @@ const Transaction = ({ projectId }) => {
     setTransactions(updatedTransactions);
   };
 
-  const sortTransactions = (criteria) => {
-    const sortedTransactions = [...transactions];
-
-    switch (criteria) {
-      case "name-asc":
-        sortedTransactions.sort((a, b) => a.expenses.localeCompare(b.expenses)); // Sort by task name A-Z
-        break;
-      case "date-asc":
-        sortedTransactions.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)); // Sort by date ascending
-        break;
-      case "date-desc":
-        sortedTransactions.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate)); // Sort by date descending
-        break;
-      default:
-        break;
-    }
-
-    setTransactions(sortedTransactions);
-    setSortCriteria(criteria);
-    setOpenDropdown(null);
-  };
-
-  const filteredTransactions = transactions.filter((transaction) => {
-    if (filterStatus === "all") return true;
-    if (filterStatus === "paid") return transaction.status === "Paid";
-    if (filterStatus === "unpaid") return transaction.status === "Unpaid";
-    return true;
-  });
-  
-
   // Handle dropdown toggle
   const toggleDropdown = (dropdownName) => {
     if (openDropdown === dropdownName) {
@@ -163,9 +131,9 @@ const Transaction = ({ projectId }) => {
   const toggleTaskDetails = (taskIndex) => {
     const newExpandedTasks = new Set(expandedTasks);
     if (newExpandedTasks.has(taskIndex)) {
-      newExpandedTasks.delete(taskIndex); // Collapse if already expanded
+      newExpandedTasks.delete(taskIndex);
     } else {
-      newExpandedTasks.add(taskIndex); // Expand the clicked task
+      newExpandedTasks.add(taskIndex); 
     }
     setExpandedTasks(newExpandedTasks);
   };
@@ -238,11 +206,10 @@ const Transaction = ({ projectId }) => {
               </button>
               {openDropdown === "status" && (
                 <div className="dropdown-task">
-                <button onClick={() => setFilterStatus("all")}>All</button>
-                <button onClick={() => setFilterStatus("paid")}>Paid</button>
-                <button onClick={() => setFilterStatus("unpaid")}>Unpaid</button>
-              </div>
-              
+                  <button>All</button>
+                  <button>Paid</button>
+                  <button>Unpaid</button>
+                </div>
               )}
             </div>
             <div className="sort-container" ref={sortDropdownRef}>
@@ -254,9 +221,9 @@ const Transaction = ({ projectId }) => {
               </button>
               {openDropdown === "sort" && (
                 <div className="sort-dropdown">
-                  <button onClick={() => sortTransactions("name-asc")}>Name</button>
-                  <button onClick={() => sortTransactions("date-asc")}>Ascending</button>
-                  <button onClick={() => sortTransactions("date-desc")}>Descending</button>
+                  <button>Name</button>
+                  <button>Ascending</button>
+                  <button>Descending</button>
                 </div>
               )}
             </div>
@@ -280,7 +247,7 @@ const Transaction = ({ projectId }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredTransactions.map((transaction, index) => {
+            {transactions.map((transaction, index) => {
               const subtotal = transaction.subItems.reduce((sum, subItem) => sum + subItem.amount, 0);
               const pastDueDays = calculatePastDueDays(transaction.dueDate);
 
@@ -313,13 +280,10 @@ const Transaction = ({ projectId }) => {
                         className="transaction-button"
                       >
                         <option value="">Select Status</option>
-                        <option value="Paid" disabled={transaction.status === "Partial Payment" || transaction.status === "Unpaid"}>
+                        <option value="Paid" disabled={transaction.status === "Paid"}>
                           Paid
                         </option>
-                        <option value="Partial Payment" disabled={transaction.status === "Paid"}>
-                          Partial Payment
-                        </option>
-                        <option value="Unpaid" disabled={transaction.status === "Paid" || transaction.status === "Partial Payment"}>
+                        <option value="Unpaid" disabled={transaction.status === "Paid"}>
                           Unpaid
                         </option>
                       </select>
