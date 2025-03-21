@@ -311,34 +311,61 @@ const TaskReports = () => {
     return csvData;
   };
   const formatTaskPaymentStatusCSV = () => {
-    let csvData = [["Projects per Client"]]; // Title row
+    let csvData = [];
 
-    clients.forEach((client) => {
-      const clientProjects = projects.filter((p) => p.clientId === client.id);
+    // Group tasks into Paid and Not Paid
+    const notPaidTasks = tasks.filter((task) => task.status !== "Completed");
+    const paidTasks = tasks.filter((task) => task.status === "Completed");
 
-      if (clientProjects.length > 0) {
-        csvData.push([client.firstName + " " + client.lastName]); // Client name
+    if (notPaidTasks.length > 0) {
+      csvData.push(["Not Paid"]); // Section title
+      csvData.push([
+        "task_name",
+        "projectName",
+        "miscellaneous",
+        "task_fee",
+        "amount",
+        "due_date",
+      ]); // Headers
+
+      notPaidTasks.forEach((task) => {
         csvData.push([
-          "Project Name",
-          "Description",
-          "Start Date",
-          "End Date",
-          "Created At",
-        ]); // Column headers
+          task.task_name,
+          projects[task.project_id] || `Project ${task.project_id}`,
+          task.miscellaneous || "N/A",
+          task.task_fee || 0,
+          task.amount || 0,
+          task.due_date,
+        ]);
+      });
 
-        clientProjects.forEach((p) => {
-          csvData.push([
-            p.projectName,
-            p.description,
-            p.startDate,
-            p.endDate,
-            p.created_at,
-          ]);
-        });
+      csvData.push([]); // Blank row for spacing
+    }
 
-        csvData.push([]); // Blank row for spacing
-      }
-    });
+    if (paidTasks.length > 0) {
+      csvData.push(["Paid"]); // Section title
+      csvData.push([
+        "task_name",
+        "projectName",
+        "miscellaneous",
+        "task_fee",
+        "amount",
+        "due_date",
+      ]); // Headers
+
+      paidTasks.forEach((task) => {
+        csvData.push([
+          task.task_name,
+          projects[task.project_id] || `Project ${task.project_id}`,
+          task.miscellaneous || "N/A",
+          task.task_fee || 0,
+          task.amount || 0,
+          task.due_date,
+        ]);
+      });
+
+      csvData.push([]); // Blank row for spacing
+    }
 
     return csvData;
   };
@@ -351,7 +378,7 @@ const TaskReports = () => {
     exportCSVData = formatTasksPerProjectCSV();
   } else if (selectedReport === "Task Due") {
     exportCSVData = formatTaskDueCSV();
-  } else if (selectedReport === "Task Payment Status") {
+  } else if (selectedReport === "Task Payment") {
     exportCSVData = formatTaskPaymentStatusCSV();
   } else {
     exportCSVData = projects;
@@ -368,82 +395,52 @@ const TaskReports = () => {
 
     if (chartElement) {
       try {
-        // Capture chart as an image
         const canvas = await html2canvas(chartElement);
         const imgData = canvas.toDataURL("image/png");
-
-        // Add image to the PDF
         doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
-        yPos += 90; // Adjust position for the table
+        yPos += 90;
       } catch (error) {
         console.error("Error capturing chart:", error);
       }
     }
-
-    if (selectedReport === "Total Projects") {
-      const headers = [
-        [
-          "Project Name",
-          "Client Name",
-          "Description",
-          "Status",
-          "Project Start",
-          "Project End",
-          "Actual Finish",
-          "Date Created",
-        ],
-      ];
-      const data = projects.map((p) => [
-        p.projectName,
-        p.clientName,
-        p.description,
-        p.status,
-        p.startDate,
-        p.endDate,
-        p.actualFinish,
-        p.created_at,
-      ]);
-
-      autoTable(doc, {
-        startY: yPos,
-        head: headers,
-        body: data,
-        styles: { fontSize: 8 },
-      });
-    }
-
-    if (selectedReport === "Projects by Status") {
-      const statuses = ["Pending", "Ongoing", "Completed"];
+    if (selectedReport === "Task Status") {
+      const statuses = ["Ongoing", "Completed"];
+      let hasData = false;
 
       statuses.forEach((status) => {
-        const projectStatus = projects.filter((p) => p.status === status);
+        const taskStatus = tasks.filter((t) => t.status === status);
 
-        if (projectStatus.length > 0) {
+        if (taskStatus.length > 0) {
+          hasData = true;
           doc.setFontSize(12);
           doc.text(status, 10, yPos);
           yPos += 10;
 
           const headers = [
             [
+              "Task Name",
               "Project Name",
-              "Client Name",
-              "Description",
+              "Assigned Employee",
+              "Miscellaneous",
               "Status",
-              "Project Start",
-              "Project End",
-              "Actual Finish",
+              "Task Fee",
+              "Total Amount",
+              "Task Due",
+              "Task Completed",
               "Date Created",
             ],
           ];
-          const data = projectStatus.map((p) => [
-            p.projectName,
-            p.clientName,
-            p.description,
-            p.status,
-            p.startDate,
-            p.endDate,
-            p.actualFinish,
-            p.created_at,
+          const data = taskStatus.map((t) => [
+            t.task_name,
+            projects[t.project_id] || `Project ${t.project_id}`,
+            employees[t.employee] || `Employee ${t.employee}`,
+            t.miscellaneous,
+            t.status,
+            t.task_fee,
+            t.amount,
+            t.due_date,
+            t.actual_finish,
+            t.created_at,
           ]);
 
           autoTable(doc, {
@@ -455,76 +452,206 @@ const TaskReports = () => {
           yPos = doc.lastAutoTable.finalY + 10;
         }
       });
-    }
 
-    if (selectedReport === "Overdue Projects") {
-      const headers = [
-        [
-          "Project Name",
-          "Client Name",
-          "Description",
+      if (!hasData) {
+        doc.text("No tasks found for the selected status.", 10, yPos);
+      }
+    }
+    if (selectedReport === "Tasks Per Project") {
+      const tasksByProject = {};
+
+      // Group tasks by project
+      tasks.forEach((task) => {
+        const projectName =
+          projects[task.project_id] || `Project ${task.project_id}`;
+        if (!tasksByProject[projectName]) {
+          tasksByProject[projectName] = [];
+        }
+        tasksByProject[projectName].push(task);
+      });
+
+      let hasData = false;
+
+      // Iterate over each project and generate table
+      Object.entries(tasksByProject).forEach(([projectName, projectTasks]) => {
+        hasData = true;
+        doc.setFontSize(12);
+        doc.text(`Project: ${projectName}`, 10, yPos);
+        yPos += 6;
+
+        const headers = [
+          "Task Name",
+          "Assigned Employee",
+          "Miscellaneous",
           "Status",
-          "End Date",
-          "Days Overdue",
-        ],
-      ];
-      const overdueProjects = projects
-        .filter((p) => p.isDelayed === 1)
-        .map((p) => [
-          p.projectName,
-          p.clientName,
-          p.description,
-          p.status,
-          p.endDate,
-          p.delayedDays, // Ensure this field exists in your backend response
+          "Task Fee",
+          "Total Amount",
+          "Task Due",
+          "Task Completed",
+          "Date Created",
+        ];
+
+        // Format task data for the table
+        const data = projectTasks.map((t) => [
+          t.task_name,
+          employees[t.employee] || `Employee ${t.employee}`,
+          formatMiscellaneous(t.miscellaneous),
+          t.status,
+          t.task_fee ? `₱${t.task_fee}` : "N/A",
+          t.amount ? `₱${t.amount}` : "N/A",
+          t.due_date,
+          t.actual_finish || "N/A",
+          t.created_at,
         ]);
 
-      autoTable(doc, {
-        startY: yPos,
-        head: headers,
-        body: overdueProjects,
-        styles: { fontSize: 8 },
+        autoTable(doc, {
+          startY: yPos,
+          head: [headers],
+          body: data,
+          styles: { fontSize: 8 },
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
       });
+
+      if (!hasData) {
+        doc.text("No tasks found for any project.", 10, yPos);
+      }
     }
+    if (selectedReport === "Task Due") {
+      const tasksByMonthYear = tasks.reduce((acc, task) => {
+        const taskDate = new Date(task.due_date);
+        const year = taskDate.getFullYear();
+        const month = months[taskDate.getMonth() + 1]; // Get month name
 
-    if (selectedReport === "Projects per Client") {
-      clients.forEach((client) => {
-        const clientProjects = projects.filter((p) => p.clientId === client.id);
+        const key = `${month} ${year}`;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(task);
+        return acc;
+      }, {});
 
-        if (clientProjects.length > 0) {
-          doc.setFontSize(12);
-          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
-          yPos += 10;
+      let hasData = false;
 
-          const headers = [
-            [
-              "Project Name",
-              "Description",
-              "Start Date",
-              "End Date",
-              "Created At",
-            ],
-          ];
-          const data = clientProjects.map((p) => [
-            p.projectName,
-            p.description,
-            p.startDate,
-            p.endDate,
-            p.created_at,
-          ]);
+      Object.keys(tasksByMonthYear).forEach((monthYear) => {
+        hasData = true;
+        doc.setFontSize(12);
+        doc.text(`Tasks Due in: ${monthYear}`, 10, yPos);
+        yPos += 6;
 
-          autoTable(doc, {
-            startY: yPos,
-            head: headers,
-            body: data,
-            styles: { fontSize: 8 },
-          });
-          yPos = doc.lastAutoTable.finalY + 10;
-        }
+        const headers = [
+          [
+            "Task Name",
+            "Project Name",
+            "Assigned Employee",
+            "Miscellaneous",
+            "Status",
+            "Task Fee",
+            "Total Amount",
+            "Due Date",
+            "Actual Finish",
+            "Created At",
+          ],
+        ];
+
+        const data = tasksByMonthYear[monthYear].map((t) => [
+          t.task_name,
+          projects[t.project_id] || `Project ${t.project_id}`,
+          employees[t.employee] || `Employee ${t.employee}`,
+          t.miscellaneous || "N/A",
+          t.status,
+          t.task_fee || 0,
+          t.amount || 0,
+          t.due_date,
+          t.actual_finish || "N/A",
+          t.created_at,
+        ]);
+
+        autoTable(doc, {
+          startY: yPos,
+          head: headers,
+          body: data,
+          styles: { fontSize: 8 },
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
       });
-    }
 
+      if (!hasData) {
+        doc.text("No tasks found for any due date.", 10, yPos);
+      }
+    }
+    if (selectedReport === "Task Payment") {
+      const notPaidTasks = tasks.filter((t) => t.status !== "Completed"); // Not paid tasks
+      const paidTasks = tasks.filter((t) => t.status === "Completed"); // Paid tasks
+
+      const formatTasks = (taskList) =>
+        taskList.map((t) => [
+          t.task_name,
+          projects[t.project_id] || `Project ${t.project_id}`,
+          formatMiscellaneous(t.miscellaneous),
+          t.task_fee ? `₱${t.task_fee}` : "N/A",
+          t.amount ? `₱${t.amount}` : "N/A",
+          t.due_date || "N/A",
+        ]);
+
+      const headers = [
+        [
+          "Task Name",
+          "Project Name",
+          "Miscellaneous",
+          "Task Fee",
+          "Amount",
+          "Due Date",
+        ],
+      ];
+
+      let hasData = false;
+      doc.setFontSize(12);
+
+      if (notPaidTasks.length > 0) {
+        hasData = true;
+        doc.text("Not Paid", 10, yPos);
+        yPos += 6;
+
+        autoTable(doc, {
+          startY: yPos,
+          head: headers,
+          body: formatTasks(notPaidTasks),
+          styles: { fontSize: 8 },
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      if (paidTasks.length > 0) {
+        hasData = true;
+        doc.text("Paid", 10, yPos);
+        yPos += 6;
+
+        autoTable(doc, {
+          startY: yPos,
+          head: headers,
+          body: formatTasks(paidTasks),
+          styles: { fontSize: 8 },
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      if (!hasData) {
+        doc.text("No tasks found for Task Payment.", 10, yPos);
+      }
+    }
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+  };
+
+  const formatMiscellaneous = (miscData) => {
+    try {
+      const parsed = JSON.parse(miscData);
+      return parsed.map((item) => `${item.name}: P${item.fee}`).join(", ");
+    } catch (error) {
+      return "N/A";
+    }
   };
 
   return (
@@ -539,7 +666,7 @@ const TaskReports = () => {
           <option value="Task Status">Task Status</option>
           <option value="Tasks Per Project">Tasks Per Project</option>
           <option value="Task Due">Task Due</option>
-          <option value="Task Payment Status">Task Payment Status</option>
+          <option value="Task Payment">Task Payment</option>
         </select>
 
         {selectedReport && (
@@ -654,12 +781,12 @@ const TaskReports = () => {
             ))}
           </select>
         </div>
-        <h3 className="text-lg font-semibold">Task Payment Status</h3>
+        <h3 className="text-lg font-semibold">Task Payment</h3>
         <BarChart width={1100} height={400} data={taskPaymentData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip formatter={(value) => [`Amount: $${value}`]} />
+          <Tooltip formatter={(value) => [`Amount: P${value}`]} />
           <Legend />
           <Bar dataKey="amount" fill="#FF0000" name="Amount" />
         </BarChart>
