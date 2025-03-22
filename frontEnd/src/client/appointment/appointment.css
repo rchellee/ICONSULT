@@ -1,7 +1,7 @@
 .appointment-form-container {
   max-width: 1100px;
+  margin: 40px auto; /* Center horizontally */
   padding: 0;
-  margin-left: 250px;
 }
 
 .content-calendar {

@@ -13,9 +13,9 @@
 }
 
 .project-management-page {
-  height: 100vh;
-  /*position: relative;*/
+  position: relative;
 }
+
 .content-project {
   margin-left: 100px;
   display: flex;
@@ -24,25 +24,11 @@
   padding-top: 60px;
 }
 
-/*.posts-tab-content {
-  margin-left: 200px; /* eto yung distance sa sidebar 
-  padding: 40px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100%;
-}
-*/
-
 h1 {
   margin-top: 20px;
   margin-bottom: 10px;
   padding: 0;
 }
-
-
-
-
 
 .action-container {
   display: flex;

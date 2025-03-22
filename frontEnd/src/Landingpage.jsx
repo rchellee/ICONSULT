@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./Landing.css"; // Import your CSS file
-import logo from "./assets/about.jpg";
+import logo from "./assets/about.png";
 import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {

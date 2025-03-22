@@ -18,6 +18,7 @@ import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
 import Files from "./Files";
 import Topbar from "../Topbar";
+import ClientTask from "./ClientTask"; // Import the new ClientTask component
 
 function Tracking() {
   const { projectId } = useParams();
@@ -176,103 +177,7 @@ function Tracking() {
               <ProjectOverview projectId={projectId} />
             )}
             {activeTab === "tasks" && (
-              <>
-                {isLoading && <p>Loading tasks...</p>}
-                {error && <p className="error">{error}</p>}
-                {!isLoading && !error && tasks.length === 0 && (
-                  <p>No tasks found.</p>
-                )}
-                {!isLoading && !error && tasks.length > 0 && (
-                  <div className="task-list">
-                    <table className="task-table">
-                      <thead>
-                        <tr>
-                          <th onClick={() => handleSort("task_name")}>
-                            Task{" "}
-                            {sortField === "task_name" && (
-                              <span>
-                                {sortOrder === "asc" ? (
-                                  <FaArrowUp />
-                                ) : (
-                                  <FaArrowDown />
-                                )}
-                              </span>
-                            )}
-                          </th>
-                          <th onClick={() => handleSort("task_fee")}>
-                            Fee{" "}
-                            {sortField === "task_fee" && (
-                              <span>
-                                {sortOrder === "asc" ? (
-                                  <FaArrowUp />
-                                ) : (
-                                  <FaArrowDown />
-                                )}
-                              </span>
-                            )}
-                          </th>
-                          <th onClick={() => handleSort("due_date")}>
-                            Due Date{" "}
-                            {sortField === "due_date" && (
-                              <span>
-                                {sortOrder === "asc" ? (
-                                  <FaArrowUp />
-                                ) : (
-                                  <FaArrowDown />
-                                )}
-                              </span>
-                            )}
-                          </th>
-                          <th onClick={() => handleSort("status")}>
-                            Status{" "}
-                            {sortField === "status" && (
-                              <span>
-                                {sortOrder === "asc" ? (
-                                  <FaArrowUp />
-                                ) : (
-                                  <FaArrowDown />
-                                )}
-                              </span>
-                            )}
-                          </th>
-                          <th onClick={() => handleSort("amount")}>
-                            Amount{" "}
-                            {sortField === "amount" && (
-                              <span>
-                                {sortOrder === "asc" ? (
-                                  <FaArrowUp />
-                                ) : (
-                                  <FaArrowDown />
-                                )}
-                              </span>
-                            )}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {tasks.map((task) => {
-                          const miscellaneousItems = JSON.parse(
-                            task.miscellaneous || "[]"
-                          );
-                          const miscellaneousDetails = miscellaneousItems
-                            .map((item) => `${item.name}: ${item.fee}`)
-                            .join(", ");
-
-                          return (
-                            <tr key={task.id}>
-                              <td>{task.task_name}</td>
-                              <td>{task.task_fee}</td>
-                              <td>{formatDueDate(task.due_date)}</td>
-                              <td>{task.status}</td>
-                              <td>{task.amount}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </>
+              <ClientTask projectId={projectId} />
             )}
           </div>
         </div>
