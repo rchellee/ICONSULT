@@ -269,6 +269,11 @@ td.amount-cell {
   border-bottom: 2px solid black;
 }
 
+.subtotal-row {
+  font-weight: bold;
+  color: #333;
+}
+
 
 
 

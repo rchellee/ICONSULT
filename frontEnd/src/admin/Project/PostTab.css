@@ -1,4 +1,3 @@
-/* Navigation buttons */
 .top-button {
   display: flex;
   align-items: center;
@@ -46,7 +45,7 @@
   height: 100%;
 }
 
-.project-name-container {
+.project-name-container{
   text-align: left;
   margin-top: 20px;
 }
@@ -62,29 +61,32 @@
   margin-top: 20px;
 }
 
-.create-task-button {
-  padding: 10px 20px;
-  background-color: #547099;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 3rem;
-  height: 3rem;
-  color: white;
-  font-size: 2rem;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
+/*.create-task-button 
+  background-color: #9cadec; 
+  color: white; 
+  border: none; 
+  padding: 10px 16px; 
+  font-size: 18px; 
+  cursor: pointer; 
+  transition: background-color 0.3s ease, transform 0.3s ease; 
+  display: inline-flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 8px; 
   position: absolute;
-  right: -60px;
-  top: 261px;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
+  right: -40px;
+  top: 30px;
+  border-radius: 4px; 
 
-.create-task-button:hover {
-  transform: scale(1.2); /* Slightly increase the size when hovered */
-  background-color: #3a5b84;
-}
+
+.create-task-icon 
+  font-size: 24px; 
+
+
+.create-task-button:hover 
+  background-color: #3a5b84; */
+ 
+
 
 /* Task Table Container */
 .table-container {
@@ -174,6 +176,7 @@
   margin-top: 20px;
 }
 
+/*
 .task-add-icon {
   background-color: #547099;
   border-radius: 50%;
@@ -192,11 +195,20 @@
 }
 
 .task-add-icon:hover {
-  transform: scale(1.2); /* Slightly increase the size when hovered */
+  transform: scale(1.2); 
   background-color: #3a5b84;
 }
+*/
 
-/* Style the task details section, eto yung sa loob ng specific task */
+
+
+.create-button-container {
+  display: flex;
+  justify-content: flex-end; /* Align to the right */
+  margin-top: 20px;
+}
+
+
 .task-details {
   padding: 20px;
   border: 1px solid #ccc;
@@ -207,37 +219,35 @@
   margin-left: 300px;
 }
 
+/*
 .task-detail-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px dashed #ccc;
-}
+}*/
 
-/* Align text to the right for amount fields */
+
 .align-right {
   text-align: right;
 }
 
-/* Slightly move the Amount label to the right */
 .amount-label {
   margin-left: 10px;
 }
 
-/* Remove dashed line for Task Name row */
 .task-detail-row:first-child {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-/* Remove dashed line for Miscellaneous row */
+
 .task-detail-row:nth-child(3) {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-/* Add bold styling and remove dashed line for the total row */
 .total-row {
   border-bottom: none;
   padding-bottom: 0;
@@ -282,11 +292,11 @@
   background-color: #ddd;
 }
 
-/*css for total amount of task*/
+
 .total-amount-container {
   display: flex;
-  align-items: center; /* Vertically align items */
-  margin-bottom: -40px; /* Add space between this and the table */
+  align-items: center; 
+  margin-bottom: -40px; 
   margin-right: 225px;
   margin-top: 20px;
   gap: 10px;

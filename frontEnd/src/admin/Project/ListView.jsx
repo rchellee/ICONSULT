@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
 import "./ListView.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { MdOutlineArrowDropDown } from "react-icons/md";
-import { FaSort, FaMoneyBillWave, FaExclamationTriangle } from "react-icons/fa";
 import { TbArrowsSort } from "react-icons/tb";
 import { FaTasks } from "react-icons/fa";
 import { MdOutlineDeleteOutline } from "react-icons/md";
@@ -139,45 +136,52 @@ const ListView = ({
     // Filter projects based on the search term and filter status
     const filtered = projects.filter((project) => {
       const matchesSearchTerm =
-        (project.projectName || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        (project.clientName || "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (project.clientName || "").toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = filterStatus
-        ? statuses[project.id] === filterStatus
-        : true;
+      const matchesStatus = filterStatus ? statuses[project.id] === filterStatus : true;
 
       return matchesSearchTerm && matchesStatus;
     });
 
+    // Sort projects based on the selected sort order
     let sorted = [...filtered];
 
-    sorted.sort((a, b) => {
-      const statusA = statuses[a.id] || "Pending";
-      const statusB = statuses[b.id] || "Pending";
-      const dateA = new Date(a.created_at);
-      const dateB = new Date(b.created_at);
+    if (sortOrder === "default") {
+      // Default sorting
+      const statusOrder = { Ongoing: 1, Pending: 2, Completed: 3 };
+      sorted.sort((a, b) => {
+        const statusA = statuses[a.id] || "Pending";
+        const statusB = statuses[b.id] || "Pending";
 
-      // Ensure "Completed" projects always go to the bottom
-      if (statusA === "Completed" && statusB !== "Completed") return 1;
-      if (statusB === "Completed" && statusA !== "Completed") return -1;
-
-      // Otherwise, sort by created_at (latest first)
-      return dateB - dateA;
-    });
-
-    // Apply additional sorting based on sortOrder (except for default)
-    if (sortOrder === "name") {
-      sorted.sort((a, b) =>
-        a.projectName.toLowerCase().localeCompare(b.projectName.toLowerCase())
-      );
+        if (statusOrder[statusA] !== statusOrder[statusB]) {
+          return statusOrder[statusA] - statusOrder[statusB];
+        }
+        return 0;
+      });
+    } else if (sortOrder === "name") {
+      // Sort alphabetically
+      sorted.sort((a, b) => {
+        const nameA = a.projectName.toLowerCase();
+        const nameB = b.projectName.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
     } else if (sortOrder === "asc") {
-      sorted.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+      // Ascending
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA - dateB;
+      });
     } else if (sortOrder === "desc") {
-      sorted.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+      // Descending
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateB - dateA;
+      });
     }
 
     setFilteredProjects(sorted);
@@ -194,7 +198,7 @@ const ListView = ({
   };
 
   return (
-    <div>
+    <div className="eto-parent">
       {/* Button Container */}
       <div className="sorting-button">
         <div className="sorting-button-container">
@@ -204,23 +208,16 @@ const ListView = ({
             ref={statusButtonRef}
           >
             <FaTasks size={20} style={{ marginRight: "13px" }} />
-            <span style={{ fontSize: "15px" }}>Status</span>{" "}
-            {/* Always show "Status" */}
+            <span style={{ fontSize: "15px" }}>Status</span> {/* Always show "Status" */}
           </button>
           <div
             className={`sorting-dropdown ${showStatusOptions ? "visible" : ""}`}
             ref={statusDropdownRef}
           >
             <button onClick={() => handleStatusOptionClick(null)}>All</button>
-            <button onClick={() => handleStatusOptionClick("Ongoing")}>
-              Ongoing
-            </button>
-            <button onClick={() => handleStatusOptionClick("Completed")}>
-              Completed
-            </button>
-            <button onClick={() => handleStatusOptionClick("Pending")}>
-              Pending
-            </button>
+            <button onClick={() => handleStatusOptionClick("Ongoing")}>Ongoing</button>
+            <button onClick={() => handleStatusOptionClick("Completed")}>Completed</button>
+            <button onClick={() => handleStatusOptionClick("Pending")}>Pending</button>
           </div>
         </div>
 
@@ -232,8 +229,7 @@ const ListView = ({
             ref={sortButtonRef}
           >
             <TbArrowsSort size={20} style={{ marginRight: "13px" }} />
-            <span style={{ fontSize: "15px" }}>Sort</span>{" "}
-            {/* Always show "Sort" */}
+            <span style={{ fontSize: "15px" }}>Sort</span> {/* Always show "Sort" */}
           </button>
           <div
             className={`sorting-dropdown ${showSortOptions ? "visible" : ""}`}
@@ -242,7 +238,9 @@ const ListView = ({
             <button onClick={() => handleSortOptionClick("default")}>
               Default
             </button>
-            <button onClick={() => handleSortOptionClick("name")}>Name</button>
+            <button onClick={() => handleSortOptionClick("name")}>
+              Name
+            </button>
             <button onClick={() => handleSortOptionClick("asc")}>
               Ascending
             </button>
@@ -255,32 +253,20 @@ const ListView = ({
 
       {/* Table */}
       <div className="table-scroll-wrapper">
+        <div className="title-project">
+          <h1>Your Projects</h1>
+        </div>
         <table className="project-list-table">
           <thead>
             <tr>
               <th>Project</th>
               <th>Client</th>
               <th>Progress</th>
-              <th>
-                Planned <br /> Duration
-              </th>
-              <th>
-                Actual <br /> Start
-              </th>
-              <th>
-                Actual <br /> Finish
-              </th>
-              <th>
-                Professional <br /> Fee
-              </th>
-              <th>Downpayment</th>
-              <th>Total</th>
-              <th>
-                Payment <br /> Status
-              </th>
-              <th>
-                Project <br /> Status
-              </th>
+              <th>Planned <br /> Duration</th>
+              <th>Professional <br /> Fee</th>
+              <th>Amount</th>
+              <th>Balance</th>
+              <th>Project <br /> Status</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -324,36 +310,18 @@ const ListView = ({
                     </div>
                   </td>
 
-                  {/* Actual Start and Finish */}
-                  <td title={startDate ? formatDate(startDate) : "--"}>
-                    {startDate ? formatDate(startDate) : "--"}
-                  </td>
-                  <td title={finishDate ? formatDate(finishDate) : "--"}>
-                    {finishDate ? formatDate(finishDate) : "--"}
-                  </td>
-
                   {/* Professional Fee, Downpayment, Total */}
-                  <td
-                    className="right-align"
-                    title={formatCurrency(project.contractPrice)}
-                  >
+                  <td className="right-align" title={formatCurrency(project.contractPrice)}>
                     {formatCurrency(project.contractPrice)}
                   </td>
-                  <td
-                    className="right-align"
-                    title={formatCurrency(project.downpayment)}
-                  >
-                    {formatCurrency(project.downpayment)}
-                  </td>
-                  <td
-                    className="right-align"
-                    title={formatCurrency(totalTasks[project.id])}
-                  >
+                  
+                  <td className="right-align" title={formatCurrency(totalTasks[project.id])}>
                     {formatCurrency(totalTasks[project.id])}
                   </td>
 
-                  {/* Payment Status */}
-                  <td>Paid</td>
+                  <td className="center-align">
+                    <div>--</div>
+                  </td>
 
                   {/* Status Dropdown */}
                   <td>
@@ -372,17 +340,17 @@ const ListView = ({
                       style={{
                         backgroundColor:
                           statuses[project.id] === "Completed"
-                            ? "#3b4f67"
-                            : statuses[project.id] === "Ongoing"
-                            ? "#F06292"
-                            : statuses[project.id] === "Pending"
-                            ? "rgb(252, 118, 118)"
-                            : statusColors[statuses[project.id]] || "fffd78",
+                          ? "#3b4f67"
+                          : statuses[project.id] === "Ongoing"
+                          ? "#F06292"
+                          : statuses[project.id] === "Pending"
+                          ? "rgb(252, 118, 118)"
+                          : statusColors[statuses[project.id]] || "fffd78",
                         color:
                           statuses[project.id] === "Ongoing" ||
                           statuses[project.id] === "Completed"
-                            ? "white"
-                            : "white",
+                          ? "white"
+                          : "white",
                       }}
                       disabled={
                         statuses[project.id] === "Completed" &&
@@ -418,25 +386,21 @@ const ListView = ({
 
                   {/* Action Buttons */}
                   <td>
-                    <div className="button-group">
+                    <div className="project-action">
                       {/* Edit Button */}
                       <button
-                        className="btn-edit"
+                        className="project-edit"
                         onClick={(e) => handleEditClick(e, project.id)}
                       >
-                        <AiOutlineEdit style={{ fontSize: "1.5rem" }} />{" "}
-                        {/* Apply style here */}
+                      <AiOutlineEdit style={{ fontSize: "1.5rem" }} /> 
                       </button>
 
-                      {/* Delete Button */}
+                     {/* Delete Button */}
                       <button
-                        className="btn-delete"
+                        className="project-delete"
                         onClick={(e) => handleDeleteClick(e, project.id)}
                       >
-                        <MdOutlineDeleteOutline
-                          style={{ fontSize: "1.5rem" }}
-                        />{" "}
-                        {/* Apply style here */}
+                        <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} />
                       </button>
                     </div>
                   </td>

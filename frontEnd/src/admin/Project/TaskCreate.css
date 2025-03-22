@@ -82,6 +82,66 @@
   background: none;
 }
 
+.add-taskfee-button {
+  background: none;
+  color: #5d6d90;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none; 
+}
+
+.add-taskfee-button:hover {
+ 
+  color: #2c3a4d;
+  outline: none; 
+  background: none; 
+}
+
+.add-taskfee-button:focus {
+  outline: none;
+}
+
+.add-taskfee-button svg {
+  margin-top: -10px; 
+}
+
+.add-taskfee-btn {
+  background: none;
+  color: #5d6d90;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none; 
+}
+
+.add-taskfee-btn:hover {
+ 
+  color: #2c3a4d;
+  outline: none; 
+  background: none; 
+}
+
+.add-taskfee-btn:focus {
+  outline: none;
+}
+
+.add-taskfee-btn svg {
+  margin-top: -10px; 
+}
+
+/*misc button*/
+
 .add-misc-button {
   background: none;
   color: #5d6d90;
@@ -111,20 +171,89 @@
   margin-top: -10px; 
 }
 
-.misc-list {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0;
+
+
+.misc-list-container {
+  max-height: 150px; 
+  overflow-y: auto; 
+  padding: 5px 5px 20px 5px;
+  border: none;
+  margin-bottom: 10px;
+
 }
 
-.misc-list li {
+.misc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; 
+  
+}
+
+.misc-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   background: #f9f9f9;
-  padding: 8px;
+  padding: 4px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-bottom: 5px;
   font-size: 0.9rem;
+  
 }
+
+.misc-details {
+  display: flex;
+  flex-direction: column; 
+  gap: 4px;
+}
+
+
+
+.misc-name {
+  font-weight: bold;
+}
+
+.misc-price {
+  color: #555;
+}
+
+
+/*remove button*/
+.remove-misc-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4d; 
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 30px;
+}
+
+.remove-misc-button:hover {
+  color: #cc0000; 
+}
+
+
+.remove-misc-button {
+  background: none; 
+  border: none; /
+  cursor: pointer; 
+  color: #ff4d4d; 
+  padding: 0; 
+  margin: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: auto; /* Let the button shrink to the size of the icon */
+  flex: none; /* Prevent the button from growing */
+}
+
+.remove-misc-button:hover {
+  color: #cc0000; 
+}
+
+
 
 .form-actions {
   display: flex;
@@ -167,3 +296,48 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none; 
   margin: 0;
 }
+
+.tras-id,
+.mop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.tras-id input,
+.mop select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.mop select {
+  height: 40px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
+}
+
+.remove-misc-button {
+  background: none; 
+  border: none; /
+  cursor: pointer; 
+  color: #ff4d4d; 
+  padding: 0; 
+  margin: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: auto; /* Let the button shrink to the size of the icon */
+  flex: none; /* Prevent the button from growing */
+}
+
+.remove-misc-button:hover {
+  color: #cc0000; 
+}
+
+
