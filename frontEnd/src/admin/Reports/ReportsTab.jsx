@@ -23,8 +23,6 @@ const ReportsTab = () => {
       <Sidebar />
       <div className="reports-tab-container">
         <div>
-          <h2 className="text-xl font-bold mb-4">Reports</h2>
-
           <div className="reports-select">
             <select
               className="border p-2 text-sm w-40 ml-auto"

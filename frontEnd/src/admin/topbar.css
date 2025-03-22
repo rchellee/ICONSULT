@@ -35,7 +35,7 @@ nav form {
   display: flex;
   height: 40px;
   padding: 2px;
-  background: #1e232b;
+  background: #fafafa;
   min-width: 18% !important;
   border-radius: 2px;
   border: 1px solid rgba(155, 155, 155, 0.2);

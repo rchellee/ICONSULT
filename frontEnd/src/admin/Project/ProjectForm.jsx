@@ -14,57 +14,33 @@ const ProjectForm = ({
   setEndDate,
   description,
   setDescription,
-  contractPrice,
-  setContractPrice,
-  downpayment,
-  setDownpayment,
   clients,
   onCancel,
   onSave,
   editingProjectId,
+  existingCreatedAt,
 }) => {
-  const [downpaymentWarning, setDownpaymentWarning] = useState(false);
-  const [feeWarning, setFeeWarning] = useState(false);
   const [validationError, setValidationError] = useState("");
 
-  // Handle downpayment input change (only numeric input allowed)
-  const handleDownpaymentChange = (e) => {
-    const value = e.target.value;
-    if (isNaN(value) && value !== "") {
-      setDownpaymentWarning(true);
-    } else {
-      setDownpaymentWarning(false);
-      setDownpayment(value);
-    }
-  };
-
-  // Handle professional fee input change (only numeric input allowed)
-  const handleFeeChange = (e) => {
-    const value = e.target.value;
-    if (isNaN(value) && value !== "") {
-      setFeeWarning(true);
-    } else {
-      setFeeWarning(false);
-      setContractPrice(value);
-    }
-  };
-
-  // Handle save action with validation
   const handleSave = () => {
-    if (
-      !projectName ||
-      !clientId ||
-      !startDate ||
-      !endDate ||
-      !description ||
-      !contractPrice
-    ) {
-      setValidationError("All fields except Downpayment are required.");
+    if (!projectName || !clientId || !startDate || !endDate || !description) {
+      setValidationError("All fields except Transaction ID are required.");
       return;
     }
 
-    setValidationError(""); // Clear error if all fields are valid
-    onSave(); // Call the original onSave function
+    setValidationError("");
+
+    const newProject = {
+      projectName,
+      clientId,
+      clientName,
+      startDate,
+      endDate,
+      description,
+      createdAt: existingCreatedAt || new Date().toISOString(), // Use existingCreatedAt or current timestamp
+    };
+
+    onSave(newProject);
   };
 
   return (
@@ -73,7 +49,6 @@ const ProjectForm = ({
         <h2 className="form-modal-title">
           {editingProjectId ? "Edit Project" : "Create Project"}
         </h2>
-
         <div className="form-project-details">
           <div className="form-modal-field">
             <label>Project Name:</label>
@@ -128,40 +103,16 @@ const ProjectForm = ({
               onChange={(e) => setEndDate(e.target.value)}
             />
           </div>
+        </div>
 
-          <div className="form-modal-field">
-            <label>Downpayment (Optional):</label>
-            <input
-              type="text"
-              placeholder="₱"
-              value={downpayment}
-              onChange={handleDownpaymentChange}
-            />
-            {downpaymentWarning && (
-              <span className="warning-message">Invalid</span>
-            )}
-          </div>
-
-          <div className="form-modal-field">
-            <label>Professional Fee:</label>
-            <input
-              type="text"
-              placeholder="₱"
-              value={contractPrice}
-              onChange={handleFeeChange}
-            />
-            {feeWarning && <span className="warning-message">Invalid</span>}
-          </div>
-
-          <div className="form-modal-field">
-            <label>Description:</label>
-            <textarea
-              placeholder="Describe your project"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="description-input"
-            />
-          </div>
+        <div className="form-modal-field">
+          <label>Description:</label>
+          <textarea
+            placeholder="Describe your project"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="description-input"
+          />
         </div>
 
         {validationError && (
