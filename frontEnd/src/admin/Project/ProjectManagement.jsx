@@ -89,7 +89,6 @@ const ProjectManagement = () => {
     fetch("http://localhost:8081/project")
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data);
         setProjects(data);
       })
       .catch((error) => console.error("Error fetching projects:", error));

@@ -7,12 +7,13 @@ import Sidebar from "../sidebar";
 import { MdAddCircleOutline } from "react-icons/md";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
-const TaskCreateForm = ({ onUpdate, taskToEdit }) => {
+const TaskCreateForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { state } = location; // Access state passed via navigation
+  const taskToEdit = state?.taskToEdit; // Extract taskToEdit from state
+  const projectId = state?.projectId;
   const queryParams = new URLSearchParams(location.search);
-  const projectId = queryParams.get("projectId"); // Retrieve projectId from URL
-
   const [taskName, setTaskName] = useState("");
   const [taskFee, setTaskFee] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -25,14 +26,17 @@ const TaskCreateForm = ({ onUpdate, taskToEdit }) => {
   const [employees, setEmployees] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [projectDetails, setProjectDetails] = useState(null);
+  useEffect(() => {
+    console.log("Project ID in Transaction:", projectId); // Debugging line
+  }, [projectId]);
 
   useEffect(() => {
     if (projectId) {
       axios
-        .get(`http://localhost:8081/projects/${projectId}`)
+        .get(`http://localhost:8081/projects/${projectId}`) // Fetch project details
         .then((response) => {
-          setStartDate(response.data.startDate);
-          setEndDate(response.data.endDate);
+          setProjectDetails(response.data);
         })
         .catch((error) => {
           console.error("Error fetching project details:", error);
@@ -84,6 +88,11 @@ const TaskCreateForm = ({ onUpdate, taskToEdit }) => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Format the miscellaneous array to ensure it only contains `expenses` and `amount`
+    const formattedMiscellaneous = subItems.map((item) => ({
+      expenses: item.expenses,
+      amount: parseFloat(item.amount || 0),
+    }));
 
     const newTask = {
       expenses: taskName,
@@ -98,7 +107,29 @@ const TaskCreateForm = ({ onUpdate, taskToEdit }) => {
     };
 
     if (taskToEdit) {
-      onUpdate(newTask); // Update task if editing
+      // Update task if editing
+      try {
+        const response = await axios.put(
+          `http://localhost:8081/tasks/${taskToEdit.id}`, // Use the task ID to update
+          {
+            taskName: newTask.expenses,
+            taskFee: newTask.subItems[0].amount,
+            dueDate: newTask.dueDate,
+            employee: newTask.assignedEmployee,
+            miscellaneous: formattedMiscellaneous,
+            projectId: projectId,
+            transactionId: newTask.transactionId,
+            modeOfPayment: newTask.modeOfPayment,
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("Task updated successfully:", response.data);
+          navigate(-1); // Go back to the previous page
+        }
+      } catch (error) {
+        console.error("Error updating task:", error);
+      }
     } else {
       // Create new task if not editing
       try {
@@ -229,9 +260,9 @@ const TaskCreateForm = ({ onUpdate, taskToEdit }) => {
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
+                  min={projectDetails?.startDate}
+                  max={projectDetails?.endDate}
                   required
-                  min={startDate} 
-                  max={endDate}
                 />
               </div>
             </div>

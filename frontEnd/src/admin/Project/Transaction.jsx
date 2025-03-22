@@ -14,11 +14,52 @@ const Transaction = ({ projectId }) => {
   const [editingTask, setEditingTask] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState(new Set());
-  const [employees, setEmployees] = useState({}); // Store employee data as a mapping of ID to fullName
-
-  // Refs for dropdown containers
+  const [employees, setEmployees] = useState({});
+  const [projectName, setProjectName] = useState("");
   const statusDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
+  useEffect(() => {
+    console.log("Project ID in Transaction:", projectId); // Debugging line
+  }, [projectId]);
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    const fetchProjectName = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8081/project/${projectId}`
+        );
+        setProjectName(response.data.projectName); // Assuming the response contains the project name
+      } catch (error) {
+        console.error("Error fetching project name:", error);
+      }
+    };
+
+    fetchProjectName();
+  }, [projectId]);
+
+  const updateTotalAmount = async (totalAmount) => {
+    try {
+      await axios.put("http://localhost:8081/update-total-amount", {
+        projectId: projectId,
+        totalAmount: totalAmount,
+      });
+      console.log("Total amount updated successfully.");
+    } catch (error) {
+      console.error("Error updating total amount:", error);
+    }
+  };
+
+  const totalAmount = transactions.reduce((sum, transaction) => {
+    return sum + (transaction.amount || 0); // Use the amount field directly
+  }, 0);
+
+  useEffect(() => {
+    if (transactions.length > 0) {
+      updateTotalAmount(totalAmount);
+    }
+  }, [totalAmount]);
 
   // Fetch employee data
   useEffect(() => {
@@ -173,12 +214,21 @@ const Transaction = ({ projectId }) => {
   };
 
   const navigateToCreateTask = () => {
-    navigate(`/create-task?projectId=${projectId}`); // Pass only projectId
+    navigate(`/create-task`, {
+      state: {
+        projectId: projectId, // Ensure projectId is passed here
+      },
+    });
   };
 
   const handleEditTask = (taskIndex) => {
-    setEditingTask({ ...transactions[taskIndex], index: taskIndex });
-    setShowTaskForm(true);
+    const taskToEdit = transactions[taskIndex];
+    navigate(`/create-task`, {
+      state: {
+        taskToEdit: { ...taskToEdit, index: taskIndex }, // Include task data and index
+        projectId: projectId, // Pass projectId for context
+      },
+    });
   };
 
   const handleUpdateTask = (updatedTask) => {
@@ -189,11 +239,34 @@ const Transaction = ({ projectId }) => {
     setEditingTask(null);
   };
 
-  const handleDeleteTask = (taskIndex) => {
-    const updatedTransactions = transactions.filter(
-      (_, index) => index !== taskIndex
+  const handleDeleteTask = async (taskIndex) => {
+    const taskToDelete = transactions[taskIndex];
+
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this task?"
     );
-    setTransactions(updatedTransactions);
+
+    if (!isConfirmed) {
+      return; // Exit if the user cancels the deletion
+    }
+
+    try {
+      // Send a DELETE request to the backend
+      const response = await axios.delete(
+        `http://localhost:8081/tasks/${taskToDelete.id}`
+      );
+
+      if (response.status === 200) {
+        // Remove the deleted task from the local state
+        const updatedTransactions = transactions.filter(
+          (_, index) => index !== taskIndex
+        );
+        setTransactions(updatedTransactions);
+        console.log("Task deleted successfully:", response.data);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   const formatAmount = (amount) => {
@@ -226,10 +299,6 @@ const Transaction = ({ projectId }) => {
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     return daysDiff > 0 ? daysDiff : 0;
   };
-
-  const totalAmount = transactions.reduce((sum, transaction) => {
-    return sum + (transaction.amount || 0); // Use the amount field directly
-  }, 0);
 
   const totalPaid = transactions.reduce((sum, transaction) => {
     if (transaction.status === "Paid") {
@@ -279,7 +348,7 @@ const Transaction = ({ projectId }) => {
     <div>
       {/* Header with Project ID */}
       <div className="header-container">
-        <h2 className="project-id">Project: {projectId}</h2>
+        <h3 className="project-id">Project:{projectName}</h3>
         <button
           className="create-task-button"
           onClick={navigateToCreateTask} // Use the navigate function
@@ -390,7 +459,7 @@ const Transaction = ({ projectId }) => {
               const subtotal = transaction.amount;
               const pastDueDays = calculatePastDueDays(transaction.dueDate);
               const assignedEmployeeName =
-                employees[transaction.assignedEmployee] || "Unknown"; 
+                employees[transaction.assignedEmployee] || "Unknown";
               return (
                 <React.Fragment key={index}>
                   <tr>
@@ -485,7 +554,8 @@ const Transaction = ({ projectId }) => {
               );
             })}
             <tr className="total-row">
-              <td>Total</td>{/* Total row */}
+              <td>Total</td>
+              {/* Total row */}
               <td></td>
               <td className="amount-cell">{formatAmount(totalAmount)}</td>
               <td></td>

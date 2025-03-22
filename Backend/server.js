@@ -1185,6 +1185,27 @@ app.delete("/project/:id", (req, res) => {
     }
   });
 });
+app.put("/update-total-amount", (req, res) => {
+  const { projectId, totalAmount } = req.body;
+
+  db.query(
+    "UPDATE project SET total_amount = ? WHERE id = ?",
+    [totalAmount, projectId],
+    (error, result) => {
+      if (error) {
+        console.error("Error updating total amount:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "Total amount updated successfully" });
+      } else {
+        res.status(400).json({ message: "Failed to update total amount" });
+      }
+    }
+  );
+});
+
 
 app.post("/tasks", (req, res) => {
   const {
@@ -1254,13 +1275,18 @@ app.put("/tasks/:id", (req, res) => {
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
     req.body;
 
-  // Calculate total miscellaneous fees
-  let miscellaneousTotal = 0;
+  let formattedMiscellaneous = [];
   if (Array.isArray(miscellaneous)) {
-    miscellaneousTotal = miscellaneous.reduce((sum, item) => {
-      return sum + parseFloat(item.fee || 0);
-    }, 0);
+    formattedMiscellaneous = miscellaneous.map((item) => ({
+      expenses: item.expenses,
+      amount: parseFloat(item.amount || 0),
+    }));
   }
+
+  const miscellaneousTotal = formattedMiscellaneous.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
 
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
 
