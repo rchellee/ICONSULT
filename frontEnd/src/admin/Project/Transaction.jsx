@@ -103,6 +103,34 @@ const Transaction = ({ projectId }) => {
       updateTotalAmount(totalAmount);
     }
   }, [totalAmount]);
+
+  const updatePaidAmount = async (paidAmount) => {
+    try {
+      await axios.put("http://localhost:8081/update-paid-amount", {
+        projectId: projectId,
+        paidAmount: paidAmount,
+      });
+      console.log("Paid amount updated successfully.");
+    } catch (error) {
+      console.error("Error updating paid amount:", error);
+    }
+  };
+
+  // Calculate total paid amount
+  const totalPaidAmount = transactions.reduce((sum, transaction) => {
+    if (transaction.status === "Paid") {
+      return sum + (transaction.amount || 0);
+    }
+    return sum;
+  }, 0);
+
+  // Update the paid_amount in the database whenever totalPaidAmount changes
+  useEffect(() => {
+    if (transactions.length > 0) {
+      updatePaidAmount(totalPaidAmount);
+    }
+  }, [totalPaidAmount]);
+
   // Fetch employee data
   useEffect(() => {
     axios

@@ -315,8 +315,8 @@ const ListView = ({
                   </td>
 
                   <td>{formatCurrency(project.total_amount)}</td>
-                  <td>{formatCurrency(project.paidAmount || 0.0)}</td>
-                  <td>{formatCurrency(project.total_amount - (project.paidAmount || 0))}</td>
+                  <td>{formatCurrency(project.paid_amount || 0.0)}</td>
+                  <td>{formatCurrency(project.total_amount - (project.paid_amount || 0))}</td>
 
                   {/* Status Dropdown */}
                   <td>

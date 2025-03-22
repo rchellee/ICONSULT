@@ -1048,18 +1048,31 @@ app.put("/update-progress/:id", (req, res) => {
   db.query(updateProgressSql, [progress, id], (err, result) => {
     if (err) {
       console.error("Error updating project progress:", err);
-      return res
-        .status(500)
-        .json({
-          message: "Error updating project progress",
-          error: err.message,
-        });
+      return res.status(500).json({
+        message: "Error updating project progress",
+        error: err.message,
+      });
     }
 
     res.status(200).json({
       message: "Project progress updated successfully",
     });
   });
+});
+app.put("/update-paid-amount", (req, res) => {
+  const { projectId, paidAmount } = req.body;
+
+  db.query(
+    "UPDATE project SET paid_amount = ? WHERE id = ?",
+    [paidAmount, projectId],
+    (error, results) => {
+      if (error) {
+        console.error("Error updating paid amount:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      res.status(200).json({ message: "Paid amount updated successfully" });
+    }
+  );
 });
 
 // Get all active (noteleted) projects (GET request)
@@ -1262,7 +1275,7 @@ app.post("/tasks", (req, res) => {
 
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
 
-  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment, payment_status, paid_date)
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment, payment_status, date_paid)
                     VALUES (?, ?, ?, ?, ?, ?, 'Ongoing', ?, NULL, ?, ?, 'Not Paid', ?)`;
 
   db.query(
