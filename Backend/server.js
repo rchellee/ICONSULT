@@ -839,7 +839,6 @@ app.get("/employees/id", (req, res) => {
     return res.status(200).json(data);
   });
 });
-
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -928,15 +927,11 @@ app.post("/project", (req, res) => {
     startDate,
     endDate,
     status = "Pending",
-    contractPrice,
-    downpayment = "00.00",
-    paymentStatus = "Not Paid",
-    actualStart = null,
     actualFinish = null,
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, actualStart, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -947,10 +942,6 @@ app.post("/project", (req, res) => {
       startDate,
       endDate,
       status,
-      contractPrice,
-      downpayment,
-      paymentStatus,
-      actualStart,
       actualFinish,
     ],
     (err, result) => {
@@ -964,10 +955,6 @@ app.post("/project", (req, res) => {
         startDate,
         endDate,
         status,
-        contractPrice,
-        downpayment,
-        paymentStatus,
-        actualStart,
         actualFinish,
       });
     }
@@ -1047,7 +1034,6 @@ app.patch("/paymentStat/:projectId", (req, res) => {
     }
   );
 });
-
 // Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = "SELECT * FROM project WHERE isDeleted = 0";
@@ -1100,20 +1086,11 @@ app.get("/projects/:id", (req, res) => {
 });
 app.put("/project/:id", (req, res) => {
   const projectId = req.params.id;
-  const {
-    clientName,
-    projectName,
-    description,
-    startDate,
-    endDate,
-    clientId,
-    contractPrice,
-    downpayment,
-    paymentStatus,
-  } = req.body;
+  const { clientName, projectName, description, startDate, endDate, clientId } =
+    req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1123,9 +1100,6 @@ app.put("/project/:id", (req, res) => {
       startDate,
       endDate,
       clientId,
-      contractPrice,
-      downpayment,
-      paymentStatus,
       projectId,
     ],
     (err, result) => {
@@ -1139,9 +1113,6 @@ app.put("/project/:id", (req, res) => {
         startDate,
         endDate,
         clientId,
-        contractPrice,
-        downpayment,
-        paymentStatus,
       });
     }
   );
@@ -2395,6 +2366,21 @@ app.get("/appointmentReports", (req, res) => {
     return res.json(data);
   });
 });
+app.get("/appointmentYears", (req, res) => {
+  const sql =
+    "SELECT DISTINCT YEAR(STR_TO_DATE(date, '%Y-%m-%d')) AS year FROM appointments ORDER BY year DESC";
+
+  db.query(sql, (err, data) => {
+    if (err) {
+      console.error("Error fetching appointment years:", err);
+      return res
+        .status(500)
+        .json({ message: "Failed to fetch years", error: err });
+    }
+    res.json(data.map((row) => row.year)); // Send an array of years
+  });
+});
+
 //clients
 app.get("/clientsReports", (req, res) => {
   const sql = `
@@ -2436,7 +2422,7 @@ app.get("/projectReports", (req, res) => {
 
   let sql = `
     SELECT 
-      id, clientId, projectName, status, contractPrice, startDate, endDate, actualFinish, 
+      id, clientId, projectName, clientName, description, status, contractPrice, startDate, endDate, created_at, actualFinish, 
       TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays, paymentStatus,
@@ -2471,7 +2457,7 @@ app.get("/taskReports", (req, res) => {
 });
 app.get("/ETReports", (req, res) => {
   const sql = `
-    SELECT e.firstName, e.lastName, t.created_at, COUNT(t.id) AS task_count
+    SELECT e.firstName, e.lastName, t.created_at, t.status, t.amount, t.due_date, t.task_name, COUNT(t.id) AS task_count
     FROM employee e
     LEFT JOIN tasks t ON e.id = t.employee
     GROUP BY e.id
@@ -2482,12 +2468,24 @@ app.get("/ETReports", (req, res) => {
     res.json(result);
   });
 });
-
 app.get("/employeeReports", (req, res) => {
   const sql = "SELECT * FROM employee";
   db.query(sql, (err, result) => {
     if (err)
       return res.json({ error: "Error fetching employee", details: err });
+    res.json(result);
+  });
+});
+app.get("/tasksForEmployee/:employeeId", (req, res) => {
+  const { employeeId } = req.params;
+  const sql = `
+    SELECT t.task_name, t.due_date, t.status, t.amount
+    FROM tasks t
+    WHERE t.employee = ?
+    ORDER BY t.due_date
+  `;
+  db.query(sql, [employeeId], (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
     res.json(result);
   });
 });

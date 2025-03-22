@@ -23,7 +23,6 @@ const ProjectList = ({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
-  const [downpayment, setDownpayment] = useState("");
 
   // States to hold statuses and dates based on filteredProjects
   const [statuses, setStatuses] = useState(
@@ -144,35 +143,6 @@ const ProjectList = ({
     fetchTasksInfo();
   }, [filteredProjects]);
 
-  // Fetch total payments for each project
-  useEffect(() => {
-    const fetchTotalPayments = async () => {
-      const totalPayments = {};
-      for (const project of filteredProjects) {
-        try {
-          const response = await fetch(
-            `http://localhost:8081/admin/tasks?projectId=${project.id}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch tasks");
-          }
-          const data = await response.json();
-          const totalTaskAmount = data.tasks.reduce(
-            (sum, task) => sum + (parseFloat(task.amount) || 0),
-            0
-          );
-          totalPayments[project.id] = project.contractPrice + totalTaskAmount;
-        } catch (error) {
-          console.error("Error fetching total payment for project:", error);
-          totalPayments[project.id] = project.contractPrice || 0;
-        }
-      }
-      setTotalTasks(totalPayments);
-    };
-
-    fetchTotalPayments();
-  }, [filteredProjects]);
-
   const handleStartDateChange = (projectId, date) => {
     setStartDates((prevStartDates) => ({
       ...prevStartDates,
@@ -200,7 +170,6 @@ const ProjectList = ({
     setStartDate("");
     setEndDate("");
     setDescription("");
-    setDownpayment("");
     setEditingProjectId(null);
   };
 

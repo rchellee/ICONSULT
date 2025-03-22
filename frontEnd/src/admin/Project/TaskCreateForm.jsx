@@ -5,12 +5,12 @@ import { IoIosCloseCircleOutline } from "react-icons/io"; // Import the close ic
 
 const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   const [taskName, setTaskName] = useState("");
-  const [taskFee, setTaskFee] = useState(""); 
+  const [taskFee, setTaskFee] = useState(""); // Initialize as empty string
   const [dueDate, setDueDate] = useState("");
   const [assignedEmployee, setAssignedEmployee] = useState("");
   const [subItems, setSubItems] = useState([]);
   const [miscName, setMiscName] = useState("");
-  const [miscAmount, setMiscAmount] = useState(""); 
+  const [miscAmount, setMiscAmount] = useState(""); // Initialize as empty string
   const [transactionId, setTransactionId] = useState("");
   const [modeOfPayment, setModeOfPayment] = useState("");
 
@@ -18,12 +18,12 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
-      setTaskFee(taskToEdit.subItems[0].amount.toString()); 
+      setTaskFee(taskToEdit.subItems[0].amount.toString()); // Convert to string
       setDueDate(taskToEdit.dueDate);
       setAssignedEmployee(taskToEdit.assignedEmployee);
       setTransactionId(taskToEdit.transactionId);
       setModeOfPayment(taskToEdit.modeOfPayment);
-      setSubItems(taskToEdit.subItems.slice(1)); 
+      setSubItems(taskToEdit.subItems.slice(1)); // Exclude the "Task Fee" from subItems
     }
   }, [taskToEdit]);
 
@@ -51,8 +51,8 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
       dueDate,
       assignedEmployee,
       subItems: [
-        { expenses: "Task Fee", amount: parseFloat(taskFee) || 0 }, 
-        ...subItems,
+        { expenses: "Task Fee", amount: parseFloat(taskFee) || 0 }, // Parse as number, default to 0 if empty
+        ...subItems, // Miscellaneous items are added here
       ],
       transactionId,
       modeOfPayment,
@@ -62,11 +62,11 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
     };
 
     if (taskToEdit) {
-      onUpdate(newTask);
+      onUpdate(newTask); // Update task if editing
     } else {
-      onCreate(newTask); 
+      onCreate(newTask); // Create new task if not editing
     }
-    onClose(); 
+    onClose(); // Close the form
   };
 
   return (

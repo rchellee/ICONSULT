@@ -30,9 +30,6 @@ const ListView = ({
   statuses,
   statusColors,
   handleStatusChange,
-  paymentstatuses,
-  paymentstatusColors,
-  handlePaymentStatusChange,
   startDates,
   finishDates,
   tasksInfo,
@@ -46,7 +43,6 @@ const ListView = ({
   const [sortOrder, setSortOrder] = useState("default");
   const [showStatusOptions, setShowStatusOptions] = useState(false);
   const [showSortOptions, setShowSortOptions] = useState(false);
-  const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
 
@@ -95,15 +91,6 @@ const ListView = ({
     setShowStatusOptions(false);
   };
 
-  // Handle payment option selection
-  const handlePaymentOptionClick = (paymentStatus) => {
-    if (selectedProjectId) {
-      handlePaymentStatusChange(selectedProjectId, paymentStatus);
-    }
-    setShowPaymentOptions(false);
-    setSelectedProjectId(null);
-  };
-
   // Handle sorting option selection
   const handleSortOptionClick = (order) => {
     setSortOrder(order);
@@ -136,10 +123,16 @@ const ListView = ({
     // Filter projects based on the search term and filter status
     const filtered = projects.filter((project) => {
       const matchesSearchTerm =
-        (project.projectName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (project.clientName || "").toLowerCase().includes(searchTerm.toLowerCase());
+        (project.projectName || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        (project.clientName || "")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
-      const matchesStatus = filterStatus ? statuses[project.id] === filterStatus : true;
+      const matchesStatus = filterStatus
+        ? statuses[project.id] === filterStatus
+        : true;
 
       return matchesSearchTerm && matchesStatus;
     });
@@ -148,16 +141,19 @@ const ListView = ({
     let sorted = [...filtered];
 
     if (sortOrder === "default") {
-      // Default sorting
-      const statusOrder = { Ongoing: 1, Pending: 2, Completed: 3 };
+      // Default sorting: Most recent first, except for completed projects
       sorted.sort((a, b) => {
-        const statusA = statuses[a.id] || "Pending";
-        const statusB = statuses[b.id] || "Pending";
-
-        if (statusOrder[statusA] !== statusOrder[statusB]) {
-          return statusOrder[statusA] - statusOrder[statusB];
+        if (statuses[a.id] === "Completed" && statuses[b.id] !== "Completed") {
+          return 1; // Move completed projects to the bottom
+        } else if (
+          statuses[a.id] !== "Completed" &&
+          statuses[b.id] === "Completed"
+        ) {
+          return -1; // Move non-completed projects to the top
+        } else {
+          // Sort by creation date (most recent first)
+          return new Date(b.created_at) - new Date(a.created_at);
         }
-        return 0;
       });
     } else if (sortOrder === "name") {
       // Sort alphabetically
@@ -169,14 +165,14 @@ const ListView = ({
         return 0;
       });
     } else if (sortOrder === "asc") {
-      // Ascending
+      // Ascending by start date
       sorted.sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
         return dateA - dateB;
       });
     } else if (sortOrder === "desc") {
-      // Descending
+      // Descending by start date
       sorted.sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
@@ -186,7 +182,6 @@ const ListView = ({
 
     setFilteredProjects(sorted);
   }, [searchTerm, projects, filterStatus, statuses, sortOrder]);
-
   const handleEditClick = (e, projectId) => {
     e.stopPropagation();
     handleEdit(projectId);
@@ -208,16 +203,23 @@ const ListView = ({
             ref={statusButtonRef}
           >
             <FaTasks size={20} style={{ marginRight: "13px" }} />
-            <span style={{ fontSize: "15px" }}>Status</span> {/* Always show "Status" */}
+            <span style={{ fontSize: "15px" }}>Status</span>{" "}
+            {/* Always show "Status" */}
           </button>
           <div
             className={`sorting-dropdown ${showStatusOptions ? "visible" : ""}`}
             ref={statusDropdownRef}
           >
             <button onClick={() => handleStatusOptionClick(null)}>All</button>
-            <button onClick={() => handleStatusOptionClick("Ongoing")}>Ongoing</button>
-            <button onClick={() => handleStatusOptionClick("Completed")}>Completed</button>
-            <button onClick={() => handleStatusOptionClick("Pending")}>Pending</button>
+            <button onClick={() => handleStatusOptionClick("Ongoing")}>
+              Ongoing
+            </button>
+            <button onClick={() => handleStatusOptionClick("Completed")}>
+              Completed
+            </button>
+            <button onClick={() => handleStatusOptionClick("Pending")}>
+              Pending
+            </button>
           </div>
         </div>
 
@@ -229,7 +231,8 @@ const ListView = ({
             ref={sortButtonRef}
           >
             <TbArrowsSort size={20} style={{ marginRight: "13px" }} />
-            <span style={{ fontSize: "15px" }}>Sort</span> {/* Always show "Sort" */}
+            <span style={{ fontSize: "15px" }}>Sort</span>{" "}
+            {/* Always show "Sort" */}
           </button>
           <div
             className={`sorting-dropdown ${showSortOptions ? "visible" : ""}`}
@@ -238,9 +241,7 @@ const ListView = ({
             <button onClick={() => handleSortOptionClick("default")}>
               Default
             </button>
-            <button onClick={() => handleSortOptionClick("name")}>
-              Name
-            </button>
+            <button onClick={() => handleSortOptionClick("name")}>Name</button>
             <button onClick={() => handleSortOptionClick("asc")}>
               Ascending
             </button>
@@ -262,11 +263,14 @@ const ListView = ({
               <th>Project</th>
               <th>Client</th>
               <th>Progress</th>
-              <th>Planned <br /> Duration</th>
-              <th>Professional <br /> Fee</th>
+              <th>
+                Planned <br /> Duration
+              </th>
               <th>Amount</th>
               <th>Balance</th>
-              <th>Project <br /> Status</th>
+              <th>
+                Project <br /> Status
+              </th>
               <th>Action</th>
             </tr>
           </thead>
@@ -289,15 +293,7 @@ const ListView = ({
                   <td title={project.clientName}>{project.clientName}</td>
 
                   {/* Progress */}
-                  <td>
-                    {(() => {
-                      const { total = 0, completed = 0 } =
-                        tasksInfo[project.id] || {};
-                      const progress =
-                        total > 0 ? Math.round((completed / total) * 100) : 0;
-                      return `${progress}%`;
-                    })()}
-                  </td>
+                  <td>{project.progress}%</td>
 
                   {/* Planned Duration */}
                   <td>
@@ -310,78 +306,26 @@ const ListView = ({
                     </div>
                   </td>
 
-                  {/* Professional Fee, Downpayment, Total */}
-                  <td className="right-align" title={formatCurrency(project.contractPrice)}>
-                    {formatCurrency(project.contractPrice)}
-                  </td>
-                  
-                  <td className="right-align" title={formatCurrency(totalTasks[project.id])}>
-                    {formatCurrency(totalTasks[project.id])}
-                  </td>
-
-                  <td className="center-align">
-                    <div>--</div>
-                  </td>
+                  <td>{formatCurrency(project.amount || 0.0)}</td>
+                  <td>{formatCurrency(project.balance || 0.0)}</td>
 
                   {/* Status Dropdown */}
                   <td>
-                    <select
-                      value={statuses[project.id] || "Pending"}
-                      onChange={(e) =>
-                        handleStatusChange(project.id, e.target.value)
-                      }
-                      className={`status-dropdown ${
-                        statuses[project.id] === "Pending"
-                          ? "status-pending"
-                          : statuses[project.id] === "Completed"
-                          ? "status-completed"
-                          : ""
-                      }`}
+                    <div
+                      className="status-text"
                       style={{
-                        backgroundColor:
-                          statuses[project.id] === "Completed"
-                          ? "#3b4f67"
-                          : statuses[project.id] === "Ongoing"
-                          ? "#F06292"
-                          : statuses[project.id] === "Pending"
-                          ? "rgb(252, 118, 118)"
-                          : statusColors[statuses[project.id]] || "fffd78",
                         color:
-                          statuses[project.id] === "Ongoing" ||
-                          statuses[project.id] === "Completed"
-                          ? "white"
-                          : "white",
+                          statuses[project.id] === "Ongoing"
+                            ? "#4070f4" // blue for Ongoing
+                            : statuses[project.id] === "Completed"
+                            ? "#3b4f67" // Dark blue for Completed
+                            : statuses[project.id] === "Pending"
+                            ? "rgb(252, 118, 118)" // Red for Pending
+                            : statusColors[statuses[project.id]] || "#000", // Default to black
                       }}
-                      disabled={
-                        statuses[project.id] === "Completed" &&
-                        (() => {
-                          const { total = 0, completed = 0 } =
-                            tasksInfo[project.id] || {};
-                          return (
-                            total > 0 &&
-                            Math.round((completed / total) * 100) === 100
-                          );
-                        })()
-                      }
                     >
-                      {statuses[project.id] === "Pending" && (
-                        <>
-                          <option value="Pending">Pending</option>
-                          <option value="Ongoing">Ongoing</option>
-                        </>
-                      )}
-                      {statuses[project.id] === "Ongoing" && (
-                        <>
-                          <option value="Ongoing">Ongoing</option>
-                          <option value="Completed">Completed</option>
-                        </>
-                      )}
-                      {statuses[project.id] === "Completed" && (
-                        <>
-                          <option value="Completed">Completed</option>
-                        </>
-                      )}
-                    </select>
+                      {statuses[project.id] || "Pending"}
+                    </div>
                   </td>
 
                   {/* Action Buttons */}
@@ -392,15 +336,17 @@ const ListView = ({
                         className="project-edit"
                         onClick={(e) => handleEditClick(e, project.id)}
                       >
-                      <AiOutlineEdit style={{ fontSize: "1.5rem" }} /> 
+                        <AiOutlineEdit style={{ fontSize: "1.5rem" }} />
                       </button>
 
-                     {/* Delete Button */}
+                      {/* Delete Button */}
                       <button
                         className="project-delete"
                         onClick={(e) => handleDeleteClick(e, project.id)}
                       >
-                        <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} />
+                        <MdOutlineDeleteOutline
+                          style={{ fontSize: "1.5rem" }}
+                        />
                       </button>
                     </div>
                   </td>

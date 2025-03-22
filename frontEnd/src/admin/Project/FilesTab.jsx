@@ -98,6 +98,7 @@ const FilesTab = ({ projectId }) => {
       setUploading(false);
     }
   };
+
   const handleDelete = async (fileId) => {
     try {
       const response = await fetch(`http://localhost:8081/files/${fileId}`, {
