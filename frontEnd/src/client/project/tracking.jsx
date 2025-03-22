@@ -5,8 +5,6 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaPlus,
-  FaArrowUp,
-  FaArrowDown,
   FaFolder,
   FaFile,
   FaHome,
@@ -18,7 +16,7 @@ import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
 import Files from "./Files";
 import Topbar from "../Topbar";
-import ClientTask from "./ClientTask"; // Import the new ClientTask component
+import ClientTask from "./ClientTask"; // Import the ClientTask component
 
 function Tracking() {
   const { projectId } = useParams();
@@ -35,8 +33,6 @@ function Tracking() {
   const { searchTerm } = useContext(SearchContext);
   const [folders, setFolders] = useState([]);
   const navigate = useNavigate();
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [sortField, setSortField] = useState("task_name");
 
   useEffect(() => {
     if (activeTab === "tasks") {
@@ -61,37 +57,6 @@ function Tracking() {
     if (tab === "overview") {
       setIsLoading(false);
     }
-  };
-
-  const handleSort = (field) => {
-    const newSortOrder = sortOrder === "asc" ? "desc" : "asc"; // Toggle order
-    setSortField(field);
-    setSortOrder(newSortOrder);
-    sortTasks(field, newSortOrder);
-  };
-
-  const sortTasks = (field, order) => {
-    const sortedTasks = [...tasks].sort((a, b) => {
-      if (field === "task_fee" || field === "amount") {
-        const feeA = parseFloat(a[field]) || 0;
-        const feeB = parseFloat(b[field]) || 0;
-        return order === "asc" ? feeA - feeB : feeB - feeA;
-      } else if (field === "due_date") {
-        const dateA = new Date(a[field]);
-        const dateB = new Date(b[field]);
-        return order === "asc" ? dateA - dateB : dateB - dateA;
-      } else if (field === "status") {
-        const statusOrder = ["Pending", "Ongoing", "Completed"];
-        return order === "asc"
-          ? statusOrder.indexOf(a[field]) - statusOrder.indexOf(b[field])
-          : statusOrder.indexOf(b[field]) - statusOrder.indexOf(a[field]);
-      } else {
-        if (a[field] < b[field]) return order === "asc" ? -1 : 1;
-        if (a[field] > b[field]) return order === "asc" ? 1 : -1;
-        return 0;
-      }
-    });
-    setTasks(sortedTasks);
   };
 
   useEffect(() => {
@@ -177,7 +142,23 @@ function Tracking() {
               <ProjectOverview projectId={projectId} />
             )}
             {activeTab === "tasks" && (
-              <ClientTask projectId={projectId} />
+              <>
+                {isLoading && <p>Loading tasks...</p>}
+                {error && <p className="error">{error}</p>}
+                {!isLoading && !error && tasks.length === 0 && (
+                  <p>No tasks found.</p>
+                )}
+                {!isLoading && !error && tasks.length > 0 && (
+                  <div className="task-list">
+                    {/* Task Cards */}
+                    <div className="task-cards">
+                      {tasks.map((task) => (
+                        <ClientTask key={task.id} task={task} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
