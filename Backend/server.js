@@ -2331,9 +2331,6 @@ app.get("/todaysTasks", (req, res) => {
     return res.json(data);
   });
 });
-app.get("/projectDashboard/revenue", (req, res) => {
-  const { filter } = req.query;
-  let condition = "";
 
 //REPORTS TAB
 //apointments

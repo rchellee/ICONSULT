@@ -105,12 +105,6 @@ const FilesTab = ({ projectId }) => {
         method: "DELETE",
       });
 
-  const handleDelete = async (fileId) => {
-    try {
-      const response = await fetch(`http://localhost:8081/files/${fileId}`, {
-        method: "DELETE",
-      });
-
       if (response.ok) {
         setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
         console.log("File record deleted successfully.");
