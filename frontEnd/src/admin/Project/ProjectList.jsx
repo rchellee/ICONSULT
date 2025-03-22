@@ -118,6 +118,8 @@ const ProjectList = ({
             `http://localhost:8081/admin/tasks?projectId=${project.id}`
           );
           if (!response.ok) {
+            const text = await response.text();
+            console.error("Server response:", text);
             throw new Error("Failed to fetch tasks");
           }
           const data = await response.json();

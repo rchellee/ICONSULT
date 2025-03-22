@@ -4,7 +4,6 @@ import ErrorBoundary from "../../components/ErrorBoundary";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Task.css";
 import "./PostTab.css";
-import PostsTab from "./PostsTab";
 import FilesTab from "./FilesTab";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
@@ -19,23 +18,8 @@ const ProjectTask = ({ onBack }) => {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tasks, setTasks] = useState([]);
 
-  useEffect(() => {
-    console.log("Project ID in ProjectTask:", projectId);
-  }, [projectId]);
-
   // Handle tab switching
   const handleTabClick = (tab) => setActiveTab(tab);
-
-  const handleCreateTask = (newTask) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-    setShowTaskForm(false);
-  };
-
-  const handleProjectClick = (projectId) => {
-    setSelectedProjectId(projectId); // Set selected project id
-  };
-
-  const handleCancelForm = () => setShowTaskForm(false);
 
   return (
     <div>
@@ -43,14 +27,12 @@ const ProjectTask = ({ onBack }) => {
       <Sidebar />
       <div className="project-task-container">
         <div className="home-button-container"></div>
-
         <div className="project-task-tabs">
-          {/* Reordered tabs: Transaction History first, Documents second */}
           <button
             className={activeTab === "transactions" ? "active" : ""}
             onClick={() => handleTabClick("transactions")}
           >
-            Task 
+            Task
           </button>
           <button
             className={activeTab === "files" ? "active" : ""}
@@ -59,7 +41,6 @@ const ProjectTask = ({ onBack }) => {
             Documents
           </button>
         </div>
-
         {/* Tab Content */}
         <div className="project-task-content">
           {/* Transaction History Tab */}

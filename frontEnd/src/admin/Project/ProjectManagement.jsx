@@ -2,12 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
 import { FaPlus } from "react-icons/fa";
-import Sidebar from "../sidebar";
 import pic4 from "../../assets/pic4.jpg";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectTask from "./ProjectTask";
 import Topbar from "../Topbar";
+import Sidebar from "../sidebar";
 
 const ProjectManagement = () => {
   const { searchTerm } = useContext(SearchContext);

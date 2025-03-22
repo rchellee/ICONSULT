@@ -1,20 +1,95 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { IoCreateOutline } from "react-icons/io5";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 import TaskCreateForm from "./TaskCreateForm";
+import axios from "axios"; // Import axios for making HTTP requests
 import "./Transaction.css";
 
 const Transaction = ({ projectId }) => {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState(new Set());
+  const [employees, setEmployees] = useState({}); // Store employee data as a mapping of ID to fullName
 
   // Refs for dropdown containers
   const statusDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
+
+  // Fetch employee data
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/employees/id") // Fetch employee data
+      .then((response) => {
+        const employeeMap = {};
+        response.data.forEach((employee) => {
+          employeeMap[employee.id] = employee.fullName; // Map employee ID to fullName
+        });
+        setEmployees(employeeMap); // Set the employee mapping
+      })
+      .catch((error) => {
+        console.error("Error fetching employees:", error);
+      });
+  }, []);
+
+  // Fetch tasks
+  useEffect(() => {
+    if (!projectId) return;
+
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8081/admin/tasks?projectId=${projectId}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch tasks");
+        }
+        const data = await response.json();
+        const tasks = data.tasks;
+
+        // Map tasks to the expected transactions structure
+        const mappedTransactions = tasks.map((task) => {
+          // Parse the miscellaneous JSON string and ensure `fee` is a number
+          const miscellaneous = JSON.parse(task.miscellaneous || "[]").map(
+            (item) => ({
+              ...item,
+              fee: parseFloat(item.fee) || 0, // Ensure fee is a number
+            })
+          );
+
+          return {
+            id: task.id,
+            expenses: task.task_name,
+            dueDate: task.due_date,
+            assignedEmployee: task.employee, // This is the employee ID
+            subItems: [
+              {
+                expenses: "Task Fee",
+                amount: parseFloat(task.task_fee) || 0, // Ensure amount is a number
+              },
+              ...miscellaneous, // Use the parsed and corrected miscellaneous array
+            ],
+            status: task.status,
+            datePaid: task.actual_finish || "",
+            amount: parseFloat(task.amount) || 0, // Include the amount field from the tasks table
+          };
+        });
+
+        // Log the mapped transactions for debugging
+        console.log("Mapped Transactions:", mappedTransactions);
+
+        setTransactions(mappedTransactions);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks();
+  }, [projectId]);
 
   // Handle clicks outside dropdowns
   useEffect(() => {
@@ -40,8 +115,65 @@ const Transaction = ({ projectId }) => {
     };
   }, []);
 
-  const handleCreateTask = (newTask) => {
-    setTransactions([...transactions, newTask]);
+  // Handle creating a new task
+  const handleCreateTask = async (newTask) => {
+    try {
+      const response = await axios.post("http://localhost:8081/tasks", {
+        taskName: newTask.expenses,
+        taskFee: newTask.subItems[0].amount,
+        dueDate: newTask.dueDate,
+        employee: newTask.assignedEmployee,
+        miscellaneous: newTask.subItems.slice(1),
+        projectId: projectId,
+      });
+
+      if (response.status === 201) {
+        // Fetch tasks again to update the list
+        const fetchResponse = await fetch(
+          `http://localhost:8081/admin/tasks?projectId=${projectId}`
+        );
+        if (!fetchResponse.ok) {
+          throw new Error("Failed to fetch tasks after creation");
+        }
+        const data = await fetchResponse.json();
+        const tasks = data.tasks;
+
+        // Map tasks to the expected transactions structure
+        const mappedTransactions = tasks.map((task) => {
+          const miscellaneous = JSON.parse(task.miscellaneous || "[]").map(
+            (item) => ({
+              ...item,
+              fee: parseFloat(item.fee) || 0,
+            })
+          );
+
+          return {
+            id: task.id,
+            expenses: task.task_name,
+            dueDate: task.due_date,
+            assignedEmployee: task.employee,
+            subItems: [
+              {
+                expenses: "Task Fee",
+                amount: parseFloat(task.task_fee) || 0,
+              },
+              ...miscellaneous,
+            ],
+            status: task.status,
+            datePaid: task.actual_finish || "",
+            amount: parseFloat(task.amount) || 0,
+          };
+        });
+
+        setTransactions(mappedTransactions);
+      }
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
+  };
+
+  const navigateToCreateTask = () => {
+    navigate(`/create-task?projectId=${projectId}`); // Pass only projectId
   };
 
   const handleEditTask = (taskIndex) => {
@@ -58,11 +190,16 @@ const Transaction = ({ projectId }) => {
   };
 
   const handleDeleteTask = (taskIndex) => {
-    const updatedTransactions = transactions.filter((_, index) => index !== taskIndex);
+    const updatedTransactions = transactions.filter(
+      (_, index) => index !== taskIndex
+    );
     setTransactions(updatedTransactions);
   };
 
   const formatAmount = (amount) => {
+    if (isNaN(amount)) {
+      return "₱0.00"; // Return a default value if amount is NaN
+    }
     return new Intl.NumberFormat("en-PH", {
       style: "currency",
       currency: "PHP",
@@ -91,14 +228,12 @@ const Transaction = ({ projectId }) => {
   };
 
   const totalAmount = transactions.reduce((sum, transaction) => {
-    const subtotal = transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0);
-    return sum + subtotal;
+    return sum + (transaction.amount || 0); // Use the amount field directly
   }, 0);
 
   const totalPaid = transactions.reduce((sum, transaction) => {
     if (transaction.status === "Paid") {
-      const subtotal = transaction.subItems.reduce((subSum, subItem) => subSum + subItem.amount, 0);
-      return sum + subtotal;
+      return sum + (transaction.amount || 0); // Use the amount field directly
     }
     return sum;
   }, 0);
@@ -110,7 +245,9 @@ const Transaction = ({ projectId }) => {
     updatedTransactions[taskIndex].status = status;
 
     if (status === "Paid") {
-      updatedTransactions[taskIndex].datePaid = new Date().toISOString().split("T")[0];
+      updatedTransactions[taskIndex].datePaid = new Date()
+        .toISOString()
+        .split("T")[0];
     } else {
       updatedTransactions[taskIndex].datePaid = "";
     }
@@ -133,7 +270,7 @@ const Transaction = ({ projectId }) => {
     if (newExpandedTasks.has(taskIndex)) {
       newExpandedTasks.delete(taskIndex);
     } else {
-      newExpandedTasks.add(taskIndex); 
+      newExpandedTasks.add(taskIndex);
     }
     setExpandedTasks(newExpandedTasks);
   };
@@ -145,16 +282,11 @@ const Transaction = ({ projectId }) => {
         <h2 className="project-id">Project: {projectId}</h2>
         <button
           className="create-task-button"
-          onClick={() => {
-            setEditingTask(null);
-            setShowTaskForm(true);
-          }}
+          onClick={navigateToCreateTask} // Use the navigate function
         >
-          Create
-          <IoCreateOutline className="create-task-icon" />
+          Create <IoCreateOutline className="create-task-icon" />
         </button>
       </div>
-
       {/* Task Creation/Edit Form */}
       {showTaskForm && (
         <TaskCreateForm
@@ -180,11 +312,18 @@ const Transaction = ({ projectId }) => {
             <div className="detail-item past-dues">
               <span className="detail-label">Past Dues:</span>
               <span className="detail-value">
-                {transactions.filter((transaction) => calculatePastDueDays(transaction.dueDate) > 0).length}
+                {
+                  transactions.filter(
+                    (transaction) =>
+                      calculatePastDueDays(transaction.dueDate) > 0
+                  ).length
+                }
               </span>
             </div>
             <div className="progress-container">
-              <span className="progress-text">Progress: {paymentProgress}%</span>
+              <span className="progress-text">
+                Progress: {paymentProgress}%
+              </span>
               <div className="progress-bar">
                 <div
                   className="progress-bar-fill"
@@ -248,12 +387,12 @@ const Transaction = ({ projectId }) => {
           </thead>
           <tbody>
             {transactions.map((transaction, index) => {
-              const subtotal = transaction.subItems.reduce((sum, subItem) => sum + subItem.amount, 0);
+              const subtotal = transaction.amount;
               const pastDueDays = calculatePastDueDays(transaction.dueDate);
-
+              const assignedEmployeeName =
+                employees[transaction.assignedEmployee] || "Unknown"; 
               return (
                 <React.Fragment key={index}>
-                  {/* Task Name Row */}
                   <tr>
                     <td>{transaction.expenses}</td>
                     <td>
@@ -261,29 +400,38 @@ const Transaction = ({ projectId }) => {
                         className="dropdown-toggle"
                         onClick={() => toggleTaskDetails(index)}
                       >
-                        {expandedTasks.has(index) ? "▼" : "▶"} Consultancy Fee
+                        {expandedTasks.has(index) ? "▼" : "▶"} Miscellaneous
                       </button>
                     </td>
                     <td className="amount-cell">
-                      {expandedTasks.has(index)
-                        ? formatAmount(transaction.subItems[0].amount) // Show only Consultancy Fee when expanded
-                        : formatAmount(subtotal) // Show total when collapsed
+                      {
+                        expandedTasks.has(index)
+                          ? formatAmount(transaction.subItems[0].amount) // Show only Consultancy Fee when expanded
+                          : formatAmount(subtotal) // Show total when collapsed
                       }
                     </td>
-                    <td>{transaction.assignedEmployee}</td>
+                    <td>{assignedEmployeeName}</td>{" "}
                     <td>{formatDate(transaction.dueDate)}</td>
                     <td>{formatDate(transaction.datePaid)}</td>
                     <td>
                       <select
                         value={transaction.status || ""}
-                        onChange={(e) => handleTaskStatusChange(index, e.target.value)}
+                        onChange={(e) =>
+                          handleTaskStatusChange(index, e.target.value)
+                        }
                         className="transaction-button"
                       >
                         <option value="">Select Status</option>
-                        <option value="Paid" disabled={transaction.status === "Paid"}>
+                        <option
+                          value="Paid"
+                          disabled={transaction.status === "Paid"}
+                        >
                           Paid
                         </option>
-                        <option value="Unpaid" disabled={transaction.status === "Paid"}>
+                        <option
+                          value="Unpaid"
+                          disabled={transaction.status === "Paid"}
+                        >
                           Unpaid
                         </option>
                       </select>
@@ -305,14 +453,15 @@ const Transaction = ({ projectId }) => {
                       </div>
                     </td>
                   </tr>
-
                   {/* Sub-items (Miscellaneous) */}
                   {expandedTasks.has(index) &&
                     transaction.subItems.slice(1).map((subItem, subIndex) => (
                       <tr key={`sub-${subIndex}`}>
                         <td></td>
                         <td>{subItem.expenses}</td>
-                        <td className="amount-cell">{formatAmount(subItem.amount)}</td>
+                        <td className="amount-cell">
+                          {formatAmount(subItem.amount)}
+                        </td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -320,7 +469,6 @@ const Transaction = ({ projectId }) => {
                         <td></td>
                       </tr>
                     ))}
-
                   {/* Subtotal Row for the Task */}
                   {expandedTasks.has(index) && (
                     <tr className="subtotal-row">
@@ -336,9 +484,8 @@ const Transaction = ({ projectId }) => {
                 </React.Fragment>
               );
             })}
-            {/* Total row */}
             <tr className="total-row">
-              <td>Total</td>
+              <td>Total</td>{/* Total row */}
               <td></td>
               <td className="amount-cell">{formatAmount(totalAmount)}</td>
               <td></td>

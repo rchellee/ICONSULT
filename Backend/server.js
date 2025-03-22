@@ -1095,7 +1095,6 @@ app.get("/project", (req, res) => {
     }
   });
 });
-
 app.get("/project/:id", (req, res) => {
   const projectId = req.params.id;
 
@@ -1188,21 +1187,38 @@ app.delete("/project/:id", (req, res) => {
 });
 
 app.post("/tasks", (req, res) => {
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    projectId,
+    transactionId,
+    modeOfPayment,
+  } = req.body;
 
   console.log("Received project_id:", projectId);
 
-  // Calculate the total miscellaneous fee
+  // Transform miscellaneous items to new format { expenses, amount }
+  let formattedMiscellaneous = [];
   let miscellaneousTotal = 0;
+
   if (Array.isArray(miscellaneous)) {
-    miscellaneousTotal = miscellaneous.reduce((sum, item) => {
-      return sum + parseFloat(item.fee || 0);
-    }, 0);
+    formattedMiscellaneous = miscellaneous.map((item) => ({
+      expenses: item.expenses, // Rename 'name' to 'expenses'
+      amount: parseFloat(item.amount || 0), // Rename 'fee' to 'amount'
+    }));
+    miscellaneousTotal = formattedMiscellaneous.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
   }
+
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish)
-                    VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, NULL)`;
+
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment)
+                    VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, NULL, ?, ?)`;
 
   db.query(
     tasksSql,
@@ -1211,9 +1227,11 @@ app.post("/tasks", (req, res) => {
       taskFee,
       dueDate,
       employee,
-      JSON.stringify(miscellaneous),
+      JSON.stringify(formattedMiscellaneous), // Save as JSON in DB
       totalAmount,
       projectId,
+      transactionId,
+      modeOfPayment,
     ],
     (err, result) => {
       if (err) {
@@ -1230,6 +1248,7 @@ app.post("/tasks", (req, res) => {
     }
   );
 });
+
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
   const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
@@ -1320,6 +1339,7 @@ app.delete("/tasks/:id", (req, res) => {
     res.status(200).json({ message: "Task deleted successfully" });
   });
 });
+//transaction
 app.get("/admin/tasks", (req, res) => {
   console.log(req.query);
   const { projectId } = req.query;
