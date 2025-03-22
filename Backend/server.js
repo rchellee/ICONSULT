@@ -1276,7 +1276,7 @@ app.post("/tasks", (req, res) => {
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
 
   const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment, payment_status, date_paid)
-                    VALUES (?, ?, ?, ?, ?, ?, 'Ongoing', ?, NULL, ?, ?, 'Not Paid', ?)`;
+                    VALUES (?, ?, ?, ?, ?, ?, 'Ongoing', ?, NULL, ?, ?, 'Not Paid', NULL)`;
 
   db.query(
     tasksSql,
