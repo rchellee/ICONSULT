@@ -1,345 +1,73 @@
-.top-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  font-size: 18px;
-  position: absolute;
-  top: 12px;
-  margin-left: 86px;
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 122px; 
+  display: inline-block; 
 }
 
-.top-button button {
+.truncate:hover {
+  overflow: visible;
+  white-space: normal; 
+  z-index: 1; 
+}
+
+.project-management-page {
+  
+  position: relative;
+}
+.content-project {
+  margin-left: 100px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 60px;
+}
+
+h1 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+
+
+
+
+.action-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  background-color: transparent;
+  position: absolute;
+  right: 0; 
+  margin-right: 50px;
+  margin-top: 20px;
+  
+  
+}
+
+.create-button {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  color: rgb(53, 52, 52);
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #3b4f67;
+  color: white;
   border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
 }
 
-.top-button svg {
-  font-size: 25px;
+.create-button:hover {
+  background-color: #2c3a4d;
 }
 
-.nav-button {
-  position: relative;
-}
-
-.nav-button:hover {
-  transform: scale(1.2);
-}
-
-.posts-tab-content {
-  margin-left: 10px;
-  margin-top: 10px;
-  padding: 40px 20px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  height: 100%;
-}
-
-.project-name-container{
-  text-align: left;
-  margin-top: 20px;
-}
-
-.project-posts {
-  display: flex;
-  flex-direction: column;
-  margin-left: 100px;
-  margin-top: -70px;
-}
-
-.create-button-container {
-  margin-top: 20px;
-}
-
-/*.create-task-button 
-  background-color: #9cadec; 
-  color: white; 
-  border: none; 
-  padding: 10px 16px; 
-  font-size: 18px; 
-  cursor: pointer; 
-  transition: background-color 0.3s ease, transform 0.3s ease; 
-  display: inline-flex; 
-  justify-content: center; 
-  align-items: center; 
-  gap: 8px; 
-  position: absolute;
-  right: -40px;
-  top: 30px;
-  border-radius: 4px; 
-
-
-.create-task-icon 
-  font-size: 24px; 
-
-
-.create-task-button:hover 
-  background-color: #3a5b84; */
- 
-
-
-/* Task Table Container */
-.table-container {
-  max-height: 700px;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-right: 10px;
-  margin-top: 40px;
-  margin-right: 50px;
-  border-radius: 10px;
-}
-
-/* Inner Container to Separate Table from Scrollbar */
-.table-inner-container {
-  padding-right: 10px; /* Space between table and scrollbar */
-}
-
-/* Webkit Custom Scrollbar */
-.table-container::-webkit-scrollbar {
-  width: 12px; /* Set the width of the scrollbar to 15px */
-}
-
-.table-container::-webkit-scrollbar-track {
-  background: transparent; /* Background of the scrollbar track */
-  border-radius: 10px;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background-color: #547099; /* Scrollbar thumb color */
-  border-radius: 10px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background-color: #365673; /* Darker thumb color on hover */
-}
-
-/* Task Table */
-.task-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-left: 2px solid #dadada;
-  border-right: 2px solid #dadada;
-  border-radius: 10px;
-  background-color: #fbfbfb;
-  border: none;
-}
-
-/* Sticky header styles */
-.task-table thead th {
-  position: sticky;
-  top: 0;
-  background-color: #eeecec;
-  color: #333;
-  padding: 10px;
-  text-align: left;
-  z-index: 2;
-  border: none;
-}
-
-/* Table Cell Styles */
-.task-table th,
-.task-table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: transparent;
-  border: none;
-}
-
-.task-table td {
-  background-color: transparent;
-  color: #333;
-  transition: background-color 0.3s ease;
-}
-
-/* Change Color on Hover */
-.task-table tbody tr:hover td {
-  background-color: #ffffff;
-}
-
-.no-task-container {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.create-button-container {
-  position: relative;
-  margin-top: 20px;
-}
-
-/*
-.task-add-icon {
-  background-color: #547099;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 3rem;
-  height: 3rem;
-  cursor: pointer;
-  color: white;
-  font-size: 2rem;
-  position: absolute;
-  right: -60px;
-  top: -478px;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-.task-add-icon:hover {
-  transform: scale(1.2); 
-  background-color: #3a5b84;
-}
-*/
-
-
-
-.create-button-container {
-  display: flex;
-  justify-content: flex-end; /* Align to the right */
-  margin-top: 20px;
+.icon {
+  font-size: 14px; 
 }
 
 
-.task-details {
-  padding: 20px;
-  border: 1px solid #ccc;
-  margin-top: 20px;
-  background-color: #f9f9f9;
-  max-width: 900px;
-  height: 700px;
-  margin-left: 300px;
-}
 
-/*
-.task-detail-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed #ccc;
-}*/
-
-
-.align-right {
-  text-align: right;
-}
-
-.amount-label {
-  margin-left: 10px;
-}
-
-.task-detail-row:first-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-
-.task-detail-row:nth-child(3) {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.total-row {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-.total-row .align-right {
-  font-weight: bold;
-}
-
-/*files tab*/
-.files-tab-content {
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  margin-left: 200px;
-}
-
-/* Floating Action Box */
-.post-click-popup {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  color: black;
-}
-
-.post-click-popup button {
-  padding: 5px;
-  margin-bottom: 5px;
-  cursor: pointer;
-  background-color: transparent;
-  border: none;
-  text-align: left;
-  color: black;
-}
-
-.post-click-popup button:hover {
-  background-color: #ddd;
-}
-
-
-.total-amount-container {
-  display: flex;
-  align-items: center; 
-  margin-bottom: -40px; 
-  margin-right: 225px;
-  margin-top: 20px;
-  gap: 10px;
-}
-
-.total-amount-container h3 {
-  font-size: 10px;
-  font-weight: bold;
-  color: #333;
-  margin: 0;
-  font-weight: normal;
-  gap: 10px;
-}
-
-.total-amount-text {
-  font-weight: bold;
-}
-
-.total-amount-number {
-  font-size: 25px;
-  font-weight: bold;
-  color: #547099;
-  margin-left: 10px;
-}
-
-/* status css*/
-.status-dropdown {
-  padding: 5px 10px;
-  border-radius: 20px;
-  border: none;
-}
-
-.status-dropdown.pending {
-  background-color: rgb(252, 118, 118);
-  color: white;
-}
-
-.status-dropdown.ongoing {
-  background-color: pink;
-  color: black;
-}
-
-.status-dropdown.completed {
-  background-color: #3b4f67;
-  color: white;
-}

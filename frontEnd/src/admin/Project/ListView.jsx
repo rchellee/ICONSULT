@@ -29,6 +29,7 @@ const ListView = ({
   formatDate,
   statuses,
   statusColors,
+  handleProgressChange,
   handleStatusChange,
   startDates,
   finishDates,

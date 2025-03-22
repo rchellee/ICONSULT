@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import ListView from "./ListView";
 import AccountingLedger from "./AccountingLedger"; // Ensure this component exists
 import "./ListView.css";
 
 const ProjectList = ({
   projects,
-  filteredProjects,
+  filteredProjects: initialFilteredProjects,
   setFilteredProjects,
   formatDate,
   handleEdit,
@@ -23,26 +23,15 @@ const ProjectList = ({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
-
   // States to hold statuses and dates based on filteredProjects
-  const [statuses, setStatuses] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.status;
-      return acc;
-    }, {})
-  );
-  const [startDates, setStartDates] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.actualStart || null;
-      return acc;
-    }, {})
-  );
-  const [finishDates, setFinishDates] = useState(
-    filteredProjects.reduce((acc, project) => {
-      acc[project.id] = project.actualFinish || null;
-      return acc;
-    }, {})
-  );
+  const [statuses, setStatuses] = useState({});
+  const [startDates, setStartDates] = useState({});
+  const [finishDates, setFinishDates] = useState({});
+
+  // Memoize filteredProjects to avoid unnecessary updates
+  const filteredProjects = useMemo(() => {
+    return initialFilteredProjects;
+  }, [initialFilteredProjects]);
 
   const [tasksInfo, setTasksInfo] = useState({});
   const [totalTasks, setTotalTasks] = useState({});
@@ -53,25 +42,61 @@ const ProjectList = ({
 
   // Update statuses, startDates, and finishDates when filteredProjects changes
   useEffect(() => {
-    setStatuses(
-      filteredProjects.reduce((acc, project) => {
-        acc[project.id] = project.status;
-        return acc;
-      }, {})
-    );
-    setStartDates(
-      filteredProjects.reduce((acc, project) => {
-        acc[project.id] = project.actualStart || null;
-        return acc;
-      }, {})
-    );
-    setFinishDates(
-      filteredProjects.reduce((acc, project) => {
-        acc[project.id] = project.actualFinish || null;
-        return acc;
-      }, {})
-    );
+    const newStatuses = filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.status;
+      return acc;
+    }, {});
+
+    const newStartDates = filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualStart || null;
+      return acc;
+    }, {});
+
+    const newFinishDates = filteredProjects.reduce((acc, project) => {
+      acc[project.id] = project.actualFinish || null;
+      return acc;
+    }, {});
+
+    // Only update state if the new state is different
+    if (JSON.stringify(newStatuses) !== JSON.stringify(statuses)) {
+      setStatuses(newStatuses);
+    }
+    if (JSON.stringify(newStartDates) !== JSON.stringify(startDates)) {
+      setStartDates(newStartDates);
+    }
+    if (JSON.stringify(newFinishDates) !== JSON.stringify(finishDates)) {
+      setFinishDates(newFinishDates);
+    }
   }, [filteredProjects]);
+
+  const handleProgressChange = (projectId, newProgress) => {
+    fetch(`http://localhost:8081/projectStat/${projectId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ progress: newProgress }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update progress and status");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Progress updated successfully:", data);
+        setFilteredProjects((prevProjects) =>
+          prevProjects.map((project) =>
+            project.id === projectId
+              ? { ...project, progress: newProgress, status: data.status }
+              : project
+          )
+        );
+      })
+      .catch((error) => {
+        console.error("Error updating progress:", error);
+      });
+  };
 
   // Function to handle status changes
   const handleStatusChange = (projectId, newStatus) => {
@@ -214,6 +239,7 @@ const ProjectList = ({
             formatDate={formatDate}
             statuses={statuses}
             statusColors={statusColors}
+            handleProgressChange={handleProgressChange}
             handleStatusChange={handleStatusChange}
             startDates={startDates}
             finishDates={finishDates}
@@ -235,6 +261,7 @@ const ProjectList = ({
             formatDate={formatDate}
             statuses={statuses}
             statusColors={statusColors}
+            handleProgressChange={handleProgressChange}
             handleStatusChange={handleStatusChange}
             startDates={startDates}
             finishDates={finishDates}

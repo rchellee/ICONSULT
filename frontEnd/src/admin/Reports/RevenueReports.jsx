@@ -8,7 +8,7 @@ import {
   Bar,
   PieChart,
   Pie,
-  Cell, 
+  Cell,
   Tooltip,
   XAxis,
   YAxis,
@@ -84,7 +84,8 @@ const RevenueReports = () => {
   }));
 
   return (
-    <div className="revenue-p-4">
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Revenue Reports</h2>
       <div className="flex space-x-4 mb-4">
         <input type="date" className="border p-2" onChange={(e) => setFilters({ ...filters, startDate: e.target.value })} />
         <input type="date" className="border p-2" onChange={(e) => setFilters({ ...filters, endDate: e.target.value })} />
@@ -100,10 +101,6 @@ const RevenueReports = () => {
 
       <div id="revenue-summary" className="bg-white p-4 shadow rounded-lg">
         <h3 className="text-lg font-semibold">Total Revenue: ${totalRevenue.toFixed(2)}</h3>
-      </div>
-      <div className="mt-4 flex space-x-4">
-        <CSVLink data={revenues} filename="revenue-report.csv" className="bg-green-500 text-white px-4 py-2 rounded">Export CSV</CSVLink>
-        <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">Export PDF</button>
       </div>
 
       <div id="revenue-chart" className="bg-white p-4 shadow rounded-lg">
@@ -126,6 +123,11 @@ const RevenueReports = () => {
           <Legend />
           <Bar dataKey="value" fill="#82ca9d" />
         </BarChart>
+      </div>
+
+      <div className="mt-4 flex space-x-4">
+        <CSVLink data={revenues} filename="revenue-report.csv" className="bg-green-500 text-white px-4 py-2 rounded">Export CSV</CSVLink>
+        <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">Export PDF</button>
       </div>
     </div>
   );

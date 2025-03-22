@@ -14,11 +14,11 @@ const EmployeeManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [filter, setFilter] = useState({ month: "", year: "" });
   const isValidDate = (date) => !isNaN(new Date(date).getTime());
 
+  // Fetch employees from the database when the component mounts
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -37,19 +37,48 @@ const EmployeeManagement = () => {
     setSearchQuery(searchTerm.toLowerCase());
   }, [searchTerm]);
 
-  const months = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-  ];
+  const sortEmployees = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
 
-  const years = Array.from(new Set(employees.map(emp => new Date(emp.modified_date).getFullYear())));
+    const sortedEmployees = [...employees].sort((a, b) => {
+      if (key === "name") {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+        if (nameA < nameB) return direction === "asc" ? -1 : 1;
+        if (nameA > nameB) return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+      if (key === "status") {
+        const statusA = a[key];
+        const statusB = b[key];
+        if (statusA === statusB) return 0;
+        if (statusA === "active" && statusB !== "active")
+          return direction === "asc" ? -1 : 1;
+        if (statusA !== "active" && statusB === "active")
+          return direction === "asc" ? 1 : -1;
+        return 0;
+      }
+      if (key === "modified_date") {
+        return direction === "asc"
+          ? new Date(a[key]) - new Date(b[key])
+          : new Date(b[key]) - new Date(a[key]);
+      }
+      return 0;
+    });
 
-  const filteredEmployees = employees.filter((employee) => {
-    const employeeDate = new Date(employee.modified_date);
-    const matchesMonth = selectedMonth ? months[employeeDate.getMonth()] === selectedMonth : true;
-    const matchesYear = selectedYear ? employeeDate.getFullYear().toString() === selectedYear : true;
-    const matchesStatus = selectedStatus ? employee.status === selectedStatus : true;
-    return matchesMonth && matchesYear && matchesStatus && `${employee.firstName} ${employee.lastName}`.toLowerCase().includes(searchQuery);
-  });
+    setEmployees(sortedEmployees);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === "asc" ? "▲" : "▼";
+    }
+    return "⇅";
+  };
 
   const viewEmployeeDetails = (employee) => {
     setSelectedEmployee(employee);
@@ -102,9 +131,42 @@ const EmployeeManagement = () => {
     return `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
   };
 
+  // Filter employees based on search term
+  const filteredEmployees = employees.filter((employee) =>
+    `${employee.firstName} ${employee.lastName} ${employee.middleName} ${employee.address} ${employee.mobile_number} ${employee.email_add} ${employee.status} ${employee.birthday} ${employee.age} ${employee.gender} ${employee.role}`
+      .toLowerCase()
+      .includes(searchQuery)
+  );
+
   const handleEmployeeAdded = () => {
     setToastVisible(true);
     setTimeout(() => setToastVisible(false), 3000); // Auto-hide after 3 seconds
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const filterEmployees = () => {
+    return employees.filter((employee) => {
+      const employeeDate = new Date(employee.dateAdded);
+      const filterMonth = filter.month ? parseInt(filter.month) : null;
+      const filterYear = filter.year ? parseInt(filter.year) : null;
+
+      return (
+        (!filterMonth || employeeDate.getMonth() + 1 === filterMonth) &&
+        (!filterYear || employeeDate.getFullYear() === filterYear)
+      );
+    });
+  };
+
+  const showToast = () => {
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+      setShowForm(false);
+    }, 5000);
   };
 
   return (
@@ -131,42 +193,33 @@ const EmployeeManagement = () => {
             />
           ) : (
             <>
+              <div className="employee-filter-section">
                 <button
                   onClick={() => setShowForm(true)}
                   className="add-employee-btn"
                 >
                   Add Employee
                 </button>
-              <div className="employee-filters-section">
-            <select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
-              <option value="">All Months</option>
-              {months.map((month, index) => (
-                <option key={index} value={month}>{month}</option>
-              ))}
-            </select>
-            <select onChange={(e) => setSelectedYear(e.target.value)} value={selectedYear}>
-              <option value="">All Years</option>
-              {years.map((year, index) => (
-                <option key={index} value={year}>{year}</option>
-              ))}
-            </select>
-            <select onChange={(e) => setSelectedStatus(e.target.value)} value={selectedStatus}>
-              <option value="">Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
+              </div>
               {filteredEmployees.length === 0 ? (
                 <p>No matching employees found.</p>
               ) : (
                 <table>
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Email</th>
+                      <th onClick={() => sortEmployees("name")}>
+                        Name {getSortIcon("name")}
+                      </th>
+                      <th onClick={() => sortEmployees("email_add")}>
+                        Email {getSortIcon("email_add")}
+                      </th>
                       <th>Position</th>
-                      <th>Status</th>
-                      <th>Date Added</th>
+                      <th onClick={() => sortEmployees("status")}>
+                        Status {getSortIcon("status")}
+                      </th>
+                      <th onClick={() => sortEmployees("dateAdded")}>
+                        Date Added {getSortIcon("dateAdded")}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -180,12 +233,23 @@ const EmployeeManagement = () => {
                         </td>
                         <td>{employee.email_add}</td>
                         <td>{employee.role}</td>
-                        <td>{employee.status}</td>
-                                                <td>
+                        <td>
+                          <label className="toggle-btn">
+                            <input
+                              type="checkbox"
+                              checked={employee.status === "active"}
+                              onChange={() =>
+                                toggleStatus(employee.id, employee.status)
+                              }
+                            />
+                            <span className="slider"></span>
+                          </label>
+                        </td>
+                        <td>
                           {isValidDate(employee.modified_date)
                             ? format(
                                 new Date(employee.modified_date),
-                                "MMMM dd, yyyy" 
+                                "MMMM dd, yyyy"
                               )
                             : "N/A"}
                         </td>
@@ -203,7 +267,7 @@ const EmployeeManagement = () => {
                 <i className="fas fa-solid fa-check check"></i>
                 <div className="message">
                   <div className="text text-2">
-                    Success, employee details have been saved.
+                    Success, employee details has been saved.
                   </div>
                 </div>
               </div>

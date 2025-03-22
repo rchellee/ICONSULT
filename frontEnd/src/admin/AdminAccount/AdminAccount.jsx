@@ -71,7 +71,7 @@ const AdminAccount = () => {
       <Sidebar />
       <div className="account-settings">
         <div className="content-admin">
-          <div className="passwordd-admin">
+          <div className="password-admin">
             <img
               src={password}
               alt="password"
@@ -86,7 +86,6 @@ const AdminAccount = () => {
                   <div className="admin-detail-row">
                     <span className="label-admin">Username</span>
                     <p>
-                      Username:{" "}
                       <span className="value-admin">
                         {adminDetails.username}
                       </span>
@@ -95,7 +94,6 @@ const AdminAccount = () => {
                   <div className="admin-detail-row">
                     <span className="label-admin">Email Address</span>
                     <p>
-                      Email:{" "}
                       <span className="value-admin">{adminDetails.email}</span>
                     </p>
                   </div>
@@ -114,7 +112,7 @@ const AdminAccount = () => {
                   </Button>
                 </>
               ) : (
-                <div>
+                <div className="update-form">
                   <TextField
                     label="Username"
                     value={updatedDetails.username || ""}
@@ -126,10 +124,12 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
+                    variant="outlined"
                     className="text-field"
                   />
                   <TextField
-                    label="Email"
+                    label="Email Address"
+                    
                     value={updatedDetails.email || ""}
                     onChange={(e) =>
                       setUpdatedDetails({
@@ -139,6 +139,7 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
+                    variant="outlined"
                     className="text-field"
                   />
                   <TextField
@@ -153,20 +154,21 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
+                    variant="outlined"
                     className="text-field"
                   />
                   <div className="button-group">
                     <Button
                       variant="contained"
                       onClick={handleUpdate}
-                      style={{ marginRight: "10px", marginTop: "20px" }}
+                      className="save-button"
                     >
                       Save
                     </Button>
                     <Button
                       variant="outlined"
                       onClick={() => setEditMode(false)}
-                      style={{ marginTop: "20px" }}
+                      className="cancel-button"
                     >
                       Cancel
                     </Button>
