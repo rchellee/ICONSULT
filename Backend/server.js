@@ -1001,7 +1001,6 @@ app.patch("/projectStat/:id", (req, res) => {
     res.status(200).json({ id, status, progress });
   });
 });
-
 app.patch("/paymentStat/:projectId", (req, res) => {
   const { projectId } = req.params;
   const { paymentStatus, paymentDate } = req.body;
@@ -1037,6 +1036,32 @@ app.patch("/paymentStat/:projectId", (req, res) => {
     }
   );
 });
+app.put("/update-progress/:id", (req, res) => {
+  const { id } = req.params;
+  const { progress } = req.body;
+
+  const updateProgressSql = `
+    UPDATE project
+    SET progress = ?
+    WHERE id = ?`;
+
+  db.query(updateProgressSql, [progress, id], (err, result) => {
+    if (err) {
+      console.error("Error updating project progress:", err);
+      return res
+        .status(500)
+        .json({
+          message: "Error updating project progress",
+          error: err.message,
+        });
+    }
+
+    res.status(200).json({
+      message: "Project progress updated successfully",
+    });
+  });
+});
+
 // Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = `SELECT id, status, progress FROM project WHERE isDeleted = 0`;
@@ -1205,8 +1230,6 @@ app.put("/update-total-amount", (req, res) => {
     }
   );
 });
-
-
 app.post("/tasks", (req, res) => {
   const {
     taskName,
@@ -1217,6 +1240,7 @@ app.post("/tasks", (req, res) => {
     projectId,
     transactionId,
     modeOfPayment,
+    paidDate,
   } = req.body;
 
   console.log("Received project_id:", projectId);
@@ -1238,8 +1262,8 @@ app.post("/tasks", (req, res) => {
 
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
 
-  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment)
-                    VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, NULL, ?, ?)`;
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment, payment_status, paid_date)
+                    VALUES (?, ?, ?, ?, ?, ?, 'Ongoing', ?, NULL, ?, ?, 'Not Paid', ?)`;
 
   db.query(
     tasksSql,
@@ -1253,6 +1277,7 @@ app.post("/tasks", (req, res) => {
       projectId,
       transactionId,
       modeOfPayment,
+      paidDate,
     ],
     (err, result) => {
       if (err) {
@@ -1269,11 +1294,19 @@ app.post("/tasks", (req, res) => {
     }
   );
 });
-
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    projectId,
+    transactionId,
+    modeOfPayment,
+    paidDate,
+  } = req.body;
 
   let formattedMiscellaneous = [];
   if (Array.isArray(miscellaneous)) {
@@ -1292,7 +1325,7 @@ app.put("/tasks/:id", (req, res) => {
 
   const updateTaskSql = `
     UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?, transaction_id = ?, mode_of_payment = ?, date_paid = ?
     WHERE id = ?`;
 
   db.query(
@@ -1304,6 +1337,9 @@ app.put("/tasks/:id", (req, res) => {
       employee,
       JSON.stringify(miscellaneous),
       totalAmount,
+      transactionId,
+      modeOfPayment,
+      paidDate,
       id,
     ],
     (err, result) => {
@@ -1319,6 +1355,28 @@ app.put("/tasks/:id", (req, res) => {
       });
     }
   );
+});
+app.put("/tasksStatus/:id", (req, res) => {
+  const { id } = req.params;
+  const { status, payment_status } = req.body;
+
+  const updateTaskSql = `
+    UPDATE tasks 
+    SET status = ?, payment_status = ?
+    WHERE id = ?`;
+
+  db.query(updateTaskSql, [status, payment_status, id], (err, result) => {
+    if (err) {
+      console.error("Error updating task status:", err);
+      return res
+        .status(500)
+        .json({ message: "Error updating task status", error: err.message });
+    }
+
+    res.status(200).json({
+      message: "Task status updated successfully",
+    });
+  });
 });
 app.put("/task/:id/status", (req, res) => {
   const { id } = req.params;

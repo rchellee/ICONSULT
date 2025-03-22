@@ -4,7 +4,7 @@ import { IoCreateOutline } from "react-icons/io5";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 import TaskCreateForm from "./TaskCreateForm";
-import axios from "axios"; // Import axios for making HTTP requests
+import axios from "axios";
 import "./Transaction.css";
 
 const Transaction = ({ projectId }) => {
@@ -18,9 +18,6 @@ const Transaction = ({ projectId }) => {
   const [projectName, setProjectName] = useState("");
   const statusDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
-  useEffect(() => {
-    console.log("Project ID in Transaction:", projectId); // Debugging line
-  }, [projectId]);
 
   useEffect(() => {
     if (!projectId) return;
@@ -38,7 +35,22 @@ const Transaction = ({ projectId }) => {
 
     fetchProjectName();
   }, [projectId]);
+  const updateProjectProgress = async (progress) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8081/update-progress/${projectId}`,
+        {
+          progress: parseFloat(progress), // Ensure progress is a number
+        }
+      );
 
+      if (response.status === 200) {
+        console.log("Project progress updated successfully:", response.data);
+      }
+    } catch (error) {
+      console.error("Error updating project progress:", error);
+    }
+  };
   const updateTotalAmount = async (totalAmount) => {
     try {
       await axios.put("http://localhost:8081/update-total-amount", {
@@ -50,17 +62,47 @@ const Transaction = ({ projectId }) => {
       console.error("Error updating total amount:", error);
     }
   };
-
   const totalAmount = transactions.reduce((sum, transaction) => {
     return sum + (transaction.amount || 0); // Use the amount field directly
   }, 0);
+  const totalPaid = transactions.reduce((sum, transaction) => {
+    if (transaction.status === "Paid") {
+      return sum + (transaction.amount || 0);
+    }
+    return sum;
+  }, 0);
+  const paymentProgress = ((totalPaid / totalAmount) * 100).toFixed(2);
+  useEffect(() => {
+    if (transactions.length > 0) {
+      updateProjectProgress(paymentProgress);
+    }
+  }, [paymentProgress]);
+  const checkAndUpdateStatus = async (task) => {
+    if (task.transaction_id && task.mode_of_payment && task.date_paid) {
+      try {
+        const response = await axios.put(
+          `http://localhost:8081/tasksStatus/${task.id}`,
+          {
+            status: "Completed",
+            payment_status: "Paid",
+          }
+        );
 
+        if (response.status === 200) {
+          console.log("Task status updated successfully:", response.data);
+          return true;
+        }
+      } catch (error) {
+        console.error("Error updating task status:", error);
+      }
+    }
+    return false;
+  };
   useEffect(() => {
     if (transactions.length > 0) {
       updateTotalAmount(totalAmount);
     }
   }, [totalAmount]);
-
   // Fetch employee data
   useEffect(() => {
     axios
@@ -76,7 +118,6 @@ const Transaction = ({ projectId }) => {
         console.error("Error fetching employees:", error);
       });
   }, []);
-
   // Fetch tasks
   useEffect(() => {
     if (!projectId) return;
@@ -91,10 +132,20 @@ const Transaction = ({ projectId }) => {
         }
         const data = await response.json();
         const tasks = data.tasks;
-
-        // Map tasks to the expected transactions structure
-        const mappedTransactions = tasks.map((task) => {
-          // Parse the miscellaneous JSON string and ensure `fee` is a number
+        const updatedTasks = await Promise.all(
+          tasks.map(async (task) => {
+            const shouldUpdate = await checkAndUpdateStatus(task);
+            if (shouldUpdate) {
+              return {
+                ...task,
+                status: "Completed",
+                payment_status: "Paid",
+              };
+            }
+            return task;
+          })
+        );
+        const mappedTransactions = updatedTasks.map((task) => {
           const miscellaneous = JSON.parse(task.miscellaneous || "[]").map(
             (item) => ({
               ...item,
@@ -106,22 +157,19 @@ const Transaction = ({ projectId }) => {
             id: task.id,
             expenses: task.task_name,
             dueDate: task.due_date,
-            assignedEmployee: task.employee, // This is the employee ID
+            assignedEmployee: task.employee,
             subItems: [
               {
                 expenses: "Task Fee",
-                amount: parseFloat(task.task_fee) || 0, // Ensure amount is a number
+                amount: parseFloat(task.task_fee) || 0,
               },
-              ...miscellaneous, // Use the parsed and corrected miscellaneous array
+              ...miscellaneous,
             ],
-            status: task.status,
-            datePaid: task.actual_finish || "",
-            amount: parseFloat(task.amount) || 0, // Include the amount field from the tasks table
+            status: task.payment_status,
+            date_paid: task.date_paid || "",
+            amount: parseFloat(task.amount) || 0,
           };
         });
-
-        // Log the mapped transactions for debugging
-        console.log("Mapped Transactions:", mappedTransactions);
 
         setTransactions(mappedTransactions);
       } catch (error) {
@@ -131,7 +179,6 @@ const Transaction = ({ projectId }) => {
 
     fetchTasks();
   }, [projectId]);
-
   // Handle clicks outside dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -155,7 +202,6 @@ const Transaction = ({ projectId }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
   // Handle creating a new task
   const handleCreateTask = async (newTask) => {
     try {
@@ -212,7 +258,6 @@ const Transaction = ({ projectId }) => {
       console.error("Error creating task:", error);
     }
   };
-
   const navigateToCreateTask = () => {
     navigate(`/create-task`, {
       state: {
@@ -220,7 +265,6 @@ const Transaction = ({ projectId }) => {
       },
     });
   };
-
   const handleEditTask = (taskIndex) => {
     const taskToEdit = transactions[taskIndex];
     navigate(`/create-task`, {
@@ -230,7 +274,6 @@ const Transaction = ({ projectId }) => {
       },
     });
   };
-
   const handleUpdateTask = (updatedTask) => {
     const updatedTransactions = [...transactions];
     updatedTransactions[updatedTask.index] = updatedTask;
@@ -238,7 +281,6 @@ const Transaction = ({ projectId }) => {
     setShowTaskForm(false);
     setEditingTask(null);
   };
-
   const handleDeleteTask = async (taskIndex) => {
     const taskToDelete = transactions[taskIndex];
 
@@ -268,7 +310,6 @@ const Transaction = ({ projectId }) => {
       console.error("Error deleting task:", error);
     }
   };
-
   const formatAmount = (amount) => {
     if (isNaN(amount)) {
       return "₱0.00"; // Return a default value if amount is NaN
@@ -280,7 +321,6 @@ const Transaction = ({ projectId }) => {
       maximumFractionDigits: 2,
     }).format(amount);
   };
-
   const formatDate = (dateString) => {
     if (!dateString) return "--";
     const date = new Date(dateString);
@@ -290,7 +330,6 @@ const Transaction = ({ projectId }) => {
       day: "numeric",
     });
   };
-
   const calculatePastDueDays = (dueDate) => {
     if (!dueDate) return 0;
     const today = new Date();
@@ -299,31 +338,6 @@ const Transaction = ({ projectId }) => {
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     return daysDiff > 0 ? daysDiff : 0;
   };
-
-  const totalPaid = transactions.reduce((sum, transaction) => {
-    if (transaction.status === "Paid") {
-      return sum + (transaction.amount || 0); // Use the amount field directly
-    }
-    return sum;
-  }, 0);
-
-  const paymentProgress = ((totalPaid / totalAmount) * 100).toFixed(2);
-
-  const handleTaskStatusChange = (taskIndex, status) => {
-    const updatedTransactions = [...transactions];
-    updatedTransactions[taskIndex].status = status;
-
-    if (status === "Paid") {
-      updatedTransactions[taskIndex].datePaid = new Date()
-        .toISOString()
-        .split("T")[0];
-    } else {
-      updatedTransactions[taskIndex].datePaid = "";
-    }
-
-    setTransactions(updatedTransactions);
-  };
-
   // Handle dropdown toggle
   const toggleDropdown = (dropdownName) => {
     if (openDropdown === dropdownName) {
@@ -332,7 +346,6 @@ const Transaction = ({ projectId }) => {
       setOpenDropdown(dropdownName);
     }
   };
-
   // Toggle task details visibility
   const toggleTaskDetails = (taskIndex) => {
     const newExpandedTasks = new Set(expandedTasks);
@@ -343,7 +356,6 @@ const Transaction = ({ projectId }) => {
     }
     setExpandedTasks(newExpandedTasks);
   };
-
   return (
     <div>
       {/* Header with Project ID */}
@@ -473,37 +485,22 @@ const Transaction = ({ projectId }) => {
                       </button>
                     </td>
                     <td className="amount-cell">
-                      {
-                        expandedTasks.has(index)
-                          ? formatAmount(transaction.subItems[0].amount) // Show only Consultancy Fee when expanded
-                          : formatAmount(subtotal) // Show total when collapsed
-                      }
+                      {expandedTasks.has(index)
+                        ? formatAmount(transaction.subItems[0].amount) // Show only Consultancy Fee when expanded
+                        : formatAmount(subtotal)}
                     </td>
                     <td>{assignedEmployeeName}</td>{" "}
                     <td>{formatDate(transaction.dueDate)}</td>
-                    <td>{formatDate(transaction.datePaid)}</td>
+                    <td>{formatDate(transaction.date_paid)}</td>
                     <td>
-                      <select
-                        value={transaction.status || ""}
-                        onChange={(e) =>
-                          handleTaskStatusChange(index, e.target.value)
-                        }
-                        className="transaction-button"
+                      <span
+                        style={{
+                          color: transaction.status === "Paid" ? "blue" : "red",
+                          fontWeight: "bold",
+                        }}
                       >
-                        <option value="">Select Status</option>
-                        <option
-                          value="Paid"
-                          disabled={transaction.status === "Paid"}
-                        >
-                          Paid
-                        </option>
-                        <option
-                          value="Unpaid"
-                          disabled={transaction.status === "Paid"}
-                        >
-                          Unpaid
-                        </option>
-                      </select>
+                        {transaction.status}
+                      </span>
                     </td>
                     <td>
                       <div className="task-actions">
@@ -555,7 +552,6 @@ const Transaction = ({ projectId }) => {
             })}
             <tr className="total-row">
               <td>Total</td>
-              {/* Total row */}
               <td></td>
               <td className="amount-cell">{formatAmount(totalAmount)}</td>
               <td></td>

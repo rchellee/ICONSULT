@@ -10,10 +10,9 @@ import { IoIosCloseCircleOutline } from "react-icons/io";
 const TaskCreateForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { state } = location; // Access state passed via navigation
-  const taskToEdit = state?.taskToEdit; // Extract taskToEdit from state
+  const { state } = location;
+  const taskToEdit = state?.taskToEdit;
   const projectId = state?.projectId;
-  const queryParams = new URLSearchParams(location.search);
   const [taskName, setTaskName] = useState("");
   const [taskFee, setTaskFee] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -23,13 +22,9 @@ const TaskCreateForm = () => {
   const [miscAmount, setMiscAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [modeOfPayment, setModeOfPayment] = useState("");
+  const [paidDate, setPaidDate] = useState("");
   const [employees, setEmployees] = useState([]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [projectDetails, setProjectDetails] = useState(null);
-  useEffect(() => {
-    console.log("Project ID in Transaction:", projectId); // Debugging line
-  }, [projectId]);
 
   useEffect(() => {
     if (projectId) {
@@ -43,7 +38,6 @@ const TaskCreateForm = () => {
         });
     }
   }, [projectId]);
-
   // Fetch employees
   useEffect(() => {
     axios
@@ -55,7 +49,6 @@ const TaskCreateForm = () => {
         console.error("Error fetching employees:", error);
       });
   }, []);
-
   // Pre-fill form if editing a task
   useEffect(() => {
     if (taskToEdit) {
@@ -64,9 +57,9 @@ const TaskCreateForm = () => {
       setDueDate(taskToEdit.dueDate);
       setAssignedEmployee(taskToEdit.assignedEmployee);
       setSubItems(taskToEdit.subItems.slice(1));
+      setPaidDate(taskToEdit.datePaid || "");
     }
   }, [taskToEdit]);
-
   // Add a miscellaneous item
   const handleAddMiscellaneous = () => {
     if (miscName) {
@@ -78,22 +71,17 @@ const TaskCreateForm = () => {
       setMiscAmount("");
     }
   };
-
   // Remove a miscellaneous item
   const handleRemoveMiscellaneous = (index) => {
     const updatedSubItems = subItems.filter((_, i) => i !== index);
     setSubItems(updatedSubItems);
   };
-
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Format the miscellaneous array to ensure it only contains `expenses` and `amount`
     const formattedMiscellaneous = subItems.map((item) => ({
       expenses: item.expenses,
       amount: parseFloat(item.amount || 0),
     }));
-
     const newTask = {
       expenses: taskName,
       dueDate,
@@ -104,8 +92,8 @@ const TaskCreateForm = () => {
       ],
       transactionId,
       modeOfPayment,
+      paidDate,
     };
-
     if (taskToEdit) {
       // Update task if editing
       try {
@@ -120,6 +108,7 @@ const TaskCreateForm = () => {
             projectId: projectId,
             transactionId: newTask.transactionId,
             modeOfPayment: newTask.modeOfPayment,
+            paidDate: newTask.paidDate,
           }
         );
 
@@ -140,8 +129,9 @@ const TaskCreateForm = () => {
           employee: newTask.assignedEmployee,
           miscellaneous: newTask.subItems.slice(1),
           projectId: projectId,
-          transactionId: newTask.transactionId, // Include transactionId in the POST request
-          modeOfPayment: newTask.modeOfPayment, // Include modeOfPayment in the POST request
+          transactionId: newTask.transactionId,
+          modeOfPayment: newTask.modeOfPayment,
+          paidDate: newTask.paidDate,
         });
 
         if (response.status === 201) {
@@ -153,7 +143,6 @@ const TaskCreateForm = () => {
       }
     }
   };
-
   return (
     <div>
       <Topbar />
@@ -187,7 +176,6 @@ const TaskCreateForm = () => {
                 />
               </div>
             </div>
-
             <div className="form-row">
               <div className="form-modal-field">
                 <label>Miscellaneous Name:</label>
@@ -216,7 +204,6 @@ const TaskCreateForm = () => {
                 <MdAddCircleOutline />
               </button>
             </div>
-
             {/* Display Added Miscellaneous Items */}
             <div className="misc-list-container">
               <div className="misc-grid">
@@ -237,7 +224,6 @@ const TaskCreateForm = () => {
                 ))}
               </div>
             </div>
-
             <div className="form-row">
               <div className="form-modal-field">
                 <label>Assign Employee:</label>
@@ -260,14 +246,11 @@ const TaskCreateForm = () => {
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  min={projectDetails?.startDate}
-                  max={projectDetails?.endDate}
                   required
                 />
               </div>
             </div>
           </div>
-
           {/* Payment Details Section */}
           <div className="form-section">
             <h3>Payment Details</h3>
@@ -293,9 +276,16 @@ const TaskCreateForm = () => {
                   <option value="Online Payment">Online Payment</option>
                 </select>
               </div>
+              <div className="form-modal-field">
+                <label>Paid Date:</label>
+                <input
+                  type="date"
+                  value={paidDate}
+                  onChange={(e) => setPaidDate(e.target.value)}
+                />
+              </div>
             </div>
           </div>
-
           {/* Form Actions */}
           <div className="form-actions">
             <button type="button" onClick={() => navigate(-1)}>
@@ -308,5 +298,4 @@ const TaskCreateForm = () => {
     </div>
   );
 };
-
 export default TaskCreateForm;
