@@ -293,15 +293,7 @@ const ListView = ({
                   <td title={project.clientName}>{project.clientName}</td>
 
                   {/* Progress */}
-                  <td>
-                    {(() => {
-                      const { total = 0, completed = 0 } =
-                        tasksInfo[project.id] || {};
-                      const progress =
-                        total > 0 ? Math.round((completed / total) * 100) : 0;
-                      return `${progress}%`;
-                    })()}
-                  </td>
+                  <td>{project.progress}%</td>
 
                   {/* Planned Duration */}
                   <td>
