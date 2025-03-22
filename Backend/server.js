@@ -976,29 +976,32 @@ app.patch("/project/:id", (req, res) => {
 });
 app.patch("/projectStat/:id", (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { progress } = req.body;
 
-  let query = "UPDATE project SET status = ?";
-  let params = [status, id];
+  let status = "Pending";
+  let query = "UPDATE project SET status = ?, progress = ?";
+  let params = [status, progress];
 
-  if (status === "Ongoing") {
-    query += ", actualStart = ?";
-    params = [status, new Date(), id];
-  } else if (status === "Completed") {
+  if (progress > 0 && progress < 100) {
+    status = "Ongoing";
+  } else if (progress === 100) {
+    status = "Completed";
     query += ", actualFinish = ?";
-    params = [status, new Date(), id];
+    params.push(new Date());
   }
 
   query += " WHERE id = ?";
+  params.push(id);
 
   db.query(query, params, (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error updating project status");
     }
-    res.status(200).json({ id, status });
+    res.status(200).json({ id, status, progress });
   });
 });
+
 app.patch("/paymentStat/:projectId", (req, res) => {
   const { projectId } = req.params;
   const { paymentStatus, paymentDate } = req.body;
@@ -1036,12 +1039,63 @@ app.patch("/paymentStat/:projectId", (req, res) => {
 });
 // Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
-  const sql = "SELECT * FROM project WHERE isDeleted = 0";
-  db.query(sql, (err, data) => {
+  const sql = `SELECT id, status, progress FROM project WHERE isDeleted = 0`;
+
+  db.query(sql, (err, projects) => {
     if (err) return res.json(err);
-    return res.json(data);
+
+    let updates = [];
+
+    projects.forEach(({ id, status, progress }) => {
+      let newStatus =
+        progress === 0
+          ? "Pending"
+          : progress > 0 && progress < 100
+          ? "Ongoing"
+          : progress === 100
+          ? "Completed"
+          : status;
+
+      if (status !== newStatus) {
+        updates.push({ id, newStatus });
+      }
+    });
+
+    if (updates.length > 0) {
+      const updateQueries = updates.map(
+        ({ id, newStatus }) =>
+          new Promise((resolve, reject) => {
+            db.query(
+              "UPDATE project SET status = ? WHERE id = ?",
+              [newStatus, id],
+              (err, result) => {
+                if (err) reject(err);
+                resolve(result);
+              }
+            );
+          })
+      );
+
+      Promise.all(updateQueries)
+        .then(() => {
+          db.query(
+            "SELECT * FROM project WHERE isDeleted = 0",
+            (err, updatedData) => {
+              if (err) return res.json(err);
+              return res.json(updatedData);
+            }
+          );
+        })
+        .catch((err) => res.json(err));
+    } else {
+      db.query("SELECT * FROM project WHERE isDeleted = 0", (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+      });
+    }
   });
 });
+
 app.get("/project/:id", (req, res) => {
   const projectId = req.params.id;
 

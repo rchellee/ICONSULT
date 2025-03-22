@@ -20,6 +20,7 @@ const ProjectManagement = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [actualFinish, setActualFinish] = useState("");
+  const [sortOrder, setSortOrder] = useState("default");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -40,8 +41,49 @@ const ProjectManagement = () => {
         (field || "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-    setFilteredProjects(filtered);
-  }, [projects, searchTerm]);
+
+    // Sort projects based on the selected sort order
+    let sorted = [...filtered];
+
+    if (sortOrder === "default") {
+      // Default sorting: Most recent first, except for completed projects
+      sorted.sort((a, b) => {
+        if (a.status === "Completed" && b.status !== "Completed") {
+          return 1; // Move completed projects to the bottom
+        } else if (a.status !== "Completed" && b.status === "Completed") {
+          return -1; // Move non-completed projects to the top
+        } else {
+          // Sort by creation date (most recent first)
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
+      });
+    } else if (sortOrder === "name") {
+      // Sort alphabetically
+      sorted.sort((a, b) => {
+        const nameA = a.projectName.toLowerCase();
+        const nameB = b.projectName.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+    } else if (sortOrder === "asc") {
+      // Ascending by start date
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA - dateB;
+      });
+    } else if (sortOrder === "desc") {
+      // Descending by start date
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateB - dateA;
+      });
+    }
+
+    setFilteredProjects(sorted);
+  }, [projects, searchTerm, sortOrder]);
 
   useEffect(() => {
     fetch("http://localhost:8081/project")
@@ -74,7 +116,6 @@ const ProjectManagement = () => {
     setStartDate("");
     setEndDate("");
     setDescription("");
-    setDownpayment("");
     setEditingProjectId(null);
   };
 
@@ -86,7 +127,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending",
+      status: "Pending", // Default status for new projects
     };
 
     fetch("http://localhost:8081/project", {
@@ -96,7 +137,8 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((newProject) => {
-        setProjects([...projects, newProject]);
+        // Update the projects state with the new project
+        setProjects((prevProjects) => [...prevProjects, newProject]);
         closeModal();
       })
       .catch((error) => console.error("Error creating project:", error));
@@ -120,8 +162,9 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((updatedProject) => {
-        setProjects(
-          projects.map((project) =>
+        // Update the projects state with the updated project
+        setProjects((prevProjects) =>
+          prevProjects.map((project) =>
             project.id === editingProjectId ? updatedProject : project
           )
         );
@@ -200,7 +243,10 @@ const ProjectManagement = () => {
       body: JSON.stringify({ isDeleted: true }),
     })
       .then(() => {
-        setProjects(projects.filter((project) => project.id !== projectId));
+        // Remove the deleted project from the projects state
+        setProjects((prevProjects) =>
+          prevProjects.filter((project) => project.id !== projectId)
+        );
         toggleDropdown(null);
       })
       .catch((error) => console.error("Error deleting project:", error));
