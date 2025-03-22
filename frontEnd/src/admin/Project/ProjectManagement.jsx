@@ -19,7 +19,6 @@ const ProjectManagement = () => {
   const [clientName, setClientName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [actualStart, setActualStart] = useState("");
   const [actualFinish, setActualFinish] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
@@ -28,11 +27,7 @@ const ProjectManagement = () => {
   const [editingProjectId, setEditingProjectId] = useState(false);
   const [description, setDescription] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [contractPrice, setContractPrice] = useState("");
-  const [downpayment, setDownpayment] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState("Not Paid");
   const [filteredProjects, setFilteredProjects] = useState(projects);
-  
 
   useEffect(() => {
     const filtered = projects.filter((project) =>
@@ -40,7 +35,6 @@ const ProjectManagement = () => {
         project.projectName,
         project.clientName,
         project.status,
-        project.paymentStatus,
         project.description,
       ].some((field) =>
         (field || "").toLowerCase().includes(searchTerm.toLowerCase())
@@ -92,12 +86,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending", 
-      contractPrice,
-      downpayment,
-      totalPayment:
-        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
-      paymentStatus: "Not Paid", 
+      status: "Pending",
     };
 
     fetch("http://localhost:8081/project", {
@@ -108,7 +97,7 @@ const ProjectManagement = () => {
       .then((response) => response.json())
       .then((newProject) => {
         setProjects([...projects, newProject]);
-        closeModal(); 
+        closeModal();
       })
       .catch((error) => console.error("Error creating project:", error));
   };
@@ -121,24 +110,14 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      contractPrice,
-      downpayment,
-      actualStart,
       actualFinish,
-      totalPayment:
-        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
-      paymentStatus: projects.find((project) => project.id === editingProjectId)
-        ?.paymentStatus,
     };
 
-    fetch(
-      `http://localhost:8081/project/${editingProjectId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProjectData),
-      }
-    )
+    fetch(`http://localhost:8081/project/${editingProjectId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedProjectData),
+    })
       .then((response) => response.json())
       .then((updatedProject) => {
         setProjects(
@@ -146,7 +125,7 @@ const ProjectManagement = () => {
             project.id === editingProjectId ? updatedProject : project
           )
         );
-        closeModal(); 
+        closeModal();
       })
       .catch((error) => console.error("Error updating project:", error));
   };
@@ -162,9 +141,9 @@ const ProjectManagement = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric", 
-      month: "long", 
-      day: "numeric", 
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -208,9 +187,6 @@ const ProjectManagement = () => {
       setStartDate(projectToEdit.startDate);
       setEndDate(projectToEdit.endDate);
       setDescription(projectToEdit.description);
-      setContractPrice(projectToEdit.contractPrice || "");
-      setDownpayment(projectToEdit.downpayment || "");
-      setPaymentStatus(projectToEdit.paymentStatus); 
       setEditingProjectId(projectId);
       openModal();
     }
@@ -218,14 +194,11 @@ const ProjectManagement = () => {
   };
 
   const handleDelete = (projectId) => {
-    fetch(
-      `http://localhost:8081/project/${projectId}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isDeleted: true }),
-      }
-    )
+    fetch(`http://localhost:8081/project/${projectId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isDeleted: true }),
+    })
       .then(() => {
         setProjects(projects.filter((project) => project.id !== projectId));
         toggleDropdown(null);
@@ -271,11 +244,11 @@ const ProjectManagement = () => {
       <Sidebar />
       <div className="project-management-page">
         <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
-        <div className="action-container">
-  <button className="create-button" onClick={openModal}>
-    <FaPlus className="icon" /> New
-  </button>
-</div>
+          <div className="action-container">
+            <button className="create-button" onClick={openModal}>
+              <FaPlus className="icon" /> New
+            </button>
+          </div>
 
           {isModalOpen && (
             <ProjectForm
@@ -291,20 +264,11 @@ const ProjectManagement = () => {
               setEndDate={setEndDate}
               description={description}
               setDescription={setDescription}
-              contractPrice={contractPrice}
-              setContractPrice={setContractPrice}
-              downpayment={downpayment}
-              setDownpayment={setDownpayment}
-              paymentStatus={paymentStatus}
-              setPaymentStatus={setPaymentStatus}
-              actualStart={actualStart}
-              setActualStart={setActualStart}
               actualFinish={setActualFinish}
               clients={clients}
               onCancel={closeModal}
               onSave={handleSave}
               editingProjectId={editingProjectId}
-              
             />
           )}
           {projects.length === 0 ? (

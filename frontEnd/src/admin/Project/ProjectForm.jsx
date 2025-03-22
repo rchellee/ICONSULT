@@ -14,32 +14,16 @@ const ProjectForm = ({
   setEndDate,
   description,
   setDescription,
-  contractPrice,
-  setContractPrice,
   clients,
   onCancel,
   onSave,
   editingProjectId,
   existingCreatedAt,
 }) => {
-  const [feeWarning, setFeeWarning] = useState(false);
   const [validationError, setValidationError] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [modeOfPayment, setModeOfPayment] = useState(""); // Initialized as an empty string
-  const [isOpen, setIsOpen] = useState(false); // State to manage dropdown visibility
-
-  const handleFeeChange = (e) => {
-    const value = e.target.value;
-    if (isNaN(value) && value !== "") {
-      setFeeWarning(true);
-    } else {
-      setFeeWarning(false);
-      setContractPrice(value);
-    }
-  };
 
   const handleSave = () => {
-    if (!projectName || !clientId || !startDate || !endDate || !description || !contractPrice) {
+    if (!projectName || !clientId || !startDate || !endDate || !description) {
       setValidationError("All fields except Transaction ID are required.");
       return;
     }
@@ -53,18 +37,10 @@ const ProjectForm = ({
       startDate,
       endDate,
       description,
-      contractPrice,
-      transactionId,
-      modeOfPayment,
       createdAt: existingCreatedAt || new Date().toISOString(), // Use existingCreatedAt or current timestamp
     };
 
     onSave(newProject);
-  };
-
-  const handleOptionClick = (value) => {
-    setModeOfPayment(value); // Update the selected value
-    setIsOpen(false); // Close the dropdown
   };
 
   return (
@@ -95,7 +71,9 @@ const ProjectForm = ({
                   (client) => client.id === parseInt(selectedClientId)
                 );
                 if (selectedClient) {
-                  setClientName(`${selectedClient.firstName} ${selectedClient.lastName}`);
+                  setClientName(
+                    `${selectedClient.firstName} ${selectedClient.lastName}`
+                  );
                 }
               }}
             >
@@ -110,56 +88,20 @@ const ProjectForm = ({
 
           <div className="form-modal-field">
             <label>Start Date:</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
           </div>
 
           <div className="form-modal-field">
             <label>End Date:</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          </div>
-        </div>
-
-        <div className="form-modal-field-container">
-          <div className="form-modal-field">
-            <label>Professional Fee:</label>
             <input
-              type="text"
-              placeholder="₱"
-              value={contractPrice}
-              onChange={handleFeeChange}
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
             />
-            {feeWarning && <span className="warning-message">Invalid</span>}
-          </div>
-
-          <div className="form-modal-field">
-            <label>Transaction ID:</label>
-            <input
-              type="text"
-              placeholder="Enter Transaction ID"
-              value={transactionId}
-              onChange={(e) => setTransactionId(e.target.value)}
-            />
-          </div>
-
-          <div className="form-modal-field">
-            <label>Mode of Payment: (MOP)</label>
-            <div className="custom-dropdown">
-              <div
-                className="dropdown-toggle"
-                onClick={() => setIsOpen(!isOpen)} // Toggle dropdown visibility
-              >
-                <span>{modeOfPayment ? modeOfPayment : "Select MOP"}</span>
-                <span className="dropdown-icon">▼</span> {/* Dropdown icon */}
-              </div>
-              {isOpen && (
-                <ul className="dropdown-menu">
-                  <li onClick={() => handleOptionClick("Select MOP")}>Select MOP</li>
-                  <li onClick={() => handleOptionClick("Cheque")}>Cheque</li>
-                  <li onClick={() => handleOptionClick("Online")}>Online</li>
-                  <li onClick={() => handleOptionClick("Cash")}>Cash</li>
-                </ul>
-              )}
-            </div>
           </div>
         </div>
 
@@ -173,10 +115,15 @@ const ProjectForm = ({
           />
         </div>
 
-        {validationError && <div className="validation-error">{validationError}</div>}
+        {validationError && (
+          <div className="validation-error">{validationError}</div>
+        )}
 
         <div className="form-create-cancel">
-          <button className="form-cancel-project-button" onClick={() => onCancel()}>
+          <button
+            className="form-cancel-project-button"
+            onClick={() => onCancel()}
+          >
             Cancel
           </button>
           <button className="form-create-project-button" onClick={handleSave}>

@@ -839,7 +839,6 @@ app.get("/employees/id", (req, res) => {
     return res.status(200).json(data);
   });
 });
-
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -928,15 +927,11 @@ app.post("/project", (req, res) => {
     startDate,
     endDate,
     status = "Pending",
-    contractPrice,
-    downpayment = "00.00",
-    paymentStatus = "Not Paid",
-    actualStart = null,
     actualFinish = null,
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, actualStart, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -947,10 +942,6 @@ app.post("/project", (req, res) => {
       startDate,
       endDate,
       status,
-      contractPrice,
-      downpayment,
-      paymentStatus,
-      actualStart,
       actualFinish,
     ],
     (err, result) => {
@@ -964,10 +955,6 @@ app.post("/project", (req, res) => {
         startDate,
         endDate,
         status,
-        contractPrice,
-        downpayment,
-        paymentStatus,
-        actualStart,
         actualFinish,
       });
     }
@@ -1047,7 +1034,6 @@ app.patch("/paymentStat/:projectId", (req, res) => {
     }
   );
 });
-
 // Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
   const sql = "SELECT * FROM project WHERE isDeleted = 0";
@@ -1100,20 +1086,11 @@ app.get("/projects/:id", (req, res) => {
 });
 app.put("/project/:id", (req, res) => {
   const projectId = req.params.id;
-  const {
-    clientName,
-    projectName,
-    description,
-    startDate,
-    endDate,
-    clientId,
-    contractPrice,
-    downpayment,
-    paymentStatus,
-  } = req.body;
+  const { clientName, projectName, description, startDate, endDate, clientId } =
+    req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1123,9 +1100,6 @@ app.put("/project/:id", (req, res) => {
       startDate,
       endDate,
       clientId,
-      contractPrice,
-      downpayment,
-      paymentStatus,
       projectId,
     ],
     (err, result) => {
@@ -1139,9 +1113,6 @@ app.put("/project/:id", (req, res) => {
         startDate,
         endDate,
         clientId,
-        contractPrice,
-        downpayment,
-        paymentStatus,
       });
     }
   );
