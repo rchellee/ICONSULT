@@ -75,16 +75,21 @@ function ProjectOverview({ projectId }) {
               <strong>Project Name:</strong> {project.projectName}
             </p>
             <span className="payment-status">
-              <strong>Payment Status:</strong> {project.paymentStatus}
+              <strong>Progress:</strong> {project.progress}%
             </span>
           </p>
           <p>
             <p className="description" style={{ marginTop: "-10px" }}>
               <strong>Description:</strong> {project.description}
             </p>
+          </p>
+          <p>
+            <p className="project-due" style={{ marginTop: "-10px" }}>
+              <strong>Project Duration:</strong>{" "}
+              {project.endDate ? formatDate(project.startDate) : "N/A"}
+            </p>
 
             <span className="project-due">
-              <strong>Project Due:</strong>{" "}
               {project.endDate ? formatDate(project.endDate) : "N/A"}
             </span>
           </p>
@@ -95,40 +100,26 @@ function ProjectOverview({ projectId }) {
           <table className="payment-table">
             <thead>
               <tr>
-                <th>Contract Fee</th>
-                <th>Tasks</th>
                 <th>Total</th>
-                <th>Downpayment</th>
+                <th>Paid Amount</th>
                 <th>Balance</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>₱ {project.contractPrice}.00</td>
-                <td>₱ {tasksTotal}.00</td>
-                <td>₱ {totalPayment}.00</td>
-                <td>₱ {project.downpayment}.00</td>
-                <td>₱ {remainingPayment}.00</td>
+                <td>₱ {project.total_amount}.00</td>
+                <td>₱ {project.paid_amount}.00</td>
+                <td>
+                  ₱ {project.total_amount - (project.paid_amount || 0)}.00
+                </td>
               </tr>
             </tbody>
           </table>
-          <div className="payment-button-container">
-            {project.paymentStatus !== "Paid" && remainingPayment > 0 && (
-              <button onClick={handlePaymentClick} className="pay-now-button">
-                Pay Now
-              </button>
-            )}
-          </div>
-
-          {remainingPayment <= 0 &&
-            project.paymentStatus === "Paid" &&
-            project.status === "Completed" &&
+          {project.status === "Completed" &&
             !project.isReview && (
               <button
                 onClick={handleReviewClick}
-                style={{
-                  backgroundColor: "#007bff",
-                }}
+                style={{ backgroundColor: "#007bff" }}
               >
                 Leave a Review
               </button>
@@ -136,17 +127,6 @@ function ProjectOverview({ projectId }) {
         </div>
       ) : (
         <p>No project details found.</p>
-      )}
-      {isPaymentOverlayOpen && (
-        <div className="overlay">
-          <div className="overlay-content">
-            <Payment
-              projectId={paymentDetails.projectId}
-              amount={paymentDetails.amount}
-              onClose={closePaymentOverlay}
-            />
-          </div>
-        </div>
       )}
     </div>
   );
