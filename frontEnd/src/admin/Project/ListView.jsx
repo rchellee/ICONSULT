@@ -190,7 +190,13 @@ const ListView = ({
 
   const handleDeleteClick = (e, projectId) => {
     e.stopPropagation();
-    handleDelete(projectId);
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+    if (confirmDelete) {
+      handleDelete(projectId);
+    }
   };
 
   return (
@@ -267,7 +273,8 @@ const ListView = ({
               <th>
                 Planned <br /> Duration
               </th>
-              <th>Amount</th>
+              <th>Total Amount</th>
+              <th>Paid Amount</th>
               <th>Balance</th>
               <th>
                 Project <br /> Status
@@ -307,8 +314,9 @@ const ListView = ({
                     </div>
                   </td>
 
-                  <td>{formatCurrency(project.amount || 0.0)}</td>
-                  <td>{formatCurrency(project.balance || 0.0)}</td>
+                  <td>{formatCurrency(project.total_amount)}</td>
+                  <td>{formatCurrency(project.paid_amount || 0.0)}</td>
+                  <td>{formatCurrency(project.total_amount - (project.paid_amount || 0))}</td>
 
                   {/* Status Dropdown */}
                   <td>

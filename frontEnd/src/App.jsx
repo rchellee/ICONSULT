@@ -30,6 +30,7 @@ import ReportsTab from "./admin/Reports/ReportsTab.jsx";
 import AdminAccount from "./admin/AdminAccount/AdminAccount.jsx";
 import AdminReview from "./admin/AdminAccount/adminReview.jsx";
 import ClientReview from "./client/AccountSettings/clientReviews.jsx";
+import TaskCreateForm from "./admin/Project/TaskCreateForm.jsx"
 
 // for google icons
 const link = document.createElement("link");
@@ -72,6 +73,7 @@ function App() {
         <Route path="/admin-settings" element={<AdminAccount />} />
         <Route path="/admin-reviews" element={<AdminReview />} />
         <Route path="/client-reviews" element={<ClientReview />} />
+        <Route path="/create-task" element={<TaskCreateForm />} />
       </Routes>
     </Router>
   );

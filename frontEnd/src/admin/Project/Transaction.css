@@ -12,6 +12,11 @@
   color: #333; 
 }
 
+.past-due {
+  color: red; /* Change this to your desired color */
+  font-weight: bold; /* Optional: Make the text bold */
+}
+
 /* Create Button */
 .create-task-button {
   display: flex;

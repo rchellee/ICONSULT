@@ -1,76 +1,163 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import "./TaskCreate.css";
+import Topbar from "../Topbar";
+import Sidebar from "../sidebar";
 import { MdAddCircleOutline } from "react-icons/md";
-import { IoIosCloseCircleOutline } from "react-icons/io"; // Import the close icon
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
-const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
+const TaskCreateForm = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { state } = location;
+  const taskToEdit = state?.taskToEdit;
+  const projectId = state?.projectId;
   const [taskName, setTaskName] = useState("");
-  const [taskFee, setTaskFee] = useState(""); // Initialize as empty string
+  const [taskFee, setTaskFee] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [assignedEmployee, setAssignedEmployee] = useState("");
   const [subItems, setSubItems] = useState([]);
   const [miscName, setMiscName] = useState("");
-  const [miscAmount, setMiscAmount] = useState(""); // Initialize as empty string
+  const [miscAmount, setMiscAmount] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [modeOfPayment, setModeOfPayment] = useState("");
+  const [paidDate, setPaidDate] = useState("");
+  const [employees, setEmployees] = useState([]);
+  const [projectDetails, setProjectDetails] = useState(null);
 
+  useEffect(() => {
+    if (projectId) {
+      axios
+        .get(`http://localhost:8081/projects/${projectId}`) // Fetch project details
+        .then((response) => {
+          setProjectDetails(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching project details:", error);
+        });
+    }
+  }, [projectId]);
+  // Fetch employees
+  useEffect(() => {
+    axios
+      .get("http://localhost:8081/employees/id")
+      .then((response) => {
+        setEmployees(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching employees:", error);
+      });
+  }, []);
   // Pre-fill form if editing a task
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
-      setTaskFee(taskToEdit.subItems[0].amount.toString()); // Convert to string
+      setTaskFee(taskToEdit.subItems[0].amount.toString());
       setDueDate(taskToEdit.dueDate);
       setAssignedEmployee(taskToEdit.assignedEmployee);
-      setTransactionId(taskToEdit.transactionId);
-      setModeOfPayment(taskToEdit.modeOfPayment);
-      setSubItems(taskToEdit.subItems.slice(1)); // Exclude the "Task Fee" from subItems
+      setSubItems(taskToEdit.subItems.slice(1));
+      setTransactionId(taskToEdit.transactionId || "");
+      setModeOfPayment(taskToEdit.modeOfPayment || "");
+      setPaidDate(taskToEdit.paidDate || "");
     }
   }, [taskToEdit]);
-
-  // Add a miscellaneous item
   const handleAddMiscellaneous = () => {
-    if (miscName && miscAmount > 0) {
-      setSubItems([...subItems, { expenses: miscName, amount: parseFloat(miscAmount) }]);
+    if (miscName) {
+      setSubItems([
+        ...subItems,
+        { expenses: miscName, amount: parseFloat(miscAmount) || 0 },
+      ]);
       setMiscName("");
       setMiscAmount("");
     }
   };
-
-  // Remove a miscellaneous item
   const handleRemoveMiscellaneous = (index) => {
-    const updatedSubItems = subItems.filter((_, i) => i !== index); // Filter out the item to remove
+    const updatedSubItems = subItems.filter((_, i) => i !== index);
     setSubItems(updatedSubItems);
   };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      (transactionId && (!modeOfPayment || !paidDate)) ||
+      (modeOfPayment && (!transactionId || !paidDate)) ||
+      (paidDate && (!transactionId || !modeOfPayment))
+    ) {
+      alert(
+        "If any of Transaction ID, Mode of Payment, or Paid Date is set, all three must be provided."
+      );
+      return;
+    }
 
+    const formattedMiscellaneous = subItems.map((item) => ({
+      expenses: item.expenses,
+      amount: parseFloat(item.amount || 0),
+    }));
     const newTask = {
       expenses: taskName,
       dueDate,
       assignedEmployee,
       subItems: [
-        { expenses: "Task Fee", amount: parseFloat(taskFee) || 0 }, // Parse as number, default to 0 if empty
-        ...subItems, // Miscellaneous items are added here
+        { expenses: "Task Fee", amount: parseFloat(taskFee) || 0 },
+        ...subItems,
       ],
       transactionId,
       modeOfPayment,
-      datePaid: taskToEdit ? taskToEdit.datePaid : "",
-      status: taskToEdit ? taskToEdit.status : "",
-      index: taskToEdit ? taskToEdit.index : null,
+      paidDate: paidDate || null,
     };
-
     if (taskToEdit) {
-      onUpdate(newTask); // Update task if editing
-    } else {
-      onCreate(newTask); // Create new task if not editing
-    }
-    onClose(); // Close the form
-  };
+      // Update task if editing
+      try {
+        const response = await axios.put(
+          `http://localhost:8081/tasks/${taskToEdit.id}`, // Use the task ID to update
+          {
+            taskName: newTask.expenses,
+            taskFee: newTask.subItems[0].amount,
+            dueDate: newTask.dueDate,
+            employee: newTask.assignedEmployee,
+            miscellaneous: formattedMiscellaneous,
+            projectId: projectId,
+            transactionId: newTask.transactionId,
+            modeOfPayment: newTask.modeOfPayment,
+            paidDate: newTask.paidDate,
+          }
+        );
 
+        if (response.status === 200) {
+          console.log("Task updated successfully:", response.data);
+          navigate(-1); // Go back to the previous page
+        }
+      } catch (error) {
+        console.error("Error updating task:", error);
+      }
+    } else {
+      // Create new task if not editing
+      try {
+        const response = await axios.post("http://localhost:8081/tasks", {
+          taskName: newTask.expenses,
+          taskFee: newTask.subItems[0].amount,
+          dueDate: newTask.dueDate,
+          employee: newTask.assignedEmployee,
+          miscellaneous: newTask.subItems.slice(1),
+          projectId: projectId,
+          transactionId: newTask.transactionId,
+          modeOfPayment: newTask.modeOfPayment,
+          paidDate: newTask.paidDate,
+        });
+
+        if (response.status === 201) {
+          console.log("Task created successfully:", response.data);
+          navigate(-1); // Go back to the previous page
+        }
+      } catch (error) {
+        console.error("Error creating task:", error);
+      }
+    }
+  };
   return (
-    <div className="task-create-form-overlay">
+    <div>
+      <Topbar />
+      <Sidebar />
       <div className="task-create-form">
         <h2>{taskToEdit ? "Update Task" : "Create Task"}</h2>
         <form onSubmit={handleSubmit}>
@@ -89,7 +176,7 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 />
               </div>
               <div className="form-modal-field">
-                <label>Consultancy Fee:</label>
+                <label>Task Fee:</label>
                 <input
                   type="number"
                   placeholder="₱"
@@ -100,7 +187,6 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 />
               </div>
             </div>
-
             <div className="form-row">
               <div className="form-modal-field">
                 <label>Miscellaneous Name:</label>
@@ -129,7 +215,6 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 <MdAddCircleOutline />
               </button>
             </div>
-
             {/* Display Added Miscellaneous Items */}
             <div className="misc-list-container">
               <div className="misc-grid">
@@ -150,7 +235,6 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                 ))}
               </div>
             </div>
-
             <div className="form-row">
               <div className="form-modal-field">
                 <label>Assign Employee:</label>
@@ -160,9 +244,11 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
                   required
                 >
                   <option value="">Select Employee</option>
-                  <option value="Employee 1">Employee 1</option>
-                  <option value="Employee 2">Employee 2</option>
-                  <option value="Employee 3">Employee 3</option>
+                  {employees.map((employee) => (
+                    <option key={employee.id} value={employee.id}>
+                      {employee.fullName}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="form-modal-field">
@@ -176,41 +262,47 @@ const TaskCreateForm = ({ onClose, onCreate, onUpdate, taskToEdit }) => {
               </div>
             </div>
           </div>
-
-          {/* Payment Details Section */}
-          <div className="form-section">
-            <h3>Payment Details</h3>
-            <div className="form-row">
-              <div className="form-modal-field">
-                <label>Transaction ID:</label>
-                <input
-                  type="text"
-                  placeholder="Enter"
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="form-modal-field">
-                <label>Mode of Payment (MOP): </label>
-                <select
-                  value={modeOfPayment}
-                  onChange={(e) => setModeOfPayment(e.target.value)}
-                  required
-                >
-                  <option value="">Select (MOP)</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Credit Card">Credit Card</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                </select>
+          {taskToEdit && (
+            <div className="form-section">
+              <h3>Payment Details</h3>
+              <div className="form-row">
+                <div className="form-modal-field">
+                  <label>Transaction ID:</label>
+                  <input
+                    type="text"
+                    placeholder="Enter"
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
+                  />
+                </div>
+                <div className="form-modal-field">
+                  <label>Mode of Payment (MOP): </label>
+                  <select
+                    value={modeOfPayment}
+                    onChange={(e) => setModeOfPayment(e.target.value)}
+                  >
+                    <option value="">Select (MOP)</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Online Payment">Online Payment</option>
+                  </select>
+                </div>
+                <div className="form-modal-field">
+                  <label>Paid Date:</label>
+                  <input
+                    type="date"
+                    value={paidDate}
+                    onChange={(e) => setPaidDate(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Form Actions */}
           <div className="form-actions">
-            <button type="button" onClick={onClose}>
-              Cancel
+            <button type="button" onClick={() => navigate(-1)}>
+              Back
             </button>
             <button type="submit">{taskToEdit ? "Update" : "Create"}</button>
           </div>
