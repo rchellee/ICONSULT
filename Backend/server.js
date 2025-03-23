@@ -1321,6 +1321,9 @@ app.put("/tasks/:id", (req, res) => {
     paidDate,
   } = req.body;
 
+  // Convert empty paidDate to null
+  const formattedPaidDate = paidDate || null;
+
   let formattedMiscellaneous = [];
   if (Array.isArray(miscellaneous)) {
     formattedMiscellaneous = miscellaneous.map((item) => ({
@@ -1352,7 +1355,7 @@ app.put("/tasks/:id", (req, res) => {
       totalAmount,
       transactionId,
       modeOfPayment,
-      paidDate,
+      formattedPaidDate,
       id,
     ],
     (err, result) => {
@@ -1781,6 +1784,148 @@ app.delete("/appointments/:id", (req, res) => {
   });
 });
 
+// Fetch all paid tasks
+app.get("/paid-tasks", (req, res) => {
+  const query = `
+    SELECT 
+      t.id AS task_id,
+      t.transaction_id,
+      t.amount,
+      t.mode_of_payment,
+      t.date_paid,
+      p.clientId AS client_id,
+      t.project_id,
+      p.clientName AS payer_name,
+      c.email_add AS payer_email,
+      t.employee AS payee_name
+    FROM tasks t
+    JOIN project p ON t.project_id = p.id
+    JOIN client c ON p.clientId = c.id 
+    WHERE t.payment_status = 'Paid'
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching paid tasks:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+// Save payment details to the database (bulk insert)
+app.post("/payments/bulk", (req, res) => {
+  const payments = req.body; // Array of payment objects
+
+  if (!Array.isArray(payments)) {
+    return res.status(400).json({ error: "Payments must be an array" });
+  }
+
+  const queries = payments.map((payment) => {
+    return new Promise((resolve, reject) => {
+      const checkQuery = `SELECT id FROM payments WHERE task_id = ?`;
+      db.query(checkQuery, [payment.task_id], (err, results) => {
+        if (err) return reject(err);
+
+        if (results.length > 0) {
+          // Update existing record
+          const updateQuery = `
+            UPDATE payments 
+            SET transaction_id = ?, payer_name = ?, payer_email = ?, amount = ?, 
+                payed_to_email = ?, payee_merchant_id = ?, payee_name = ?, 
+                client_id = ?, project_id = ?, mode_of_payment = ?, date_paid = ?
+            WHERE task_id = ?
+          `;
+          db.query(
+            updateQuery,
+            [
+              payment.transaction_id,
+              payment.payer_name,
+              payment.payer_email,
+              payment.amount,
+              payment.payed_to_email || "",
+              payment.payee_merchant_id || null,
+              payment.payee_name || "",
+              payment.client_id,
+              payment.project_id,
+              payment.mode_of_payment,
+              payment.date_paid,
+              payment.task_id, // WHERE condition
+            ],
+            (err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            }
+          );
+        } else {
+          // Insert new record
+          const insertQuery = `
+            INSERT INTO payments (
+              transaction_id, payer_name, payer_email, amount, currency, 
+              payed_to_email, payee_merchant_id, payee_name, client_id, 
+              project_id, task_id, mode_of_payment, date_paid
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `;
+          db.query(
+            insertQuery,
+            [
+              payment.transaction_id,
+              payment.payer_name,
+              payment.payer_email,
+              payment.amount,
+              "PHP", // Currency is always PHP
+              payment.payed_to_email || "",
+              payment.payee_merchant_id || null,
+              payment.payee_name || "",
+              payment.client_id,
+              payment.project_id,
+              payment.task_id,
+              payment.mode_of_payment,
+              payment.date_paid,
+            ],
+            (err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            }
+          );
+        }
+      });
+    });
+  });
+
+  Promise.all(queries)
+    .then(() =>
+      res.status(200).json({ message: "Payments saved/updated successfully" })
+    )
+    .catch((err) => {
+      console.error("Error processing payments:", err);
+      res.status(500).json({ error: "Error processing payments" });
+    });
+});
+// Fetch all payments sorted by date_paid
+app.get("/paymentLedger", (req, res) => {
+  const query = `
+    SELECT 
+      p.projectName,
+      py.transaction_id,
+      py.payer_name,
+      t.task_name AS description,
+      py.amount,
+      py.mode_of_payment,
+      py.date_paid
+    FROM payments py
+    JOIN project p ON py.project_id = p.id
+    JOIN tasks t ON py.task_id = t.id
+    ORDER BY py.date_paid DESC
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
 // Save payment details to the database
 app.post("/payments", (req, res) => {
   const {

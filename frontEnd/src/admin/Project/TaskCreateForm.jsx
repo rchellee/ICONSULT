@@ -57,10 +57,11 @@ const TaskCreateForm = () => {
       setDueDate(taskToEdit.dueDate);
       setAssignedEmployee(taskToEdit.assignedEmployee);
       setSubItems(taskToEdit.subItems.slice(1));
-      setPaidDate(taskToEdit.datePaid || "");
+      setTransactionId(taskToEdit.transactionId || "");
+      setModeOfPayment(taskToEdit.modeOfPayment || "");
+      setPaidDate(taskToEdit.paidDate || "");
     }
   }, [taskToEdit]);
-  // Add a miscellaneous item
   const handleAddMiscellaneous = () => {
     if (miscName) {
       setSubItems([
@@ -71,13 +72,23 @@ const TaskCreateForm = () => {
       setMiscAmount("");
     }
   };
-  // Remove a miscellaneous item
   const handleRemoveMiscellaneous = (index) => {
     const updatedSubItems = subItems.filter((_, i) => i !== index);
     setSubItems(updatedSubItems);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      (transactionId && (!modeOfPayment || !paidDate)) ||
+      (modeOfPayment && (!transactionId || !paidDate)) ||
+      (paidDate && (!transactionId || !modeOfPayment))
+    ) {
+      alert(
+        "If any of Transaction ID, Mode of Payment, or Paid Date is set, all three must be provided."
+      );
+      return;
+    }
+
     const formattedMiscellaneous = subItems.map((item) => ({
       expenses: item.expenses,
       amount: parseFloat(item.amount || 0),
@@ -92,7 +103,7 @@ const TaskCreateForm = () => {
       ],
       transactionId,
       modeOfPayment,
-      paidDate,
+      paidDate: paidDate || null,
     };
     if (taskToEdit) {
       // Update task if editing
@@ -251,41 +262,43 @@ const TaskCreateForm = () => {
               </div>
             </div>
           </div>
-          {/* Payment Details Section */}
-          <div className="form-section">
-            <h3>Payment Details</h3>
-            <div className="form-row">
-              <div className="form-modal-field">
-                <label>Transaction ID:</label>
-                <input
-                  type="text"
-                  placeholder="Enter"
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
-                />
-              </div>
-              <div className="form-modal-field">
-                <label>Mode of Payment (MOP): </label>
-                <select
-                  value={modeOfPayment}
-                  onChange={(e) => setModeOfPayment(e.target.value)}
-                >
-                  <option value="">Select (MOP)</option>
-                  <option value="Cash">Cash</option>
-                  <option value="Cheque">Cheque</option>
-                  <option value="Online Payment">Online Payment</option>
-                </select>
-              </div>
-              <div className="form-modal-field">
-                <label>Paid Date:</label>
-                <input
-                  type="date"
-                  value={paidDate}
-                  onChange={(e) => setPaidDate(e.target.value)}
-                />
+          {taskToEdit && (
+            <div className="form-section">
+              <h3>Payment Details</h3>
+              <div className="form-row">
+                <div className="form-modal-field">
+                  <label>Transaction ID:</label>
+                  <input
+                    type="text"
+                    placeholder="Enter"
+                    value={transactionId}
+                    onChange={(e) => setTransactionId(e.target.value)}
+                  />
+                </div>
+                <div className="form-modal-field">
+                  <label>Mode of Payment (MOP): </label>
+                  <select
+                    value={modeOfPayment}
+                    onChange={(e) => setModeOfPayment(e.target.value)}
+                  >
+                    <option value="">Select (MOP)</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="Online Payment">Online Payment</option>
+                  </select>
+                </div>
+                <div className="form-modal-field">
+                  <label>Paid Date:</label>
+                  <input
+                    type="date"
+                    value={paidDate}
+                    onChange={(e) => setPaidDate(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
           {/* Form Actions */}
           <div className="form-actions">
             <button type="button" onClick={() => navigate(-1)}>
@@ -298,4 +311,5 @@ const TaskCreateForm = () => {
     </div>
   );
 };
+
 export default TaskCreateForm;

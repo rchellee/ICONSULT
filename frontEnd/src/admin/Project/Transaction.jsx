@@ -196,10 +196,17 @@ const Transaction = ({ projectId }) => {
             status: task.payment_status,
             date_paid: task.date_paid || "",
             amount: parseFloat(task.amount) || 0,
+            created_at: task.created_at,
           };
         });
 
-        setTransactions(mappedTransactions);
+        const sortedTransactions = mappedTransactions.sort((a, b) => {
+          if (a.status === "Paid" && b.status !== "Paid") return 1;
+          if (b.status === "Paid" && a.status !== "Paid") return -1;
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+
+        setTransactions(sortedTransactions);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -297,15 +304,31 @@ const Transaction = ({ projectId }) => {
     const taskToEdit = transactions[taskIndex];
     navigate(`/create-task`, {
       state: {
-        taskToEdit: { ...taskToEdit, index: taskIndex }, // Include task data and index
+        taskToEdit: {
+          ...taskToEdit,
+          index: taskIndex,
+          transactionId: taskToEdit.transaction_id, // Add transaction_id
+          modeOfPayment: taskToEdit.mode_of_payment, // Add mode_of_payment
+          paidDate: taskToEdit.date_paid, // Add date_paid
+        },
         projectId: projectId, // Pass projectId for context
       },
     });
   };
   const handleUpdateTask = (updatedTask) => {
     const updatedTransactions = [...transactions];
-    updatedTransactions[updatedTask.index] = updatedTask;
-    setTransactions(updatedTransactions);
+    updatedTransactions[updatedTask.index] = {
+      ...updatedTask,
+      created_at: updatedTask.created_at || new Date().toISOString(), // Preserve or set created_at
+    };
+
+    // Sort transactions by created_at (newest first) and status (Paid last)
+    const sortedTransactions = updatedTransactions.sort((a, b) => {
+      if (a.status === "Paid" && b.status !== "Paid") return 1;
+      if (b.status === "Paid" && a.status !== "Paid") return -1;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+    setTransactions(sortedTransactions);
     setShowTaskForm(false);
     setEditingTask(null);
   };
@@ -518,13 +541,26 @@ const Transaction = ({ projectId }) => {
                         : formatAmount(subtotal)}
                     </td>
                     <td>{assignedEmployeeName}</td>{" "}
-                    <td>{formatDate(transaction.dueDate)}</td>
+                    <td
+                      style={{
+                        color:
+                          calculatePastDueDays(transaction.dueDate) > 0
+                            ? "red"
+                            : "inherit",
+                        fontWeight:
+                          calculatePastDueDays(transaction.dueDate) > 0
+                            ? "normal"
+                            : "normal",
+                      }}
+                    >
+                      {formatDate(transaction.dueDate)}
+                    </td>
                     <td>{formatDate(transaction.date_paid)}</td>
                     <td>
                       <span
                         style={{
                           color: transaction.status === "Paid" ? "blue" : "red",
-                          fontWeight: "bold",
+                          fontWeight: "normal",
                         }}
                       >
                         {transaction.status}
