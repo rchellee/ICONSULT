@@ -381,13 +381,13 @@ const Transaction = ({ projectId }) => {
       day: "numeric",
     });
   };
-  const calculatePastDueDays = (dueDate) => {
-    if (!dueDate) return 0;
+  const calculatePastDueDays = (dueDate, status) => {
+    if (!dueDate || status === "Paid") return 0; // Return 0 if the task is paid or has no due date
     const today = new Date();
     const due = new Date(dueDate);
     const timeDiff = today - due;
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    return daysDiff > 0 ? daysDiff : 0;
+    return daysDiff > 0 ? daysDiff : 0; // Return the number of days past due (or 0 if not past due)
   };
   // Handle dropdown toggle
   const toggleDropdown = (dropdownName) => {
@@ -447,7 +447,10 @@ const Transaction = ({ projectId }) => {
                 {
                   transactions.filter(
                     (transaction) =>
-                      calculatePastDueDays(transaction.dueDate) > 0
+                      calculatePastDueDays(
+                        transaction.dueDate,
+                        transaction.status
+                      ) > 0
                   ).length
                 }
               </span>
@@ -544,13 +547,12 @@ const Transaction = ({ projectId }) => {
                     <td
                       style={{
                         color:
-                          calculatePastDueDays(transaction.dueDate) > 0
+                          calculatePastDueDays(
+                            transaction.dueDate,
+                            transaction.status
+                          ) > 0
                             ? "red"
                             : "inherit",
-                        fontWeight:
-                          calculatePastDueDays(transaction.dueDate) > 0
-                            ? "normal"
-                            : "normal",
                       }}
                     >
                       {formatDate(transaction.dueDate)}
