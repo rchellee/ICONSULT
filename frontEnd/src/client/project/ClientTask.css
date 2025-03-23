@@ -1,0 +1,32 @@
+/* Table styling */
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table header styling */
+.task-table th {
+  background-color: #333;
+  color: white;
+  padding: 12px;
+  text-align: left;
+}
+
+/* Table row styling */
+.task-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.task-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Alternate row coloring */
+.task-table tbody tr:nth-child(even) {
+  background-color: #f5f5f5;
+}

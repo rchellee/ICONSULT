@@ -1466,9 +1466,10 @@ app.get("/tasks", (req, res) => {
   // Ensure projectIds is an array
   const idsArray = Array.isArray(projectIds) ? projectIds : [projectIds];
 
-  const sql = "SELECT * FROM tasks WHERE project_id IN (?)";
-
-  db.query(sql, [idsArray], (err, tasks) => {
+  const sql = `SELECT * FROM tasks WHERE project_id IN (${idsArray
+    .map(() => "?")
+    .join(",")})`;
+  db.query(sql, idsArray, (err, tasks) => {
     if (err) {
       console.error("Error fetching tasks: ", err);
       return res
@@ -1939,11 +1940,14 @@ app.post("/payments", (req, res) => {
     payeeName,
     clientId,
     projectId,
+    taskId,
+    modeOfPayment,
+    datePaid,
   } = req.body;
 
   const query = `
-    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, payee_merchant_id, payee_name, client_id, project_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, payee_merchant_id, payee_name, client_id, project_id, task_id, mode_of_payment, date_paid) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   db.query(
     query,
@@ -1958,6 +1962,9 @@ app.post("/payments", (req, res) => {
       payeeName,
       clientId,
       projectId,
+      taskId,
+      modeOfPayment,
+      datePaid,
     ],
     (err, result) => {
       if (err) {
@@ -1965,76 +1972,95 @@ app.post("/payments", (req, res) => {
         return res.status(500).send("Error saving payment.");
       }
 
-      // Update project's downpayment
-      const updateDownpaymentQuery = `
-        UPDATE project
-        SET downpayment = downpayment + ?
-        WHERE id = ?
+      // Save notification for the admin
+      const notificationQuery = `
+        INSERT INTO notifications (title, description, timestamp, isRead) 
+        VALUES (?, ?, ?, ?)
       `;
 
+      const notificationTitle = "New Payment Received";
+      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}. Transaction ID: ${transactionId}. Date Paid: ${new Date().toLocaleString()}`;
+      const timestamp = new Date();
+
       db.query(
-        updateDownpaymentQuery,
-        [amount, projectId],
-        (err, updateResult) => {
+        notificationQuery,
+        [notificationTitle, notificationDescription, timestamp, false],
+        (err, notificationResult) => {
           if (err) {
-            console.error("Error updating downpayment:", err);
-            return res.status(500).send("Error updating downpayment.");
+            console.error("Error creating notification:", err);
+            return res.status(500).send("Error saving notification.");
           }
 
-          // Save notification for the admin
-          const notificationQuery = `
-      INSERT INTO notifications (title, description, timestamp, isRead) 
-      VALUES (?, ?, ?, ?)
-    `;
-
-          const notificationTitle = "New Payment Received";
-          const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
-          const timestamp = new Date();
-
-          db.query(
-            notificationQuery,
-            [notificationTitle, notificationDescription, timestamp, false],
-            (err, notificationResult) => {
-              if (err) {
-                console.error("Error creating notification:", err);
-                return res.status(500).send("Error saving notification.");
-              }
-
-              // Save client notification
-              const clientNotificationQuery = `
-            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
-            VALUES (?, ?, ?, NOW(), FALSE)
-          `;
-
-              const clientNotificationTitle = "Payment Received";
-              const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
-
-              db.query(
-                clientNotificationQuery,
-                [
-                  clientId,
-                  clientNotificationTitle,
-                  clientNotificationDescription,
-                ],
-                (err) => {
-                  if (err) {
-                    console.error("Error saving client notification:", err);
-                    return res
-                      .status(500)
-                      .send("Error saving client notification.");
-                  }
-
-                  res
-                    .status(200)
-                    .send(
-                      "Payment, downpayment and client notification saved successfully."
-                    );
-                }
-              );
-            }
-          );
+          res
+            .status(200)
+            .send("Payment and admin notification saved successfully.");
         }
       );
+    }
+  );
+});
+app.put("/update-payment-status/:taskId", (req, res) => {
+  const taskId = req.params.taskId;
+  const {
+    transaction_id,
+    mode_of_payment,
+    payment_status,
+    status,
+    date_paid,
+    actual_finish,
+  } = req.body;
+
+  if (
+    !transaction_id ||
+    !mode_of_payment ||
+    !payment_status ||
+    !status ||
+    !date_paid ||
+    !actual_finish
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const sql = `
+    UPDATE tasks 
+    SET 
+      transaction_id = ?, 
+      mode_of_payment = ?, 
+      payment_status = ?, 
+      status = ?, 
+      date_paid = ?,
+      actual_finish = ?
+    WHERE id = ?
+  `;
+  db.query(
+    sql,
+    [
+      transaction_id,
+      mode_of_payment,
+      payment_status,
+      status,
+      date_paid,
+      actual_finish,
+      taskId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating task payment status:", err);
+        return res
+          .status(500)
+          .json({ error: "Failed to update task payment status" });
+      }
+
+      return res.json({
+        taskId,
+        transaction_id,
+        mode_of_payment,
+        payment_status,
+        status,
+        date_paid,
+        actual_finish,
+        message: "Task payment status updated successfully",
+      });
     }
   );
 });
@@ -2061,25 +2087,6 @@ app.get("/payments/:clientId", (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     res.status(200).json(results);
-  });
-});
-app.put("/project/update-payment-status/:id", (req, res) => {
-  const projectId = req.params.id;
-  const { paymentStatus } = req.body;
-
-  if (!paymentStatus) {
-    return res.status(400).json({ error: "Payment status is required" });
-  }
-
-  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
-  db.query(sql, [paymentStatus, projectId], (err, result) => {
-    if (err) return res.status(500).json(err);
-
-    return res.json({
-      id: projectId,
-      paymentStatus,
-      message: "Payment status updated successfully",
-    });
   });
 });
 
