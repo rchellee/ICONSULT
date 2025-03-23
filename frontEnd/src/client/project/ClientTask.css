@@ -1,7 +1,7 @@
 /* Table styling */
 .task-table {
     width: 100%;
-    border-collapse: collapse; /* Remove space between cells */
+    border-collapse: collapse; 
     margin: 16px 0;
     font-family: Arial, sans-serif;
     background-color: #f9f9f9;
@@ -19,10 +19,9 @@
   /* Table row styling */
   .task-table td {
     padding: 12px;
-    border-bottom: 1px solid #ddd; /* Add a border between rows */
+    border-bottom: 1px solid #ddd; 
   }
   
-  /* Hover effect for rows */
   .task-table tbody tr:hover {
     background-color: #f1f1f1;
   }
