@@ -226,17 +226,17 @@ const overallProgress = totalProjects
         {/* Left side - Status counters and progress */}
         <div className="status-counters">
         <span className="status-counter">
-  <span className="counter-label">Ongoing:</span>
-  <span className="status-value-list">{statusCounts?.Ongoing || 0}</span>
-</span>
-<span className="status-counter">
-  <span className="counter-label">Pending:</span>
-  <span className="status-value-list">{statusCounts?.Pending || 0}</span>
-</span>
-<span className="status-counter">
-  <span className="counter-label">Completed:</span>
-  <span className="status-value-list">{statusCounts?.Completed || 0}</span>
-</span>
+          <span className="counter-label">Ongoing:</span>
+          <span className="status-value-list">{statusCounts?.Ongoing || 0}</span>
+        </span>
+        <span className="status-counter">
+          <span className="counter-label">Pending:</span>
+          <span className="status-value-list">{statusCounts?.Pending || 0}</span>
+        </span>
+        <span className="status-counter">
+          <span className="counter-label">Completed:</span>
+          <span className="status-value-list">{statusCounts?.Completed || 0}</span>
+        </span>
           <span className="progress-counter">
           <span className="progress-label">Progress:</span>
           <span className="progress-value">{overallProgress}%</span>

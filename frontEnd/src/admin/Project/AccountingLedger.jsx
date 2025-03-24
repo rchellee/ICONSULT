@@ -18,12 +18,10 @@ const AccountingLedger = ({
   useEffect(() => {
     const fetchAndSavePaidTasks = async () => {
       try {
-        // Fetch paid tasks
         const response = await axios.get("http://localhost:8081/paid-tasks");
         const paidTasks = response.data;
 
         if (paidTasks.length > 0) {
-          // Save paid tasks to the payments table
           await axios.post("http://localhost:8081/payments/bulk", paidTasks);
           console.log("Paid tasks saved to payments table");
         }
@@ -42,7 +40,6 @@ const AccountingLedger = ({
         const response = await axios.get("http://localhost:8081/paymentLedger");
         setPayments(response.data);
 
-        // Calculate subtotals for each project
         const subtotalsMap = response.data.reduce((acc, payment) => {
           const key =
             sortCriteria === "mode_of_payment"
@@ -66,7 +63,7 @@ const AccountingLedger = ({
 
   useEffect(() => {
     if (sortCriteria === "date_paid") {
-      setSubtotals({}); // No subtotals for date_paid
+      setSubtotals({});
       return;
     }
 
@@ -100,6 +97,7 @@ const AccountingLedger = ({
       maximumFractionDigits: 2,
     })}`;
   };
+
   const sortedPayments = [...payments].sort((a, b) => {
     if (sortCriteria === "date_paid") {
       return new Date(a.date_paid) - new Date(b.date_paid);
@@ -111,10 +109,8 @@ const AccountingLedger = ({
 
   return (
     <div className="accounting-ledger">
-      
       <div className="sort-ledger">
-        {/*<label>Sort By: </label>*/}
-          <select
+        <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
         >
@@ -132,7 +128,7 @@ const AccountingLedger = ({
               <th>Transaction ID</th>
               <th>Paid By</th>
               <th>Description</th>
-              <th>Amount</th>
+              <th style={{ textAlign: 'right', paddingRight: '20px' }}>Amount</th>
               <th>Mode of Payment</th>
               <th>Date Paid</th>
             </tr>
@@ -145,11 +141,17 @@ const AccountingLedger = ({
                   <td>{payment.transaction_id.toUpperCase()}</td>
                   <td>{payment.payer_name}</td>
                   <td>Payment for {payment.description}</td>
-                  <td>{formatAmount(payment.amount)}</td>
+                  <td style={{ 
+                    textAlign: 'right', 
+                    paddingRight: '20px',
+                    
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {formatAmount(payment.amount)}
+                  </td>
                   <td>{payment.mode_of_payment}</td>
                   <td>{formatDate(payment.date_paid)}</td>
                 </tr>
-                {/* Display subtotal for the project */}
                 {sortCriteria !== "date_paid" &&
                 (index === sortedPayments.length - 1 ||
                   sortedPayments[index + 1][sortCriteria] !==
@@ -163,7 +165,15 @@ const AccountingLedger = ({
                         ? payment.payer_name
                         : payment.projectName}
                     </td>
-                    <td>{formatAmount(subtotals[payment[sortCriteria]])}</td>
+                    <td style={{ 
+                      textAlign: 'right', 
+                      paddingRight: '20px',
+                      fontWeight: 'bold',
+                      
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {formatAmount(subtotals[payment[sortCriteria]])}
+                    </td>
                     <td colSpan="2"></td>
                   </tr>
                 ) : null}
@@ -172,7 +182,13 @@ const AccountingLedger = ({
             {sortCriteria !== "date_paid" && (
               <tr className="grand-total-row">
                 <td colSpan="4">Total</td>
-                <td>
+                <td style={{ 
+                  textAlign: 'right', 
+                  paddingRight: '20px',
+                  fontWeight: 'bold',
+                  
+                  whiteSpace: 'nowrap'
+                }}>
                   {formatAmount(
                     Object.values(subtotals).reduce(
                       (sum, amount) => sum + amount,

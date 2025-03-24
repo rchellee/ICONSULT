@@ -9,6 +9,10 @@ function formatDate(dateString) {
   return date.toISOString().split("T")[0];
 }
 
+function formatCurrency(amount) {
+  return `₱ ${amount?.toLocaleString('en-PH')}.00`;
+}
+
 function ProjectOverview({ projectId }) {
   const [project, setProject] = useState(null);
   const [tasksTotal, setTasksTotal] = useState(0);
@@ -107,11 +111,9 @@ function ProjectOverview({ projectId }) {
             </thead>
             <tbody>
               <tr>
-                <td>₱ {project.total_amount}.00</td>
-                <td>₱ {project.paid_amount}.00</td>
-                <td>
-                  ₱ {project.total_amount - (project.paid_amount || 0)}.00
-                </td>
+                <td>{formatCurrency(project.total_amount)}</td>
+                <td>{formatCurrency(project.paid_amount)}</td>
+                <td>{formatCurrency(project.total_amount - (project.paid_amount || 0))}</td>
               </tr>
             </tbody>
           </table>
