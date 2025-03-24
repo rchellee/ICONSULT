@@ -112,9 +112,9 @@ const AccountingLedger = ({
   return (
     <div className="accounting-ledger">
       
-      <div className="sort-container">
-        <label style={{ marginLeft: "1190px" }}>Sort By: </label>
-        <select
+      <div className="sort-ledger">
+        <label>Sort By: </label>
+          <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
         >

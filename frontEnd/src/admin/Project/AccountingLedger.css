@@ -2,14 +2,57 @@
   position: relative;
 }
 
+
+/*-----------------------------------------------------------*/
+
+
+/* Sort dropdown container */
+.sort-ledger {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 20px 0;
+  gap: 10px;
+  margin-bottom: auto;
+  position: relative;
+  top: 60px;
+}
+
+.sort-ledger label {
+  font-weight: 500;
+  color: #3b4f67;
+}
+
+.sort-ledger select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sort-ledger select:hover {
+  border-color: #4070f4;
+}
+
+.sort-ledger select:focus {
+  outline: none;
+  border-color: #4070f4;
+  box-shadow: 0 0 0 2px rgba(64, 112, 244, 0.2);
+}
+
+/*-----------------------------------------------------------*/
+
 .accounting-table {
   width: 100%;
   border-collapse: collapse;
   border: none;
   font-size: 18px;
-  position: absolute;
+  position: relative;
   margin-right: 50px;
-  margin-top: 100px;
+  margin-top: 10px;
   top: 70px;
   /* Ensure columns respect their widths */
 }

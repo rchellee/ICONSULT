@@ -1,3 +1,7 @@
+.eto-parent{
+  position: relative;
+}
+
 .task-table .numeric-column {
   text-align: right;
 }
@@ -342,14 +346,6 @@
   background-color: #3b4f67; 
   color: white; 
 }
-
-
-.eto-parent{
-  position: relative;
-}
-
-
-
 
 
 
