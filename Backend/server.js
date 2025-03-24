@@ -2560,30 +2560,7 @@ app.get("/appointmentsDashboard/upcoming", (req, res) => {
     res.status(200).json(result);
   });
 });
-app.get("/projectDashboard/revenue", (req, res) => {
-  const { filter } = req.query;
-  let condition = "";
 
-  switch (filter) {
-    case "weekly":
-      condition = "WEEK(paymentDate) = WEEK(CURDATE())";
-      break;
-    case "yearly":
-      condition = "YEAR(paymentDate) = YEAR(CURDATE())";
-      break;
-    case "all":
-      condition = "1=1"; // No filter, fetch all projects
-      break;
-    default:
-      condition = "1=1"; // No filter, fetch all projects
-  }
-
-  const sql = `SELECT SUM(contractPrice) AS totalRevenues FROM project WHERE paymentStatus = 'Paid' AND ${condition} AND isDeleted = 0`;
-  db.query(sql, (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.status(200).json(result[0]);
-  });
-});
 app.get("/latest-activity", (req, res) => {
   const queries = {
     client: "SELECT * FROM client ORDER BY created_at DESC LIMIT 1",
@@ -2742,10 +2719,10 @@ app.get("/projectReports", (req, res) => {
 
   let sql = `
     SELECT 
-      id, clientId, projectName, clientName, description, status, contractPrice, startDate, endDate, created_at, actualFinish, 
+      id, clientId, projectName, clientName, description, status, startDate, endDate, created_at, actualFinish, 
       TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
-      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays, paymentStatus,
+      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays,
       IF(endDate < CURDATE(), 1, 0) AS isOverdue
     FROM project
     WHERE isDeleted = 0

@@ -30,7 +30,7 @@ import ReportsTab from "./admin/Reports/ReportsTab.jsx";
 import AdminAccount from "./admin/AdminAccount/AdminAccount.jsx";
 import AdminReview from "./admin/AdminAccount/adminReview.jsx";
 import ClientReview from "./client/AccountSettings/clientReviews.jsx";
-import TaskCreateForm from "./admin/Project/TaskCreateForm.jsx"
+import TaskCreateForm from "./admin/Project/TaskCreateForm.jsx";
 
 // for google icons
 const link = document.createElement("link");
