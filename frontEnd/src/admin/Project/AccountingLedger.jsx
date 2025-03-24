@@ -111,7 +111,7 @@ const AccountingLedger = ({
 
   return (
     <div className="accounting-ledger">
-      <h2>Accounting Ledger</h2>
+      
       <div className="sort-container">
         <label style={{ marginLeft: "1190px" }}>Sort By: </label>
         <select

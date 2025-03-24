@@ -42,23 +42,14 @@ const ProjectManagement = () => {
       )
     );
 
-    // Sort projects based on the selected sort order
     let sorted = [...filtered];
-
     if (sortOrder === "default") {
-      // Default sorting: Most recent first, except for completed projects
       sorted.sort((a, b) => {
-        if (a.status === "Completed" && b.status !== "Completed") {
-          return 1; // Move completed projects to the bottom
-        } else if (a.status !== "Completed" && b.status === "Completed") {
-          return -1; // Move non-completed projects to the top
-        } else {
-          // Sort by creation date (most recent first)
-          return new Date(b.created_at) - new Date(a.created_at);
-        }
+        if (a.status === "Completed" && b.status !== "Completed") return 1;
+        if (a.status !== "Completed" && b.status === "Completed") return -1;
+        return new Date(b.created_at) - new Date(a.created_at);
       });
     } else if (sortOrder === "name") {
-      // Sort alphabetically
       sorted.sort((a, b) => {
         const nameA = a.projectName.toLowerCase();
         const nameB = b.projectName.toLowerCase();
@@ -67,19 +58,9 @@ const ProjectManagement = () => {
         return 0;
       });
     } else if (sortOrder === "asc") {
-      // Ascending by start date
-      sorted.sort((a, b) => {
-        const dateA = new Date(a.startDate);
-        const dateB = new Date(b.startDate);
-        return dateA - dateB;
-      });
+      sorted.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     } else if (sortOrder === "desc") {
-      // Descending by start date
-      sorted.sort((a, b) => {
-        const dateA = new Date(a.startDate);
-        const dateB = new Date(b.startDate);
-        return dateB - dateA;
-      });
+      sorted.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
     }
 
     setFilteredProjects(sorted);
@@ -88,9 +69,7 @@ const ProjectManagement = () => {
   useEffect(() => {
     fetch("http://localhost:8081/project")
       .then((response) => response.json())
-      .then((data) => {
-        setProjects(data);
-      })
+      .then((data) => setProjects(data))
       .catch((error) => console.error("Error fetching projects:", error));
 
     fetch("http://localhost:8081/clients")
@@ -99,13 +78,9 @@ const ProjectManagement = () => {
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+  const openModal = () => setIsModalOpen(true);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -126,7 +101,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending", // Default status for new projects
+      status: "Pending",
     };
 
     fetch("http://localhost:8081/project", {
@@ -136,8 +111,7 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((newProject) => {
-        // Update the projects state with the new project
-        setProjects((prevProjects) => [...prevProjects, newProject]);
+        setProjects((prev) => [...prev, newProject]);
         closeModal();
       })
       .catch((error) => console.error("Error creating project:", error));
@@ -161,9 +135,8 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((updatedProject) => {
-        // Update the projects state with the updated project
-        setProjects((prevProjects) =>
-          prevProjects.map((project) =>
+        setProjects((prev) =>
+          prev.map((project) =>
             project.id === editingProjectId ? updatedProject : project
           )
         );
@@ -173,47 +146,33 @@ const ProjectManagement = () => {
   };
 
   const handleSave = () => {
-    if (editingProjectId) {
-      updateExistingProject();
-    } else {
-      saveNewProject();
-    }
+    editingProjectId ? updateExistingProject() : saveNewProject();
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
   };
 
-  const toggleSortDropdown = () => {
-    setIsSortDropdownOpen((prev) => !prev);
-  };
+  const toggleSortDropdown = () => setIsSortDropdownOpen((prev) => !prev);
 
   const requestSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
+    const direction = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
     setSortConfig({ key, direction });
     sortProjects(key, direction);
     setIsSortDropdownOpen(false);
   };
 
   const sortProjects = (key, direction) => {
-    const sortedProjects = [...projects].sort((a, b) => {
-      if (a[key] < b[key]) {
-        return direction === "asc" ? -1 : 1;
-      }
-      if (a[key] > b[key]) {
-        return direction === "asc" ? 1 : -1;
-      }
+    const sorted = [...projects].sort((a, b) => {
+      if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
+      if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
       return 0;
     });
-    setProjects(sortedProjects);
+    setProjects(sorted);
   };
 
   const toggleDropdown = (projectId) => {
@@ -221,14 +180,14 @@ const ProjectManagement = () => {
   };
 
   const handleEdit = (projectId) => {
-    const projectToEdit = projects.find((project) => project.id === projectId);
-    if (projectToEdit) {
-      setProjectName(projectToEdit.projectName);
-      setClientName(projectToEdit.clientName);
-      setClientId(projectToEdit.clientId);
-      setStartDate(projectToEdit.startDate);
-      setEndDate(projectToEdit.endDate);
-      setDescription(projectToEdit.description);
+    const project = projects.find((p) => p.id === projectId);
+    if (project) {
+      setProjectName(project.projectName);
+      setClientName(project.clientName);
+      setClientId(project.clientId);
+      setStartDate(project.startDate);
+      setEndDate(project.endDate);
+      setDescription(project.description);
       setEditingProjectId(projectId);
       openModal();
     }
@@ -242,10 +201,7 @@ const ProjectManagement = () => {
       body: JSON.stringify({ isDeleted: true }),
     })
       .then(() => {
-        // Remove the deleted project from the projects state
-        setProjects((prevProjects) =>
-          prevProjects.filter((project) => project.id !== projectId)
-        );
+        setProjects((prev) => prev.filter((project) => project.id !== projectId));
         toggleDropdown(null);
       })
       .catch((error) => console.error("Error deleting project:", error));
@@ -260,25 +216,34 @@ const ProjectManagement = () => {
         />
       );
     }
+
     return (
       <ProjectList
         projects={projects}
-        searchTerm={searchTerm}
         filteredProjects={filteredProjects}
         setFilteredProjects={setFilteredProjects}
         formatDate={formatDate}
-        toggleSortDropdown={toggleSortDropdown}
-        isSortDropdownOpen={isSortDropdownOpen}
-        requestSort={requestSort}
-        activeDropdown={activeDropdown}
-        toggleDropdown={toggleDropdown}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
+        toggleDropdown={toggleDropdown}
+        activeDropdown={activeDropdown}
+        openModal={openModal}
+        clients={clients}
+        onSave={handleSave}
+        editingProjectId={editingProjectId}
+        projectName={projectName}
+        setProjectName={setProjectName}
+        clientId={clientId}
+        setClientId={setClientId}
+        clientName={clientName}
+        setClientName={setClientName}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        description={description}
+        setDescription={setDescription}
         onCancel={closeModal}
-        onProjectClick={(projectId) => {
-          console.log("Clicked Project ID:", projectId);
-          setSelectedProjectId(projectId);
-        }}
       />
     );
   };
@@ -289,12 +254,6 @@ const ProjectManagement = () => {
       <Sidebar />
       <div className="project-management-page">
         <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
-          <div className="action-container">
-            <button className="create-button" onClick={openModal}>
-              <FaPlus className="icon" /> New
-            </button>
-          </div>
-
           {isModalOpen && (
             <ProjectForm
               projectName={projectName}

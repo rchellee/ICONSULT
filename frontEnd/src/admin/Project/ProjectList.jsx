@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ListView from "./ListView";
-import AccountingLedger from "./AccountingLedger"; // Ensure this component exists
+import AccountingLedger from "./AccountingLedger";
 import "./ListView.css";
+import { FaPlus } from "react-icons/fa";
+import ProjectForm from "./ProjectForm";
 
 const ProjectList = ({
   projects,
@@ -12,33 +14,39 @@ const ProjectList = ({
   handleDelete,
   toggleDropdown,
   activeDropdown,
+  openModal,
+  clients,
+  onSave,
+  editingProjectId,
+  projectName,
+  setProjectName,
+  clientId,
+  setClientId,
+  clientName,
+  setClientName,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  description,
+  setDescription,
+  onCancel
 }) => {
   // Toggle state for switching views
   const [activeView, setActiveView] = useState("overview");
 
-  // Other states for project details
-  const [projectName, setProjectName] = useState("");
-  const [clientId, setClientId] = useState("");
-  const [clientName, setClientName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [description, setDescription] = useState("");
   // States to hold statuses and dates based on filteredProjects
   const [statuses, setStatuses] = useState({});
   const [startDates, setStartDates] = useState({});
   const [finishDates, setFinishDates] = useState({});
+  const [tasksInfo, setTasksInfo] = useState({});
+  const [totalTasks, setTotalTasks] = useState({});
+  const [selectedProject, setSelectedProject] = useState(null);
 
   // Memoize filteredProjects to avoid unnecessary updates
   const filteredProjects = useMemo(() => {
     return initialFilteredProjects;
   }, [initialFilteredProjects]);
-
-  const [tasksInfo, setTasksInfo] = useState({});
-  const [totalTasks, setTotalTasks] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProjectId, setEditingProjectId] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
 
   // Update statuses, startDates, and finishDates when filteredProjects changes
   useEffect(() => {
@@ -57,16 +65,9 @@ const ProjectList = ({
       return acc;
     }, {});
 
-    // Only update state if the new state is different
-    if (JSON.stringify(newStatuses) !== JSON.stringify(statuses)) {
-      setStatuses(newStatuses);
-    }
-    if (JSON.stringify(newStartDates) !== JSON.stringify(startDates)) {
-      setStartDates(newStartDates);
-    }
-    if (JSON.stringify(newFinishDates) !== JSON.stringify(finishDates)) {
-      setFinishDates(newFinishDates);
-    }
+    setStatuses(newStatuses);
+    setStartDates(newStartDates);
+    setFinishDates(newFinishDates);
   }, [filteredProjects]);
 
   // Function to handle status changes
@@ -84,9 +85,7 @@ const ProjectList = ({
       body: JSON.stringify({ status: newStatus }),
     })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update status");
-        }
+        if (!response.ok) throw new Error("Failed to update status");
         return response.json();
       })
       .then((data) => {
@@ -117,11 +116,7 @@ const ProjectList = ({
           const response = await fetch(
             `http://localhost:8081/admin/tasks?projectId=${project.id}`
           );
-          if (!response.ok) {
-            const text = await response.text();
-            console.error("Server response:", text);
-            throw new Error("Failed to fetch tasks");
-          }
+          if (!response.ok) throw new Error("Failed to fetch tasks");
           const data = await response.json();
           const completedTasks = data.tasks.filter(
             (task) => task.status === "Completed"
@@ -155,22 +150,6 @@ const ProjectList = ({
     }));
   };
 
-  // Modal handling functions
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setProjectName("");
-    setClientId("");
-    setClientName("");
-    setStartDate("");
-    setEndDate("");
-    setDescription("");
-    setEditingProjectId(null);
-  };
-
   const statusColors = {
     Ongoing: "#F06292",
     Pending: "rgb(252, 118, 118)",
@@ -183,24 +162,36 @@ const ProjectList = ({
 
   return (
     <div className="project-list-wrapper">
-      {/* Toggle Buttons */}
-      <div className="toggle-buttons">
-        <button
-          className={`toggle-button ${
-            activeView === "overview" ? "active" : ""
-          }`}
-          onClick={() => setActiveView("overview")}
-        >
-          Overview
-        </button>
-        <button
-          className={`toggle-button ${
-            activeView === "accounting" ? "active" : ""
-          }`}
-          onClick={() => setActiveView("accounting")}
-        >
-          Accounting Ledger
-        </button>
+      {/* Header with toggle buttons and New button */}
+      <div className="list-view-header">
+        <div className="projects-title">
+          My Projects
+        </div>
+        <div className="toggle-buttons">
+          <button
+            className={`toggle-button ${
+              activeView === "overview" ? "active" : ""
+            }`}
+            onClick={() => setActiveView("overview")}
+          >
+            Overview
+          </button>
+          <button
+            className={`toggle-button ${
+              activeView === "accounting" ? "active" : ""
+            }`}
+            onClick={() => setActiveView("accounting")}
+          >
+            Accounting Ledger
+          </button>
+        </div>
+        
+        {/* New button - only shown in Overview view */}
+        {activeView === "overview" && (
+          <button className="create-project-btn" onClick={openModal}>
+            <FaPlus className="icon" /> New 
+          </button>
+        )}
       </div>
 
       <div className="project-list">

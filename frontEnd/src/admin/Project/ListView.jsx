@@ -12,14 +12,16 @@ import { AiOutlineEdit } from "react-icons/ai";
 // Utility function to format numbers with ₱ symbol
 const formatCurrency = (amount) => {
   if (amount === undefined || amount === null) return "₱ 0.00";
-  return (
-    "₱ " +
-    new Intl.NumberFormat("en-US", {
-      style: "decimal",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)
-  );
+  
+  // Format with right-aligned padding
+  const formatted = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+  
+  // Add non-breaking spaces for consistent alignment
+  return `₱${String.fromCharCode(160)}${formatted}`;
 };
 
 const ListView = ({
@@ -199,74 +201,115 @@ const ListView = ({
     }
   };
 
+  // Calculate status counts and overall progress
+const statusCounts = projects?.reduce(
+  (acc, project) => {
+    const status = statuses[project.id] || "Pending";
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  },
+  { Ongoing: 0, Pending: 0, Completed: 0 }
+);
+
+const totalProjects = projects?.length || 0;
+const overallProgress = totalProjects
+  ? Math.round(
+      projects.reduce((sum, project) => sum + (project.progress || 0), 0) /
+        totalProjects
+    )
+  : 0;
+
   return (
     <div className="eto-parent">
       {/* Button Container */}
-      <div className="sorting-button">
-        <div className="sorting-button-container">
-          <button className="action-button">Export</button>
+      <div className="sorting-button-container">
+        {/* Left side - Status counters and progress */}
+        <div className="status-counters">
+        <span className="status-counter">
+  <span className="counter-label">Ongoing:</span>
+  <span className="status-value-list">{statusCounts?.Ongoing || 0}</span>
+</span>
+<span className="status-counter">
+  <span className="counter-label">Pending:</span>
+  <span className="status-value-list">{statusCounts?.Pending || 0}</span>
+</span>
+<span className="status-counter">
+  <span className="counter-label">Completed:</span>
+  <span className="status-value-list">{statusCounts?.Completed || 0}</span>
+</span>
+          <span className="progress-counter">
+          <span className="progress-label">Progress:</span>
+          <span className="progress-value">{overallProgress}%</span>
+            <div className="progress-bar-container">
+            <div 
+              className="progress-bar" 
+              style={{ width: `${overallProgress}%` }}
+            ></div>
+            </div>
+          </span>
         </div>
-        <div className="sorting-button-container">
-          <button
-            className="action-button"
-            onClick={toggleStatusDropdown}
-            ref={statusButtonRef}
-          >
-            <FaTasks size={20} style={{ marginRight: "13px" }} />
-            <span style={{ fontSize: "15px" }}>Status</span>{" "}
-            {/* Always show "Status" */}
+  
+        {/* Right side - Buttons */}
+        <div className="action-list-buttons">
+          <button className="action-button export-button">
+            Export
           </button>
-          <div
-            className={`sorting-dropdown ${showStatusOptions ? "visible" : ""}`}
-            ref={statusDropdownRef}
-          >
-            <button onClick={() => handleStatusOptionClick(null)}>All</button>
-            <button onClick={() => handleStatusOptionClick("Ongoing")}>
-              Ongoing
+          <div className="dropdown-list-container">
+            <button
+              className="action-button status-list-button"
+              onClick={toggleStatusDropdown}
+              ref={statusButtonRef}
+            >
+              <FaTasks size={20} className="button-icon" />
+              <span>Status</span>
             </button>
-            <button onClick={() => handleStatusOptionClick("Completed")}>
-              Completed
-            </button>
-            <button onClick={() => handleStatusOptionClick("Pending")}>
-              Pending
-            </button>
+            <div
+              className={`sorting-dropdown ${showStatusOptions ? "visible" : ""}`}
+              ref={statusDropdownRef}
+            >
+              <button onClick={() => handleStatusOptionClick(null)}>All</button>
+              <button onClick={() => handleStatusOptionClick("Ongoing")}>
+                Ongoing
+              </button>
+              <button onClick={() => handleStatusOptionClick("Completed")}>
+                Completed
+              </button>
+              <button onClick={() => handleStatusOptionClick("Pending")}>
+                Pending
+              </button>
+            </div>
           </div>
-        </div>
-
-        {/* Sorting dropdown for Default, Name, Ascending, Descending */}
-        <div className="sorting-button-container">
-          <button
-            className="action-button"
-            onClick={toggleSortDropdown}
-            ref={sortButtonRef}
-          >
-            <TbArrowsSort size={20} style={{ marginRight: "13px" }} />
-            <span style={{ fontSize: "15px" }}>Sort</span>{" "}
-            {/* Always show "Sort" */}
-          </button>
-          <div
-            className={`sorting-dropdown ${showSortOptions ? "visible" : ""}`}
-            ref={sortDropdownRef}
-          >
-            <button onClick={() => handleSortOptionClick("default")}>
-              Default
+          <div className="dropdown-list-container">
+            <button
+              className="action-button sort-button"
+              onClick={toggleSortDropdown}
+              ref={sortButtonRef}
+            >
+              <TbArrowsSort size={20} className="button-icon" />
+              <span>Sort</span>
             </button>
-            <button onClick={() => handleSortOptionClick("name")}>Name</button>
-            <button onClick={() => handleSortOptionClick("asc")}>
-              Ascending
-            </button>
-            <button onClick={() => handleSortOptionClick("desc")}>
-              Descending
-            </button>
+            <div
+              className={`sorting-dropdown ${showSortOptions ? "visible" : ""}`}
+              ref={sortDropdownRef}
+            >
+              <button onClick={() => handleSortOptionClick("default")}>
+                Default
+              </button>
+              <button onClick={() => handleSortOptionClick("name")}>Name</button>
+              <button onClick={() => handleSortOptionClick("asc")}>
+                Ascending
+              </button>
+              <button onClick={() => handleSortOptionClick("desc")}>
+                Descending
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
       <div className="table-scroll-wrapper">
-        <div className="title-project">
-          <h1>My Projects</h1>
-        </div>
+        
         <table className="project-list-table">
           <thead>
             <tr>
@@ -317,9 +360,21 @@ const ListView = ({
                     </div>
                   </td>
 
-                  <td>{formatCurrency(project.total_amount)}</td>
-                  <td>{formatCurrency(project.paid_amount || 0.0)}</td>
-                  <td>{formatCurrency(project.total_amount - (project.paid_amount || 0))}</td>
+                  <td>
+  <span className="currency-value">
+    {formatCurrency(project.total_amount)}
+  </span>
+</td>
+<td>
+  <span className="currency-value">
+    {formatCurrency(project.paid_amount || 0.0)}
+  </span>
+</td>
+<td>
+  <span className="currency-value">
+    {formatCurrency(project.total_amount - (project.paid_amount || 0))}
+  </span>
+</td>
 
                   {/* Status Dropdown */}
                   <td>
