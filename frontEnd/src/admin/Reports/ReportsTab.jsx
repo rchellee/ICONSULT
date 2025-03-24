@@ -35,7 +35,7 @@ const ReportsTab = () => {
               <option value="tasks">Task Reports</option>
               <option value="employees">Employees Reports</option>
               <option value="payments">Financial Reports</option>
-              <option value="review">Review Reports</option>
+              {/* <option value="review">Review Reports</option> */}
             </select>
           </div>
 
@@ -44,7 +44,7 @@ const ReportsTab = () => {
           {reportType === "payments" && <RevenueReports />}
           {reportType === "projects" && <ProjectReports />}
           {reportType === "tasks" && <TaskReports />}
-          {reportType === "reviews" && <ReviewReports />}
+          {/* {reportType === "reviews" && <ReviewReports />} */}
           {reportType === "employees" && <EmployeeReports />}
         </div>
       </div>

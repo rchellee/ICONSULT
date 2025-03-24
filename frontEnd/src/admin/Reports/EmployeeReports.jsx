@@ -3,6 +3,7 @@ import axios from "axios";
 import { CSVLink } from "react-csv";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   BarChart,
   Bar,
@@ -105,7 +106,68 @@ const EmployeeReports = () => {
     name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
     tasks: task.task_count || 0,
   }));
+  const exportPDF = async () => {
+    const doc = new jsPDF("landscape", "mm", "a4");
+    doc.setFontSize(8);
+    doc.text(selectedReport, 10, 10);
+    let yPos = 20;
+    const chartElement = document.getElementById("chart-container");
+    if (chartElement) {
+      try {
+        // Capture chart as an image
+        const canvas = await html2canvas(chartElement);
+        const imgData = canvas.toDataURL("image/png");
 
+        // Add image to the PDF
+        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
+        yPos += 90; // Adjust position for the table
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
+    }
+    if (selectedReport === "Total Employees") {
+      const headers = [
+        [
+          "id",
+          "First Name",
+          "Last Name",
+          "Address",
+          "Mobile Number",
+          "Email",
+          "Status",
+          "Birthday",
+          "Age",
+          "gender",
+          "Role",
+          "Date Updated",
+        ],
+      ];
+      const data = employees.map((e) => [
+        e.id,
+        e.firstName,
+        e.lastName,
+        e.address,
+        e.mobile_number,
+        e.email_add,
+        e.status,
+        e.birthday,
+        e.age,
+        e.gender,
+        e.role,
+        e.date_paid,
+        e.modified_date,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
+      });
+    }
+
+    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+  };
   const formatTasksAssignedtoEachEmployeeCSV = () => {
     let csvData = [];
 
@@ -147,7 +209,6 @@ const EmployeeReports = () => {
 
     return csvData;
   };
-
   const formatTasksforSelectedEmployeeCSV = () => {
     let csvData = [];
 
@@ -192,16 +253,6 @@ const EmployeeReports = () => {
   } else {
     exportCSVData = employees; // Default case for Total Appointments & Appointments This Month
   }
-  const exportPdf = () => {
-    const input = document.getElementById("report-container"); // Ensure this matches your report div's ID
-
-    html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
-      pdf.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
-    });
-  };
 
   return (
     <div className="employee-p-4">
@@ -234,7 +285,7 @@ const EmployeeReports = () => {
               Export CSV
             </CSVLink>
             <button
-              onClick={exportPdf}
+              onClick={exportPDF}
               className="bg-red-500 text-white px-4 py-2 rounded"
             >
               Export PDF

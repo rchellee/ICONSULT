@@ -22,6 +22,7 @@ import "./ReportsTab.css";
 
 const RevenueReports = () => {
   const [revenues, setRevenues] = useState([]);
+  const [clients, setClients] = useState([]);
   const [paymentData, setPaymentData] = useState([]);
   const [overduePayments, setOverduePayments] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -36,6 +37,10 @@ const RevenueReports = () => {
     year: new Date().getFullYear(),
   });
   const [selectedReport, setSelectedReport] = useState("");
+  const [detailedPaymentData, setDetailedPaymentData] = useState({
+    receivedPayments: [],
+    pendingPayments: [],
+  });
 
   const months = [
     "January",
@@ -56,6 +61,7 @@ const RevenueReports = () => {
     fetchProjects();
     fetchRevenues();
     fetchPaymentsPerClient();
+    fetchClients();
   }, [filters]);
 
   useEffect(() => {
@@ -87,15 +93,23 @@ const RevenueReports = () => {
   const fetchPaymentStatus = async () => {
     try {
       const response = await axios.get("http://localhost:8081/payment-status");
-      const { receivedPayments, pendingPayments, revenueThisMonth } =
+      const { paidTasks, pendingTasks, receivedPayments, pendingPayments } =
         response.data;
 
+      // Format for the pie chart
       setPaymentData([
         { name: "Received Payments", value: receivedPayments },
         { name: "Pending Payments", value: pendingPayments },
       ]);
+
+      // Store detailed data for CSV export
+      setDetailedPaymentData({
+        receivedPayments: paidTasks,
+        pendingPayments: pendingTasks,
+      });
+
       setTotalRevenue(receivedPayments);
-      setRevenueThisMonth(revenueThisMonth);
+      setRevenueThisMonth(receivedPayments); // Assuming you want to update this too
     } catch (error) {
       console.error("Error fetching payment status data:", error);
     }
@@ -109,6 +123,14 @@ const RevenueReports = () => {
       setOverduePayments(response.data);
     } catch (error) {
       console.error("Error fetching overdue payments:", error);
+    }
+  };
+  const fetchClients = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/clients");
+      setClients(response.data);
+    } catch (error) {
+      console.error("Error fetching clients", error);
     }
   };
 
@@ -276,6 +298,174 @@ const RevenueReports = () => {
         styles: { fontSize: 8 },
       });
     }
+    if (selectedReport === "Accounts Receivable Overview") {
+      doc.setFontSize(8);
+
+      // Add report title
+      doc.text("Accounts Receivable Overview", 14, yPos);
+      yPos += 10;
+
+      // Add Received Payments section header
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.text("Received Payments", 14, yPos);
+      yPos += 7;
+
+      // Add Received Payments table headers
+      doc.setFont("helvetica", "normal");
+      const receivedHeaders = [
+        "Task ID",
+        "Task Name",
+        "Amount",
+        "Transaction ID",
+        "MOP",
+        "Date Paid",
+      ];
+
+      // Prepare Received Payments data
+      const receivedRows = detailedPaymentData.receivedPayments.map(
+        (payment) => [
+          payment.task_id,
+          payment.task_name,
+          `₱${payment.amount.toFixed(2)}`,
+          payment.transaction_id || "N/A",
+          payment.mode_of_payment || "N/A",
+          payment.date_paid
+            ? new Date(payment.date_paid).toLocaleDateString()
+            : "N/A",
+        ]
+      );
+
+      // Calculate received total
+      const receivedTotal = detailedPaymentData.receivedPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0
+      );
+
+      // Add Received Payments table
+      autoTable(doc, {
+        startY: yPos,
+        head: [receivedHeaders],
+        body: receivedRows,
+        margin: { left: 14 },
+        styles: { fontSize: 8, cellPadding: 2 },
+      });
+      yPos = doc.lastAutoTable.finalY + 5;
+      doc.text(`Total Amount: ₱${receivedTotal.toFixed(2)}`, 14, yPos);
+      yPos += 10;
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Pending Payments", 14, yPos);
+      yPos += 7;
+
+      doc.setFont("helvetica", "normal");
+      const pendingHeaders = ["Task ID", "Task Name", "Amount", "Due Date"];
+
+      // Prepare Pending Payments data
+      const pendingRows = detailedPaymentData.pendingPayments.map((payment) => [
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.due_date
+          ? new Date(payment.due_date).toLocaleDateString()
+          : "N/A",
+      ]);
+
+      // Calculate pending total
+      const pendingTotal = detailedPaymentData.pendingPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0
+      );
+
+      // Add Pending Payments table
+      autoTable(doc, {
+        startY: yPos,
+        head: [pendingHeaders],
+        body: pendingRows,
+        margin: { left: 14 },
+        styles: { fontSize: 8, cellPadding: 2 },
+      });
+
+      // Add Pending Payments total
+      yPos = doc.lastAutoTable.finalY + 5;
+      doc.text(`Total Amount: ₱${pendingTotal.toFixed(2)}`, 14, yPos);
+    }
+    if (selectedReport === "Payments per Client") {
+      clients.forEach((client) => {
+        const clientRevenues = revenues.filter(
+          (r) => r.client_id === client.id
+        );
+
+        if (clientRevenues.length > 0) {
+          doc.setFontSize(8);
+          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
+          const data = clientRevenues.map((r) => [
+            r.transaction_id,
+            r.amount,
+            r.mode_of_payment,
+            r.date_paid,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 8 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+    if (selectedReport === "Revenue per Project") {
+      let grandTotal = 0;
+
+      projects.forEach((project) => {
+        const projectRevenues = revenues.filter(
+          (r) => r.project_id === project.id
+        );
+
+        if (projectRevenues.length > 0) {
+          doc.setFontSize(8);
+          doc.text(`${project.projectName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
+          let projectTotal = 0;
+          const data = projectRevenues.map((r) => {
+            projectTotal += r.amount;
+            return [
+              r.transaction_id || "N/A",
+              `₱${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+            ];
+          });
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+          });
+
+          // Add project total
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Project Total: ₱${projectTotal.toFixed(2)}`, 10, yPos);
+          yPos += 15; // Extra space before next project
+
+          grandTotal += projectTotal;
+        }
+      });
+      if (grandTotal > 0) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ₱${grandTotal.toFixed(2)}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
+    }
+
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
   const formatREVENUETHISMonthCSV = () => {
@@ -328,15 +518,122 @@ const RevenueReports = () => {
   };
   const formatAccountsReceivableOverviewCSV = () => {
     let csvData = [];
-  
-    // Add headers
-    csvData.push(["Category", "Amount"]);
-  
-    // Populate CSV data
-    paymentData.forEach((item) => {
-      csvData.push([item.name, item.value]);
+    csvData.push(["Received Payments"]);
+    csvData.push([
+      "Task ID",
+      "Task Name",
+      "Amount",
+      "Transaction ID",
+      "MOP",
+      "Date Paid",
+    ]);
+
+    let receivedTotal = 0;
+    detailedPaymentData.receivedPayments.forEach((payment) => {
+      csvData.push([
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.transaction_id,
+        payment.mode_of_payment,
+        payment.date_paid
+          ? new Date(payment.date_paid).toLocaleDateString()
+          : "N/A",
+      ]);
+      receivedTotal += payment.amount;
     });
-  
+
+    csvData.push([
+      "Total Amount",
+      "",
+      `₱${receivedTotal.toFixed(2)}`,
+      "",
+      "",
+      "",
+    ]);
+    csvData.push([]);
+    csvData.push(["Pending Payments"]);
+    csvData.push(["Task ID", "Task Name", "Amount", "Due Date"]);
+
+    let pendingTotal = 0;
+    detailedPaymentData.pendingPayments.forEach((payment) => {
+      csvData.push([
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.due_date
+          ? new Date(payment.due_date).toLocaleDateString()
+          : "N/A",
+      ]);
+      pendingTotal += payment.amount;
+    });
+
+    csvData.push(["Total Amount", "", `₱${pendingTotal.toFixed(2)}`, ""]);
+
+    return csvData;
+  };
+  const formatPaymentsperClientCSV = () => {
+    let csvData = [];
+
+    clients.forEach((client) => {
+      const clientRevenues = revenues.filter((r) => r.client_id === client.id);
+
+      if (clientRevenues.length > 0) {
+        csvData.push([`${client.firstName} ${client.lastName}`]); // Add client name as a row
+        csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]); // Headers
+
+        clientRevenues.forEach((r) => {
+          csvData.push([
+            r.transaction_id,
+            r.amount,
+            r.mode_of_payment,
+            r.date_paid,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatRevenueperProjectCSV = () => {
+    let csvData = [];
+    let grandTotal = 0;
+
+    projects.forEach((project) => {
+      const projectRevenues = revenues.filter(
+        (r) => r.project_id === project.id
+      );
+
+      if (projectRevenues.length > 0) {
+        csvData.push([`${project.projectName}`]); // Add client name as a row
+        csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]);
+
+        let projectTotal = 0;
+
+        projectRevenues.forEach((r) => {
+          csvData.push([
+            r.transaction_id,
+            r.amount,
+            r.mode_of_payment,
+            r.date_paid,
+          ]);
+          projectTotal += r.amount;
+        });
+
+        csvData.push(["Project Total", projectTotal, "", ""]);
+        csvData.push([]); // Blank row for spacing
+
+        grandTotal += projectTotal;
+      }
+    });
+
+    // Add grand total if there were any projects with revenues
+    if (grandTotal > 0) {
+      csvData.push(["GRAND TOTAL", grandTotal, "", ""]);
+    }
+
     return csvData;
   };
 
@@ -370,7 +667,6 @@ const RevenueReports = () => {
           </option>
           <option value="Payments per Client">Payments per Client</option>
           <option value="Revenue per Project">Revenue per Project</option>
-          <option value="Overdue Payments">Overdue Payments</option>
         </select>
 
         {selectedReport && (

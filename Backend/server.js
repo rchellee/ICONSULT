@@ -2827,43 +2827,50 @@ app.get("/tasksForEmployee/:employeeId", (req, res) => {
 });
 //financial reports
 app.get("/payment-status", (req, res) => {
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
+  const paidTasksQuery = `
+    SELECT 
+      t.id AS task_id,
+      t.task_name,
+      t.amount,
+      t.transaction_id,
+      t.mode_of_payment,
+      t.date_paid
+    FROM tasks t
+    WHERE t.payment_status = 'Paid'
+  `;
 
-  const sql =
-    "SELECT payment_status, amount, DATE(date_paid) AS paid_date FROM tasks";
+  const pendingTasksQuery = `
+    SELECT 
+      t.id AS task_id,
+      t.task_name,
+      t.amount,
+      t.due_date
+    FROM tasks t
+    WHERE t.payment_status != 'Paid' OR t.payment_status IS NULL
+  `;
 
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error fetching payment status data:", err);
-      return res.status(500).json({ message: "Internal server error" });
+  db.query(paidTasksQuery, (paidErr, paidResults) => {
+    if (paidErr) {
+      console.error("Error fetching paid tasks:", paidErr);
+      return res.status(500).json({ message: "Error fetching paid tasks" });
     }
 
-    // Calculate total received and pending payments
-    let receivedPayments = 0;
-    let revenueThisMonth = 0;
-    let pendingPayments = 0;
-
-    results.forEach((task) => {
-      if (task.payment_status === "Paid") {
-        receivedPayments += task.amount;
-        // Check if payment is from the current month
-        const taskDate = new Date(task.paid_date);
-        if (
-          taskDate.getMonth() + 1 === currentMonth &&
-          taskDate.getFullYear() === currentYear
-        ) {
-          revenueThisMonth += task.amount;
-        }
-      } else if (task.payment_status === "Not Paid") {
-        pendingPayments += task.amount;
+    db.query(pendingTasksQuery, (pendingErr, pendingResults) => {
+      if (pendingErr) {
+        console.error("Error fetching pending tasks:", pendingErr);
+        return res.status(500).json({ message: "Error fetching pending tasks" });
       }
-    });
 
-    res.status(200).json({
-      receivedPayments,
-      revenueThisMonth,
-      pendingPayments,
+      // Calculate totals
+      const receivedPayments = paidResults.reduce((sum, task) => sum + task.amount, 0);
+      const pendingPayments = pendingResults.reduce((sum, task) => sum + task.amount, 0);
+
+      res.status(200).json({
+        paidTasks: paidResults,
+        pendingTasks: pendingResults,
+        receivedPayments,
+        pendingPayments
+      });
     });
   });
 });
