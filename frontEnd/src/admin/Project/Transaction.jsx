@@ -408,6 +408,50 @@ const Transaction = ({ projectId }) => {
     }
     setExpandedTasks(newExpandedTasks);
   };
+  const exportToCSV = () => {
+    if (transactions.length === 0) {
+      alert("No data available for export.");
+      return;
+    }
+
+    const headers = [
+      "Task Name",
+      "Due Date",
+      "Assigned Employee",
+      "Status",
+      "Date Paid",
+      "Amount",
+    ];
+
+    const csvRows = [headers.join(",")];
+
+    transactions.forEach((transaction) => {
+      const row = [
+        transaction.expenses,
+        transaction.dueDate ? formatDate(transaction.dueDate) : "--",
+        employees[transaction.assignedEmployee] || "Unassigned",
+        transaction.status,
+        transaction.date_paid ? formatDate(transaction.date_paid) : "--",
+        formatAmount(transaction.amount),
+      ];
+      csvRows.push(row.join(","));
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+
+    // Use projectName for the filename, with fallback to "transactions" if projectName is empty
+    const filename = projectName
+      ? `${projectName.replace(/[^a-z0-9]/gi, "_")}_transactions.csv`
+      : "transactions.csv";
+    link.setAttribute("download", filename);
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   return (
     <div>
       {/* Header with Project ID */}
@@ -475,7 +519,9 @@ const Transaction = ({ projectId }) => {
 
           {/* Right-aligned buttons */}
           <div className="button-row">
-            <button className="export-task-button">Export</button>
+            <button onClick={exportToCSV} className="export-task-button">
+              Export
+            </button>
             <div className="status-task" ref={statusDropdownRef}>
               <button
                 className="status-task-button"
