@@ -27,6 +27,11 @@ const TaskCreateForm = () => {
   const [employees, setEmployees] = useState([]);
   const [projectDetails, setProjectDetails] = useState(null);
 
+  const validateTransactionId = (id) => {
+    // Check if the ID contains only letters and numbers
+    return /^[A-Za-z0-9]*$/.test(id);
+  };
+
   useEffect(() => {
     if (projectId) {
       axios
@@ -79,6 +84,13 @@ const TaskCreateForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validate Transaction ID if it's provided
+    if (transactionId && !validateTransactionId(transactionId)) {
+      alert(
+        "Transaction ID can only contain letters and numbers (no special characters)"
+      );
+      return;
+    }
     if (
       (transactionId && (!modeOfPayment || !paidDate)) ||
       (modeOfPayment && (!transactionId || !paidDate)) ||
@@ -282,7 +294,12 @@ const TaskCreateForm = () => {
                     type="text"
                     placeholder="Enter"
                     value={transactionId}
-                    onChange={(e) => setTransactionId(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (validateTransactionId(value)) {
+                        setTransactionId(value.toUpperCase());
+                      }
+                    }}
                   />
                 </div>
                 <div className="form-modal-field">
