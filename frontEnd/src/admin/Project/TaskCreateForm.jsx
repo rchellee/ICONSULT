@@ -5,6 +5,7 @@ import "./TaskCreate.css";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import { MdAddCircleOutline } from "react-icons/md";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const TaskCreateForm = () => {
@@ -159,7 +160,16 @@ const TaskCreateForm = () => {
       <Topbar />
       <Sidebar />
       <div className="task-create-form">
-        <h2>{taskToEdit ? "Update Task" : "Create Task"}</h2>
+        <div className="backkk">
+          <button
+            type="button"
+            className="back-satask"
+            onClick={() => navigate(-1)}
+          >
+            <IoArrowBackCircleOutline className="back-icontask" />
+          </button>
+          <h2>{taskToEdit ? "" : ""}</h2>
+        </div>
         <form onSubmit={handleSubmit}>
           {/* Task Details Section */}
           <div className="form-section">
@@ -301,9 +311,6 @@ const TaskCreateForm = () => {
 
           {/* Form Actions */}
           <div className="form-actions">
-            <button type="button" onClick={() => navigate(-1)}>
-              Back
-            </button>
             <button type="submit">{taskToEdit ? "Update" : "Create"}</button>
           </div>
         </form>

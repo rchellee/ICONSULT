@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { IoCreateOutline } from "react-icons/io5";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
+import { IoChevronForward } from "react-icons/io5";
 import TaskCreateForm from "./TaskCreateForm";
 import axios from "axios";
 import "./Transaction.css";
@@ -411,7 +412,11 @@ const Transaction = ({ projectId }) => {
     <div>
       {/* Header with Project ID */}
       <div className="header-container">
-        <h3 className="project-id">Project:{projectName}</h3>
+        <h3 className="project-id">
+          <span className="project-name">MyProject</span>
+          <IoChevronForward className="chevron-icon" />
+          <span className="project-name">{projectName}</span>
+        </h3>
         <button
           className="create-task-button"
           onClick={navigateToCreateTask} // Use the navigate function
@@ -470,10 +475,10 @@ const Transaction = ({ projectId }) => {
 
           {/* Right-aligned buttons */}
           <div className="button-row">
-            <button className="export-button">Export</button>
+            <button className="export-task-button">Export</button>
             <div className="status-task" ref={statusDropdownRef}>
               <button
-                className="status-button"
+                className="status-task-button"
                 onClick={() => toggleDropdown("status")}
               >
                 Status
@@ -488,13 +493,13 @@ const Transaction = ({ projectId }) => {
             </div>
             <div className="sort-container" ref={sortDropdownRef}>
               <button
-                className="sort-button"
+                className="sort-task-button"
                 onClick={() => toggleDropdown("sort")}
               >
                 Sort
               </button>
               {openDropdown === "sort" && (
-                <div className="sort-dropdown">
+                <div className="sort-task-dropdown">
                   <button>Name</button>
                   <button>Ascending</button>
                   <button>Descending</button>
@@ -532,7 +537,7 @@ const Transaction = ({ projectId }) => {
                     <td>{transaction.expenses}</td>
                     <td>
                       <button
-                        className="dropdown-toggle"
+                        className="misc-dropdown"
                         onClick={() => toggleTaskDetails(index)}
                       >
                         {expandedTasks.has(index) ? "▼" : "▶"} Miscellaneous

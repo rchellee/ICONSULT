@@ -7,6 +7,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
+import emptyFolder from "../../assets/empty-folder.png";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
@@ -114,35 +115,6 @@ const FilesTab = ({ projectId }) => {
       }
     } catch (error) {
       console.error("Error deleting file record:", error);
-    }
-  };
-
-  const handleRename = async (fileId, currentName) => {
-    const newName = prompt("Enter new file name:", currentName);
-    if (newName && newName !== currentName) {
-      try {
-        const response = await fetch(`http://localhost:8081/files/${fileId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ original_name: newName }),
-        });
-
-        if (response.ok) {
-          setFiles((prevFiles) =>
-            prevFiles.map((file) =>
-              file.id === fileId ? { ...file, original_name: newName } : file
-            )
-          );
-          console.log("File renamed successfully.");
-        } else {
-          const errorData = await response.json();
-          console.error("Error renaming file:", errorData.message);
-        }
-      } catch (error) {
-        console.error("Error renaming file:", error);
-      }
     }
   };
 
@@ -302,7 +274,14 @@ const FilesTab = ({ projectId }) => {
         )}
 
         {files.length === 0 && (
-          <div className="no-files-message">No files uploaded yet.</div>
+          <div className="no-files-container">
+            <img
+              src={emptyFolder}
+              alt="Empty folder"
+              className="empty-folder-image"
+            />
+            <div className="no-files-message">No files uploaded yet.</div>
+          </div>
         )}
       </div>
     </div>

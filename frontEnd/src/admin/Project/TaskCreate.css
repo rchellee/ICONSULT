@@ -1,12 +1,13 @@
-
-
 .task-create-form {
-  margin-left:175px;
+  margin: 20px auto;
   background: white;
   padding: 20px;
-  border-radius: 8px;
+  border: none;
   width: 1000px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  position: relative;
+  left: 50px;
+  top: auto;
 }
 
 .task-create-form h2 {
@@ -61,11 +62,11 @@
 .form-modal-field select {
   width: 100%;
   padding: 6px 8px;
-  font-size: 14px; 
+  font-size: 14px;
   border-radius: 10px;
   border: 1px solid #ccc;
   box-sizing: border-box;
-  height: 40px; 
+  height: 40px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -83,14 +84,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none; 
+  outline: none;
 }
 
 .add-taskfee-button:hover {
- 
   color: #2c3a4d;
-  outline: none; 
-  background: none; 
+  outline: none;
+  background: none;
 }
 
 .add-taskfee-button:focus {
@@ -98,7 +98,7 @@
 }
 
 .add-taskfee-button svg {
-  margin-top: -10px; 
+  margin-top: -10px;
 }
 
 .add-taskfee-btn {
@@ -112,14 +112,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none; 
+  outline: none;
 }
 
 .add-taskfee-btn:hover {
- 
   color: #2c3a4d;
-  outline: none; 
-  background: none; 
+  outline: none;
+  background: none;
 }
 
 .add-taskfee-btn:focus {
@@ -127,7 +126,7 @@
 }
 
 .add-taskfee-btn svg {
-  margin-top: -10px; 
+  margin-top: -10px;
 }
 
 /*misc button*/
@@ -143,14 +142,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  outline: none; 
+  outline: none;
 }
 
 .add-misc-button:hover {
- 
   color: #2c3a4d;
-  outline: none; 
-  background: none; 
+  outline: none;
+  background: none;
 }
 
 .add-misc-button:focus {
@@ -158,25 +156,21 @@
 }
 
 .add-misc-button svg {
-  margin-top: -10px; 
+  margin-top: -10px;
 }
 
-
-
 .misc-list-container {
-  max-height: 150px; 
-  overflow-y: auto; 
+  max-height: 150px;
+  overflow-y: auto;
   padding: 5px 5px 20px 5px;
   border: none;
   margin-bottom: 10px;
-
 }
 
 .misc-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px; 
-  
+  gap: 10px;
 }
 
 .misc-item {
@@ -188,16 +182,13 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.9rem;
-  
 }
 
 .misc-details {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 4px;
 }
-
-
 
 .misc-name {
   font-weight: bold;
@@ -207,13 +198,12 @@
   color: #555;
 }
 
-
 /*remove button*/
 .remove-misc-button {
   background: none;
   border: none;
   cursor: pointer;
-  color: #ff4d4d; 
+  color: #ff4d4d;
   margin-left: 10px;
   display: flex;
   align-items: center;
@@ -221,29 +211,26 @@
 }
 
 .remove-misc-button:hover {
-  color: #cc0000; 
+  color: #cc0000;
 }
 
-
 .remove-misc-button {
-  background: none; 
-  border: none; /
-  cursor: pointer; 
-  color: #ff4d4d; 
-  padding: 0; 
-  margin: 0; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4d;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: auto; /* Let the button shrink to the size of the icon */
   flex: none; /* Prevent the button from growing */
 }
 
 .remove-misc-button:hover {
-  color: #cc0000; 
+  color: #cc0000;
 }
-
-
 
 .form-actions {
   display: flex;
@@ -265,7 +252,7 @@
 }
 
 .form-actions button[type="button"]:hover {
-  background: #e0e0e0; 
+  background: #e0e0e0;
 }
 
 .form-actions button[type="submit"] {
@@ -274,16 +261,16 @@
 }
 
 .form-actions button[type="submit"]:hover {
-  background: #b0c2f8; 
+  background: #b0c2f8;
 }
 
 input[type="number"] {
-  -moz-appearance: textfield; 
+  -moz-appearance: textfield;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none; 
+  -webkit-appearance: none;
   margin: 0;
 }
 
@@ -313,21 +300,64 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .remove-misc-button {
-  background: none; 
-  border: none; /
-  cursor: pointer; 
-  color: #ff4d4d; 
-  padding: 0; 
-  margin: 0; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ff4d4d;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: auto; /* Let the button shrink to the size of the icon */
   flex: none; /* Prevent the button from growing */
 }
 
 .remove-misc-button:hover {
-  color: #cc0000; 
+  color: #cc0000;
 }
 
+/* Form Header Styles */
+.backkk {
+  position: relative;
+  top: auto;
+  left: -170px;
+  margin-left: 100px;
+}
 
+.back-satask {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  color: #5d6d90;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.back-satask:hover {
+  background-color: #f5f5f5;
+}
+
+.back-icontask {
+  margin-right: 8px;
+  font-size: 2.5rem;
+}
+
+.form-title {
+  flex-grow: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 1.5rem;
+  color: #5d6d90;
+}
+
+/* Adjust form actions to only have submit button */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
