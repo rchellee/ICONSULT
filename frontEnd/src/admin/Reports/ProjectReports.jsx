@@ -435,7 +435,6 @@ const ProjectReports = () => {
           <option value="Overdue Projects">Overdue Projects</option>
           <option value="Projects per Client">Projects per Client</option>
         </select>
-
         {selectedReport && (
           <>
             <CSVLink
@@ -453,7 +452,6 @@ const ProjectReports = () => {
           </>
         )}
       </div>
-
       {/* Filters */}
       <div className="project-filter-container">
         <select
@@ -482,7 +480,6 @@ const ProjectReports = () => {
           ))}
         </select>
       </div>
-
       {/* Summary Section */}
       <div className="summary-container">
         <div className="summary-box">
@@ -490,7 +487,6 @@ const ProjectReports = () => {
           <p className="summary-value">{totalProjects}</p>
         </div>
       </div>
-
       <div className="project-charts-container">
         {/* Projects by Status */}
         <div className="project-chart-box">
@@ -517,35 +513,34 @@ const ProjectReports = () => {
             <Bar dataKey="daysDelayed" fill="#FF0000" name="Days Delayed" />
           </BarChart>
         </div>
-
-        <div className="project-charts-container">
-          <div className="chart-card">
-            <h3>Projects per Client</h3>
-            <LineChart
-              width={1300}
-              height={300}
-              data={projectsByClient}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="name"
-                angle={-15}
-                textAnchor="end"
-                interval={0}
-                height={60}
-              />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#8884d8"
-                name="Number of projects"
-              />
-            </LineChart>
-          </div>
+      </div>
+      <div className="project-charts-container">
+        <div className="chart-card">
+          <h3>Projects per Client</h3>
+          <LineChart
+            width={1300}
+            height={300}
+            data={projectsByClient}
+            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="name"
+              angle={-15}
+              textAnchor="end"
+              interval={0}
+              height={60}
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="#8884d8"
+              name="Number of projects"
+            />
+          </LineChart>
         </div>
       </div>
     </div>

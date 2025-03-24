@@ -1223,6 +1223,7 @@ app.delete("/project/:id", (req, res) => {
     }
   });
 });
+
 app.put("/update-total-amount", (req, res) => {
   const { projectId, totalAmount } = req.body;
 
@@ -2387,7 +2388,6 @@ app.post("/reviews", (req, res) => {
     }
   );
 });
-
 app.get("/reviews", (req, res) => {
   const query = "SELECT * FROM reviews";
 
@@ -2677,7 +2677,6 @@ app.get("/appointmentYears", (req, res) => {
     res.json(data.map((row) => row.year)); // Send an array of years
   });
 });
-
 //clients
 app.get("/clientsReports", (req, res) => {
   const sql = `
@@ -2784,6 +2783,163 @@ app.get("/tasksForEmployee/:employeeId", (req, res) => {
   db.query(sql, [employeeId], (err, result) => {
     if (err) return res.json({ error: "Error fetching tasks", details: err });
     res.json(result);
+  });
+});
+//financial reports
+app.get("/payment-status", (req, res) => {
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+
+  const sql =
+    "SELECT payment_status, amount, DATE(date_paid) AS paid_date FROM tasks";
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching payment status data:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    // Calculate total received and pending payments
+    let receivedPayments = 0;
+    let revenueThisMonth = 0;
+    let pendingPayments = 0;
+
+    results.forEach((task) => {
+      if (task.payment_status === "Paid") {
+        receivedPayments += task.amount;
+        // Check if payment is from the current month
+        const taskDate = new Date(task.paid_date);
+        if (
+          taskDate.getMonth() + 1 === currentMonth &&
+          taskDate.getFullYear() === currentYear
+        ) {
+          revenueThisMonth += task.amount;
+        }
+      } else if (task.payment_status === "Not Paid") {
+        pendingPayments += task.amount;
+      }
+    });
+
+    res.status(200).json({
+      receivedPayments,
+      revenueThisMonth,
+      pendingPayments,
+    });
+  });
+});
+app.get("/overdue-payments", (req, res) => {
+  const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+
+  const sql = `
+    SELECT task_name AS name, due_date, amount
+    FROM tasks
+    WHERE payment_status = 'Not Paid' AND due_date < ?
+    ORDER BY due_date
+  `;
+
+  db.query(sql, [currentDate], (err, results) => {
+    if (err) {
+      console.error("Error fetching overdue payments:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/total-revenue-per-project", (req, res) => {
+  const { paymentStatus } = req.query;
+
+  let sql = `
+    SELECT 
+      p.projectName AS project_name, 
+      SUM(t.amount) AS total_revenue 
+    FROM tasks t
+    JOIN project p ON t.project_id = p.id
+  `;
+
+  if (paymentStatus) {
+    sql += ` WHERE t.payment_status = ?`;
+  }
+
+  sql += ` GROUP BY p.projectName`;
+
+  db.query(sql, [paymentStatus], (err, results) => {
+    if (err) {
+      console.error("Error fetching total revenue per project:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/projects", (req, res) => {
+  const sql = `
+    SELECT 
+      id,
+      projectName,
+      total_amount,
+      paid_amount,
+      (total_amount - paid_amount) AS remaining
+    FROM project
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching projects:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/payment-received-vs-remaining", (req, res) => {
+  const sql = `
+    SELECT 
+      p.projectName AS name,
+      p.paid_amount AS received,
+      (p.total_amount - p.paid_amount) AS remaining
+    FROM project p
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching payment received vs remaining data:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/payments-per-client", (req, res) => {
+  const { year, month } = req.query;
+
+  let sql = `
+    SELECT 
+      payer_name AS name,
+      SUM(amount) AS total_amount
+    FROM payments
+  `;
+
+  // Add filters for year and month
+  if (year !== "All") {
+    sql += ` WHERE YEAR(date_paid) = ${year}`;
+  }
+  if (month !== "All") {
+    sql +=
+      year !== "All"
+        ? ` AND MONTH(date_paid) = ${months.indexOf(month) + 1}`
+        : ` WHERE MONTH(date_paid) = ${months.indexOf(month) + 1}`;
+  }
+
+  sql += ` GROUP BY payer_name`;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments per client:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
   });
 });
 
