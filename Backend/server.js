@@ -1903,6 +1903,27 @@ app.post("/payments/bulk", (req, res) => {
       res.status(500).json({ error: "Error processing payments" });
     });
 });
+// Clean up duplicate payments (keep the most recent one)
+app.post("/payments/clean-duplicates", (req, res) => {
+  const query = `
+    DELETE t1 FROM payments t1
+    INNER JOIN payments t2 
+    WHERE 
+      t1.id < t2.id AND 
+      t1.task_id = t2.task_id
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error("Error cleaning duplicates:", err);
+      return res.status(500).json({ error: "Error cleaning duplicates" });
+    }
+    res.status(200).json({
+      message: "Duplicate payments cleaned successfully",
+      affectedRows: result.affectedRows
+    });
+  });
+});
 // Fetch all payments sorted by date_paid
 app.get("/paymentLedger", (req, res) => {
   const query = `

@@ -18,6 +18,8 @@ const AccountingLedger = ({
   useEffect(() => {
     const fetchAndSavePaidTasks = async () => {
       try {
+        // First clean up any existing duplicates
+        await axios.post("http://localhost:8081/payments/clean-duplicates");
         // Fetch paid tasks
         const response = await axios.get("http://localhost:8081/paid-tasks");
         const paidTasks = response.data;
