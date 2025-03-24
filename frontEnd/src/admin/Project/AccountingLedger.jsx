@@ -113,7 +113,7 @@ const AccountingLedger = ({
     <div className="accounting-ledger">
       
       <div className="sort-ledger">
-        <label>Sort By: </label>
+        {/*<label>Sort By: </label>*/}
           <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
