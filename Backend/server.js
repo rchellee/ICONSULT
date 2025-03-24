@@ -1668,6 +1668,25 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+// Add this to your server code
+app.get("/appointments/client-check", (req, res) => {
+  const { clientId, date } = req.query;
+
+  const sql = `
+    SELECT COUNT(*) as appointmentCount 
+    FROM appointments 
+    WHERE client_id = ? AND date = ?
+  `;
+
+  db.query(sql, [clientId, date], (err, results) => {
+    if (err) {
+      console.error("Error checking client appointments:", err);
+      return res.status(500).json({ error: "Error checking appointments" });
+    }
+    
+    res.json({ hasAppointment: results[0].appointmentCount > 0 });
+  });
+});
 app.get("/appointments-details/:clientId", (req, res) => {
   const { clientId } = req.params;
 
