@@ -1,15 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
+import Payment from "./payment";
 
-const ClientTask = ({ tasks }) => {
+const ClientTask = ({ tasks, projectId }) => {
+  const [isPaymentOverlayOpen, setIsPaymentOverlayOpen] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState({});
+
   const formatDueDate = (date) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(date).toLocaleDateString("en-US", options);
   };
 
-  const handlePay = (taskId) => {
-    console.log(`Paying for task with ID: ${taskId}`);
-    alert(`Payment of ₱100.00 for Task ID ${taskId} is being processed.`);
-    
+  const handlePay = (taskId, amount) => {
+    console.log("Task ID being passed:", taskId);
+    setPaymentDetails({ taskId, amount, projectId });
+    setIsPaymentOverlayOpen(true);
+  };
+
+  const closePaymentOverlay = () => {
+    setIsPaymentOverlayOpen(false);
   };
 
   return (
@@ -18,26 +26,40 @@ const ClientTask = ({ tasks }) => {
         <thead>
           <tr>
             <th>Task Name</th>
-            <th>Consultancy Fee</th>
+            <th>Fee</th>
             <th>Due Date</th>
             <th>Status</th>
             <th>Pay</th>
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => (
-            <tr key={task.task_id}>
+          {tasks.map((task, index) => (
+            <tr key={task.task_id || index}>
               <td>{task.task_name}</td>
-              <td>{task.task_fee}</td>
+              <td>₱ {task.amount}.00</td>
               <td>{formatDueDate(task.due_date)}</td>
-              <td>{task.status}</td>
+              <td>{task.payment_status}</td>
               <td>
-                <button onClick={() => handlePay(task.task_id)}>Pay</button>
+                <button onClick={() => handlePay(task.id, task.amount)}>
+                  Pay
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {isPaymentOverlayOpen && (
+        <div className="overlay">
+          <div className="overlay-content">
+            <Payment
+              taskId={paymentDetails.taskId}
+              amount={paymentDetails.amount}
+              projectId={paymentDetails.projectId}
+              onClose={() => setIsPaymentOverlayOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

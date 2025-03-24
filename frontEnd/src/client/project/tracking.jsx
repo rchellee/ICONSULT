@@ -1,21 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { SearchContext } from "../../components/SearchProvider";
 import { useParams, useLocation } from "react-router-dom";
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaPlus,
-  FaFolder,
-  FaFile,
-  FaHome,
-} from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../sidebar";
 import ProjectOverview from "./ProjectOverview";
 import "./tracking.css";
 import Files from "./Files";
 import Topbar from "../Topbar";
-import ClientTask from "./ClientTask"; // Import the new ClientTask component
+import ClientTask from "./ClientTask";
 import axios from "axios";
 
 function Tracking() {
@@ -27,12 +18,8 @@ function Tracking() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
-  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
-  const [folderName, setFolderName] = useState("");
   const { searchTerm } = useContext(SearchContext);
-  const [folders, setFolders] = useState([]);
-  const [tasks, setTasks] = useState([]); 
-  const navigate = useNavigate();
+  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     // Fetch tasks for the specific project
@@ -43,7 +30,7 @@ function Tracking() {
       .then((response) => {
         const tasksWithFixedFee = response.data.tasks.map((task) => ({
           ...task,
-          task_fee: "₱100.00", 
+          task_fee: "₱100.00",
         }));
         setTasks(tasksWithFixedFee || []);
         setIsLoading(false);
@@ -73,31 +60,6 @@ function Tracking() {
     }
   };
 
-  const handleNewFolderClick = () => {
-    setShowNewFolderInput(true);
-  };
-
-  const handleFolderNameChange = (e) => {
-    setFolderName(e.target.value);
-  };
-
-  const handleCancelCreate = () => {
-    setFolderName("");
-    setShowNewFolderInput(false);
-  };
-
-  const handleCreateFolder = () => {
-    if (folderName) {
-      const newFolder = {
-        name: folderName,
-        modifiedDate: new Date().toLocaleDateString(),
-        modifiedBy: "Client",
-        duedate: new Date().toLocaleDateString(), 
-      };
-      setFolders([...folders, newFolder]); 
-      handleCancelCreate();
-    }
-  };
 
   return (
     <div>

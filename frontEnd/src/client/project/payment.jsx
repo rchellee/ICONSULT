@@ -1,11 +1,8 @@
 import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import Sidebar from "../sidebar";
-import Topbar from "../Topbar";
+import { useNavigate } from "react-router-dom";
 
-const Payment = ({ projectId, amount, onClose }) => {
+const Payment = ({ taskId, amount, projectId, onClose }) => {
   const navigate = useNavigate();
-  const { state } = useLocation();
 
   useEffect(() => {
     if (!document.getElementById("paypal-sdk")) {
@@ -28,27 +25,34 @@ const Payment = ({ projectId, amount, onClose }) => {
     };
   }, []);
 
-  const updatePaymentStatus = async (projectId) => {
+  const updateTaskPaymentStatus = async (taskId, transactionId) => {
     try {
       const response = await fetch(
-        `http://localhost:8081/project/update-payment-status/${projectId}`,
+        `http://localhost:8081/update-payment-status/${taskId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ paymentStatus: "Partial Payment" }),
+          body: JSON.stringify({
+            transaction_id: transactionId,
+            mode_of_payment: "Online Payment",
+            payment_status: "Paid",
+            status: "Completed",
+            date_paid: new Date().toISOString().split("T")[0],
+            actual_finish: new Date().toISOString().split("T")[0], // Current date
+          }),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update payment status.");
+        throw new Error("Failed to update task payment status.");
       }
 
-      console.log("Payment status updated to 'Partial Payment'.");
+      console.log("Task payment status updated successfully.");
     } catch (error) {
-      console.error("Error updating payment status:", error);
-      alert("Error updating payment status. Please try again.");
+      console.error("Error updating task payment status:", error);
+      alert("Error updating task payment status. Please try again.");
     }
   };
 
@@ -80,7 +84,7 @@ const Payment = ({ projectId, amount, onClose }) => {
               const payeeName =
                 payeeDetails?.business_name ||
                 payeeDetails?.email_address ||
-                "Unknown Merchant Name";
+                clientId;
 
               const transactionDetails = {
                 transactionId: details.id,
@@ -96,9 +100,12 @@ const Payment = ({ projectId, amount, onClose }) => {
                 payeeName: payeeName,
                 clientId,
                 projectId,
+                taskId,
+                modeOfPayment: "Online Payment",
+                datePaid: new Date().toISOString(),
               };
               savePaymentDetails(transactionDetails);
-              updatePaymentStatus(projectId);
+              updateTaskPaymentStatus(taskId, details.id);
 
               console.log("Transaction Details:", details);
               alert(`Transaction completed by ${transactionDetails.payerName}`);

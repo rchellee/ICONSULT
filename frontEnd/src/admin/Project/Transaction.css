@@ -8,8 +8,14 @@
 }
 
 .project-id {
-  margin: 0; 
-  color: #333; 
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.past-due {
+  color: red; /* Change this to your desired color */
+  font-weight: bold; /* Optional: Make the text bold */
 }
 
 /* Create Button */
@@ -47,105 +53,178 @@
   font-weight: bold; 
 }
 
+
+
+
+
+
+
+
 /* Details Container */
 .details-container {
-  margin-left: 125px; 
-  margin-right: 125px; 
-  margin-bottom: 20px; 
+  margin-left: 125px;
+  margin-right: 125px;
+  margin-bottom: 20px;
   position: relative;
 }
 
 .details-content {
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
+  justify-content: space-between; /* Align children to the edges */
+  align-items: center; /* Vertically center children */
 }
 
 .detail-row {
   display: flex;
-  gap: 50px; 
-  align-items: center; 
+  align-items: center;
+  gap: 20px; /* Adjust spacing between elements */
+  flex-grow: 1; /* Allow this row to take up remaining space */
 }
 
-.detail-item {
+.detail-item,
+.progress-container,
+.status-task,
+.sort-container {
   display: flex;
   align-items: center;
-  gap: 5px; 
 }
 
 .detail-item.partial-payment,
 .detail-item.current-task,
 .detail-item.past-dues,
 .detail-item.progress {
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 .detail-label {
-  color: #333; 
+  color: #333;
 }
 
 .detail-value {
-  color: #555; 
+  color: #555;
 }
 
 /* Progress Container */
 .progress-container {
   display: flex;
-  align-items: center; 
+  align-items: center;
   gap: 10px;
 }
 
 .progress-text {
-  color: #333; 
-  font-weight: bold; 
+  color: #333;
+  font-weight: bold;
 }
 
 .progress-bar {
-  width: 150px; 
+  width: 150px;
   height: 10px;
   background-color: #e0e0e0;
-  border-radius: 5px; 
-  overflow: hidden; 
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #4caf50; 
-  transition: width 0.3s ease; 
+  background-color: #7d96e4;
+  transition: width 0.3s ease;
 }
 
 /* Button Row */
 .button-row {
   display: flex;
-  gap: 10px; 
-  position: absolute;
-  margin-right: auto;
-  margin-top: 100px;
-  top: -40px;
-  right: 0;
-  
+  gap: 10px; /* Adjust spacing between buttons */
+  align-items: center; /* Vertically center buttons */
 }
 
-.button-row .export-button,
-.button-row .status-button,
-.button-row .sort-button {
-  background-color: transparent;
+.export-task-button,
+.sort-task-button,
+.status-task-button {
   padding: 8px 16px;
-  border: none; 
-  border-radius: 4px;
-  cursor: pointer; 
-  font-size: 14px; 
-  color: #3b4f67; 
-  transition: color 0.3s ease, background-color 0.3s ease; 
-  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  color: #3b4f67;
+  background: none;
 }
 
-/* Hover effect */
-.button-row .export-button:hover,
-.button-row .status-button:hover,
-.button-row .sort-button:hover {
-  color: #363636; 
-  background-color: #e1e1e1;
+.export-task-button:hover {
+  background-color: white;
+  color: rgb(48, 148, 255);
+  border: none;
+}
+
+.sort-task-button:hover {
+  background-color: white;
+  color: rgb(48, 148, 255);
+  border: none;
+}
+
+.status-task-button:hover {
+  background-color: white;
+  color: rgb(48, 148, 255);
+  border: none;
+}
+
+.dropdown-task,
+.sort-task-dropdown {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  z-index: 10;
+  margin-top: 5px;
+}
+
+.dropdown-task button,
+.sort-task-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sort-task-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.sort-task-dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+
+
+.misc-dropdown {
+  color: #333; /* Dark text color */
+  font-size: 16px;
+  
+  border: none;
+  background: none; /* No background color */
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.misc-dropdown:hover {
+  background-color: #f0f0f0;/* Slightly darker text on hover */
+}
+
+.misc-dropdown:active {
+  transform: scale(0.98); /* Slightly shrink when clicked */
+}
+
+.misc-dropdown:focus {
+  outline: none;
 }
 
 
@@ -183,11 +262,14 @@
   -webkit-overflow-scrolling: touch; 
   margin-top: 40px;
   margin-left: 125px; 
-  margin-right: 125px; 
+  margin-right: 205px; 
   border-radius: 10px;
   background-color: transparent; 
   padding: 10px; 
   border: none;
+  justify-content: center;
+  width: 90%;
+  
 }
 
 /* Webkit Custom Scrollbar */
@@ -218,6 +300,7 @@
   border-collapse: collapse; 
   background-color: transparent; 
   border: none;
+  margin: 0 auto; 
 }
 
 .transaction-table th,

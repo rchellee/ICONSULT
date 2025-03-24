@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 20, 2025 at 12:39 PM
+-- Generation Time: Mar 23, 2025 at 06:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -70,7 +70,7 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `date`, `time`, `name`, `email`, `consultationType`, `additionalInfo`, `platform`, `created_at`, `client_id`, `contact`, `companyName`, `reminder`) VALUES
-(2, '2024-11-20', '08:00 AM', 'rITCHELLE RUERAS', 'ritchellerueras@gmail.com', 'Employee Benefits and Compliance Advisory', 'HAKDOG', 'In-Person', '2024-11-17 06:29:33', 0, NULL, NULL, NULL),
+(2, '2026-11-20', '08:00 AM', 'rITCHELLE RUERAS', 'ritchellerueras@gmail.com', 'Employee Benefits and Compliance Advisory', 'HAKDOG', 'In-Person', '2024-11-17 06:29:33', 6, NULL, NULL, NULL),
 (4, '2024-11-22', '02:00 PM', 'CHELLE', 'ruerasritchelle@gmail.com', 'Risk Management Consultation', 'RISKY', 'Video Call', '2024-11-17 06:46:26', 0, NULL, NULL, NULL),
 (5, '2024-11-19', '04:00 PM', 'MONIK', 'ritchellerueras@gmail.com', 'Risk Management Consultation', 'RISKYYY', 'Video Call', '2024-11-17 06:55:32', 3, NULL, NULL, NULL),
 (6, '2025-01-09', '11:00 AM', 'CLARIEZA BAUTISTA', 'CLAIRE@gmail.com', 'Legal Advisory', 'hakdog', 'In-Person', '2024-11-17 07:05:42', 5, '09876543212', 'Bora', NULL),
@@ -110,7 +110,9 @@ INSERT INTO `appointments` (`id`, `date`, `time`, `name`, `email`, `consultation
 (53, '2025-01-31', '12:00 PM', 'Clarieza Baustista', 'clarieza@gmail.com', 'Financial Advisory', 'financing', 'Phone Call', '2025-01-14 20:39:50', 5, '09709573613', 'Beauty Parlor', '2025-01-15 12:00:00'),
 (54, '2025-01-23', '07:00 AM', 'Jane Smith', 'ruerasritchelle07@gmail.com', 'Strategic Planning Consultation', 'para saan', 'Google Meet', '2025-01-16 09:20:07', 2, '0923456890', 'Apple', '2025-01-16 17:30:00'),
 (55, '2025-01-23', '11:00 AM', 'TRISHIa SAN DIEGO', 'trishiasandiego24@gmail.com', 'Legal Advisory', 'PERMIT', 'In-Person', '2025-01-17 05:37:32', 32, '09666095399', 'COFFEE', '2025-01-17 13:45:00'),
-(56, '2025-01-23', '01:00 PM', 'TRISHIa SAN DIEGO', 'trishiasandiego24@gmail.com', 'Payroll System Setup Consultation', 'Payroll', 'In-Person', '2025-01-17 05:57:20', 32, '09666095399', 'COFFEE', '2025-01-17 14:00:00');
+(56, '2025-01-23', '01:00 PM', 'TRISHIa SAN DIEGO', 'trishiasandiego24@gmail.com', 'Payroll System Setup Consultation', 'Payroll', 'In-Person', '2025-01-17 05:57:20', 32, '09666095399', 'COFFEE', '2025-01-17 14:00:00'),
+(57, '2025-03-13', '08:00 AM', 'Monique Cabigting', 'ritchellerueras@gmail.com', 'Strategic Planning Consultation', 'strategy', 'In-Person', '2025-03-04 03:18:28', 4, '098765432', 'Vape Shop', '2025-03-04 11:30:00'),
+(58, '2025-03-18', '12:00 PM', 'Clarieza Baustista', 'clarieza@gmail.com', 'Corporate Governance Review', 'Review', 'Video Call', '2025-03-04 03:32:06', 5, '09709573613', 'Beauty Parlor', '2025-03-04 11:45:00');
 
 -- --------------------------------------------------------
 
@@ -149,7 +151,11 @@ INSERT INTO `availability` (`id`, `start_time`, `end_time`, `date_created`, `dat
 (33, '10:00 AM', '01:00 PM', '2025-01-14 03:21:22', '2025-01-21'),
 (34, '11:00 AM', '05:00 PM', '2025-01-16 06:11:13', '2025-01-18'),
 (35, '09:00 AM', '02:00 PM', '2025-01-16 09:20:40', '2025-01-28'),
-(36, '09:00 AM', '03:00 PM', '2025-01-17 06:53:34', '2025-01-23');
+(36, '09:00 AM', '03:00 PM', '2025-01-17 06:53:34', '2025-01-23'),
+(37, '07:00 AM', '07:00 PM', '2025-03-04 03:19:14', '2025-03-05'),
+(38, '08:00 AM', '06:00 PM', '2025-03-04 03:19:14', '2025-03-06'),
+(39, '09:00 AM', '04:00 PM', '2025-03-04 03:19:14', '2025-03-07'),
+(40, '11:00 AM', '02:00 PM', '2025-03-04 03:19:52', '2025-03-18');
 
 -- --------------------------------------------------------
 
@@ -185,8 +191,8 @@ CREATE TABLE `client` (
 --
 
 INSERT INTO `client` (`id`, `firstName`, `lastName`, `birthday`, `mobile_number`, `email_add`, `address`, `password`, `username`, `status`, `companyName`, `passwordChanged`, `created_at`, `age`, `nationality`, `city`, `postalCode`, `gender`, `companyPosition`, `companyContact`) VALUES
-(1, 'John Michael', 'Doe', '2024-03-28', '09123456789', 'john.doe@example.com', '1234 Main St, Cityville', '1wEr!rtya', 'john.doe12345', 'inactive', 'Apple Store', 1, '2025-01-07 14:17:44', 25, 'Filipino', 'Manila ', '1017', 'Male', 'CEO', '09666095399'),
-(2, 'Jane', 'Smith', '1985-08-15', '0923456890', 'ruerasritchelle07@gmail.com', '456 Elm St, Townsville', '12345', 'smith.jane', 'active', 'Apple', 1, '2025-01-07 14:17:44', 30, 'Filipino', 'Quezon city', '2325', 'Female', 'CEO', '09709573613'),
+(1, 'John Michael', 'Doe', '2024-03-28', '09123456789', 'john.doe@example.com', '1234 Main St, Cityville', '1wEr!rtya', 'john.doe12345', 'inactive', 'Apple Store', 1, '2025-03-01 14:17:44', 25, 'Filipino', 'Manila ', '1017', 'Male', 'CEO', '09666095399'),
+(2, 'Jane', 'Smith', '1985-08-15', '0923456890', 'ruerasritchelle07@gmail.com', '456 Elm St, Townsville', '12345', 'smith.jane', 'active', 'Apple', 1, '2024-01-07 14:17:44', 30, 'Filipino', 'Quezon city', '2325', 'Female', 'CEO', '09709573613'),
 (3, 'Ritchelle', 'Rueras', '2001-05-22', '09709573613', 'ritchellerueras@gmail.com', 'Surigao City', '1234', 'Rueras12345', 'inactive', 'TYESO', 1, '2025-01-07 14:17:44', 27, 'Filipino', 'Marikina City', '2790', 'Female', 'Secretary', '09056545560'),
 (4, 'Monique', 'Cabigting', '2005-06-07', '098765432', 'ritchellerueras@gmail.com', 'Santa Mesa', 'monik1234', 'Cabigting12345', 'active', 'Vape Shop', 1, '2025-01-07 14:17:44', 25, 'filipino', 'PAsig', '9098', 'Female', 'Manager', '09276524356'),
 (5, 'Clarieza', 'Baustista', '2024-10-01', '09709573613', 'clarieza@gmail.com', 'pasig city', 'Claire_bautista1', 'bautista.claireza', 'active', 'Beauty Parlor', 1, '2025-01-07 14:17:44', 29, 'Filipino', 'Paco', '1234', 'Female', 'Supervisor', '09666095399'),
@@ -303,9 +309,9 @@ INSERT INTO `employee` (`id`, `lastName`, `middleName`, `firstName`, `address`, 
 (6, 'ARANTE', 'ISABELLE', 'JULLIANA', 'QUEZON CITY', '09876543234', 'ritchellerueras@gmail.com', 'inactive', '2001-06-05', 23, 'female', 'CHIEF AUDIT EXECUTIVE', '2025-01-16 01:41:43'),
 (7, 'IGNACIO', 'SAN DIEGO', 'MARIA LOURDES', 'BALOT TONDO', '09709573613', 'ritchellerueras@gmail.com', 'active', '1983-12-23', 41, 'female', 'Chairman of the Board and Chief Executive Officer', '2025-01-12 14:33:27'),
 (8, 'MARIANO', 'SAN', 'MARIA KATRINA FAYE', 'PACO', '09709573613', 'ritchellerueras@gmail.com', 'active', '1997-06-17', 27, 'female', 'CHIEF OPERATING OFFICER', '2025-01-11 00:39:47'),
-(9, 'PEREIRA', 'RUERAS', 'KYLEE', '1151 I. DELOS REYES, METRO MANILA', '09709573613', 'ritchellerueras@gmail.com', 'active', '1993-02-16', 31, '', 'CHIEF AUDIT EXECUTIVE', '2025-01-16 01:01:25'),
+(9, 'PEREIRA', 'RUERAS', 'KYLEE', '1151 I. DELOS REYES, METRO MANILA', '09709573613', 'ritchellerueras@gmail.com', 'active', '1993-02-16', 31, 'male', 'CHIEF AUDIT EXECUTIVE', '2025-03-22 01:18:19'),
 (10, 'CENAS', 'T', 'ROSYL', '1151 I. DELOS REYES, METRO MANILA', '09709573613', 'ritchellerueras@gmail.com', 'inactive', '1993-06-16', 31, 'female', 'CHIEF OPERATING OFFICER', '2025-01-16 01:41:44'),
-(11, 'JAY', 'RUERAS', 'JEO', '1151 I. DELOS REYES, METRO MANILA', '09709573613', 'ritchellerueras@gmail.com', 'active', '2010-06-09', 14, '', 'CHAIRMAN OF THE BOARD AND CHIEF EXECUTIVE OFFICER', '2025-01-16 01:08:00'),
+(11, 'JAY', 'RUERAS', 'JEO', '1151 I. DELOS REYES, METRO MANILA', '09709573613', 'ritchellerueras@gmail.com', 'active', '2010-06-09', 14, 'male', 'CHAIRMAN OF THE BOARD AND CHIEF EXECUTIVE OFFICER', '2025-03-22 01:18:31'),
 (12, 'PEREIRA', 'RUERAS', 'LILIBETH', '', '09709573613', 'ruerasritchelle07@gmail.com', 'active', '2011-11-16', 13, 'female', 'INDEPENDENT AUDITOR', '2025-01-16 01:17:32');
 
 -- --------------------------------------------------------
@@ -418,7 +424,15 @@ INSERT INTO `notifications` (`id`, `title`, `description`, `timestamp`, `isRead`
 (54, 'New Payment Received', 'Client John Doe paid 1513.00 PHP.', '2025-01-15 07:35:38', 0, NULL, 'admin', 0),
 (55, 'Appointment Scheduled', 'Consultation scheduled for JANE SMITH on January 23, 2025 at 07:00 AM.', '2025-01-16 17:20:07', 0, 2, 'admin', 0),
 (56, 'Appointment Scheduled', 'Consultation scheduled for TRISHIA SAN DIEGO on January 23, 2025 at 11:00 AM.', '2025-01-17 13:37:32', 0, 32, 'admin', 0),
-(57, 'Appointment Scheduled', 'Consultation scheduled for TRISHIA SAN DIEGO on January 23, 2025 at 01:00 PM.', '2025-01-17 13:57:20', 0, 32, 'client', 1);
+(57, 'Appointment Scheduled', 'Consultation scheduled for TRISHIA SAN DIEGO on January 23, 2025 at 01:00 PM.', '2025-01-17 13:57:20', 0, 32, 'client', 1),
+(58, 'Appointment Scheduled', 'Consultation scheduled for MONIQUE CABIGTING on March 13, 2025 at 08:00 AM.', '2025-03-04 11:18:28', 0, 4, 'admin', 0),
+(59, 'Appointment Scheduled', 'Consultation scheduled for CLARIEZA BAUSTISTA on March 18, 2025 at 12:00 PM.', '2025-03-04 11:32:06', 0, 5, 'client', 0),
+(60, 'New Payment Received', 'Client John Doe paid 50.00 PHP. Transaction ID: 66X85016T12813506. Date Paid: 3/24/2025, 12:06:10 AM', '2025-03-23 16:06:10', 0, NULL, 'admin', 0),
+(61, 'New Payment Received', 'Client John Doe paid 50.00 PHP. Transaction ID: 9KR72063C46675900. Date Paid: 3/24/2025, 12:27:35 AM', '2025-03-23 16:27:36', 0, NULL, 'admin', 0),
+(62, 'New Payment Received', 'Client John Doe paid 50.00 PHP. Transaction ID: 9T464597GD914011Y. Date Paid: 3/24/2025, 12:48:07 AM', '2025-03-23 16:48:07', 0, NULL, 'admin', 0),
+(63, 'New Payment Received', 'Client John Doe paid 10.00 PHP. Transaction ID: 0CT28928EW225291C. Date Paid: 3/24/2025, 12:52:17 AM', '2025-03-23 16:52:17', 0, NULL, 'admin', 0),
+(64, 'New Payment Received', 'Client John Doe paid 50.00 PHP. Transaction ID: 0E9767292P723972V. Date Paid: 3/24/2025, 12:57:54 AM', '2025-03-23 16:57:55', 0, NULL, 'admin', 0),
+(65, 'New Payment Received', 'Client John Doe paid 2000.00 PHP. Transaction ID: 9W871926SY388451J. Date Paid: 3/24/2025, 1:00:37 AM', '2025-03-23 17:00:37', 0, NULL, 'admin', 1);
 
 -- --------------------------------------------------------
 
@@ -438,31 +452,33 @@ CREATE TABLE `payments` (
   `payee_name` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `client_id` int(11) DEFAULT NULL,
-  `project_id` int(11) DEFAULT NULL
+  `project_id` int(11) DEFAULT NULL,
+  `task_id` int(11) DEFAULT NULL,
+  `mode_of_payment` enum('Cash','Cheque','Online Payment') NOT NULL,
+  `date_paid` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `payments`
 --
 
-INSERT INTO `payments` (`id`, `transaction_id`, `payer_name`, `payer_email`, `amount`, `currency`, `payed_to_email`, `payee_merchant_id`, `payee_name`, `created_at`, `client_id`, `project_id`) VALUES
-(1, '82V683108H2375644', 'John Doe', 'sb-x2i47834694194@personal.example.com', 20.00, 'USD', 'Sharp Minds', NULL, NULL, '2024-12-18 12:01:36', NULL, NULL),
-(2, '44902679CF354034B', 'John Doe', 'sb-x2i47834694194@personal.example.com', 21.00, 'USD', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2024-12-18 12:14:45', NULL, NULL),
-(3, '29S25917Y89617702', 'John Doe', 'sb-x2i47834694194@personal.example.com', 15.00, 'USD', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2024-12-18 12:36:44', 3, NULL),
-(4, '09N39975HP337261B', 'John Doe', 'sb-x2i47834694194@personal.example.com', 15.00, 'USD', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2024-12-18 13:57:57', 3, NULL),
-(5, '7XG522585E497851R', 'John Doe', 'sb-x2i47834694194@personal.example.com', 15.00, 'USD', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2024-12-19 07:09:46', 5, NULL),
-(6, '5UJ88158SL470325F', 'John Doe', 'sb-x2i47834694194@personal.example.com', 50.00, 'USD', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2025-01-02 10:06:57', 5, 17),
-(7, '5EV634229L456502N', 'John Doe', 'sb-x2i47834694194@personal.example.com', 45.00, 'USD', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2025-01-02 10:38:48', 5, 17),
-(8, '6HH64811WC266721W', 'John Doe', 'sb-x2i47834694194@personal.example.com', 50.00, 'PHP', 'ritchelle.rueras@tup.edu.ph', NULL, NULL, '2025-01-09 06:30:42', 2, 14),
-(9, '2MM29053BC502073C', 'John Doe', 'sb-x2i47834694194@personal.example.com', 50.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'Unknown Merchant Name', '2025-01-09 08:06:58', 2, 14),
-(10, '8WD165671W0319429', 'John Doe', 'sb-x2i47834694194@personal.example.com', 50.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'Unknown Merchant Name', '2025-01-09 08:19:26', 2, 14),
-(11, '01P28405RE497924Y', 'John Doe', 'sb-x2i47834694194@personal.example.com', 10.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'Unknown Merchant Name', '2025-01-09 08:29:30', 2, 14),
-(12, '4SV402608Y256953R', 'John Doe', 'sb-x2i47834694194@personal.example.com', 8230.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'sb-id7hu34654140@business.example.com', '2025-01-14 16:20:51', 5, 18),
-(13, '9U7778809G119394C', 'John Doe', 'sb-x2i47834694194@personal.example.com', 598.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'sb-id7hu34654140@business.example.com', '2025-01-14 16:34:26', 5, 18),
-(14, '79462908YR520642T', 'John Doe', 'sb-x2i47834694194@personal.example.com', 598.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'sb-id7hu34654140@business.example.com', '2025-01-14 17:03:52', 5, 18),
-(15, '56949455EW192200Y', 'John Doe', 'sb-x2i47834694194@personal.example.com', 598.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'sb-id7hu34654140@business.example.com', '2025-01-14 17:06:39', 5, 18),
-(16, '74F88148262988200', 'John Doe', 'sb-x2i47834694194@personal.example.com', 45.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'sb-id7hu34654140@business.example.com', '2025-01-15 05:18:18', 5, 17),
-(17, '53A87602P6285325M', 'John Doe', 'sb-x2i47834694194@personal.example.com', 1513.00, 'PHP', 'sb-id7hu34654140@business.example.com', '7YBPBFAVM55H2', 'sb-id7hu34654140@business.example.com', '2025-01-15 07:35:38', 5, 7);
+INSERT INTO `payments` (`id`, `transaction_id`, `payer_name`, `payer_email`, `amount`, `currency`, `payed_to_email`, `payee_merchant_id`, `payee_name`, `created_at`, `client_id`, `project_id`, `task_id`, `mode_of_payment`, `date_paid`) VALUES
+(18, 'g1g2h3j4j', 'Monique Cabigting', 'ritchellerueras@gmail.com', 100.00, 'PHP', '', NULL, '8', '2025-03-23 07:00:23', 4, 33, 24, 'Cheque', '2025-03-21'),
+(21, 'h1h2h3', 'Mark Vincent', 'clarieza@gmail.com', 200.00, 'PHP', '', NULL, '7', '2025-03-23 07:00:23', 7, 31, 34, 'Cheque', '2025-03-23'),
+(24, 'h1h2j3k4k5', 'Monique Cabigting', 'ritchellerueras@gmail.com', 10000.00, 'PHP', '', NULL, '9', '2025-03-23 07:00:23', 4, 33, 25, 'Online Payment', '2025-03-31'),
+(28, 'QRWYQTE52436', 'claireza bautista', 'clarieza@gmail.com', 1530.00, 'PHP', '', NULL, '8', '2025-03-23 07:58:13', 5, 17, 6, 'Cheque', '2025-03-31'),
+(30, 'G1G2G3G4HJDHJ', 'claireza bautista', 'clarieza@gmail.com', 200.00, 'PHP', '', NULL, '5', '2025-03-23 08:01:39', 5, 17, 35, 'Online Payment', '2025-03-22'),
+(32, 'HKASDVJ', 'ALFREDo DACQUEl', 'moniquecabigting01@gmail.com', 200.00, 'PHP', '', NULL, '11', '2025-03-23 08:09:43', 31, 34, 39, 'Online Payment', '2025-03-23'),
+(33, 'NSDKJASB', 'claireza bautista', 'clarieza@gmail.com', 1700.00, 'PHP', '', NULL, '6', '2025-03-23 08:11:57', 5, 17, 37, 'Online Payment', '2025-03-23'),
+(34, 'NSDKJASB', 'claireza bautista', 'clarieza@gmail.com', 1700.00, 'PHP', '', NULL, '6', '2025-03-23 08:11:57', 5, 17, 37, 'Online Payment', '2025-03-23'),
+(35, 'JDHDJHASD', 'John Michael Doe', 'john.doe@example.com', 2010.00, 'PHP', '', NULL, '12', '2025-03-23 08:19:21', 1, 32, 31, 'Online Payment', '2025-03-23'),
+(36, 'KJDSBKKW', 'claireza bautista', 'clarieza@gmail.com', 200.00, 'PHP', '', NULL, '8', '2025-03-23 08:20:10', 5, 17, 36, 'Cheque', '2025-03-23'),
+(37, '9I9I9I9I9', 'claireza bautista', 'clarieza@gmail.com', 1000.00, 'PHP', '', NULL, '10', '2025-03-23 08:21:20', 5, 7, 8, 'Cash', '2025-03-22'),
+(38, 'JUHDIU', 'claireza bautista', 'clarieza@gmail.com', 60.00, 'PHP', '', NULL, '9', '2025-03-23 08:22:11', 5, 18, 7, 'Cash', '2025-03-05'),
+(39, 'HWQBDLWBD', 'Joshua Latruel', 'ritchellerueras@gmail.com', 3000.00, 'PHP', '', NULL, '11', '2025-03-23 08:29:38', 11, 30, 43, 'Cheque', '2025-03-20'),
+(40, 'bjhavdja', 'claireza bautista', 'clarieza@gmail.com', 500.00, 'PHP', '', NULL, '11', '2025-03-23 09:18:26', 5, 7, 11, 'Cash', '2025-03-01'),
+(45, '0E9767292P723972V', 'claireza bautista', 'clarieza@gmail.com', 50.00, 'PHP', '', NULL, '5', '2025-03-23 16:57:54', 5, 7, 2, 'Online Payment', '2025-03-23'),
+(46, '9W871926SY388451J', 'claireza bautista', 'clarieza@gmail.com', 2000.00, 'PHP', '', NULL, '8', '2025-03-23 17:00:37', 5, 7, 16, 'Online Payment', '2025-03-23');
 
 -- --------------------------------------------------------
 
@@ -481,42 +497,48 @@ CREATE TABLE `project` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `isDeleted` tinyint(1) DEFAULT 0,
   `clientId` int(11) NOT NULL,
-  `contractPrice` decimal(10,2) NOT NULL DEFAULT 0.00,
-  `paymentStatus` enum('Paid','Not Paid','Partial Payment') DEFAULT 'Not Paid',
-  `downpayment` decimal(10,2) DEFAULT 0.00,
-  `actualStart` datetime DEFAULT NULL,
   `actualFinish` datetime DEFAULT NULL,
   `isReview` tinyint(1) DEFAULT 0,
-  `paymentDate` datetime DEFAULT NULL
+  `progress` int(11) NOT NULL DEFAULT 0,
+  `total_amount` decimal(10,2) DEFAULT 0.00,
+  `paid_amount` decimal(10,2) DEFAULT 0.00,
+  `balance` decimal(10,2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`id`, `clientName`, `projectName`, `description`, `startDate`, `endDate`, `status`, `created_at`, `isDeleted`, `clientId`, `contractPrice`, `paymentStatus`, `downpayment`, `actualStart`, `actualFinish`, `isReview`, `paymentDate`) VALUES
-(6, 'John Doe', 'qwqw', 'dnasjdjs', '2024-11-15', '2024-11-22', 'Ongoing', '2025-01-14 07:29:16', 1, 5, 0.00, 'Not Paid', NULL, NULL, NULL, 0, NULL),
-(7, 'claireza bautista', 'Coffee Project', 'Handling business transactions', '2024-11-29', '2025-02-15', 'Completed', '2025-01-14 09:49:23', 0, 5, 178.00, 'Paid', 10513.00, '2025-01-15 02:46:05', '2025-01-15 07:36:01', 1, '2025-01-16 18:10:52'),
-(8, 'Ritchelle Rueras', 'Snack Bar', 'music prod', '2024-11-15', '2024-12-07', 'Completed', '2025-01-14 10:06:23', 0, 5, 200.00, 'Paid', 100.00, '2025-01-15 02:51:29', '2025-01-16 06:55:13', 0, '2025-01-16 18:24:49'),
-(9, 'Monique Cabigting', 'PRMS', 'Project Management system ', '2024-11-16', '2025-04-15', 'Completed', '2025-02-14 16:52:07', 0, 4, 5000.00, 'Partial Payment', 200.00, '2025-01-12 06:24:30', '2025-01-12 06:25:10', 0, NULL),
-(10, 'Jane Smith', 'DBMS', 'hahahaha', '2024-11-16', '2024-12-05', 'Completed', '2025-01-14 17:05:19', 0, 0, 0.00, 'Partial Payment', NULL, '2025-01-11 15:19:54', '2025-01-11 15:19:57', 0, NULL),
-(11, 'mimi mema', 'qwer', 'dmsd', '2024-11-16', '2025-11-23', 'Completed', '2025-01-14 17:24:15', 1, 0, 0.00, 'Not Paid', NULL, NULL, '2025-01-14 09:47:48', 0, NULL),
-(12, 'John Doe', 'mema', 'lapapapa', '2025-01-23', '2024-12-07', 'Ongoing', '2025-11-16 08:12:45', 1, 0, 0.00, 'Not Paid', NULL, NULL, NULL, 0, NULL),
-(13, 'Ritchelle Rueras', 'Rrr', 'rrrrrrrr', '2024-11-19', '2024-12-07', 'Ongoing', '2025-11-17 16:49:45', 1, 0, 0.00, 'Not Paid', NULL, NULL, NULL, 0, NULL),
-(14, 'Jane Smith', 'Purple Desk', 'study hub', '2024-11-21', '2025-06-26', 'Ongoing', '2025-01-17 17:12:09', 0, 2, 60.00, 'Not Paid', 50.00, NULL, NULL, 0, NULL),
-(15, 'Jane Smith', 'jdkasd', 'hhahahaha', '2024-11-30', '2025-05-01', 'Ongoing', '2025-01-21 02:28:43', 1, 2, 0.00, 'Not Paid', NULL, NULL, NULL, 0, NULL),
-(16, 'sbh sdjas', 'ndjas', 'lalalalala', '2024-11-28', '2025-05-01', 'Ongoing', '2025-01-21 02:29:14', 1, 8, 0.00, 'Not Paid', NULL, NULL, NULL, 0, NULL),
-(17, 'claireza bautista', 'Water Station', 'refilling station business', '2025-01-03', '2025-07-23', 'Completed', '2024-11-21 06:52:07', 0, 5, 5.00, 'Partial Payment', 65.00, NULL, NULL, 0, NULL),
-(18, 'claireza bautista', 'Samgyupsal', 'lalalalalalalove', '2024-12-26', '2025-10-30', 'Completed', '2024-12-22 14:07:48', 0, 5, 50.00, 'Paid', 598.00, NULL, '2025-01-20 11:28:28', 0, '2025-01-20 11:28:42'),
-(19, 'Ritchelle Rueras', 'Vista Mall', 'tax pay', '2024-12-28', '2025-12-27', 'Ongoing', '2024-12-26 14:36:44', 0, 3, 1000.00, 'Not Paid', 0.00, NULL, NULL, 0, NULL),
-(20, 'Monique Cabigting', 'Moontoon', 'renewal', '2024-12-26', '2025-01-11', 'Ongoing', '2024-12-26 15:41:33', 0, 4, 2000.00, 'Not Paid', 100.00, NULL, NULL, 0, NULL),
-(21, 'Ritchelle Rueras', 'Apartment', 'Apartment construction projects', '2025-01-09', '2026-01-07', 'Ongoing', '2025-01-06 19:33:25', 0, 3, 300.00, 'Not Paid', 30000.00, '2025-01-15 18:35:49', NULL, 0, NULL),
-(22, 'Julie Rueras', '711', '711 payroll', '2025-01-08', '2025-05-22', 'Ongoing', '2025-01-07 09:54:09', 1, 14, 2000.00, 'Not Paid', 0.00, NULL, NULL, 0, NULL),
-(23, 'John Michael Doe', 'Aquaflask', 'business setup', '2025-01-18', '2025-02-26', 'Ongoing', '2025-01-11 13:58:44', 0, 1, 10000.00, 'Not Paid', 0.00, '2025-01-20 11:28:14', NULL, 0, NULL),
-(24, 'July DE LEOn', 'Tiktok Shop', 'Revenue Tracking', '2025-01-13', '2026-05-29', 'Ongoing', '2025-01-11 21:14:18', 0, 30, 1000.00, 'Not Paid', 0.00, '2025-01-15 03:33:42', NULL, 0, NULL),
-(25, 'Clarieza Baustista', 'Watson', 'health and lifestyle', '2025-01-31', '2025-02-28', 'Ongoing', '2025-01-17 06:59:36', 1, 5, 1000.00, 'Not Paid', 1000.00, '2025-01-17 07:03:40', NULL, 0, NULL),
-(26, 'Clarieza Baustista', 'Watson PH', 'life style and health', '2025-01-17', '2025-01-31', 'Completed', '2025-01-17 07:07:24', 0, 5, 1000.00, 'Not Paid', 0.00, '2025-01-17 07:08:56', '2025-01-17 07:08:59', 0, NULL),
-(27, 'MIGUEL  REYES', 'HODEKT', 'FAN', '2025-01-22', '2025-05-29', 'Pending', '2025-01-20 11:30:03', 0, 8, 1000.00, 'Not Paid', 100.00, NULL, NULL, 0, NULL);
+INSERT INTO `project` (`id`, `clientName`, `projectName`, `description`, `startDate`, `endDate`, `status`, `created_at`, `isDeleted`, `clientId`, `actualFinish`, `isReview`, `progress`, `total_amount`, `paid_amount`, `balance`) VALUES
+(6, 'John Doe', 'qwqw', 'dnasjdjs', '2024-11-15', '2024-11-22', 'Pending', '2025-01-14 07:29:16', 1, 5, NULL, 0, 0, 0.00, 0.00, 0.00),
+(7, 'claireza bautista', 'Coffee Project', 'Handling business transactions', '2025-01-01', '2025-02-15', 'Completed', '2025-01-14 09:49:23', 0, 5, '2025-01-15 07:36:01', 0, 100, 3560.00, 3550.00, 0.00),
+(8, 'Ritchelle Rueras', 'Snack Bar', 'music prod', '2024-11-15', '2024-12-07', 'Pending', '2025-01-14 10:06:23', 1, 5, '2025-01-16 06:55:13', 0, 0, 0.00, 0.00, 0.00),
+(9, 'Monique Cabigting', 'PRMS', 'Project Management system ', '2024-11-16', '2025-04-15', 'Pending', '2025-02-14 16:52:07', 0, 4, '2025-01-12 06:25:10', 0, 0, 1100.00, 0.00, 0.00),
+(10, 'Jane Smith', 'DBMS', 'hahahaha', '2024-11-16', '2024-12-05', 'Pending', '2025-01-14 17:05:19', 0, 2, '2025-01-11 15:19:57', 0, 0, 0.00, 0.00, 0.00),
+(11, 'John Doe', 'qwer', 'dmsd', '2024-11-16', '2025-11-23', 'Pending', '2025-01-14 17:24:15', 1, 1, '2025-01-14 09:47:48', 0, 0, 0.00, 0.00, 0.00),
+(12, 'John Doe', 'mema', 'lapapapa', '2025-01-23', '2024-12-07', 'Pending', '2025-11-16 08:12:45', 1, 1, NULL, 0, 0, 0.00, 0.00, 0.00),
+(13, 'Ritchelle Rueras', 'Rrr', 'rrrrrrrr', '2024-11-19', '2024-12-07', 'Pending', '2025-11-17 16:49:45', 1, 5, NULL, 0, 0, 0.00, 0.00, 0.00),
+(14, 'Jane Smith', 'Purple Desk', 'study hub', '2024-12-23', '2027-10-12', 'Ongoing', '2025-01-17 17:12:09', 0, 2, NULL, 0, 80, 0.00, 0.00, 0.00),
+(15, 'Jane Smith', 'jdkasd', 'hhahahaha', '2024-11-30', '2025-05-01', 'Pending', '2025-01-21 02:28:43', 1, 2, NULL, 0, 0, 0.00, 0.00, 0.00),
+(16, 'sbh sdjas', 'ndjas', 'lalalalala', '2024-11-28', '2025-05-01', 'Pending', '2025-01-21 02:29:14', 1, 8, NULL, 0, 0, 0.00, 0.00, 0.00),
+(17, 'claireza bautista', 'Water Station', 'refilling station business', '2025-01-03', '2025-07-23', 'Ongoing', '2024-11-21 06:52:07', 0, 5, NULL, 0, 78, 4630.00, 3630.00, 0.00),
+(18, 'claireza bautista', 'Samgyupsal', 'lalalalalalalove', '2024-12-26', '2025-10-30', 'Ongoing', '2024-12-22 14:07:48', 0, 5, '2025-01-20 11:28:28', 0, 13, 468.00, 60.00, 0.00),
+(19, 'Ritchelle Rueras', 'Vista Mall', 'tax pay', '2024-12-28', '2025-12-27', 'Pending', '2024-12-26 14:36:44', 0, 3, NULL, 0, 0, 0.00, 0.00, 0.00),
+(20, 'Monique Cabigting', 'Moontoon', 'renewal', '2024-12-26', '2025-01-11', 'Pending', '2024-12-26 15:41:33', 0, 4, NULL, 0, 0, 0.00, 0.00, 0.00),
+(21, 'Ritchelle Rueras', 'Apartment', 'Apartment construction projects', '2027-01-01', '2026-01-07', 'Ongoing', '2025-01-06 19:33:25', 0, 3, NULL, 0, 10, 0.00, 0.00, 0.00),
+(22, 'Julie Rueras', '711', '711 payroll', '2025-01-08', '2025-05-22', 'Pending', '2025-01-07 09:54:09', 1, 14, NULL, 0, 0, 0.00, 0.00, 0.00),
+(23, 'John Michael Doe', 'Aquaflask', 'business setup', '2025-01-18', '2025-02-26', 'Pending', '2025-01-11 13:58:44', 0, 1, NULL, 0, 0, 0.00, 0.00, 0.00),
+(24, 'July DE LEOn', 'Tiktok Shop', 'Revenue Tracking', '2025-01-13', '2026-05-29', 'Pending', '2025-01-11 21:14:18', 1, 30, NULL, 0, 0, 0.00, 0.00, 0.00),
+(25, 'Clarieza Baustista', 'Watson', 'health and lifestyle', '2025-01-31', '2025-02-28', 'Pending', '2025-01-17 06:59:36', 1, 5, NULL, 0, 0, 0.00, 0.00, 0.00),
+(26, 'Clarieza Baustista', 'Watson PH', 'life style and health', '2025-01-17', '2026-06-22', 'Pending', '2025-01-17 07:07:24', 0, 5, '2025-01-17 07:08:59', 0, 0, 0.00, 0.00, 0.00),
+(27, 'MIGUEL  REYES', 'HODEKT', 'FAN', '2025-03-21', '2026-03-22', 'Pending', '2025-01-20 11:30:03', 0, 8, NULL, 0, 0, 0.00, 0.00, 0.00),
+(28, 'Jane Smith', 'Wilkins', 'wilkins distilled', '2025-03-24', '2025-03-31', 'Pending', '2025-03-01 14:18:13', 0, 2, NULL, 0, 0, 0.00, 0.00, 0.00),
+(29, 'REJEAN NOGUERRA', 'Chipsy', 'Food Technology Business', '2025-03-23', '2026-03-04', 'Pending', '2025-03-18 02:15:44', 0, 10, NULL, 0, 0, 5600.00, 0.00, 0.00),
+(30, 'Joshua Latruel', 'TYESO', 'TUMBLER COMPANY', '2025-03-23', '2026-11-18', 'Ongoing', '2025-03-22 03:32:15', 0, 11, NULL, 0, 50, 6000.00, 3000.00, 0.00),
+(31, 'Mark Vincent', 'National Bookstore(NBS)', 'National Bookstore(NBS)', '2025-03-24', '2028-10-17', 'Completed', '2025-03-22 08:05:00', 0, 7, NULL, 0, 100, 200.00, 200.00, 0.00),
+(32, 'John Michael Doe', 'Redmi Note', 'Business guidance', '2025-03-23', '2027-03-02', 'Ongoing', '2025-03-22 08:11:11', 0, 1, NULL, 0, 87, 2310.00, 2010.00, 0.00),
+(33, 'Monique Cabigting', 'Dali Store', 'All Goods for inventory, payroll and business registrations', '2025-03-22', '2026-06-09', 'Ongoing', '2025-03-22 08:23:05', 0, 4, NULL, 0, 58, 17400.00, 10100.00, 0.00),
+(34, 'ALFREDo DACQUEl', 'XIAOME', 'FOR BUSINESS REGISTRATIONS AND OTHER PROCESSES', '2025-03-25', '2026-06-09', 'Completed', '2025-03-23 05:22:08', 0, 31, NULL, 0, 100, 200.00, 200.00, 0.00);
 
 -- --------------------------------------------------------
 
@@ -562,33 +584,56 @@ CREATE TABLE `tasks` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `amount` decimal(10,2) DEFAULT NULL,
-  `actual_finish` datetime DEFAULT NULL
+  `actual_finish` datetime DEFAULT NULL,
+  `is_deleted` tinyint(1) DEFAULT 0,
+  `transaction_id` varchar(255) NOT NULL,
+  `mode_of_payment` enum('Cash','Cheque','Online Payment') DEFAULT NULL,
+  `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `payment_status` enum('Not Paid','Paid') NOT NULL DEFAULT 'Not Paid',
+  `date_paid` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `task_name`, `task_fee`, `due_date`, `employee`, `miscellaneous`, `status`, `project_id`, `created_at`, `updated_at`, `amount`, `actual_finish`) VALUES
-(1, 'BIR', 100.00, '2025-01-25', '5', '[{\"name\":\"Gas\",\"fee\":\"100\"}]', 'Ongoing', 18, '2024-12-22 18:14:59', '2025-01-14 16:27:18', 200.00, NULL),
-(2, 'Tax', 50.00, '2025-01-30', '5', '[{\"name\":\"Food\",\"fee\":\"100\"},{\"name\":\"Gas\",\"fee\":\"500\"},{\"name\":\"Internet\",\"fee\":\"100\"},{\"name\":\"Accomodotion\",\"fee\":\"100\"}]', 'Completed', 7, '2024-12-26 17:14:37', '2025-01-20 11:32:49', 850.00, '2025-01-11 18:19:55'),
-(3, 'Payroll', 10.00, '2025-01-24', '1', '[{\"name\":\"Rent\",\"fee\":\"5000\"}]', 'Completed', 7, '2024-12-26 17:18:14', '2025-01-15 03:32:24', 5010.00, '2025-01-11 18:17:35'),
-(4, 'Design Homepage', 50.00, '2025-01-15', '1', '[{\"name\":\"Design tools\",\"fee\":50}]', 'Completed', 18, '2024-12-31 08:21:35', '2025-01-14 16:27:37', 100.00, NULL),
-(5, 'Develop Login Page', 8.00, '2025-01-31', '2', '[{\"name\":\"Backend setup\",\"fee\":100}]', 'Ongoing', 18, '2024-12-31 08:21:35', '2025-01-14 16:32:20', 108.00, NULL),
-(6, 'Testing and QA', 30.00, '2024-01-25', '3', '[{\"name\": \"Testing tools\", \"fee\": 30}]', 'Pending', 17, '2024-12-31 08:21:35', '2025-01-02 09:50:36', 60.00, NULL),
-(7, 'Database Optimization', 60.00, '2025-01-16', '4', '[{\"name\":\"Database license\",\"fee\":80}]', 'Pending', 18, '2024-12-31 08:21:35', '2025-01-14 16:31:08', 140.00, NULL),
-(8, 'BIR Payment', 1000.00, '2025-01-29', '3', '[{\"name\":\"Food\",\"fee\":\"100\"},{\"name\":\"Gas\",\"fee\":\"500\"}]', 'Completed', 7, '2025-01-03 07:28:10', '2025-01-14 17:54:51', 1600.00, '2025-01-14 17:54:51'),
-(11, 'Payroll', 500.00, '2025-02-05', '4', '[{\"name\":\"Food\",\"fee\":\"200\"},{\"name\":\"Utility\",\"fee\":\"50\"},{\"name\":\"Papers\",\"fee\":\"25\"}]', 'Completed', 7, '2025-01-05 06:13:41', '2025-01-14 17:54:58', 775.00, '2025-01-14 17:54:58'),
-(12, 'Music Production', 2000.00, '2025-01-08', '5', '[{\"name\":\"Studio Rent\",\"fee\":\"3000\"}]', 'Pending', 8, '2025-01-05 06:26:19', '2025-01-07 20:19:06', 5000.00, NULL),
-(13, 'Cloud', 1300.00, '2025-01-31', '6', '[{\"name\":\"Internet\",\"fee\":\"1300\"}]', 'Pending', 10, '2025-01-06 09:17:17', '2025-01-07 19:53:20', 2600.00, NULL),
-(14, 'Payroll', 500.00, '2025-01-16', '6', '[{\"name\":\"Utilities\",\"fee\":\"500\"},{\"name\":\"Food\",\"fee\":\"500\"}]', 'Pending', 22, '2025-01-07 17:51:54', '2025-01-07 17:51:54', 1500.00, NULL),
-(15, 'Payroll', 500.00, '2025-01-16', '6', '[{\"name\":\"Utilities\",\"fee\":\"500\"},{\"name\":\"Food\",\"fee\":\"500\"}]', 'Pending', 22, '2025-01-07 18:00:14', '2025-01-07 18:00:14', 1500.00, NULL),
-(16, 'Business Registration', 2000.00, '2025-01-31', '8', '[{\"name\":\"Transportation\",\"fee\":\"100\"},{\"name\":\"Food\",\"fee\":\"200\"}]', 'Completed', 7, '2025-01-11 18:42:48', '2025-01-14 17:55:09', 2300.00, '2025-01-14 17:55:09'),
-(17, 'Tax Payment', 1000.00, '2025-02-28', '7', '[{\"name\":\"Transportation\",\"fee\":\"100\"}]', 'Pending', 9, '2025-01-11 18:49:15', '2025-01-11 18:49:15', 1100.00, NULL),
-(19, 'Payroll', 100.00, '2025-01-31', '6', '[{\"name\":\"Utilities\",\"fee\":\"500\"}]', 'Pending', 19, '2025-01-15 04:51:52', '2025-01-15 04:51:52', 600.00, NULL),
-(20, 'Bir Registration', 1000.00, '2025-02-24', '7', '[{\"name\":\"Transportation\",\"fee\":\"100\"},{\"name\":\"Food\",\"fee\":\"100\"}]', 'Pending', 19, '2025-01-15 04:53:03', '2025-01-15 04:53:03', 1200.00, NULL),
-(21, 'Payroll', 500.00, '2025-01-28', '7', '[{\"name\":\"Accomodotion\",\"fee\":\"100\"}]', 'Pending', 14, '2025-01-17 02:54:17', '2025-01-17 02:54:17', 600.00, NULL),
-(22, 'Payroll', 1000.00, '2025-01-29', '4', '[{\"name\":\"Food\",\"fee\":\"100\"}]', 'Pending', 26, '2025-01-17 07:08:08', '2025-01-17 07:08:08', 1100.00, NULL);
+INSERT INTO `tasks` (`id`, `task_name`, `task_fee`, `due_date`, `employee`, `miscellaneous`, `status`, `project_id`, `created_at`, `updated_at`, `amount`, `actual_finish`, `is_deleted`, `transaction_id`, `mode_of_payment`, `total_amount`, `payment_status`, `date_paid`) VALUES
+(1, 'BIR', 100.00, '2026-01-25', '5', '[{\"name\":\"Gas\",\"fee\":\"100\"}]', 'Ongoing', 18, '2026-12-22 18:14:59', '2025-03-17 21:55:40', 200.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(2, 'Tax', 50.00, '2026-01-30', '5', '[]', 'Completed', 7, '2026-12-26 17:14:37', '2025-03-23 16:57:55', 50.00, '2025-03-23 00:00:00', 0, '0E9767292P723972V', 'Online Payment', 0.00, 'Paid', '2025-03-23'),
+(3, 'Payroll', 10.00, '2026-01-24', '4', '[]', 'Completed', 7, '2026-12-26 17:18:14', '2025-03-23 17:06:41', 10.00, '2025-01-11 18:17:35', 0, '', '', 0.00, 'Not Paid', NULL),
+(4, 'Design Homepage', 50.00, '2025-01-15', '6', '[{\"name\":\"Design tools\",\"fee\":50}]', 'Completed', 18, '2027-12-31 08:21:35', '2025-03-21 13:46:22', 100.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(5, 'Develop Login Page', 8.00, '2026-01-31', '7', '[{\"name\":\"Backend setup\",\"fee\":100}]', 'Ongoing', 18, '2027-12-31 08:21:35', '2025-03-21 13:46:30', 108.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(6, 'Testing and QA', 30.00, '2025-01-25', '8', '[{\"expenses\":\"INTERNET\",\"amount\":1500}]', 'Completed', 17, '2025-12-02 08:21:35', '2025-03-23 07:56:37', 1530.00, NULL, 0, 'QRWYQTE52436', 'Cheque', 0.00, 'Paid', '2025-03-31'),
+(7, 'Database Optimization', 60.00, '2025-01-16', '9', '[{\"amount\":0}]', 'Completed', 18, '2026-05-26 08:21:35', '2025-03-23 08:22:06', 60.00, NULL, 0, 'JUHDIU', 'Cash', 0.00, 'Paid', '2025-03-05'),
+(8, 'BIR Payment', 1000.00, '2025-01-29', '10', '[{\"amount\":0},{\"amount\":0}]', 'Completed', 7, '2025-01-03 07:28:10', '2025-03-23 10:25:49', 1000.00, '2025-01-14 17:54:51', 0, '9I9I9I9I9', 'Cash', 0.00, 'Paid', '2025-03-22'),
+(11, 'Payroll', 500.00, '2025-02-05', '11', '[{\"amount\":0},{\"amount\":0},{\"amount\":0}]', 'Completed', 7, '2025-01-05 06:13:41', '2025-03-23 09:18:21', 500.00, '2025-01-14 17:54:58', 0, 'bjhavdja', 'Cash', 0.00, 'Paid', '2025-03-01'),
+(12, 'Music Production', 2000.00, '2025-01-08', '5', '[{\"name\":\"Studio Rent\",\"fee\":\"3000\"}]', 'Ongoing', 8, '2025-01-05 06:26:19', '2025-03-21 08:29:59', 5000.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(13, 'Cloud', 1300.00, '2025-01-31', '6', '[{\"name\":\"Internet\",\"fee\":\"1300\"}]', 'Ongoing', 10, '2025-01-06 09:17:17', '2025-03-21 08:29:53', 2600.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(14, 'Payroll', 500.00, '2025-01-16', '6', '[{\"name\":\"Utilities\",\"fee\":\"500\"},{\"name\":\"Food\",\"fee\":\"500\"}]', 'Ongoing', 22, '2025-01-07 17:51:54', '2025-03-21 08:29:47', 1500.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(15, 'Payroll', 500.00, '2025-01-16', '6', '[{\"name\":\"Utilities\",\"fee\":\"500\"},{\"name\":\"Food\",\"fee\":\"500\"}]', 'Ongoing', 22, '2025-01-07 18:00:14', '2025-03-21 08:29:41', 1500.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(16, 'Business Registration', 2000.00, '2025-03-22', '8', '[]', 'Completed', 7, '2025-01-11 18:42:48', '2025-03-23 17:00:37', 2000.00, '2025-03-23 00:00:00', 0, '9W871926SY388451J', 'Online Payment', 0.00, 'Paid', '2025-03-23'),
+(17, 'Tax Payment', 1000.00, '2025-02-28', '7', '[{\"name\":\"Transportation\",\"fee\":\"100\"}]', 'Ongoing', 9, '2025-01-11 18:49:15', '2025-03-21 08:28:41', 1100.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(19, 'Payroll', 100.00, '2025-01-31', '6', '[{\"name\":\"Utilities\",\"fee\":\"500\"}]', 'Ongoing', 19, '2025-01-15 04:51:52', '2025-03-21 08:29:30', 600.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(20, 'Bir Registration', 1000.00, '2025-02-24', '7', '[{\"name\":\"Transportation\",\"fee\":\"100\"},{\"name\":\"Food\",\"fee\":\"100\"}]', 'Ongoing', 19, '2025-01-15 04:53:03', '2025-03-21 08:29:24', 1200.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(21, 'Payroll', 500.00, '2025-01-28', '7', '[{\"name\":\"Accomodotion\",\"fee\":\"100\"}]', 'Ongoing', 14, '2025-01-17 02:54:17', '2025-03-21 08:29:00', 600.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(22, 'Payroll', 1000.00, '2025-01-29', '12', '[{\"name\":\"Food\",\"fee\":\"100\"}]', 'Ongoing', 26, '2025-01-17 07:08:08', '2025-03-21 13:47:17', 1100.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(23, 'Business Registration', 5000.00, '2025-04-30', '11', '[{\"name\":\"Food\",\"fee\":\"100\"},{\"name\":\"GAS\",\"fee\":\"500\"}]', 'Ongoing', 29, '2025-03-18 02:29:09', '2025-03-21 08:28:46', 5600.00, NULL, 0, '', NULL, 0.00, 'Not Paid', NULL),
+(24, 'haha', 100.00, '2025-03-28', '8', '[]', 'Completed', 33, '2025-03-22 12:38:19', '2025-03-22 20:38:34', 100.00, NULL, 0, 'g1g2h3j4j', 'Cheque', 0.00, 'Paid', '2025-03-21'),
+(25, 'Consultancy Fee', 10000.00, '2025-03-22', '9', '[]', 'Completed', 33, '2025-03-22 12:39:34', '2025-03-22 20:38:34', 10000.00, NULL, 0, 'h1h2j3k4k5', 'Online Payment', 0.00, 'Paid', '2025-03-31'),
+(26, 'BIR', 1000.00, '2025-03-23', '5', '[]', 'Pending', 33, '2025-03-22 12:41:52', '2025-03-22 12:41:52', 1000.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(27, 'TAX PAYMENT', 2000.00, '2025-03-23', '9', '[{\"expenses\":\"TRANSPORTATION\",\"amount\":100},{\"expenses\":\"FOOD\",\"amount\":200}]', 'Pending', 33, '2025-03-22 12:49:12', '2025-03-22 13:28:16', 2000.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(28, 'Employee Payroll', 1000.00, '2025-04-22', '10', '[{\"expenses\":\"INTERNET\",\"amount\":1500}]', 'Pending', 33, '2025-03-22 12:54:50', '2025-03-22 12:54:50', 1000.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(31, 'BIR', 10.00, '2027-03-05', '12', '[{\"expenses\":\"Rent\",\"amount\":2000}]', 'Completed', 32, '2025-03-22 13:59:18', '2025-03-23 08:19:16', 2010.00, NULL, 0, 'JDHDJHASD', 'Online Payment', 0.00, 'Paid', '2025-03-23'),
+(33, 'TAX PAYMENT', 2000.00, '2025-03-23', '9', '[{\"expenses\":\"TRANSPORTATION\",\"amount\":100},{\"expenses\":\"FOOD\",\"amount\":200},{\"expenses\":\"RENT\",\"amount\":1000}]', 'Pending', 33, '2025-03-22 14:52:38', '2025-03-23 05:50:32', 3300.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(34, 'inventory', 100.00, '2025-03-31', '7', '[{\"expenses\":\"nge\",\"amount\":100}]', 'Completed', 31, '2025-03-22 16:33:07', '2025-03-22 20:55:26', 200.00, NULL, 0, 'h1h2h3', 'Cheque', 0.00, 'Paid', '2025-03-23'),
+(35, 'Payroll', 200.00, '2025-06-18', '5', '[]', 'Completed', 17, '2025-03-22 21:26:45', '2025-03-23 08:01:03', 200.00, NULL, 0, 'G1G2G3G4HJDHJ', 'Online Payment', 0.00, 'Paid', '2025-03-22'),
+(36, 'BIR', 100.00, '2025-03-31', '8', '[{\"expenses\":\"transportation\",\"amount\":100}]', 'Completed', 17, '2025-03-22 21:27:27', '2025-03-23 08:20:05', 200.00, NULL, 0, 'KJDSBKKW', 'Cheque', 0.00, 'Paid', '2025-03-23'),
+(37, 'Tax Payment', 1000.00, '2025-03-24', '6', '[{\"expenses\":\"Food\",\"amount\":100},{\"expenses\":\"Transportation\",\"amount\":600}]', 'Completed', 17, '2025-03-22 21:28:27', '2025-03-23 08:11:51', 1700.00, NULL, 0, 'NSDKJASB', 'Online Payment', 0.00, 'Paid', '2025-03-23'),
+(39, 'pAYROLL FOR EMPLOYEE', 200.00, '2025-03-31', '11', '[]', 'Completed', 34, '2025-03-23 08:08:24', '2025-03-23 08:09:27', 200.00, NULL, 0, 'HKASDVJ', 'Online Payment', 0.00, 'Paid', '2025-03-23'),
+(40, 'TAX PAYMENT', 100.00, '2025-03-24', '10', '[{\"expenses\":\"FOOD\",\"amount\":200}]', 'Ongoing', 32, '2025-03-23 08:13:23', '2025-03-23 08:13:34', 300.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(41, 'CONSULTANCY FEE', 1000.00, '2025-03-31', '11', '[]', 'Ongoing', 17, '2025-03-23 08:24:02', '2025-03-23 08:24:02', 1000.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(42, 'BIR', 500.00, '2025-03-31', '11', '[{\"expenses\":\"GAS\",\"amount\":1000},{\"expenses\":\"RENT\",\"amount\":1500}]', 'Ongoing', 30, '2025-03-23 08:28:41', '2025-03-23 08:28:41', 3000.00, NULL, 0, '', '', 0.00, 'Not Paid', NULL),
+(43, 'CONSULTANCY FEE', 3000.00, '2025-03-31', '11', '[]', 'Completed', 30, '2025-03-23 08:29:14', '2025-03-23 08:29:33', 3000.00, NULL, 0, 'HWQBDLWBD', 'Cheque', 0.00, 'Paid', '2025-03-20');
 
 -- --------------------------------------------------------
 
@@ -685,7 +730,8 @@ ALTER TABLE `notifications`
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_payments_task` (`task_id`);
 
 --
 -- Indexes for table `project`
@@ -728,13 +774,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `availability`
 --
 ALTER TABLE `availability`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `client`
@@ -764,19 +810,19 @@ ALTER TABLE `files`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `project`
 --
 ALTER TABLE `project`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `reviews`
@@ -788,7 +834,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `uploads`
@@ -799,6 +845,12 @@ ALTER TABLE `uploads`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `fk_payments_task` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `reviews`

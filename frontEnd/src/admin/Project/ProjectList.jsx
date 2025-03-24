@@ -69,35 +69,6 @@ const ProjectList = ({
     }
   }, [filteredProjects]);
 
-  const handleProgressChange = (projectId, newProgress) => {
-    fetch(`http://localhost:8081/projectStat/${projectId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ progress: newProgress }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to update progress and status");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Progress updated successfully:", data);
-        setFilteredProjects((prevProjects) =>
-          prevProjects.map((project) =>
-            project.id === projectId
-              ? { ...project, progress: newProgress, status: data.status }
-              : project
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Error updating progress:", error);
-      });
-  };
-
   // Function to handle status changes
   const handleStatusChange = (projectId, newStatus) => {
     setStatuses((prevStatuses) => ({
@@ -147,6 +118,8 @@ const ProjectList = ({
             `http://localhost:8081/admin/tasks?projectId=${project.id}`
           );
           if (!response.ok) {
+            const text = await response.text();
+            console.error("Server response:", text);
             throw new Error("Failed to fetch tasks");
           }
           const data = await response.json();
@@ -239,7 +212,6 @@ const ProjectList = ({
             formatDate={formatDate}
             statuses={statuses}
             statusColors={statusColors}
-            handleProgressChange={handleProgressChange}
             handleStatusChange={handleStatusChange}
             startDates={startDates}
             finishDates={finishDates}
@@ -261,7 +233,6 @@ const ProjectList = ({
             formatDate={formatDate}
             statuses={statuses}
             statusColors={statusColors}
-            handleProgressChange={handleProgressChange}
             handleStatusChange={handleStatusChange}
             startDates={startDates}
             finishDates={finishDates}
