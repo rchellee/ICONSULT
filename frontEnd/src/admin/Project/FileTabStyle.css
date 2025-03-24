@@ -269,3 +269,32 @@ td {
   outline: none;
 }
 
+
+
+/* No files container styles */
+.no-files-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* In your FileTabStyle.css */
+.empty-folder-image {
+  width: 300px;        /* Fixed width */
+  height: 300px;       /* Fixed height */
+  object-fit: contain; /* Preserve aspect ratio */
+  
+  /* OR for responsive sizing: */
+  max-width: 100%;     /* Won't exceed container */
+  max-height: 30vh;    /* Viewport height units */
+}
+
+.no-files-message {
+  font-size: 18px;
+  color: #666;
+  margin-top: 10px;
+}

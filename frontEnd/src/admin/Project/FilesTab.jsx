@@ -7,6 +7,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
+import emptyFolder from "../../assets/empty-folder.png"; // Adjusted path
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
@@ -301,8 +302,16 @@ const FilesTab = ({ projectId }) => {
           </div>
         )}
 
-        {files.length === 0 && (
-          <div className="no-files-message">No files uploaded yet.</div>
+        
+{files.length === 0 && (
+  <div className="no-files-container">
+    <img 
+      src={emptyFolder} 
+      alt="Empty folder" 
+      className="empty-folder-image"
+    />
+    <div className="no-files-message">No files uploaded yet.</div>
+  </div>
         )}
       </div>
     </div>
