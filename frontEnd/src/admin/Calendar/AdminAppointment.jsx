@@ -145,7 +145,29 @@ function AdminAppointment() {
     }));
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
+    if (currentStep === 2 && formData.client && formData.date) {
+      try {
+        const checkResponse = await fetch(
+          `http://localhost:8081/appointments/client-check?clientId=${formData.client}&date=${formData.date}`
+        );
+
+        if (!checkResponse.ok)
+          throw new Error("Failed to check existing appointments");
+
+        const { hasAppointment } = await checkResponse.json();
+
+        if (hasAppointment) {
+          alert(
+            "This client already has an appointment scheduled on this date. Please choose another date or client."
+          );
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking existing appointments:", error);
+        // Continue with the process even if check fails
+      }
+    }
     if (currentStep === 2) {
       if (
         !formData.client ||
