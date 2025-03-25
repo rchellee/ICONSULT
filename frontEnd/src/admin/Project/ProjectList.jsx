@@ -158,22 +158,6 @@ const ProjectList = ({
     }));
   };
 
-  // Modal handling functions
-  // const openModal = () => {
-  //   setIsModalOpen(true);
-  // };
-
-  // const closeModal = () => {
-  //   setIsModalOpen(false);
-  //   setProjectName("");
-  //   setClientId("");
-  //   setClientName("");
-  //   setStartDate("");
-  //   setEndDate("");
-  //   setDescription("");
-  //   setEditingProjectId(null);
-  // };
-
   const statusColors = {
     Ongoing: "#F06292",
     Pending: "rgb(252, 118, 118)",
@@ -186,7 +170,6 @@ const ProjectList = ({
 
   return (
     <div className="project-list-wrapper">
-      {/* Toggle Buttons */}
       <div className="list-view-header">
         <div className="projects-title">My Projects</div>
         <div className="toggle-buttons">
