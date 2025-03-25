@@ -839,7 +839,6 @@ app.get("/employees/id", (req, res) => {
     return res.status(200).json(data);
   });
 });
-
 // Update employee's status (PUT request)
 app.put("/employees/:id", (req, res) => {
   const employeeId = req.params.id;
@@ -928,15 +927,11 @@ app.post("/project", (req, res) => {
     startDate,
     endDate,
     status = "Pending",
-    contractPrice,
-    downpayment = "00.00",
-    paymentStatus = "Not Paid",
-    actualStart = null,
     actualFinish = null,
   } = req.body;
 
   const sql =
-    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, contractPrice, downpayment, paymentStatus, actualStart, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO project (clientId, clientName, projectName, description, startDate, endDate, status, actualFinish) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
   db.query(
     sql,
     [
@@ -947,10 +942,6 @@ app.post("/project", (req, res) => {
       startDate,
       endDate,
       status,
-      contractPrice,
-      downpayment,
-      paymentStatus,
-      actualStart,
       actualFinish,
     ],
     (err, result) => {
@@ -964,10 +955,6 @@ app.post("/project", (req, res) => {
         startDate,
         endDate,
         status,
-        contractPrice,
-        downpayment,
-        paymentStatus,
-        actualStart,
         actualFinish,
       });
     }
@@ -989,27 +976,29 @@ app.patch("/project/:id", (req, res) => {
 });
 app.patch("/projectStat/:id", (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { progress } = req.body;
 
-  let query = "UPDATE project SET status = ?";
-  let params = [status, id];
+  let status = "Pending";
+  let query = "UPDATE project SET status = ?, progress = ?";
+  let params = [status, progress];
 
-  if (status === "Ongoing") {
-    query += ", actualStart = ?";
-    params = [status, new Date(), id];
-  } else if (status === "Completed") {
+  if (progress > 0 && progress < 100) {
+    status = "Ongoing";
+  } else if (progress === 100) {
+    status = "Completed";
     query += ", actualFinish = ?";
-    params = [status, new Date(), id];
+    params.push(new Date());
   }
 
   query += " WHERE id = ?";
+  params.push(id);
 
   db.query(query, params, (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error updating project status");
     }
-    res.status(200).json({ id, status });
+    res.status(200).json({ id, status, progress });
   });
 });
 app.patch("/paymentStat/:projectId", (req, res) => {
@@ -1047,13 +1036,101 @@ app.patch("/paymentStat/:projectId", (req, res) => {
     }
   );
 });
+app.put("/update-progress/:id", (req, res) => {
+  const { id } = req.params;
+  const { progress } = req.body;
+
+  const updateProgressSql = `
+    UPDATE project
+    SET progress = ?
+    WHERE id = ?`;
+
+  db.query(updateProgressSql, [progress, id], (err, result) => {
+    if (err) {
+      console.error("Error updating project progress:", err);
+      return res.status(500).json({
+        message: "Error updating project progress",
+        error: err.message,
+      });
+    }
+
+    res.status(200).json({
+      message: "Project progress updated successfully",
+    });
+  });
+});
+app.put("/update-paid-amount", (req, res) => {
+  const { projectId, paidAmount } = req.body;
+
+  db.query(
+    "UPDATE project SET paid_amount = ? WHERE id = ?",
+    [paidAmount, projectId],
+    (error, results) => {
+      if (error) {
+        console.error("Error updating paid amount:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      res.status(200).json({ message: "Paid amount updated successfully" });
+    }
+  );
+});
 
 // Get all active (noteleted) projects (GET request)
 app.get("/project", (req, res) => {
-  const sql = "SELECT * FROM project WHERE isDeleted = 0";
-  db.query(sql, (err, data) => {
+  const sql = `SELECT id, status, progress FROM project WHERE isDeleted = 0`;
+
+  db.query(sql, (err, projects) => {
     if (err) return res.json(err);
-    return res.json(data);
+
+    let updates = [];
+
+    projects.forEach(({ id, status, progress }) => {
+      let newStatus =
+        progress === 0
+          ? "Pending"
+          : progress > 0 && progress < 100
+          ? "Ongoing"
+          : progress === 100
+          ? "Completed"
+          : status;
+
+      if (status !== newStatus) {
+        updates.push({ id, newStatus });
+      }
+    });
+
+    if (updates.length > 0) {
+      const updateQueries = updates.map(
+        ({ id, newStatus }) =>
+          new Promise((resolve, reject) => {
+            db.query(
+              "UPDATE project SET status = ? WHERE id = ?",
+              [newStatus, id],
+              (err, result) => {
+                if (err) reject(err);
+                resolve(result);
+              }
+            );
+          })
+      );
+
+      Promise.all(updateQueries)
+        .then(() => {
+          db.query(
+            "SELECT * FROM project WHERE isDeleted = 0",
+            (err, updatedData) => {
+              if (err) return res.json(err);
+              return res.json(updatedData);
+            }
+          );
+        })
+        .catch((err) => res.json(err));
+    } else {
+      db.query("SELECT * FROM project WHERE isDeleted = 0", (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+      });
+    }
   });
 });
 app.get("/project/:id", (req, res) => {
@@ -1100,20 +1177,11 @@ app.get("/projects/:id", (req, res) => {
 });
 app.put("/project/:id", (req, res) => {
   const projectId = req.params.id;
-  const {
-    clientName,
-    projectName,
-    description,
-    startDate,
-    endDate,
-    clientId,
-    contractPrice,
-    downpayment,
-    paymentStatus,
-  } = req.body;
+  const { clientName, projectName, description, startDate, endDate, clientId } =
+    req.body;
 
   const sql =
-    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ?,contractPrice = ?, downpayment = ?, paymentStatus = ? WHERE id = ?";
+    "UPDATE project SET clientName = ?, projectName = ?, description = ?, startDate = ?, endDate = ?, clientId = ? WHERE id = ?";
   db.query(
     sql,
     [
@@ -1123,9 +1191,6 @@ app.put("/project/:id", (req, res) => {
       startDate,
       endDate,
       clientId,
-      contractPrice,
-      downpayment,
-      paymentStatus,
       projectId,
     ],
     (err, result) => {
@@ -1139,9 +1204,6 @@ app.put("/project/:id", (req, res) => {
         startDate,
         endDate,
         clientId,
-        contractPrice,
-        downpayment,
-        paymentStatus,
       });
     }
   );
@@ -1162,22 +1224,60 @@ app.delete("/project/:id", (req, res) => {
   });
 });
 
+app.put("/update-total-amount", (req, res) => {
+  const { projectId, totalAmount } = req.body;
+
+  db.query(
+    "UPDATE project SET total_amount = ? WHERE id = ?",
+    [totalAmount, projectId],
+    (error, result) => {
+      if (error) {
+        console.error("Error updating total amount:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "Total amount updated successfully" });
+      } else {
+        res.status(400).json({ message: "Failed to update total amount" });
+      }
+    }
+  );
+});
 app.post("/tasks", (req, res) => {
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    projectId,
+    transactionId,
+    modeOfPayment,
+    paidDate,
+  } = req.body;
 
   console.log("Received project_id:", projectId);
 
-  // Calculate the total miscellaneous fee
+  // Transform miscellaneous items to new format { expenses, amount }
+  let formattedMiscellaneous = [];
   let miscellaneousTotal = 0;
+
   if (Array.isArray(miscellaneous)) {
-    miscellaneousTotal = miscellaneous.reduce((sum, item) => {
-      return sum + parseFloat(item.fee || 0);
-    }, 0);
+    formattedMiscellaneous = miscellaneous.map((item) => ({
+      expenses: item.expenses, // Rename 'name' to 'expenses'
+      amount: parseFloat(item.amount || 0), // Rename 'fee' to 'amount'
+    }));
+    miscellaneousTotal = formattedMiscellaneous.reduce(
+      (sum, item) => sum + item.amount,
+      0
+    );
   }
+
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
-  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish)
-                    VALUES (?, ?, ?, ?, ?, ?, 'Pending', ?, NULL)`;
+
+  const tasksSql = `INSERT INTO tasks (task_name, task_fee, due_date, employee, miscellaneous, amount, status, project_id, actual_finish, transaction_id, mode_of_payment, payment_status, date_paid)
+                    VALUES (?, ?, ?, ?, ?, ?, 'Ongoing', ?, NULL, ?, ?, 'Not Paid', NULL)`;
 
   db.query(
     tasksSql,
@@ -1186,9 +1286,12 @@ app.post("/tasks", (req, res) => {
       taskFee,
       dueDate,
       employee,
-      JSON.stringify(miscellaneous),
+      JSON.stringify(formattedMiscellaneous), // Save as JSON in DB
       totalAmount,
       projectId,
+      transactionId,
+      modeOfPayment,
+      paidDate,
     ],
     (err, result) => {
       if (err) {
@@ -1207,22 +1310,39 @@ app.post("/tasks", (req, res) => {
 });
 app.put("/tasks/:id", (req, res) => {
   const { id } = req.params;
-  const { taskName, taskFee, dueDate, employee, miscellaneous, projectId } =
-    req.body;
+  const {
+    taskName,
+    taskFee,
+    dueDate,
+    employee,
+    miscellaneous,
+    projectId,
+    transactionId,
+    modeOfPayment,
+    paidDate,
+  } = req.body;
 
-  // Calculate total miscellaneous fees
-  let miscellaneousTotal = 0;
+  // Convert empty paidDate to null
+  const formattedPaidDate = paidDate || null;
+
+  let formattedMiscellaneous = [];
   if (Array.isArray(miscellaneous)) {
-    miscellaneousTotal = miscellaneous.reduce((sum, item) => {
-      return sum + parseFloat(item.fee || 0);
-    }, 0);
+    formattedMiscellaneous = miscellaneous.map((item) => ({
+      expenses: item.expenses,
+      amount: parseFloat(item.amount || 0),
+    }));
   }
+
+  const miscellaneousTotal = formattedMiscellaneous.reduce(
+    (sum, item) => sum + item.amount,
+    0
+  );
 
   const totalAmount = parseFloat(taskFee || 0) + miscellaneousTotal;
 
   const updateTaskSql = `
     UPDATE tasks 
-    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?
+    SET task_name = ?, task_fee = ?, due_date = ?, employee = ?, miscellaneous = ?, amount = ?, transaction_id = ?, mode_of_payment = ?, date_paid = ?
     WHERE id = ?`;
 
   db.query(
@@ -1234,6 +1354,9 @@ app.put("/tasks/:id", (req, res) => {
       employee,
       JSON.stringify(miscellaneous),
       totalAmount,
+      transactionId,
+      modeOfPayment,
+      formattedPaidDate,
       id,
     ],
     (err, result) => {
@@ -1249,6 +1372,28 @@ app.put("/tasks/:id", (req, res) => {
       });
     }
   );
+});
+app.put("/tasksStatus/:id", (req, res) => {
+  const { id } = req.params;
+  const { status, payment_status } = req.body;
+
+  const updateTaskSql = `
+    UPDATE tasks 
+    SET status = ?, payment_status = ?
+    WHERE id = ?`;
+
+  db.query(updateTaskSql, [status, payment_status, id], (err, result) => {
+    if (err) {
+      console.error("Error updating task status:", err);
+      return res
+        .status(500)
+        .json({ message: "Error updating task status", error: err.message });
+    }
+
+    res.status(200).json({
+      message: "Task status updated successfully",
+    });
+  });
 });
 app.put("/task/:id/status", (req, res) => {
   const { id } = req.params;
@@ -1295,6 +1440,7 @@ app.delete("/tasks/:id", (req, res) => {
     res.status(200).json({ message: "Task deleted successfully" });
   });
 });
+//transaction
 app.get("/admin/tasks", (req, res) => {
   console.log(req.query);
   const { projectId } = req.query;
@@ -1321,9 +1467,10 @@ app.get("/tasks", (req, res) => {
   // Ensure projectIds is an array
   const idsArray = Array.isArray(projectIds) ? projectIds : [projectIds];
 
-  const sql = "SELECT * FROM tasks WHERE project_id IN (?)";
-
-  db.query(sql, [idsArray], (err, tasks) => {
+  const sql = `SELECT * FROM tasks WHERE project_id IN (${idsArray
+    .map(() => "?")
+    .join(",")})`;
+  db.query(sql, idsArray, (err, tasks) => {
     if (err) {
       console.error("Error fetching tasks: ", err);
       return res
@@ -1521,6 +1668,25 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+// Add this to your server code
+app.get("/appointments/client-check", (req, res) => {
+  const { clientId, date } = req.query;
+
+  const sql = `
+    SELECT COUNT(*) as appointmentCount 
+    FROM appointments 
+    WHERE client_id = ? AND date = ?
+  `;
+
+  db.query(sql, [clientId, date], (err, results) => {
+    if (err) {
+      console.error("Error checking client appointments:", err);
+      return res.status(500).json({ error: "Error checking appointments" });
+    }
+    
+    res.json({ hasAppointment: results[0].appointmentCount > 0 });
+  });
+});
 app.get("/appointments-details/:clientId", (req, res) => {
   const { clientId } = req.params;
 
@@ -1639,6 +1805,169 @@ app.delete("/appointments/:id", (req, res) => {
   });
 });
 
+// Fetch all paid tasks
+app.get("/paid-tasks", (req, res) => {
+  const query = `
+    SELECT 
+      t.id AS task_id,
+      t.transaction_id,
+      t.amount,
+      t.mode_of_payment,
+      t.date_paid,
+      p.clientId AS client_id,
+      t.project_id,
+      p.clientName AS payer_name,
+      c.email_add AS payer_email,
+      t.employee AS payee_name
+    FROM tasks t
+    JOIN project p ON t.project_id = p.id
+    JOIN client c ON p.clientId = c.id 
+    WHERE t.payment_status = 'Paid'
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching paid tasks:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
+// Save payment details to the database (bulk insert)
+app.post("/payments/bulk", (req, res) => {
+  const payments = req.body; // Array of payment objects
+
+  if (!Array.isArray(payments)) {
+    return res.status(400).json({ error: "Payments must be an array" });
+  }
+
+  const queries = payments.map((payment) => {
+    return new Promise((resolve, reject) => {
+      const checkQuery = `SELECT id FROM payments WHERE task_id = ?`;
+      db.query(checkQuery, [payment.task_id], (err, results) => {
+        if (err) return reject(err);
+
+        if (results.length > 0) {
+          // Update existing record
+          const updateQuery = `
+            UPDATE payments 
+            SET transaction_id = ?, payer_name = ?, payer_email = ?, amount = ?, 
+                payed_to_email = ?, payee_merchant_id = ?, payee_name = ?, 
+                client_id = ?, project_id = ?, mode_of_payment = ?, date_paid = ?
+            WHERE task_id = ?
+          `;
+          db.query(
+            updateQuery,
+            [
+              payment.transaction_id,
+              payment.payer_name,
+              payment.payer_email,
+              payment.amount,
+              payment.payed_to_email || "",
+              payment.payee_merchant_id || null,
+              payment.payee_name || "",
+              payment.client_id,
+              payment.project_id,
+              payment.mode_of_payment,
+              payment.date_paid,
+              payment.task_id, // WHERE condition
+            ],
+            (err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            }
+          );
+        } else {
+          // Insert new record
+          const insertQuery = `
+            INSERT INTO payments (
+              transaction_id, payer_name, payer_email, amount, currency, 
+              payed_to_email, payee_merchant_id, payee_name, client_id, 
+              project_id, task_id, mode_of_payment, date_paid
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `;
+          db.query(
+            insertQuery,
+            [
+              payment.transaction_id,
+              payment.payer_name,
+              payment.payer_email,
+              payment.amount,
+              "PHP", // Currency is always PHP
+              payment.payed_to_email || "",
+              payment.payee_merchant_id || null,
+              payment.payee_name || "",
+              payment.client_id,
+              payment.project_id,
+              payment.task_id,
+              payment.mode_of_payment,
+              payment.date_paid,
+            ],
+            (err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            }
+          );
+        }
+      });
+    });
+  });
+
+  Promise.all(queries)
+    .then(() =>
+      res.status(200).json({ message: "Payments saved/updated successfully" })
+    )
+    .catch((err) => {
+      console.error("Error processing payments:", err);
+      res.status(500).json({ error: "Error processing payments" });
+    });
+});
+// Clean up duplicate payments (keep the most recent one)
+app.post("/payments/clean-duplicates", (req, res) => {
+  const query = `
+    DELETE t1 FROM payments t1
+    INNER JOIN payments t2 
+    WHERE 
+      t1.id < t2.id AND 
+      t1.task_id = t2.task_id
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error("Error cleaning duplicates:", err);
+      return res.status(500).json({ error: "Error cleaning duplicates" });
+    }
+    res.status(200).json({
+      message: "Duplicate payments cleaned successfully",
+      affectedRows: result.affectedRows
+    });
+  });
+});
+// Fetch all payments sorted by date_paid
+app.get("/paymentLedger", (req, res) => {
+  const query = `
+    SELECT 
+      p.projectName,
+      py.transaction_id,
+      py.payer_name,
+      t.task_name AS description,
+      py.amount,
+      py.mode_of_payment,
+      py.date_paid
+    FROM payments py
+    JOIN project p ON py.project_id = p.id
+    JOIN tasks t ON py.task_id = t.id
+    ORDER BY py.date_paid DESC
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json(results);
+  });
+});
 // Save payment details to the database
 app.post("/payments", (req, res) => {
   const {
@@ -1652,11 +1981,14 @@ app.post("/payments", (req, res) => {
     payeeName,
     clientId,
     projectId,
+    taskId,
+    modeOfPayment,
+    datePaid,
   } = req.body;
 
   const query = `
-    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, payee_merchant_id, payee_name, client_id, project_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO payments (transaction_id, payer_name, payer_email, amount, currency, payed_to_email, payee_merchant_id, payee_name, client_id, project_id, task_id, mode_of_payment, date_paid) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   db.query(
     query,
@@ -1671,6 +2003,9 @@ app.post("/payments", (req, res) => {
       payeeName,
       clientId,
       projectId,
+      taskId,
+      modeOfPayment,
+      datePaid,
     ],
     (err, result) => {
       if (err) {
@@ -1678,76 +2013,95 @@ app.post("/payments", (req, res) => {
         return res.status(500).send("Error saving payment.");
       }
 
-      // Update project's downpayment
-      const updateDownpaymentQuery = `
-        UPDATE project
-        SET downpayment = downpayment + ?
-        WHERE id = ?
+      // Save notification for the admin
+      const notificationQuery = `
+        INSERT INTO notifications (title, description, timestamp, isRead) 
+        VALUES (?, ?, ?, ?)
       `;
 
+      const notificationTitle = "New Payment Received";
+      const notificationDescription = `Client ${payerName} paid ${amount} ${currency}. Transaction ID: ${transactionId}. Date Paid: ${new Date().toLocaleString()}`;
+      const timestamp = new Date();
+
       db.query(
-        updateDownpaymentQuery,
-        [amount, projectId],
-        (err, updateResult) => {
+        notificationQuery,
+        [notificationTitle, notificationDescription, timestamp, false],
+        (err, notificationResult) => {
           if (err) {
-            console.error("Error updating downpayment:", err);
-            return res.status(500).send("Error updating downpayment.");
+            console.error("Error creating notification:", err);
+            return res.status(500).send("Error saving notification.");
           }
 
-          // Save notification for the admin
-          const notificationQuery = `
-      INSERT INTO notifications (title, description, timestamp, isRead) 
-      VALUES (?, ?, ?, ?)
-    `;
-
-          const notificationTitle = "New Payment Received";
-          const notificationDescription = `Client ${payerName} paid ${amount} ${currency}.`;
-          const timestamp = new Date();
-
-          db.query(
-            notificationQuery,
-            [notificationTitle, notificationDescription, timestamp, false],
-            (err, notificationResult) => {
-              if (err) {
-                console.error("Error creating notification:", err);
-                return res.status(500).send("Error saving notification.");
-              }
-
-              // Save client notification
-              const clientNotificationQuery = `
-            INSERT INTO client_notifications (client_id, title, description, timestamp, isRead)
-            VALUES (?, ?, ?, NOW(), FALSE)
-          `;
-
-              const clientNotificationTitle = "Payment Received";
-              const clientNotificationDescription = `Your payment of ${amount} ${currency} was successful.`;
-
-              db.query(
-                clientNotificationQuery,
-                [
-                  clientId,
-                  clientNotificationTitle,
-                  clientNotificationDescription,
-                ],
-                (err) => {
-                  if (err) {
-                    console.error("Error saving client notification:", err);
-                    return res
-                      .status(500)
-                      .send("Error saving client notification.");
-                  }
-
-                  res
-                    .status(200)
-                    .send(
-                      "Payment, downpayment and client notification saved successfully."
-                    );
-                }
-              );
-            }
-          );
+          res
+            .status(200)
+            .send("Payment and admin notification saved successfully.");
         }
       );
+    }
+  );
+});
+app.put("/update-payment-status/:taskId", (req, res) => {
+  const taskId = req.params.taskId;
+  const {
+    transaction_id,
+    mode_of_payment,
+    payment_status,
+    status,
+    date_paid,
+    actual_finish,
+  } = req.body;
+
+  if (
+    !transaction_id ||
+    !mode_of_payment ||
+    !payment_status ||
+    !status ||
+    !date_paid ||
+    !actual_finish
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const sql = `
+    UPDATE tasks 
+    SET 
+      transaction_id = ?, 
+      mode_of_payment = ?, 
+      payment_status = ?, 
+      status = ?, 
+      date_paid = ?,
+      actual_finish = ?
+    WHERE id = ?
+  `;
+  db.query(
+    sql,
+    [
+      transaction_id,
+      mode_of_payment,
+      payment_status,
+      status,
+      date_paid,
+      actual_finish,
+      taskId,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating task payment status:", err);
+        return res
+          .status(500)
+          .json({ error: "Failed to update task payment status" });
+      }
+
+      return res.json({
+        taskId,
+        transaction_id,
+        mode_of_payment,
+        payment_status,
+        status,
+        date_paid,
+        actual_finish,
+        message: "Task payment status updated successfully",
+      });
     }
   );
 });
@@ -1774,25 +2128,6 @@ app.get("/payments/:clientId", (req, res) => {
       return res.status(500).json({ error: err.message });
     }
     res.status(200).json(results);
-  });
-});
-app.put("/project/update-payment-status/:id", (req, res) => {
-  const projectId = req.params.id;
-  const { paymentStatus } = req.body;
-
-  if (!paymentStatus) {
-    return res.status(400).json({ error: "Payment status is required" });
-  }
-
-  const sql = "UPDATE project SET paymentStatus = ? WHERE id = ?";
-  db.query(sql, [paymentStatus, projectId], (err, result) => {
-    if (err) return res.status(500).json(err);
-
-    return res.json({
-      id: projectId,
-      paymentStatus,
-      message: "Payment status updated successfully",
-    });
   });
 });
 
@@ -2093,7 +2428,6 @@ app.post("/reviews", (req, res) => {
     }
   );
 });
-
 app.get("/reviews", (req, res) => {
   const query = "SELECT * FROM reviews";
 
@@ -2266,30 +2600,7 @@ app.get("/appointmentsDashboard/upcoming", (req, res) => {
     res.status(200).json(result);
   });
 });
-app.get("/projectDashboard/revenue", (req, res) => {
-  const { filter } = req.query;
-  let condition = "";
 
-  switch (filter) {
-    case "weekly":
-      condition = "WEEK(paymentDate) = WEEK(CURDATE())";
-      break;
-    case "yearly":
-      condition = "YEAR(paymentDate) = YEAR(CURDATE())";
-      break;
-    case "all":
-      condition = "1=1"; // No filter, fetch all projects
-      break;
-    default:
-      condition = "1=1"; // No filter, fetch all projects
-  }
-
-  const sql = `SELECT SUM(contractPrice) AS totalRevenues FROM project WHERE paymentStatus = 'Paid' AND ${condition} AND isDeleted = 0`;
-  db.query(sql, (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.status(200).json(result[0]);
-  });
-});
 app.get("/latest-activity", (req, res) => {
   const queries = {
     client: "SELECT * FROM client ORDER BY created_at DESC LIMIT 1",
@@ -2406,7 +2717,6 @@ app.get("/appointmentYears", (req, res) => {
     res.json(data.map((row) => row.year)); // Send an array of years
   });
 });
-
 //clients
 app.get("/clientsReports", (req, res) => {
   const sql = `
@@ -2448,10 +2758,10 @@ app.get("/projectReports", (req, res) => {
 
   let sql = `
     SELECT 
-      id, clientId, projectName, status, contractPrice, startDate, endDate, actualFinish, 
+      id, clientId, projectName, clientName, description, status, startDate, endDate, created_at, actualFinish, 
       TIMESTAMPDIFF(DAY, startDate, IFNULL(actualFinish, CURDATE())) AS projectDuration,
       IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), 1, 0) AS isDelayed,
-      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays, paymentStatus,
+      IF((status IN ('Ongoing', 'Pending') AND endDate < CURDATE()), TIMESTAMPDIFF(DAY, endDate, CURDATE()), 0) AS delayedDays,
       IF(endDate < CURDATE(), 1, 0) AS isOverdue
     FROM project
     WHERE isDeleted = 0
@@ -2483,7 +2793,7 @@ app.get("/taskReports", (req, res) => {
 });
 app.get("/ETReports", (req, res) => {
   const sql = `
-    SELECT e.firstName, e.lastName, t.created_at, COUNT(t.id) AS task_count
+    SELECT e.firstName, e.lastName, t.created_at, t.status, t.amount, t.due_date, t.task_name, COUNT(t.id) AS task_count
     FROM employee e
     LEFT JOIN tasks t ON e.id = t.employee
     GROUP BY e.id
@@ -2494,13 +2804,189 @@ app.get("/ETReports", (req, res) => {
     res.json(result);
   });
 });
-
 app.get("/employeeReports", (req, res) => {
   const sql = "SELECT * FROM employee";
   db.query(sql, (err, result) => {
     if (err)
       return res.json({ error: "Error fetching employee", details: err });
     res.json(result);
+  });
+});
+app.get("/tasksForEmployee/:employeeId", (req, res) => {
+  const { employeeId } = req.params;
+  const sql = `
+    SELECT t.task_name, t.due_date, t.status, t.amount
+    FROM tasks t
+    WHERE t.employee = ?
+    ORDER BY t.due_date
+  `;
+  db.query(sql, [employeeId], (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
+    res.json(result);
+  });
+});
+//financial reports
+app.get("/payment-status", (req, res) => {
+  const paidTasksQuery = `
+    SELECT 
+      t.id AS task_id,
+      t.task_name,
+      t.amount,
+      t.transaction_id,
+      t.mode_of_payment,
+      t.date_paid
+    FROM tasks t
+    WHERE t.payment_status = 'Paid'
+  `;
+
+  const pendingTasksQuery = `
+    SELECT 
+      t.id AS task_id,
+      t.task_name,
+      t.amount,
+      t.due_date
+    FROM tasks t
+    WHERE t.payment_status != 'Paid' OR t.payment_status IS NULL
+  `;
+
+  db.query(paidTasksQuery, (paidErr, paidResults) => {
+    if (paidErr) {
+      console.error("Error fetching paid tasks:", paidErr);
+      return res.status(500).json({ message: "Error fetching paid tasks" });
+    }
+
+    db.query(pendingTasksQuery, (pendingErr, pendingResults) => {
+      if (pendingErr) {
+        console.error("Error fetching pending tasks:", pendingErr);
+        return res.status(500).json({ message: "Error fetching pending tasks" });
+      }
+
+      // Calculate totals
+      const receivedPayments = paidResults.reduce((sum, task) => sum + task.amount, 0);
+      const pendingPayments = pendingResults.reduce((sum, task) => sum + task.amount, 0);
+
+      res.status(200).json({
+        paidTasks: paidResults,
+        pendingTasks: pendingResults,
+        receivedPayments,
+        pendingPayments
+      });
+    });
+  });
+});
+app.get("/overdue-payments", (req, res) => {
+  const currentDate = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+
+  const sql = `
+    SELECT task_name AS name, due_date, amount
+    FROM tasks
+    WHERE payment_status = 'Not Paid' AND due_date < ?
+    ORDER BY due_date
+  `;
+
+  db.query(sql, [currentDate], (err, results) => {
+    if (err) {
+      console.error("Error fetching overdue payments:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/total-revenue-per-project", (req, res) => {
+  const { paymentStatus } = req.query;
+
+  let sql = `
+    SELECT 
+      p.projectName AS project_name, 
+      SUM(t.amount) AS total_revenue 
+    FROM tasks t
+    JOIN project p ON t.project_id = p.id
+  `;
+
+  if (paymentStatus) {
+    sql += ` WHERE t.payment_status = ?`;
+  }
+
+  sql += ` GROUP BY p.projectName`;
+
+  db.query(sql, [paymentStatus], (err, results) => {
+    if (err) {
+      console.error("Error fetching total revenue per project:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/projects", (req, res) => {
+  const sql = `
+    SELECT 
+      id,
+      projectName,
+      total_amount,
+      paid_amount,
+      (total_amount - paid_amount) AS remaining
+    FROM project
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching projects:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/payment-received-vs-remaining", (req, res) => {
+  const sql = `
+    SELECT 
+      p.projectName AS name,
+      p.paid_amount AS received,
+      (p.total_amount - p.paid_amount) AS remaining
+    FROM project p
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching payment received vs remaining data:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
+  });
+});
+app.get("/payments-per-client", (req, res) => {
+  const { year, month } = req.query;
+
+  let sql = `
+    SELECT 
+      payer_name AS name,
+      SUM(amount) AS total_amount
+    FROM payments
+  `;
+
+  // Add filters for year and month
+  if (year !== "All") {
+    sql += ` WHERE YEAR(date_paid) = ${year}`;
+  }
+  if (month !== "All") {
+    sql +=
+      year !== "All"
+        ? ` AND MONTH(date_paid) = ${months.indexOf(month) + 1}`
+        : ` WHERE MONTH(date_paid) = ${months.indexOf(month) + 1}`;
+  }
+
+  sql += ` GROUP BY payer_name`;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching payments per client:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    res.status(200).json(results);
   });
 });
 

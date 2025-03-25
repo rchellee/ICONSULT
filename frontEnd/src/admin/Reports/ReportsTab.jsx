@@ -25,7 +25,7 @@ const ReportsTab = () => {
         <div>
           <div className="reports-select">
             <select
-              className="border p-2 text-sm w-40 ml-auto"
+              className="border p-2 text-sm w-40 "
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
             >
@@ -34,8 +34,8 @@ const ReportsTab = () => {
               <option value="projects">Projects Reports</option>
               <option value="tasks">Task Reports</option>
               <option value="employees">Employees Reports</option>
-              <option value="reviews">Reviews Reports</option>
               <option value="payments">Financial Reports</option>
+              {/* <option value="review">Review Reports</option> */}
             </select>
           </div>
 
@@ -44,7 +44,7 @@ const ReportsTab = () => {
           {reportType === "payments" && <RevenueReports />}
           {reportType === "projects" && <ProjectReports />}
           {reportType === "tasks" && <TaskReports />}
-          {reportType === "reviews" && <ReviewReports />}
+          {/* {reportType === "reviews" && <ReviewReports />} */}
           {reportType === "employees" && <EmployeeReports />}
         </div>
       </div>

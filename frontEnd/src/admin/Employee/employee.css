@@ -413,7 +413,7 @@ input:checked + .slider:before {
 .employee-form-row select {
   padding: 12px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   border-radius: 4px;
   width: 100%;
 }

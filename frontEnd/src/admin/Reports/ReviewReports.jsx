@@ -97,14 +97,22 @@ const ReviewReports = () => {
         >
           <option value="">Select Report Type</option>
           <option value="Average Client Rating">Average Client Rating</option>
-          <option value="Number of Reviews per Project">Number of Reviews per Project</option>
+          <option value="Number of Reviews per Project">
+            Number of Reviews per Project
+          </option>
         </select>
 
         {selectedReport && (
           <div className="export-buttons">
             <CSVLink
-              data={selectedReport === "Average Client Rating" ? averageClientRatings : reviewsPerProject}
-              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.csv`}
+              data={
+                selectedReport === "Average Client Rating"
+                  ? averageClientRatings
+                  : reviewsPerProject
+              }
+              filename={`${selectedReport
+                .replace(/\s+/g, "_")
+                .toLowerCase()}.csv`}
               className="csv-button"
             >
               Export CSV

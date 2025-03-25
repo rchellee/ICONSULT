@@ -3,7 +3,10 @@ import axios from "axios";
 import { CSVLink } from "react-csv";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
+  LineChart,
+  Line,
   BarChart,
   Bar,
   PieChart,
@@ -20,24 +23,108 @@ import "./ReportsTab.css";
 const RevenueReports = () => {
   const [revenues, setRevenues] = useState([]);
   const [clients, setClients] = useState([]);
+  const [paymentData, setPaymentData] = useState([]);
+  const [overduePayments, setOverduePayments] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [totalPerProject, setTotalPerProject] = useState([]);
+  const [receivedVsRemaining, setReceivedVsRemaining] = useState([]);
+  const [paymentsPerClient, setPaymentsPerClient] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [revenueThisMonth, setRevenueThisMonth] = useState(0);
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("All");
   const [filters, setFilters] = useState({
     month: "All",
     year: new Date().getFullYear(),
   });
   const [selectedReport, setSelectedReport] = useState("");
+  const [detailedPaymentData, setDetailedPaymentData] = useState({
+    receivedPayments: [],
+    pendingPayments: [],
+  });
 
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   useEffect(() => {
-    fetchClients();
     fetchProjects();
     fetchRevenues();
+    fetchPaymentsPerClient();
+    fetchClients();
   }, [filters]);
 
+  useEffect(() => {
+    fetchPaymentStatus();
+    fetchOverduePayments();
+  }, []);
+
+  useEffect(() => {
+    fetchTotalRevenuePerProject();
+  }, [paymentStatusFilter]);
+
+  const fetchTotalRevenuePerProject = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/total-revenue-per-project",
+        {
+          params: {
+            paymentStatus:
+              paymentStatusFilter === "All" ? undefined : paymentStatusFilter,
+          },
+        }
+      );
+      setTotalPerProject(response.data);
+    } catch (error) {
+      console.error("Error fetching total revenue per project:", error);
+    }
+  };
+
+  const fetchPaymentStatus = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/payment-status");
+      const { paidTasks, pendingTasks, receivedPayments, pendingPayments } =
+        response.data;
+
+      // Format for the pie chart
+      setPaymentData([
+        { name: "Received Payments", value: receivedPayments },
+        { name: "Pending Payments", value: pendingPayments },
+      ]);
+
+      // Store detailed data for CSV export
+      setDetailedPaymentData({
+        receivedPayments: paidTasks,
+        pendingPayments: pendingTasks,
+      });
+
+      setTotalRevenue(receivedPayments);
+      setRevenueThisMonth(receivedPayments); // Assuming you want to update this too
+    } catch (error) {
+      console.error("Error fetching payment status data:", error);
+    }
+  };
+
+  const fetchOverduePayments = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/overdue-payments"
+      );
+      setOverduePayments(response.data);
+    } catch (error) {
+      console.error("Error fetching overdue payments:", error);
+    }
+  };
   const fetchClients = async () => {
     try {
       const response = await axios.get("http://localhost:8081/clients");
@@ -47,70 +134,522 @@ const RevenueReports = () => {
     }
   };
 
+  const fetchPaymentsPerClient = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/payments-per-client",
+        {
+          params: {
+            year: filters.year,
+            month: filters.month,
+          },
+        }
+      );
+      setPaymentsPerClient(response.data);
+    } catch (error) {
+      console.error("Error fetching payments per client:", error);
+    }
+  };
+
   const fetchProjects = async () => {
     try {
       const response = await axios.get("http://localhost:8081/projects");
       setProjects(response.data);
+
+      // Format the data for the "Payment Received vs. Remaining Balances" chart
+      const formattedData = response.data.map((project) => ({
+        name: project.projectName,
+        received: project.paid_amount,
+        remaining: project.remaining,
+      }));
+      setReceivedVsRemaining(formattedData);
     } catch (error) {
-      console.error("Error fetching projects", error);
+      console.error("Error fetching projects:", error);
     }
   };
 
   const fetchRevenues = async () => {
     try {
-      const response = await axios.get("http://localhost:8081/revenueReports", {
+      const response = await axios.get("http://localhost:8081/payments", {
         params: filters,
       });
       setRevenues(response.data);
     } catch (error) {
-      console.error("Error fetching revenue data", error);
+      console.error("Error fetching revenues", error);
     }
   };
+  const COLORS = ["#4CAF50", "#FF5252"];
 
-  const exportPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Revenue Report", 10, 10);
-    html2canvas(document.getElementById("revenue-chart")).then((canvas) => {
-      doc.addImage(canvas.toDataURL("image/png"), "PNG", 10, 20, 180, 100);
-      doc.save("revenue-report.pdf");
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const task = payload[0].payload;
+      return (
+        <div className="custom-tooltip">
+          <p className="intro">{`Due Date: ${task.due_date}`}</p>
+          <p className="intro">{`Amount: ₱ ${task.amount}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+  const exportPDF = async () => {
+    const doc = new jsPDF("landscape", "mm", "a4");
+    doc.setFontSize(8);
+    doc.text(selectedReport, 10, 10);
+    let yPos = 20;
+    const chartElement = document.getElementById("chart-container");
+    if (chartElement) {
+      try {
+        // Capture chart as an image
+        const canvas = await html2canvas(chartElement);
+        const imgData = canvas.toDataURL("image/png");
+
+        // Add image to the PDF
+        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
+        yPos += 90; // Adjust position for the table
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
+    }
+    if (selectedReport === "TOTAL REVENUE") {
+      const headers = [
+        [
+          "id",
+          "Client",
+          "Project",
+          "Task",
+          "Transaction ID",
+          "Paid by",
+          "Email",
+          "Amount",
+          "Currency",
+          "MOP",
+          "Date Paid",
+          "Date Created",
+        ],
+      ];
+      const data = revenues.map((r) => [
+        r.id,
+        r.client_id,
+        r.project_id,
+        r.task_id,
+        r.transaction_id,
+        r.payer_name,
+        r.payer_email,
+        r.amount,
+        r.currency,
+        r.mode_of_payment,
+        r.date_paid,
+        r.created_at,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
+      });
+    }
+    if (selectedReport === "REVENUE THIS MONTH") {
+      // Filter revenues for the current month
+      const currentMonthRevenues = revenues.filter((r) => {
+        const revenuesDate = new Date(r.date_paid);
+        return (
+          revenuesDate.getMonth() === new Date().getMonth() &&
+          revenuesDate.getFullYear() === new Date().getFullYear()
+        );
+      });
+
+      const headers = [
+        [
+          "id",
+          "Client",
+          "Project",
+          "Task",
+          "Transaction ID",
+          "Paid by",
+          "Email",
+          "Amount",
+          "Currency",
+          "MOP",
+          "Date Paid",
+          "Date Created",
+        ],
+      ];
+      const data = currentMonthRevenues.map((r) => [
+        r.id,
+        r.client_id,
+        r.project_id,
+        r.task_id,
+        r.transaction_id,
+        r.payer_name,
+        r.payer_email,
+        r.amount,
+        r.currency,
+        r.mode_of_payment,
+        r.date_paid,
+        r.created_at,
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
+      });
+    }
+    if (selectedReport === "Accounts Receivable Overview") {
+      doc.setFontSize(8);
+
+      // Add report title
+      doc.text("Accounts Receivable Overview", 14, yPos);
+      yPos += 10;
+
+      // Add Received Payments section header
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.text("Received Payments", 14, yPos);
+      yPos += 7;
+
+      // Add Received Payments table headers
+      doc.setFont("helvetica", "normal");
+      const receivedHeaders = [
+        "Task ID",
+        "Task Name",
+        "Amount",
+        "Transaction ID",
+        "MOP",
+        "Date Paid",
+      ];
+
+      // Prepare Received Payments data
+      const receivedRows = detailedPaymentData.receivedPayments.map(
+        (payment) => [
+          payment.task_id,
+          payment.task_name,
+          `₱${payment.amount.toFixed(2)}`,
+          payment.transaction_id || "N/A",
+          payment.mode_of_payment || "N/A",
+          payment.date_paid
+            ? new Date(payment.date_paid).toLocaleDateString()
+            : "N/A",
+        ]
+      );
+
+      // Calculate received total
+      const receivedTotal = detailedPaymentData.receivedPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0
+      );
+
+      // Add Received Payments table
+      autoTable(doc, {
+        startY: yPos,
+        head: [receivedHeaders],
+        body: receivedRows,
+        margin: { left: 14 },
+        styles: { fontSize: 8, cellPadding: 2 },
+      });
+      yPos = doc.lastAutoTable.finalY + 5;
+      doc.text(`Total Amount: ₱${receivedTotal.toFixed(2)}`, 14, yPos);
+      yPos += 10;
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Pending Payments", 14, yPos);
+      yPos += 7;
+
+      doc.setFont("helvetica", "normal");
+      const pendingHeaders = ["Task ID", "Task Name", "Amount", "Due Date"];
+
+      // Prepare Pending Payments data
+      const pendingRows = detailedPaymentData.pendingPayments.map((payment) => [
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.due_date
+          ? new Date(payment.due_date).toLocaleDateString()
+          : "N/A",
+      ]);
+
+      // Calculate pending total
+      const pendingTotal = detailedPaymentData.pendingPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0
+      );
+
+      // Add Pending Payments table
+      autoTable(doc, {
+        startY: yPos,
+        head: [pendingHeaders],
+        body: pendingRows,
+        margin: { left: 14 },
+        styles: { fontSize: 8, cellPadding: 2 },
+      });
+
+      // Add Pending Payments total
+      yPos = doc.lastAutoTable.finalY + 5;
+      doc.text(`Total Amount: ₱${pendingTotal.toFixed(2)}`, 14, yPos);
+    }
+    if (selectedReport === "Payments per Client") {
+      clients.forEach((client) => {
+        const clientRevenues = revenues.filter(
+          (r) => r.client_id === client.id
+        );
+
+        if (clientRevenues.length > 0) {
+          doc.setFontSize(8);
+          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
+          const data = clientRevenues.map((r) => [
+            r.transaction_id,
+            r.amount,
+            r.mode_of_payment,
+            r.date_paid,
+          ]);
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 8 },
+          });
+          yPos = doc.lastAutoTable.finalY + 10;
+        }
+      });
+    }
+    if (selectedReport === "Revenue per Project") {
+      let grandTotal = 0;
+
+      projects.forEach((project) => {
+        const projectRevenues = revenues.filter(
+          (r) => r.project_id === project.id
+        );
+
+        if (projectRevenues.length > 0) {
+          doc.setFontSize(8);
+          doc.text(`${project.projectName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
+          let projectTotal = 0;
+          const data = projectRevenues.map((r) => {
+            projectTotal += r.amount;
+            return [
+              r.transaction_id || "N/A",
+              `₱${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+            ];
+          });
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+          });
+
+          // Add project total
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Project Total: ₱${projectTotal.toFixed(2)}`, 10, yPos);
+          yPos += 15; // Extra space before next project
+
+          grandTotal += projectTotal;
+        }
+      });
+      if (grandTotal > 0) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ₱${grandTotal.toFixed(2)}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
+    }
+
+    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+  };
+  const formatREVENUETHISMonthCSV = () => {
+    let csvData = [];
+
+    // Add headers
+    csvData.push([
+      "id",
+      "Client",
+      "Project",
+      "Task",
+      "Transaction ID",
+      "Paid by",
+      "Email",
+      "Amount",
+      "Currency",
+      "MOP",
+      "Date Paid",
+      "Date Created",
+    ]);
+
+    // Filter appointments for the current month
+    const currentMonthRevenues = revenues.filter((r) => {
+      const revenuesDate = new Date(r.date_paid);
+      return (
+        revenuesDate.getMonth() === new Date().getMonth() &&
+        revenuesDate.getFullYear() === new Date().getFullYear()
+      );
     });
+
+    // Populate CSV data
+    currentMonthRevenues.forEach((r) => {
+      csvData.push([
+        r.id,
+        r.client_id,
+        r.project_id,
+        r.task_id,
+        r.transaction_id,
+        r.payer_name,
+        r.payer_email,
+        r.amount,
+        r.currency,
+        r.mode_of_payment,
+        r.date_paid,
+        r.created_at,
+      ]);
+    });
+
+    return csvData;
+  };
+  const formatAccountsReceivableOverviewCSV = () => {
+    let csvData = [];
+    csvData.push(["Received Payments"]);
+    csvData.push([
+      "Task ID",
+      "Task Name",
+      "Amount",
+      "Transaction ID",
+      "MOP",
+      "Date Paid",
+    ]);
+
+    let receivedTotal = 0;
+    detailedPaymentData.receivedPayments.forEach((payment) => {
+      csvData.push([
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.transaction_id,
+        payment.mode_of_payment,
+        payment.date_paid
+          ? new Date(payment.date_paid).toLocaleDateString()
+          : "N/A",
+      ]);
+      receivedTotal += payment.amount;
+    });
+
+    csvData.push([
+      "Total Amount",
+      "",
+      `₱${receivedTotal.toFixed(2)}`,
+      "",
+      "",
+      "",
+    ]);
+    csvData.push([]);
+    csvData.push(["Pending Payments"]);
+    csvData.push(["Task ID", "Task Name", "Amount", "Due Date"]);
+
+    let pendingTotal = 0;
+    detailedPaymentData.pendingPayments.forEach((payment) => {
+      csvData.push([
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.due_date
+          ? new Date(payment.due_date).toLocaleDateString()
+          : "N/A",
+      ]);
+      pendingTotal += payment.amount;
+    });
+
+    csvData.push(["Total Amount", "", `₱${pendingTotal.toFixed(2)}`, ""]);
+
+    return csvData;
+  };
+  const formatPaymentsperClientCSV = () => {
+    let csvData = [];
+
+    clients.forEach((client) => {
+      const clientRevenues = revenues.filter((r) => r.client_id === client.id);
+
+      if (clientRevenues.length > 0) {
+        csvData.push([`${client.firstName} ${client.lastName}`]); // Add client name as a row
+        csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]); // Headers
+
+        clientRevenues.forEach((r) => {
+          csvData.push([
+            r.transaction_id,
+            r.amount,
+            r.mode_of_payment,
+            r.date_paid,
+          ]);
+        });
+
+        csvData.push([]); // Blank row for spacing
+      }
+    });
+
+    return csvData;
+  };
+  const formatRevenueperProjectCSV = () => {
+    let csvData = [];
+    let grandTotal = 0;
+
+    projects.forEach((project) => {
+      const projectRevenues = revenues.filter(
+        (r) => r.project_id === project.id
+      );
+
+      if (projectRevenues.length > 0) {
+        csvData.push([`${project.projectName}`]); // Add client name as a row
+        csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]);
+
+        let projectTotal = 0;
+
+        projectRevenues.forEach((r) => {
+          csvData.push([
+            r.transaction_id,
+            r.amount,
+            r.mode_of_payment,
+            r.date_paid,
+          ]);
+          projectTotal += r.amount;
+        });
+
+        csvData.push(["Project Total", projectTotal, "", ""]);
+        csvData.push([]); // Blank row for spacing
+
+        grandTotal += projectTotal;
+      }
+    });
+
+    // Add grand total if there were any projects with revenues
+    if (grandTotal > 0) {
+      csvData.push(["GRAND TOTAL", grandTotal, "", ""]);
+    }
+
+    return csvData;
   };
 
-  const totalRevenue = revenues.reduce((sum, r) => sum + r.amount, 0);
+  let exportCSVData = [];
 
-  const paymentsStatus = [
-    { name: "Received", value: 120000 },
-    { name: "Pending", value: 40000 },
-  ];
-
-  const paymentsPerClient = [
-    { name: "John Doe", amount: 50000 },
-    { name: "Jane Smith", amount: 42000 },
-    { name: "Michael Johnson", amount: 35000 },
-    { name: "Emily Davis", amount: 27000 },
-    { name: "Chris Brown", amount: 63000 },
-  ];
-
-  const totalPerProject = projects.length
-    ? projects.map((project) => ({
-        name: project.name,
-        value: Math.floor(Math.random() * 70000) + 20000,
-      }))
-    : [{ name: "No Data", value: 0 }];
-
-  const receivedVsRemaining = projects.length
-    ? projects.map((project) => ({
-        name: project.name,
-        received: Math.floor(Math.random() * 50000) + 10000,
-        remaining: Math.floor(Math.random() * 30000),
-      }))
-    : [{ name: "No Data", received: 0, remaining: 0 }];
-
-  const overduePayments = [
-    { name: "Paid", value: 90000 },
-    { name: "Overdue", value: 30000 },
-  ];
-
+  if (selectedReport === "REVENUE THIS MONTH") {
+    exportCSVData = formatREVENUETHISMonthCSV();
+  } else if (selectedReport === "Accounts Receivable Overview") {
+    exportCSVData = formatAccountsReceivableOverviewCSV();
+  } else if (selectedReport === "Payments per Client") {
+    exportCSVData = formatPaymentsperClientCSV();
+  } else if (selectedReport === "Revenue per Project") {
+    exportCSVData = formatRevenueperProjectCSV();
+  } else {
+    exportCSVData = revenues; // Default case for Total Appointments & Appointments This Month
+  }
   return (
     <div className="revenue-p-4">
       {/* Report Type Selection */}
@@ -121,113 +660,163 @@ const RevenueReports = () => {
           onChange={(e) => setSelectedReport(e.target.value)}
         >
           <option value="">Select Report Type</option>
-          <option value="Total Revenue">Total Revenue</option>
-          <option value="Pending vs Received Payments">Pending vs Received Payments</option>
+          <option value="TOTAL REVENUE">Total revenue</option>
+          <option value="REVENUE THIS MONTH">Revenue this Month</option>
+          <option value="Accounts Receivable Overview">
+            Accounts Receivable Overview
+          </option>
           <option value="Payments per Client">Payments per Client</option>
           <option value="Revenue per Project">Revenue per Project</option>
-          <option value="Overdue Payments">Overdue Payments</option>
         </select>
 
         {selectedReport && (
           <>
             <CSVLink
-              data={revenues}
-              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.csv`}
+              data={exportCSVData}
+              filename={`${selectedReport
+                .replace(/\s+/g, "_")
+                .toLowerCase()}.csv`}
               className="bg-green-500 text-white px-4 py-2 rounded"
             >
               Export CSV
             </CSVLink>
 
-            <button onClick={exportPDF} className="bg-red-500 text-white px-4 py-2 rounded">
+            <button
+              onClick={exportPDF}
+              className="bg-red-500 text-white px-4 py-2 rounded"
+            >
               Export PDF
             </button>
           </>
         )}
       </div>
 
-      {/* Sorting Buttons */}
-      <div className="filter-buttons">
-        <select value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })}>
-          <option value="All">Year</option>
-          {[2023, 2024, 2025].map((year) => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-
-        <select value={filters.month} onChange={(e) => setFilters({ ...filters, month: e.target.value })}>
-          <option value="All">Month</option>
-          {months.map((month) => (
-            <option key={month} value={month}>{month}</option>
-          ))}
-        </select>
+      {/* Reports Grid */}
+      <div id="summary-section">
+        <div className="summary-box">
+          <h2 className="summary-title">Total Revenue</h2>
+          <p className="summary-value">₱ {totalRevenue.toLocaleString()}</p>
+        </div>
+        <div className="summary-box">
+          <h2 className="summary-title">Revenue this Month </h2>
+          <p className="summary-value">₱ {revenueThisMonth.toLocaleString()}</p>
+        </div>
       </div>
 
-      {/* Reports Grid */}
       <div className="revenue-grid">
         <div className="chart-container">
-          <h3>Pending Payments vs. Received Payments</h3>
+        <h3>Accounts Receivable Overview</h3>
+        <p>Compares received payments and pending payments for a clearer view of outstanding balances.</p>
           <PieChart width={400} height={300}>
-            <Pie data={paymentsStatus} dataKey="value" cx="50%" cy="50%" outerRadius={100} label>
-              {paymentsStatus.map((entry, index) => (
-                <Cell key={index} fill={["#4CAF50", "#FF5252"][index]} />
+            <Pie
+              data={paymentData}
+              dataKey="value"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label
+            >
+              {paymentData.map((entry, index) => (
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip />
+            <Legend />
           </PieChart>
         </div>
 
-          {/* Overdue Payments */}
-    <div className="chart-container">
-    <h3>Overdue Payments</h3>
-    <PieChart width={400} height={300}>
-      <Pie data={overduePayments} dataKey="value" cx="50%" cy="50%" outerRadius={100} label>
-        {overduePayments.map((entry, index) => (
-          <Cell key={index} fill={["#4CAF50", "#FF5252"][index]} />
-        ))}
-      </Pie>
-      <Tooltip />
-    </PieChart>
-  </div>
-
-   {/* Total Revenue per Project */}
-   <div className="chart-container">
-    <h3>Total Revenue per Project</h3>
-    <BarChart width={700} height={400} data={totalPerProject}>
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="value" fill="#82ca9d" />
-    </BarChart>
-  </div>
-
-    {/* Payment Received vs. Remaining Balances */}
-    <div className="chart-container scrollable-chart">
-    <h3>Payment Received vs. Remaining Balances</h3>
-    <BarChart width={700} height={400} data={receivedVsRemaining}>
-    <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="received" fill="#4CAF50" />
-      <Bar dataKey="remaining" fill="#FF5252" />
-    </BarChart>
-  </div>
-  </div>
-
+        {/* Overdue Payments */}
         <div className="chart-container scrollable-chart">
-          <h3>Payments per Client</h3>
-          <BarChart width={1700} height={400} data={paymentsPerClient}>
+        <h3>Overdue Payments</h3>
+        <p>Displays overdue payments, showing their due dates and amounts.</p>          <LineChart
+            width={1500}
+            height={400}
+            data={overduePayments}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="name" angle={-15} />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#FF5252"
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </div>
+
+        {/* Total Revenue per Project */}
+        <div className="chart-container scrollable-chart">
+        <h3>Total Revenue per Project</h3>
+        <p>Displays the total revenue generated by each project.</p>          <div className="filter-buttons">
+            <label>
+              Filter by Payment Status:
+              <select
+                value={paymentStatusFilter}
+                onChange={(e) => setPaymentStatusFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Paid">Paid</option>
+                <option value="Not Paid">Unpaid</option>
+              </select>
+            </label>
+          </div>
+          <BarChart width={1500} height={400} data={totalPerProject}>
+            <XAxis dataKey="project_name" angle={-15} />
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="amount" fill="#8884d8" />
+            <Bar dataKey="total_revenue" fill="#82ca9d" />
           </BarChart>
         </div>
+
+        {/* Payment Received vs. Remaining Balances */}
+        <div className="chart-container scrollable-chart">
+        <h3>Payment Received vs. Remaining Balances</h3>
+        <p>Compares payments already received with remaining balances for various projects.</p>          <LineChart
+            width={1500}
+            height={400}
+            data={receivedVsRemaining}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" angle={-15} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="received"
+              stroke="#4CAF50"
+              activeDot={{ r: 8 }}
+              name="Received"
+            />
+            <Line
+              type="monotone"
+              dataKey="remaining"
+              stroke="#FF5252"
+              activeDot={{ r: 8 }}
+              name="Remaining"
+            />
+          </LineChart>
+        </div>
       </div>
+
+      <div className="chart-container scrollable-chart">
+      <h3>Payments per Client</h3>
+      <p>Shows the total payments received from each client.</p>        <BarChart width={1700} height={400} data={paymentsPerClient}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="total_amount" fill="#8884d8" />
+        </BarChart>
+      </div>
+    </div>
   );
 };
 
