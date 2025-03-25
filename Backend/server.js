@@ -2804,6 +2804,21 @@ app.get("/ETReports", (req, res) => {
     res.json(result);
   });
 });
+// Add this new endpoint
+app.get("/allEmployeeTasks", (req, res) => {
+  const sql = `
+    SELECT e.id as employeeId, e.firstName, e.lastName, 
+           t.task_name, t.status, t.due_date
+    FROM employee e
+    LEFT JOIN tasks t ON e.id = t.employee
+    ORDER BY e.id, t.due_date
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
+    res.json(result);
+  });
+});
 app.get("/employeeReports", (req, res) => {
   const sql = "SELECT * FROM employee";
   db.query(sql, (err, result) => {

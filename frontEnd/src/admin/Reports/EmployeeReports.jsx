@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 
 const EmployeeReports = () => {
@@ -22,6 +23,7 @@ const EmployeeReports = () => {
   const [taskStatusFilter, setTaskStatusFilter] = useState("All");
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [tasksForSelectedEmployee, setTasksForSelectedEmployee] = useState([]);
+  const [allTasksForCSV, setAllTasksForCSV] = useState([]);
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -38,7 +40,17 @@ const EmployeeReports = () => {
       setEmployees([]);
     }
   };
-
+  const fetchAllTasksForCSV = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/allEmployeeTasks"
+      );
+      setAllTasksForCSV(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching all tasks for CSV", error);
+      setAllTasksForCSV([]);
+    }
+  };
   const fetchTasks = async () => {
     try {
       const response = await axios.get("http://localhost:8081/ETReports");
@@ -66,6 +78,7 @@ const EmployeeReports = () => {
   useEffect(() => {
     fetchEmployees();
     fetchTasks();
+    fetchAllTasksForCSV();
   }, []);
 
   useEffect(() => {
@@ -79,6 +92,14 @@ const EmployeeReports = () => {
       fetchTasksForEmployee(selectedEmployee);
     }
   }, [selectedEmployee]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US", options);
+  };
 
   // Filter tasks for the "Tasks Assigned to Each Employee" chart
   const filteredTasks = tasks.filter((task) => {
@@ -100,11 +121,35 @@ const EmployeeReports = () => {
       (filters.month === "All" || taskMonth === filters.month)
     );
   });
+  const colors = [
+    "#3498db", // Blue
+    "#2ecc71", // Green
+    "#e74c3c", // Red
+    "#f39c12", // Yellow-Orange
+    "#9b59b6", // Purple
+    "#1abc9c", // Teal
+    "#e67e22", // Dark Orange
+    "#95a5a6", // Gray
+  ];
+
+  const taskColors = [
+    "#3498db", // Blue
+    "#2ecc71", // Green
+    "#e74c3c", // Red
+    "#f39c12", // Yellow-Orange
+    "#9b59b6", // Purple
+    "#1abc9c", // Teal
+    "#e67e22", // Dark Orange
+    "#95a5a6", // Gray
+    "#c0392b", // Dark Red
+    "#8e44ad", // Deep Purple
+  ];
 
   // Map tasks for the "Tasks Assigned to Each Employee" chart
-  const taskData = filteredTasks.map((task) => ({
+  const taskData = filteredTasks.map((task, index) => ({
     name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
     tasks: task.task_count || 0,
+    color: taskColors[index % taskColors.length], // Assign color dynamically
   }));
   const exportPDF = async () => {
     const doc = new jsPDF("landscape", "mm", "a4");
@@ -165,80 +210,78 @@ const EmployeeReports = () => {
         styles: { fontSize: 8 },
       });
     }
+    if (selectedReport === "Tasks Assigned to Each Employee") {
+      const tasksByEmployee = allTasksForCSV.reduce((acc, task) => {
+        const key = task.employeeId;
+        if (!acc[key]) {
+          acc[key] = {
+            name: `${task.firstName} ${task.lastName}`,
+            tasks: [],
+          };
+        }
+        if (task.task_name) {
+          acc[key].tasks.push(task);
+        }
+        return acc;
+      }, {});
+
+      Object.values(tasksByEmployee).forEach((employee) => {
+        doc.setFontSize(12);
+        doc.text(employee.name, 10, yPos);
+        yPos += 10;
+
+        const headers = [["Employee Name", "Task Name", "Status", "Due Date"]];
+        const data = employee.tasks.map((task) => [
+          "", // Empty for indentation
+          task.task_name || "N/A",
+          task.status || "N/A",
+          task.due_date ? formatDate(task.due_date) : "N/A",
+        ]);
+
+        autoTable(doc, {
+          startY: yPos,
+          head: headers,
+          body: data,
+          styles: { fontSize: 10 },
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+      });
+    }
 
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
   const formatTasksAssignedtoEachEmployeeCSV = () => {
-    let csvData = [];
-
-    employees.forEach((employee) => {
-      const employeesTasks = tasks.filter((e) => e.employee === employee.id);
-
-      if (employeesTasks.length > 0) {
-        csvData.push([
-          `${employee.firstName} ${employee.lastName} - ${employeesTasks.length} task`,
-        ]); // Add employee name and task count
-
-        // Completed Tasks
-        const completedTasks = employeesTasks.filter(
-          (task) => task.status?.toLowerCase() === "completed"
-        );
-        if (completedTasks.length > 0) {
-          csvData.push(["Completed"]);
-          csvData.push(["Task name", "due_date", "amount"]);
-          completedTasks.forEach((task) => {
-            csvData.push([task.task_name, task.due_date, task.amount]);
-          });
-        }
-
-        // Ongoing Tasks
-        const ongoingTasks = employeesTasks.filter(
-          (task) => task.status?.toLowerCase() !== "completed"
-        );
-        if (ongoingTasks.length > 0) {
-          csvData.push(["Ongoing"]);
-          csvData.push(["Task name", "due_date", "amount"]);
-          ongoingTasks.forEach((task) => {
-            csvData.push([task.task_name, task.due_date, task.amount]);
-          });
-        }
-
-        csvData.push([]); // Blank row for spacing
-      }
-    });
-
-    return csvData;
-  };
-  const formatTasksforSelectedEmployeeCSV = () => {
-    let csvData = [];
+    let csvData = [["Employee Name", "Task Name", "Status", "Due Date"]];
 
     // Group tasks by employee
-    const tasksByEmployee = tasksForSelectedEmployee.reduce((acc, task) => {
-      const employeeName = `${task.firstName} ${task.lastName}`;
-      if (!acc[employeeName]) {
-        acc[employeeName] = [];
+    const tasksByEmployee = allTasksForCSV.reduce((acc, task) => {
+      const key = task.employeeId;
+      if (!acc[key]) {
+        acc[key] = {
+          name: `${task.firstName} ${task.lastName}`,
+          tasks: [],
+        };
       }
-      acc[employeeName].push(task);
+      if (task.task_name) {
+        acc[key].tasks.push(task);
+      }
       return acc;
     }, {});
 
-    // Populate CSV data
-    Object.entries(tasksByEmployee).forEach(([employeeName, tasks]) => {
-      // Add employee name
-      csvData.push([employeeName]);
+    // Generate CSV data
+    Object.values(tasksByEmployee).forEach((employee) => {
+      csvData.push([employee.name, "", "", ""]);
 
-      // Add task details for the employee
-      tasks.forEach((task) => {
+      employee.tasks.forEach((task) => {
         csvData.push([
-          "",
-          task.task_name,
-          task.due_date,
-          task.amount,
-          task.status,
+          "", // empty for indentation
+          task.task_name || "N/A",
+          task.status || "N/A",
+          task.due_date ? formatDate(task.due_date) : "N/A",
         ]);
       });
 
-      csvData.push([]); // Add a blank row for spacing
+      csvData.push(["", "", "", ""]); // empty row between employees
     });
 
     return csvData;
@@ -248,18 +291,15 @@ const EmployeeReports = () => {
 
   if (selectedReport === "Tasks Assigned to Each Employee") {
     exportCSVData = formatTasksAssignedtoEachEmployeeCSV();
-  } else if (selectedReport === "Tasks for Selected Employee") {
-    exportCSVData = formatTasksforSelectedEmployeeCSV();
   } else {
-    exportCSVData = employees; // Default case for Total Appointments & Appointments This Month
+    exportCSVData = employees;
   }
 
   return (
     <div className="employee-p-4">
-      {/* Filters */}
-      <div className="mt-4 flex space-x-4">
+      <div className="filter-container">
         <select
-          className="bg-gray-200 text-black px-4 py-2 rounded"
+          className="filter-select"
           value={selectedReport}
           onChange={(e) => setSelectedReport(e.target.value)}
         >
@@ -267,9 +307,6 @@ const EmployeeReports = () => {
           <option value="Total Employees">Total Employees</option>
           <option value="Tasks Assigned to Each Employee">
             Tasks Assigned to Each Employee
-          </option>
-          <option value="Tasks for Selected Employee">
-            Tasks for Selected Employee
           </option>
         </select>
 
@@ -294,23 +331,22 @@ const EmployeeReports = () => {
         )}
       </div>
 
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">
-          Total Employees: {employees.length}
-        </h3>
+      <div className="employee-summary-card">
+        Total Employees
+        <p>{employees.length}</p>
       </div>
-
       <div className="employee-graph-container">
-        <h3 className="text-lg font-semibold mb-2">
-          Tasks Assigned to Each Employee
-        </h3>
-        <div className="flex space-x-4 mb-4">
+        <div className="employee-graphs">
+          <h3>Tasks Assigned to Each Employee</h3>
+          <p className="graph-description">
+            Shows the number of tasks assigned to employees.
+          </p>
           <select
-            className="border p-2"
+            className="employee-filter-each"
             value={filters.year}
             onChange={(e) => setFilters({ ...filters, year: e.target.value })}
           >
-            <option value="All">All Years</option>
+            <option value="All">Year</option>
             <option value="2025">2025</option>
             <option value="2026">2026</option>
           </select>
@@ -319,7 +355,7 @@ const EmployeeReports = () => {
             value={filters.month}
             onChange={(e) => setFilters({ ...filters, month: e.target.value })}
           >
-            <option value="All">All Months</option>
+            <option value="All">Month</option>
             {[
               "January",
               "February",
@@ -344,77 +380,90 @@ const EmployeeReports = () => {
             value={taskStatusFilter}
             onChange={(e) => setTaskStatusFilter(e.target.value)}
           >
-            <option value="All">All Tasks</option>
+            <option value="All">Task</option>
             <option value="Completed">Completed</option>
             <option value="Ongoing">Ongoing</option>
           </select>
-        </div>
 
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            layout="vertical"
-            data={taskData}
-            margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="name" type="category" width={150} />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="tasks" fill="#8884d8" name="Number of Tasks" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="bg-white p-4 shadow rounded-lg">
-        <h3 className="text-lg font-semibold">Tasks for Selected Employee</h3>
-        <div className="flex space-x-4 mb-4">
-          <select
-            className="border p-2"
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-          >
-            {employees.map((emp) => (
-              <option
-                key={emp.id}
-                value={emp.id}
-              >{`${emp.firstName} ${emp.lastName}`}</option>
-            ))}
-          </select>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart layout="vertical" data={taskData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" width={150} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="tasks">
+                {taskData.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            layout="vertical"
-            data={tasksForSelectedEmployee}
-            margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" />
-            <YAxis dataKey="task_name" type="category" width={150} />
-            <Tooltip
-              content={({ payload }) => {
-                if (payload && payload.length) {
-                  const task = payload[0].payload;
-                  return (
-                    <div className="bg-white p-2 border rounded shadow">
-                      <p className="text-xs text-gray-600">
-                        Status: {task.status}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        Amount: {task.amount}
-                      </p>
-                      <p className="text-xs text-gray-600">
-                        Task Due: {task.due_date}
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Legend />
-            <Bar dataKey="amount" fill="#8884d8" name="Task Amount" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="employee-graphs">
+          <h3>Tasks for selected Employee</h3>
+          <p className="graph-description">
+            Displays tasks for the selected employee.
+          </p>{" "}
+          <div className="space-x-4 mb-4">
+            <select
+              className="employee-filter-each"
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
+            >
+              {employees.map((emp) => (
+                <option
+                  key={emp.id}
+                  value={emp.id}
+                >{`${emp.firstName} ${emp.lastName}`}</option>
+              ))}
+            </select>
+
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                layout="vertical"
+                data={tasksForSelectedEmployee}
+                margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis dataKey="task_name" type="category" width={150} />
+                <Tooltip
+                  content={({ payload }) => {
+                    if (payload && payload.length) {
+                      const task = payload[0].payload;
+                      return (
+                        <div className="bg-white p-2 border rounded shadow">
+                          <p className="text-xs text-gray-600">
+                            Status: {task.status}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            Amount: {task.amount}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            Task Due: {task.due_date}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis dataKey="task_name" type="category" width={150} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="amount">
+                  {tasksForSelectedEmployee.map((_, index) => (
+                    <Cell key={index} fill={colors[index % colors.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );
