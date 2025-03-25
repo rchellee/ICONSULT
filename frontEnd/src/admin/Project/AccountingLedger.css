@@ -2,14 +2,60 @@
   position: relative;
 }
 
+/*-----------------------------------------------------------*/
+
+/* Sort dropdown container */
+.sort-ledger {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 20px 0;
+  gap: 10px;
+  margin-bottom: auto;
+  position: relative;
+  top: 60px;
+}
+
+.sort-ledger label {
+  font-weight: 500;
+  color: #3b4f67;
+  height: 36px; /* Match select height */
+  display: flex;
+  align-items: center;
+}
+
+.sort-ledger select {
+  padding: 8px 12px;
+  border: 1px solid #ddd; /* Added border for better visibility */
+  border-radius: 4px; /* Added for better appearance */
+  background-color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 36px; /* Fixed height */
+  box-sizing: border-box; /* Ensures padding is included in height */
+}
+
+.sort-ledger select:hover {
+  border-color: #4070f4;
+}
+
+.sort-ledger select:focus {
+  outline: none;
+  border-color: #4070f4;
+  box-shadow: 0 0 0 2px rgba(64, 112, 244, 0.2);
+}
+
+/*-----------------------------------------------------------*/
+
 .accounting-table {
   width: 100%;
   border-collapse: collapse;
   border: none;
   font-size: 18px;
-  position: absolute;
+  position: relative;
   margin-right: 50px;
-  margin-top: 100px;
+  margin-top: 10px;
   top: 70px;
   /* Ensure columns respect their widths */
 }
@@ -57,30 +103,30 @@
 }
 
 .accounting-scroll {
-  max-height: 520px; 
-  overflow-y: auto; 
-  -webkit-overflow-scrolling: touch; 
+  max-height: 520px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   margin-top: 40px;
-  margin-left: 125px; 
-  margin-right: 125px; 
+  margin-left: 125px;
+  margin-right: 125px;
   border-radius: 10px;
-  background-color: transparent; 
-  padding: 10px; 
+  background-color: transparent;
+  padding: 10px;
   border: none;
 }
 
 /* Webkit Custom Scrollbar */
 .accounting-scroll::-webkit-scrollbar {
-  width: 12px; 
+  width: 12px;
 }
 
 .accounting-scroll::-webkit-scrollbar-track {
-  background: #ccc; 
+  background: #ccc;
   border-radius: 10px;
 }
 
 .accounting-scroll::-webkit-scrollbar-thumb {
-  background-color: #547099; 
+  background-color: #547099;
   border-radius: 10px;
 }
 
