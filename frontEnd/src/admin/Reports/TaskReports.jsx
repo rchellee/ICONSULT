@@ -689,107 +689,116 @@ const TaskReports = () => {
           </>
         )}
       </div>
+      <div className="tasks-grid-container">
+        <div className="tasks-graph-container scrollable-chart">
+          <h3>Task Status</h3>
+          <p>
+            Displays the distribution of tasks based on their current status:
+            Pending, Ongoing, or Completed.
+          </p>
+          <PieChart width={500} height={400}>
+            <Pie
+              data={filteredTaskStatusCounts}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+            >
+              {filteredTaskStatusCounts.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={["#8884d8", "#82ca9d", "#ff8042"][index % 3]}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </div>
 
-      <div className="tasks-graph-container">
-        <h3>Task Status</h3>
-
-        <PieChart width={400} height={400}>
-          <Pie
-            data={filteredTaskStatusCounts}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-          >
-            {filteredTaskStatusCounts.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={["#8884d8", "#82ca9d", "#ff8042"][index % 3]}
-              />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </div>
-
-      <div className="tasks-graph-container">
-        <h3 className="text-lg font-semibold">Tasks Per Project</h3>
-
-        <select
-          className="mb-4 p-2 border rounded"
-          value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
-        >
-          <option value="All">All Status</option>
-          <option value="Ongoing">Ongoing</option>
-          <option value="Completed">Completed</option>
-        </select>
-
-        <BarChart width={1100} height={400} data={projectTaskData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#82ca9d" name="Task Count" />
-        </BarChart>
-      </div>
-
-      <div className="tasks-graph-container">
-        <h3 className="text-lg font-semibold">Task Due</h3>
-
-        <LineChart width={1000} height={300} data={filteredTaskDueData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="task_name" />
-          <YAxis dataKey="due_date" type="category" />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="due_date"
-            stroke="#FF0000"
-            name="Due Date"
-          />
-        </LineChart>
-      </div>
-
-      <div className="tasks-graph-container">
-        <div className="mb-4">
-          <label className="mr-2">Filter by Status:</label>
+        <div className="tasks-graph-container scrollable-chart">
+          <h3>Tasks Per Project</h3>
+          <p>Illustrates the number of tasks assigned to each project.</p>
           <select
-            className="p-2 border rounded"
+            className="mb-4 p-2 border rounded"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
-            <option value="All">All</option>
-            <option value="Completed">Paid (Completed)</option>
-            <option value="Ongoing">Not Paid (Ongoing)</option>
+            <option value="All">All Status</option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Completed">Completed</option>
           </select>
-          <label className="mr-2">Filter by Project:</label>
-          <select
-            className="p-2 border rounded"
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-          >
-            <option value="All">All Projects</option>
-            {Object.entries(projects).map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
+
+          <BarChart width={1100} height={400} data={projectTaskData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="value" fill="#82ca9d" name="Task Count" />
+          </BarChart>
         </div>
-        <h3 className="text-lg font-semibold">Task Payment</h3>
-        <BarChart width={1100} height={400} data={taskPaymentData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip formatter={(value) => [`Amount: P${value}`]} />
-          <Legend />
-          <Bar dataKey="amount" fill="#FF0000" name="Amount" />
-        </BarChart>
+
+        <div className="tasks-graph-container scrollable-chart">
+          <h3>Task Due Dates</h3>
+          <p>
+            Shows the upcoming due dates of tasks, helping in tracking
+            deadlines.
+          </p>
+          <LineChart width={1000} height={300} data={filteredTaskDueData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="task_name" />
+            <YAxis dataKey="due_date" type="category" />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="due_date"
+              stroke="#FF0000"
+              name="Due Date"
+            />
+          </LineChart>
+        </div>
+
+        <div className="tasks-graph-container scrollable-chart">
+          <div className="mb-4">
+            <h3>Task Payment</h3>
+            <p>Displays the total payments associated with each task.</p>
+            <label className="mr-2">Filter by Status:</label>
+            <select
+              className="p-2 border rounded"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="All">All</option>
+              <option value="Completed">Paid (Completed)</option>
+              <option value="Ongoing">Not Paid (Ongoing)</option>
+            </select>
+            <label className="mr-2">Filter by Project:</label>
+            <select
+              className="p-2 border rounded"
+              value={selectedProject}
+              onChange={(e) => setSelectedProject(e.target.value)}
+            >
+              <option value="All">All Projects</option>
+              {Object.entries(projects).map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <BarChart width={1100} height={400} data={taskPaymentData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip formatter={(value) => [`Amount: P${value}`]} />
+            <Legend />
+            <Bar dataKey="amount" fill="#FF0000" name="Amount" />
+          </BarChart>
+        </div>
       </div>
     </div>
   );

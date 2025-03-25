@@ -423,43 +423,14 @@ const ProjectReports = () => {
 
   return (
     <div className="project-p-4">
-      <div className="export-dropdown">
-        <select
-          className="export-select"
-          value={selectedReport}
-          onChange={(e) => setSelectedReport(e.target.value)}
-        >
-          <option value="">Select Report Type</option>
-          <option value="Total Projects">Total Projects</option>
-          <option value="Projects by Status">Projects by Status</option>
-          <option value="Overdue Projects">Overdue Projects</option>
-          <option value="Projects per Client">Projects per Client</option>
-        </select>
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={exportCSVData}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="export-button"
-            >
-              Export CSV
-            </CSVLink>
-            <button onClick={exportPDF} className="export-button">
-              Export PDF
-            </button>
-          </>
-        )}
-      </div>
       {/* Filters */}
-      <div className="project-filter-container">
+      <div className="filter-container">
         <select
-          className="project-filter-input"
+          className="filter-select"
           value={filters.year}
           onChange={(e) => setFilters({ ...filters, year: e.target.value })}
         >
-          <option>All Years</option>
+          <option>Years</option>
           {years.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -468,17 +439,46 @@ const ProjectReports = () => {
         </select>
 
         <select
-          className="project-filter-input"
+          className="filter-select"
           value={filters.month}
           onChange={(e) => setFilters({ ...filters, month: e.target.value })}
         >
-          <option>All Months</option>
+          <option>Months</option>
           {months.map((month) => (
             <option key={month} value={month}>
               {month}
             </option>
           ))}
         </select>
+        <div className="mt-4 flex justify-start items-center space-x-4">
+          <select
+            className="bg-gray-200 text-black px-4 py-2 rounded"
+            value={selectedReport}
+            onChange={(e) => setSelectedReport(e.target.value)}
+          >
+            <option value="">Select Report Type</option>
+            <option value="Total Projects">Total Projects</option>
+            <option value="Projects by Status">Projects by Status</option>
+            <option value="Overdue Projects">Overdue Projects</option>
+            <option value="Projects per Client">Projects per Client</option>
+          </select>
+          {selectedReport && (
+            <>
+              <CSVLink
+                data={exportCSVData}
+                filename={`${selectedReport
+                  .replace(/\s+/g, "_")
+                  .toLowerCase()}.csv`}
+                className="export-button"
+              >
+                Export CSV
+              </CSVLink>
+              <button onClick={exportPDF} className="export-button">
+                Export PDF
+              </button>
+            </>
+          )}
+        </div>
       </div>
       {/* Summary Section */}
       <div className="summary-container">
@@ -490,8 +490,12 @@ const ProjectReports = () => {
       <div className="project-charts-container">
         {/* Projects by Status */}
         <div className="project-chart-box">
-          <h3 className="project-chart-title">Projects by Status</h3>
-          <BarChart width={500} height={300} data={projectStatusCounts}>
+          <h3>Projects by Status</h3>
+          <p>
+            This chart displays the total number of projects categorized by
+            their current status.
+          </p>
+          <BarChart width={800} height={400} data={projectStatusCounts}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -503,8 +507,12 @@ const ProjectReports = () => {
 
         {/* Overdue Projects */}
         <div className="project-chart-box">
-          <h3 className="project-chart-title">Overdue Projects</h3>
-          <BarChart width={500} height={300} data={delayedProjects}>
+          <h3>Overdue Projects</h3>
+          <p>
+            This chart shows projects that are delayed, along with the number of
+            days overdue.
+          </p>
+          <BarChart width={800} height={400} data={delayedProjects}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -517,9 +525,14 @@ const ProjectReports = () => {
       <div className="project-charts-container">
         <div className="chart-card">
           <h3>Projects per Client</h3>
+          <p className="chart-description">
+            This line chart represents the number of projects associated with
+            each client.
+          </p>
+
           <LineChart
-            width={1300}
-            height={300}
+            width={1700}
+            height={400}
             data={projectsByClient}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >

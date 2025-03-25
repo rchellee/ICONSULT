@@ -475,10 +475,10 @@ const ClientsReports = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between mb-4">
+      <div className="export-reports-client">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="flex items-center">
+            <Button variant="outline" className="flex">
               Export Reports <Download className="ml-1" size={16} />
             </Button>
           </DropdownMenuTrigger>
@@ -523,7 +523,7 @@ const ClientsReports = () => {
         </div>
 
         {/* Clients Per Month Chart */}
-        <div className="clients-chart-container">
+        <div className="clients-chart-container scrollable-chart">
           <h3>Clients Per Month ({selectedYear})</h3>
           <div className="clients-year-selector">
             <label>Select Year:</label>
@@ -541,7 +541,7 @@ const ClientsReports = () => {
               ))}
             </select>
           </div>
-          <LineChart width={800} height={300} data={clientsByMonth}>
+          <LineChart width={1700} height={350} data={clientsByMonth}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
@@ -559,9 +559,9 @@ const ClientsReports = () => {
         {/* Clients Data Grid */}
         <div className="clients-clients-grid">
           {/* Clients by Age */}
-          <div className="clients-chart-card">
+          <div className="clients-chart-card scrollable-chart">
             <h3>Clients by Age</h3>
-            <BarChart width={400} height={300} data={clientsByAge}>
+            <BarChart width={1000} height={300} data={clientsByAge}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />

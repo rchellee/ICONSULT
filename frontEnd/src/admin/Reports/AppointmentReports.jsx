@@ -576,14 +576,14 @@ const AppointmentReports = () => {
   }
 
   return (
-    <div className="p-4">
+    <div className="app-4">
       <div className="filter-container">
         <select
           className="filter-select"
           value={filters.year}
           onChange={(e) => setFilters({ ...filters, year: e.target.value })}
         >
-          <option value="All">All Years</option>
+          <option value="All">Year</option>
           {years.map((year) => (
             <option key={year} value={year}>
               {year}
@@ -596,57 +596,57 @@ const AppointmentReports = () => {
           value={filters.month}
           onChange={(e) => setFilters({ ...filters, month: e.target.value })}
         >
-          <option value="All">All Months</option>
+          <option value="All">Month</option>
           {months.map((month) => (
             <option key={month} value={month}>
               {month}
             </option>
           ))}
         </select>
-      </div>
 
-      <div className="mt-4 flex space-x-4">
-        <select
-          className="bg-gray-200 text-black px-4 py-2 rounded"
-          value={selectedReport}
-          onChange={(e) => setSelectedReport(e.target.value)}
-        >
-          <option value="">Select Report Type</option>
-          <option value="Total Appointments">Total Appointments</option>
-          <option value="Appointments This Month">
-            Appointments This Month
-          </option>
-          <option value="Appointments per Client">
-            Appointments per Client
-          </option>
-          <option value="Appointments by Platform">
-            Appointments by Platform
-          </option>
-          <option value="Consultation Type Overview">
-            Consultation Type Overview
-          </option>
-        </select>
+        <div className="mt-4 flex justify-start items-center space-x-4">
+          <select
+            className="bg-gray-200 text-black px-4 py-2 rounded"
+            value={selectedReport}
+            onChange={(e) => setSelectedReport(e.target.value)}
+          >
+            <option value="">Select Report Type</option>
+            <option value="Total Appointments">Total Appointments</option>
+            <option value="Appointments This Month">
+              Appointments This Month
+            </option>
+            <option value="Appointments per Client">
+              Appointments per Client
+            </option>
+            <option value="Appointments by Platform">
+              Appointments by Platform
+            </option>
+            <option value="Consultation Type Overview">
+              Consultation Type Overview
+            </option>
+          </select>
 
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={exportCSVData}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export CSV
-            </CSVLink>
+          {selectedReport && (
+            <>
+              <CSVLink
+                data={exportCSVData}
+                filename={`${selectedReport
+                  .replace(/\s+/g, "_")
+                  .toLowerCase()}.csv`}
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Export CSV
+              </CSVLink>
 
-            <button
-              onClick={exportPDF}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Export PDF
-            </button>
-          </>
-        )}
+              <button
+                onClick={exportPDF}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Export PDF
+              </button>
+            </>
+          )}
+        </div>
       </div>
       <div id="summary-section">
         <div className="summary-box">
@@ -669,7 +669,7 @@ const AppointmentReports = () => {
               Overview of client appointments in percentage format.
             </p>
             <div className="app-chart-scroll">
-              <PieChart width={600} height={350}>
+              <PieChart width={800} height={550}>
                 <Pie
                   data={appointmentsByClient}
                   dataKey="value"
@@ -705,7 +705,7 @@ const AppointmentReports = () => {
             Distribution of appointments across various platforms.
           </p>
           <div className="app-chart-scroll">
-            <BarChart width={700} height={350} data={appointmentsByPlatform}>
+            <BarChart width={700} height={450} data={appointmentsByPlatform}>
               <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} />
@@ -729,8 +729,8 @@ const AppointmentReports = () => {
         </p>
         <div className="app-chart-scroll">
           <BarChart
-            width={1400}
-            height={450}
+            width={1700}
+            height={550}
             data={appointmentsByConsultationType}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
