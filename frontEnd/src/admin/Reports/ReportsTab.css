@@ -826,3 +826,42 @@ select {
 .total-appointments {
   margin-top: 8rem; /* Add top margin to prevent overlap */
 }
+.employee-graphs h3{
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.chart-container h3{
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px;
+}
+.project-chart-box h3{
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px; 
+}
+.clients-chart-container h3{
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px; 
+}
+
+.clients-summary-card h3{
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px; 
+}
+
+.clients-chart-card h3{
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px; 
+}

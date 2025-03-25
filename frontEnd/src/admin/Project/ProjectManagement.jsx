@@ -2,12 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
 import { FaPlus } from "react-icons/fa";
-import Sidebar from "../sidebar";
-import pic4 from "../../assets/pic4.png";
+import pic4 from "../../assets/pic4.jpg";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
 import ProjectTask from "./ProjectTask";
 import Topbar from "../Topbar";
+import Sidebar from "../sidebar";
 
 const ProjectManagement = () => {
   const { searchTerm } = useContext(SearchContext);
@@ -19,8 +19,8 @@ const ProjectManagement = () => {
   const [clientName, setClientName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [actualStart, setActualStart] = useState("");
   const [actualFinish, setActualFinish] = useState("");
+  const [sortOrder, setSortOrder] = useState("default");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -28,9 +28,6 @@ const ProjectManagement = () => {
   const [editingProjectId, setEditingProjectId] = useState(false);
   const [description, setDescription] = useState("");
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [contractPrice, setContractPrice] = useState("");
-  const [downpayment, setDownpayment] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState("Not Paid");
   const [filteredProjects, setFilteredProjects] = useState(projects);
 
   useEffect(() => {
@@ -39,24 +36,53 @@ const ProjectManagement = () => {
         project.projectName,
         project.clientName,
         project.status,
-        project.paymentStatus,
         project.description,
       ].some((field) =>
         (field || "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-    setFilteredProjects(filtered);
-  }, [projects, searchTerm]);
+    let sorted = [...filtered];
+    if (sortOrder === "default") {
+      sorted.sort((a, b) => {
+        if (a.status === "Completed" && b.status !== "Completed") {
+          return 1;
+        } else if (a.status !== "Completed" && b.status === "Completed") {
+          return -1;
+        } else {
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
+      });
+    } else if (sortOrder === "name") {
+      sorted.sort((a, b) => {
+        const nameA = a.projectName.toLowerCase();
+        const nameB = b.projectName.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+    } else if (sortOrder === "asc") {
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA - dateB;
+      });
+    } else if (sortOrder === "desc") {
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateB - dateA;
+      });
+    }
+    setFilteredProjects(sorted);
+  }, [projects, searchTerm, sortOrder]);
 
   useEffect(() => {
     fetch("http://localhost:8081/project")
       .then((response) => response.json())
       .then((data) => {
-        // console.log(data);
         setProjects(data);
       })
       .catch((error) => console.error("Error fetching projects:", error));
-
     fetch("http://localhost:8081/clients")
       .then((response) => response.json())
       .then((data) => setClients(data))
@@ -79,7 +105,6 @@ const ProjectManagement = () => {
     setStartDate("");
     setEndDate("");
     setDescription("");
-    setDownpayment("");
     setEditingProjectId(null);
   };
 
@@ -91,12 +116,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending", // Default status for new projects
-      contractPrice,
-      downpayment,
-      totalPayment:
-        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
-      paymentStatus: "Not Paid", // Default payment status
+      status: "Pending",
     };
 
     fetch("http://localhost:8081/project", {
@@ -106,8 +126,8 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((newProject) => {
-        setProjects([...projects, newProject]);
-        closeModal(); // Clear modal and reset form
+        setProjects((prevProjects) => [...prevProjects, newProject]);
+        closeModal();
       })
       .catch((error) => console.error("Error creating project:", error));
   };
@@ -120,16 +140,8 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      contractPrice,
-      downpayment,
-      actualStart,
       actualFinish,
-      totalPayment:
-        parseFloat(downpayment || 0) + parseFloat(contractPrice || 0),
-      paymentStatus: projects.find((project) => project.id === editingProjectId)
-        ?.paymentStatus,
     };
-
     fetch(`http://localhost:8081/project/${editingProjectId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -137,17 +149,16 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((updatedProject) => {
-        setProjects(
-          projects.map((project) =>
+        setProjects((prevProjects) =>
+          prevProjects.map((project) =>
             project.id === editingProjectId ? updatedProject : project
           )
         );
-        closeModal(); // Clear modal and reset form
+        closeModal();
       })
       .catch((error) => console.error("Error updating project:", error));
   };
 
-  // Pass separate save functions to the ProjectForm component
   const handleSave = () => {
     if (editingProjectId) {
       updateExistingProject();
@@ -159,9 +170,9 @@ const ProjectManagement = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric", // Full year (e.g., "2024")
-      month: "long", // Full month name (e.g., "January")
-      day: "numeric", // Day of the month (e.g., "6")
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -205,9 +216,6 @@ const ProjectManagement = () => {
       setStartDate(projectToEdit.startDate);
       setEndDate(projectToEdit.endDate);
       setDescription(projectToEdit.description);
-      setContractPrice(projectToEdit.contractPrice || "");
-      setDownpayment(projectToEdit.downpayment || "");
-      setPaymentStatus(projectToEdit.paymentStatus); // Retain current payment status
       setEditingProjectId(projectId);
       openModal();
     }
@@ -221,7 +229,10 @@ const ProjectManagement = () => {
       body: JSON.stringify({ isDeleted: true }),
     })
       .then(() => {
-        setProjects(projects.filter((project) => project.id !== projectId));
+        // Remove the deleted project from the projects state
+        setProjects((prevProjects) =>
+          prevProjects.filter((project) => project.id !== projectId)
+        );
         toggleDropdown(null);
       })
       .catch((error) => console.error("Error deleting project:", error));
@@ -246,8 +257,24 @@ const ProjectManagement = () => {
         toggleSortDropdown={toggleSortDropdown}
         isSortDropdownOpen={isSortDropdownOpen}
         requestSort={requestSort}
-        activeDropdown={activeDropdown}
         toggleDropdown={toggleDropdown}
+        activeDropdown={activeDropdown}
+        openModal={openModal}
+        clients={clients}
+        onSave={handleSave}
+        editingProjectId={editingProjectId}
+        projectName={projectName}
+        setProjectName={setProjectName}
+        clientId={clientId}
+        setClientId={setClientId}
+        clientName={clientName}
+        setClientName={setClientName}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        description={description}
+        setDescription={setDescription}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         onCancel={closeModal}
@@ -265,11 +292,6 @@ const ProjectManagement = () => {
       <Sidebar />
       <div className="project-management-page">
         <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
-          <div className="header-actions">
-            <button className="create-button" onClick={openModal}>
-              <FaPlus className="icon" /> New
-            </button>
-          </div>
           {isModalOpen && (
             <ProjectForm
               projectName={projectName}
@@ -284,14 +306,6 @@ const ProjectManagement = () => {
               setEndDate={setEndDate}
               description={description}
               setDescription={setDescription}
-              contractPrice={contractPrice}
-              setContractPrice={setContractPrice}
-              downpayment={downpayment}
-              setDownpayment={setDownpayment}
-              paymentStatus={paymentStatus}
-              setPaymentStatus={setPaymentStatus}
-              actualStart={actualStart}
-              setActualStart={setActualStart}
               actualFinish={setActualFinish}
               clients={clients}
               onCancel={closeModal}
