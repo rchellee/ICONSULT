@@ -41,13 +41,16 @@ const ProjectManagement = () => {
         (field || "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-
     let sorted = [...filtered];
     if (sortOrder === "default") {
       sorted.sort((a, b) => {
-        if (a.status === "Completed" && b.status !== "Completed") return 1;
-        if (a.status !== "Completed" && b.status === "Completed") return -1;
-        return new Date(b.created_at) - new Date(a.created_at);
+        if (a.status === "Completed" && b.status !== "Completed") {
+          return 1;
+        } else if (a.status !== "Completed" && b.status === "Completed") {
+          return -1;
+        } else {
+          return new Date(b.created_at) - new Date(a.created_at);
+        }
       });
     } else if (sortOrder === "name") {
       sorted.sort((a, b) => {
@@ -58,29 +61,41 @@ const ProjectManagement = () => {
         return 0;
       });
     } else if (sortOrder === "asc") {
-      sorted.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA - dateB;
+      });
     } else if (sortOrder === "desc") {
-      sorted.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+      sorted.sort((a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateB - dateA;
+      });
     }
-
     setFilteredProjects(sorted);
   }, [projects, searchTerm, sortOrder]);
 
   useEffect(() => {
     fetch("http://localhost:8081/project")
       .then((response) => response.json())
-      .then((data) => setProjects(data))
+      .then((data) => {
+        setProjects(data);
+      })
       .catch((error) => console.error("Error fetching projects:", error));
-
     fetch("http://localhost:8081/clients")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -111,7 +126,7 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((newProject) => {
-        setProjects((prev) => [...prev, newProject]);
+        setProjects((prevProjects) => [...prevProjects, newProject]);
         closeModal();
       })
       .catch((error) => console.error("Error creating project:", error));
@@ -127,7 +142,6 @@ const ProjectManagement = () => {
       endDate,
       actualFinish,
     };
-
     fetch(`http://localhost:8081/project/${editingProjectId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -135,8 +149,8 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((updatedProject) => {
-        setProjects((prev) =>
-          prev.map((project) =>
+        setProjects((prevProjects) =>
+          prevProjects.map((project) =>
             project.id === editingProjectId ? updatedProject : project
           )
         );
@@ -146,33 +160,47 @@ const ProjectManagement = () => {
   };
 
   const handleSave = () => {
-    editingProjectId ? updateExistingProject() : saveNewProject();
+    if (editingProjectId) {
+      updateExistingProject();
+    } else {
+      saveNewProject();
+    }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
   };
 
-  const toggleSortDropdown = () => setIsSortDropdownOpen((prev) => !prev);
+  const toggleSortDropdown = () => {
+    setIsSortDropdownOpen((prev) => !prev);
+  };
 
   const requestSort = (key) => {
-    const direction = sortConfig.key === key && sortConfig.direction === "asc" ? "desc" : "asc";
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
     setSortConfig({ key, direction });
     sortProjects(key, direction);
     setIsSortDropdownOpen(false);
   };
 
   const sortProjects = (key, direction) => {
-    const sorted = [...projects].sort((a, b) => {
-      if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
-      if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
+    const sortedProjects = [...projects].sort((a, b) => {
+      if (a[key] < b[key]) {
+        return direction === "asc" ? -1 : 1;
+      }
+      if (a[key] > b[key]) {
+        return direction === "asc" ? 1 : -1;
+      }
       return 0;
     });
-    setProjects(sorted);
+    setProjects(sortedProjects);
   };
 
   const toggleDropdown = (projectId) => {
@@ -180,14 +208,14 @@ const ProjectManagement = () => {
   };
 
   const handleEdit = (projectId) => {
-    const project = projects.find((p) => p.id === projectId);
-    if (project) {
-      setProjectName(project.projectName);
-      setClientName(project.clientName);
-      setClientId(project.clientId);
-      setStartDate(project.startDate);
-      setEndDate(project.endDate);
-      setDescription(project.description);
+    const projectToEdit = projects.find((project) => project.id === projectId);
+    if (projectToEdit) {
+      setProjectName(projectToEdit.projectName);
+      setClientName(projectToEdit.clientName);
+      setClientId(projectToEdit.clientId);
+      setStartDate(projectToEdit.startDate);
+      setEndDate(projectToEdit.endDate);
+      setDescription(projectToEdit.description);
       setEditingProjectId(projectId);
       openModal();
     }
@@ -201,7 +229,10 @@ const ProjectManagement = () => {
       body: JSON.stringify({ isDeleted: true }),
     })
       .then(() => {
-        setProjects((prev) => prev.filter((project) => project.id !== projectId));
+        // Remove the deleted project from the projects state
+        setProjects((prevProjects) =>
+          prevProjects.filter((project) => project.id !== projectId)
+        );
         toggleDropdown(null);
       })
       .catch((error) => console.error("Error deleting project:", error));
@@ -216,15 +247,16 @@ const ProjectManagement = () => {
         />
       );
     }
-
     return (
       <ProjectList
         projects={projects}
+        searchTerm={searchTerm}
         filteredProjects={filteredProjects}
         setFilteredProjects={setFilteredProjects}
         formatDate={formatDate}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        toggleSortDropdown={toggleSortDropdown}
+        isSortDropdownOpen={isSortDropdownOpen}
+        requestSort={requestSort}
         toggleDropdown={toggleDropdown}
         activeDropdown={activeDropdown}
         openModal={openModal}
@@ -243,7 +275,13 @@ const ProjectManagement = () => {
         setEndDate={setEndDate}
         description={description}
         setDescription={setDescription}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
         onCancel={closeModal}
+        onProjectClick={(projectId) => {
+          console.log("Clicked Project ID:", projectId);
+          setSelectedProjectId(projectId);
+        }}
       />
     );
   };

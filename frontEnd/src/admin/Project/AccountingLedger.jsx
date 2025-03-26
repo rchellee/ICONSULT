@@ -14,13 +14,12 @@ const AccountingLedger = ({
   const [subtotals, setSubtotals] = useState({});
   const [sortCriteria, setSortCriteria] = useState("projectName");
 
-  // Fetch and save paid tasks when the component mounts
   useEffect(() => {
     const fetchAndSavePaidTasks = async () => {
       try {
+        await axios.post("http://localhost:8081/payments/clean-duplicates");
         const response = await axios.get("http://localhost:8081/paid-tasks");
         const paidTasks = response.data;
-
         if (paidTasks.length > 0) {
           await axios.post("http://localhost:8081/payments/bulk", paidTasks);
           console.log("Paid tasks saved to payments table");
@@ -29,17 +28,14 @@ const AccountingLedger = ({
         console.error("Error fetching or saving paid tasks:", error);
       }
     };
-
     fetchAndSavePaidTasks();
   }, []);
 
-  // Fetch payments when the component mounts
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         const response = await axios.get("http://localhost:8081/paymentLedger");
         setPayments(response.data);
-
         const subtotalsMap = response.data.reduce((acc, payment) => {
           const key =
             sortCriteria === "mode_of_payment"
@@ -97,7 +93,6 @@ const AccountingLedger = ({
       maximumFractionDigits: 2,
     })}`;
   };
-
   const sortedPayments = [...payments].sort((a, b) => {
     if (sortCriteria === "date_paid") {
       return new Date(a.date_paid) - new Date(b.date_paid);
@@ -109,7 +104,8 @@ const AccountingLedger = ({
 
   return (
     <div className="accounting-ledger">
-      <div className="sort-ledger">
+      <div className="sort-container">
+        <label style={{ marginLeft: "1190px" }}>Sort By: </label>
         <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
@@ -128,7 +124,9 @@ const AccountingLedger = ({
               <th>Transaction ID</th>
               <th>Paid By</th>
               <th>Description</th>
-              <th style={{ textAlign: 'right', paddingRight: '20px' }}>Amount</th>
+              <th style={{ textAlign: "right", paddingRight: "20px" }}>
+                Amount
+              </th>
               <th>Mode of Payment</th>
               <th>Date Paid</th>
             </tr>
@@ -141,17 +139,19 @@ const AccountingLedger = ({
                   <td>{payment.transaction_id.toUpperCase()}</td>
                   <td>{payment.payer_name}</td>
                   <td>Payment for {payment.description}</td>
-                  <td style={{ 
-                    textAlign: 'right', 
-                    paddingRight: '20px',
-                    
-                    whiteSpace: 'nowrap'
-                  }}>
+                  <td
+                    style={{
+                      textAlign: "right",
+                      paddingRight: "20px",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {formatAmount(payment.amount)}
                   </td>
                   <td>{payment.mode_of_payment}</td>
                   <td>{formatDate(payment.date_paid)}</td>
                 </tr>
+                {/* Display subtotal for the project */}
                 {sortCriteria !== "date_paid" &&
                 (index === sortedPayments.length - 1 ||
                   sortedPayments[index + 1][sortCriteria] !==
@@ -165,13 +165,15 @@ const AccountingLedger = ({
                         ? payment.payer_name
                         : payment.projectName}
                     </td>
-                    <td style={{ 
-                      textAlign: 'right', 
-                      paddingRight: '20px',
-                      fontWeight: 'bold',
-                      
-                      whiteSpace: 'nowrap'
-                    }}>
+                    <td
+                      style={{
+                        textAlign: "right",
+                        paddingRight: "20px",
+                        fontWeight: "bold",
+
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       {formatAmount(subtotals[payment[sortCriteria]])}
                     </td>
                     <td colSpan="2"></td>
@@ -182,13 +184,14 @@ const AccountingLedger = ({
             {sortCriteria !== "date_paid" && (
               <tr className="grand-total-row">
                 <td colSpan="4">Total</td>
-                <td style={{ 
-                  textAlign: 'right', 
-                  paddingRight: '20px',
-                  fontWeight: 'bold',
-                  
-                  whiteSpace: 'nowrap'
-                }}>
+                <td
+                  style={{
+                    textAlign: "right",
+                    paddingRight: "20px",
+                    fontWeight: "bold",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   {formatAmount(
                     Object.values(subtotals).reduce(
                       (sum, amount) => sum + amount,

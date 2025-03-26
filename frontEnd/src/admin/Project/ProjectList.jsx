@@ -30,25 +30,22 @@ const ProjectList = ({
   setEndDate,
   description,
   setDescription,
-  onCancel
+  onCancel,
 }) => {
-  // Toggle state for switching views
   const [activeView, setActiveView] = useState("overview");
-
-  // States to hold statuses and dates based on filteredProjects
   const [statuses, setStatuses] = useState({});
   const [startDates, setStartDates] = useState({});
   const [finishDates, setFinishDates] = useState({});
   const [tasksInfo, setTasksInfo] = useState({});
   const [totalTasks, setTotalTasks] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Memoize filteredProjects to avoid unnecessary updates
   const filteredProjects = useMemo(() => {
     return initialFilteredProjects;
   }, [initialFilteredProjects]);
 
-  // Update statuses, startDates, and finishDates when filteredProjects changes
   useEffect(() => {
     const newStatuses = filteredProjects.reduce((acc, project) => {
       acc[project.id] = project.status;
@@ -65,12 +62,18 @@ const ProjectList = ({
       return acc;
     }, {});
 
-    setStatuses(newStatuses);
-    setStartDates(newStartDates);
-    setFinishDates(newFinishDates);
+    // Only update state if the new state is different
+    if (JSON.stringify(newStatuses) !== JSON.stringify(statuses)) {
+      setStatuses(newStatuses);
+    }
+    if (JSON.stringify(newStartDates) !== JSON.stringify(startDates)) {
+      setStartDates(newStartDates);
+    }
+    if (JSON.stringify(newFinishDates) !== JSON.stringify(finishDates)) {
+      setFinishDates(newFinishDates);
+    }
   }, [filteredProjects]);
 
-  // Function to handle status changes
   const handleStatusChange = (projectId, newStatus) => {
     setStatuses((prevStatuses) => ({
       ...prevStatuses,
@@ -85,7 +88,9 @@ const ProjectList = ({
       body: JSON.stringify({ status: newStatus }),
     })
       .then((response) => {
-        if (!response.ok) throw new Error("Failed to update status");
+        if (!response.ok) {
+          throw new Error("Failed to update status");
+        }
         return response.json();
       })
       .then((data) => {
@@ -107,7 +112,6 @@ const ProjectList = ({
       });
   };
 
-  // Fetch tasks info for each project
   useEffect(() => {
     const fetchTasksInfo = async () => {
       const info = {};
@@ -116,7 +120,11 @@ const ProjectList = ({
           const response = await fetch(
             `http://localhost:8081/admin/tasks?projectId=${project.id}`
           );
-          if (!response.ok) throw new Error("Failed to fetch tasks");
+          if (!response.ok) {
+            const text = await response.text();
+            console.error("Server response:", text);
+            throw new Error("Failed to fetch tasks");
+          }
           const data = await response.json();
           const completedTasks = data.tasks.filter(
             (task) => task.status === "Completed"
@@ -162,17 +170,17 @@ const ProjectList = ({
 
   return (
     <div className="project-list-wrapper">
-      {/* Header with toggle buttons and New button */}
       <div className="list-view-header">
-        <div className="projects-title">
-          My Projects
-        </div>
+        <div className="projects-title">My Projects</div>
         <div className="toggle-buttons">
           <button
             className={`toggle-button ${
               activeView === "overview" ? "active" : ""
             }`}
-            onClick={() => setActiveView("overview")}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveView("overview");
+            }}
           >
             Overview
           </button>
@@ -185,11 +193,10 @@ const ProjectList = ({
             Accounting Ledger
           </button>
         </div>
-        
-        {/* New button - only shown in Overview view */}
+
         {activeView === "overview" && (
           <button className="create-project-btn" onClick={openModal}>
-            <FaPlus className="icon" /> New 
+            <FaPlus className="icon" /> New
           </button>
         )}
       </div>
