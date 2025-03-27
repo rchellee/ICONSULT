@@ -234,7 +234,6 @@ const ListView = ({
             </div>
           </span>
         </div>
-        {/* Right side - Buttons */}
         <div className="action-list-buttons">
           {/* <button className="action-button export-button">Export</button> */}
           <div className="dropdown-list-container">

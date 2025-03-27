@@ -642,14 +642,14 @@ const Calendar = () => {
                   onClick={confirmDelete}
                   color="error"
                   sx={{
-                    backgroundColor: "#003366", // Dark blue button background
-                    color: "#fff", // White text
+                    backgroundColor: "#003366",
+                    color: "#fff",
                     borderRadius: "4px",
                     fontWeight: "bold",
                     fontSize: "12px",
                     padding: "8px 16px",
                     "&:hover": {
-                      backgroundColor: "#002244", // Darker blue on hover
+                      backgroundColor: "#002244",
                     },
                   }}
                 >
