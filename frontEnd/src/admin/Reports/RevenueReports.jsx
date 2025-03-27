@@ -32,14 +32,18 @@ const RevenueReports = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [revenueThisMonth, setRevenueThisMonth] = useState(0);
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("All");
-  const [filters, setFilters] = useState({
-    month: "All",
-    year: new Date().getFullYear(),
-  });
   const [selectedReport, setSelectedReport] = useState("");
+  const [selectedProject, setSelectedProject] = useState("All");
+  const [selectedClient, setSelectedClient] = useState("All");
+
   const [detailedPaymentData, setDetailedPaymentData] = useState({
     receivedPayments: [],
     pendingPayments: [],
+  });
+
+  const [filters, setFilters] = useState({
+    month: "All",
+    year: new Date().getFullYear(),
   });
 
   const months = [
@@ -391,7 +395,15 @@ const RevenueReports = () => {
       doc.text(`Total Amount: ₱${pendingTotal.toFixed(2)}`, 14, yPos);
     }
     if (selectedReport === "Payments per Client") {
-      clients.forEach((client) => {
+      let grandTotal = 0;
+
+      // Filter clients based on selection
+      const clientsToExport =
+        selectedClient === "All"
+          ? clients
+          : clients.filter((c) => c.id.toString() === selectedClient);
+
+      clientsToExport.forEach((client) => {
         const clientRevenues = revenues.filter(
           (r) => r.client_id === client.id
         );
@@ -402,12 +414,16 @@ const RevenueReports = () => {
           yPos += 10;
 
           const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
-          const data = clientRevenues.map((r) => [
-            r.transaction_id,
-            r.amount,
-            r.mode_of_payment,
-            r.date_paid,
-          ]);
+          let clientTotal = 0;
+          const data = clientRevenues.map((r) => {
+            clientTotal += r.amount;
+            return [
+              r.transaction_id || "N/A",
+              `₱${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+            ];
+          });
 
           autoTable(doc, {
             startY: yPos,
@@ -415,14 +431,32 @@ const RevenueReports = () => {
             body: data,
             styles: { fontSize: 8 },
           });
-          yPos = doc.lastAutoTable.finalY + 10;
+
+          // Add client total
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Client Total: ₱${clientTotal.toFixed(2)}`, 10, yPos);
+          yPos += 15; // Extra space before next client
+
+          grandTotal += clientTotal;
         }
       });
+      if (grandTotal > 0) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ₱${grandTotal.toFixed(2)}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
     }
     if (selectedReport === "Revenue per Project") {
       let grandTotal = 0;
 
-      projects.forEach((project) => {
+      // Filter projects based on selection
+      const projectsToExport =
+        selectedProject === "All"
+          ? projects
+          : projects.filter((p) => p.id.toString() === selectedProject);
+
+      projectsToExport.forEach((project) => {
         const projectRevenues = revenues.filter(
           (r) => r.project_id === project.id
         );
@@ -574,26 +608,44 @@ const RevenueReports = () => {
   };
   const formatPaymentsperClientCSV = () => {
     let csvData = [];
+    let grandTotal = 0;
 
-    clients.forEach((client) => {
+    // Filter clients based on selection
+    const clientsToExport =
+      selectedClient === "All"
+        ? clients
+        : clients.filter((c) => c.id.toString() === selectedClient);
+
+    clientsToExport.forEach((client) => {
       const clientRevenues = revenues.filter((r) => r.client_id === client.id);
 
       if (clientRevenues.length > 0) {
         csvData.push([`${client.firstName} ${client.lastName}`]); // Add client name as a row
         csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]); // Headers
 
+        let clientTotal = 0;
+
         clientRevenues.forEach((r) => {
           csvData.push([
-            r.transaction_id,
-            r.amount,
-            r.mode_of_payment,
-            r.date_paid,
+            r.transaction_id || "N/A",
+            `₱${r.amount.toFixed(2)}`,
+            r.mode_of_payment || "N/A",
+            r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
           ]);
+          clientTotal += r.amount;
         });
 
+        csvData.push(["Client Total", `₱${clientTotal.toFixed(2)}`, "", ""]);
         csvData.push([]); // Blank row for spacing
+
+        grandTotal += clientTotal;
       }
     });
+
+    // Add grand total if there were any clients with revenues
+    if (grandTotal > 0) {
+      csvData.push(["GRAND TOTAL", `₱${grandTotal.toFixed(2)}`, "", ""]);
+    }
 
     return csvData;
   };
@@ -601,28 +653,34 @@ const RevenueReports = () => {
     let csvData = [];
     let grandTotal = 0;
 
-    projects.forEach((project) => {
+    // Filter projects based on selection
+    const projectsToExport =
+      selectedProject === "All"
+        ? projects
+        : projects.filter((p) => p.id.toString() === selectedProject);
+
+    projectsToExport.forEach((project) => {
       const projectRevenues = revenues.filter(
         (r) => r.project_id === project.id
       );
 
       if (projectRevenues.length > 0) {
-        csvData.push([`${project.projectName}`]); // Add client name as a row
+        csvData.push([`${project.projectName}`]); // Add project name as a row
         csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]);
 
         let projectTotal = 0;
 
         projectRevenues.forEach((r) => {
           csvData.push([
-            r.transaction_id,
-            r.amount,
-            r.mode_of_payment,
-            r.date_paid,
+            r.transaction_id || "N/A",
+            `₱${r.amount.toFixed(2)}`,
+            r.mode_of_payment || "N/A",
+            r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
           ]);
           projectTotal += r.amount;
         });
 
-        csvData.push(["Project Total", projectTotal, "", ""]);
+        csvData.push(["Project Total", `₱${projectTotal.toFixed(2)}`, "", ""]);
         csvData.push([]); // Blank row for spacing
 
         grandTotal += projectTotal;
@@ -631,7 +689,7 @@ const RevenueReports = () => {
 
     // Add grand total if there were any projects with revenues
     if (grandTotal > 0) {
-      csvData.push(["GRAND TOTAL", grandTotal, "", ""]);
+      csvData.push(["GRAND TOTAL", `₱${grandTotal.toFixed(2)}`, "", ""]);
     }
 
     return csvData;
@@ -669,13 +727,53 @@ const RevenueReports = () => {
           <option value="Revenue per Project">Revenue per Project</option>
         </select>
 
+        {/* Add project selection dropdown when Revenue per Project is selected */}
+        {selectedReport === "Revenue per Project" && (
+          <select
+            value={selectedProject}
+            onChange={(e) => setSelectedProject(e.target.value)}
+            className="ml-4"
+          >
+            <option value="All">All Projects</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.projectName}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {/* Add client selection dropdown when Payments per Client is selected */}
+        {selectedReport === "Payments per Client" && (
+          <select
+            value={selectedClient}
+            onChange={(e) => setSelectedClient(e.target.value)}
+            className="ml-4"
+          >
+            <option value="All">All Clients</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.firstName} {client.lastName}
+              </option>
+            ))}
+          </select>
+        )}
+
         {selectedReport && (
           <>
             <CSVLink
               data={exportCSVData}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
+              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}_${
+                selectedReport === "Revenue per Project"
+                  ? selectedProject === "All"
+                    ? "all_projects"
+                    : "project_" + selectedProject
+                  : selectedReport === "Payments per Client"
+                  ? selectedClient === "All"
+                    ? "all_clients"
+                    : "client_" + selectedClient
+                  : "report"
+              }.csv`}
               className="bg-green-500 text-white px-4 py-2 rounded"
             >
               Export CSV

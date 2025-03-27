@@ -28,6 +28,7 @@ const ProjectReports = () => {
     clientId: "",
   });
   const [selectedReport, setSelectedReport] = useState("");
+  const [selectedClient, setSelectedClient] = useState("All");
 
   useEffect(() => {
     fetchClients();
@@ -100,8 +101,14 @@ const ProjectReports = () => {
       (filterMonth === null || projectMonth === filterMonth)
     );
   });
-
   const totalProjects = filteredProjects.length;
+  const projectsThisMonth = projects.filter((p) => {
+    const projectDate = new Date(p.startDate);
+    return (
+      projectDate.getMonth() === new Date().getMonth() &&
+      projectDate.getFullYear() === new Date().getFullYear()
+    );
+  }).length;
   const projectsByClient = clients
     .map((client) => ({
       name: `${client.firstName} ${client.lastName}`,
@@ -123,29 +130,44 @@ const ProjectReports = () => {
       daysDelayed: project.delayedDays, // Use delayedDays from backend
     }));
 
-  const today = new Date();
-  const formatDate = (dateString, format) => {
-    const date = new Date(dateString);
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
+  const formatProjectsThisMonthCSV = () => {
+    let csvData = [];
 
-    if (format === "year") return date.getFullYear().toString();
-    if (format === "month") return months[date.getMonth()]; // Convert to month name
-    return date.toLocaleDateString("en-US");
+    // Add headers
+    csvData.push([
+      "Project Name",
+      "Client Name",
+      "Description",
+      "Status",
+      "Start Date",
+      "End Date",
+      "Created At",
+    ]);
+
+    // Filter projects for current month
+    const currentMonthProjects = projects.filter((p) => {
+      const projectDate = new Date(p.startDate);
+      return (
+        projectDate.getMonth() === new Date().getMonth() &&
+        projectDate.getFullYear() === new Date().getFullYear()
+      );
+    });
+
+    // Populate CSV data
+    currentMonthProjects.forEach((p) => {
+      csvData.push([
+        p.projectName || "N/A",
+        p.clientName || "N/A",
+        p.description || "N/A",
+        p.status || "N/A",
+        p.startDate ? new Date(p.startDate).toLocaleDateString() : "N/A",
+        p.endDate ? new Date(p.endDate).toLocaleDateString() : "N/A",
+        p.created_at ? new Date(p.created_at).toLocaleDateString() : "N/A",
+      ]);
+    });
+
+    return csvData;
   };
-
   const formatProjectsbyStatusCSV = () => {
     let csvData = [];
 
@@ -207,34 +229,48 @@ const ProjectReports = () => {
     return csvData;
   };
   const formatProjectsperClientCSV = () => {
-    let csvData = [["Projects per Client"]]; // Title row
+    let csvData = [];
+    let grandTotal = 0;
+    const clientsToExport =
+      selectedClient === "All"
+        ? clients
+        : clients.filter((c) => c.id.toString() === selectedClient);
 
-    clients.forEach((client) => {
+    clientsToExport.forEach((client) => {
       const clientProjects = projects.filter((p) => p.clientId === client.id);
 
       if (clientProjects.length > 0) {
-        csvData.push([client.firstName + " " + client.lastName]); // Client name
+        csvData.push([`${client.firstName} ${client.lastName}`]);
         csvData.push([
           "Project Name",
           "Description",
+          "Status",
           "Start Date",
           "End Date",
           "Created At",
-        ]); // Column headers
+        ]);
+
+        let clientTotal = 0;
 
         clientProjects.forEach((p) => {
           csvData.push([
-            p.projectName,
-            p.description,
-            p.startDate,
-            p.endDate,
-            p.created_at,
+            p.projectName || "N/A",
+            p.description || "N/A",
+            p.status || "N/A",
+            p.startDate ? new Date(p.startDate).toLocaleDateString() : "N/A",
+            p.endDate ? new Date(p.endDate).toLocaleDateString() : "N/A",
+            p.created_at ? new Date(p.created_at).toLocaleDateString() : "N/A",
           ]);
+          clientTotal++;
         });
-
-        csvData.push([]); // Blank row for spacing
+        csvData.push(["Project Total", clientTotal, "", "", "", ""]);
+        csvData.push([]);
+        grandTotal += clientTotal;
       }
     });
+    if (grandTotal > 0) {
+      csvData.push(["GRAND TOTAL", grandTotal, "", "", "", ""]);
+    }
 
     return csvData;
   };
@@ -247,6 +283,8 @@ const ProjectReports = () => {
     exportCSVData = formatOverdueProjectsCSV();
   } else if (selectedReport === "Projects per Client") {
     exportCSVData = formatProjectsperClientCSV();
+  } else if (selectedReport === "Projects This Month") {
+    exportCSVData = formatProjectsThisMonthCSV();
   } else {
     exportCSVData = projects;
   }
@@ -273,7 +311,6 @@ const ProjectReports = () => {
         console.error("Error capturing chart:", error);
       }
     }
-
     if (selectedReport === "Total Projects") {
       const headers = [
         [
@@ -305,7 +342,44 @@ const ProjectReports = () => {
         styles: { fontSize: 8 },
       });
     }
+    if (selectedReport === "Projects This Month") {
+      const headers = [
+        [
+          "Project Name",
+          "Client Name",
+          "Description",
+          "Status",
+          "Start Date",
+          "End Date",
+          "Created At",
+        ],
+      ];
 
+      const currentMonthProjects = projects.filter((p) => {
+        const projectDate = new Date(p.startDate);
+        return (
+          projectDate.getMonth() === new Date().getMonth() &&
+          projectDate.getFullYear() === new Date().getFullYear()
+        );
+      });
+
+      const data = currentMonthProjects.map((p) => [
+        p.projectName || "N/A",
+        p.clientName || "N/A",
+        p.description || "N/A",
+        p.status || "N/A",
+        p.startDate ? new Date(p.startDate).toLocaleDateString() : "N/A",
+        p.endDate ? new Date(p.endDate).toLocaleDateString() : "N/A",
+        p.created_at ? new Date(p.created_at).toLocaleDateString() : "N/A",
+      ]);
+
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
+      });
+    }
     if (selectedReport === "Projects by Status") {
       const statuses = ["Pending", "Ongoing", "Completed"];
 
@@ -350,7 +424,6 @@ const ProjectReports = () => {
         }
       });
     }
-
     if (selectedReport === "Overdue Projects") {
       const headers = [
         [
@@ -380,44 +453,61 @@ const ProjectReports = () => {
         styles: { fontSize: 8 },
       });
     }
-
     if (selectedReport === "Projects per Client") {
-      clients.forEach((client) => {
+      let grandTotal = 0;
+      const clientsToExport =
+        selectedClient === "All"
+          ? clients
+          : clients.filter((c) => c.id.toString() === selectedClient);
+      clientsToExport.forEach((client) => {
         const clientProjects = projects.filter((p) => p.clientId === client.id);
-
         if (clientProjects.length > 0) {
           doc.setFontSize(12);
           doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
           yPos += 10;
-
           const headers = [
             [
               "Project Name",
               "Description",
+              "Status",
               "Start Date",
               "End Date",
               "Created At",
             ],
           ];
-          const data = clientProjects.map((p) => [
-            p.projectName,
-            p.description,
-            p.startDate,
-            p.endDate,
-            p.created_at,
-          ]);
-
+          let clientTotal = 0;
+          const data = clientProjects.map((p) => {
+            clientTotal++;
+            return [
+              p.projectName || "N/A",
+              p.description || "N/A",
+              p.status || "N/A",
+              p.startDate ? new Date(p.startDate).toLocaleDateString() : "N/A",
+              p.endDate ? new Date(p.endDate).toLocaleDateString() : "N/A",
+              p.created_at
+                ? new Date(p.created_at).toLocaleDateString()
+                : "N/A",
+            ];
+          });
           autoTable(doc, {
             startY: yPos,
             head: headers,
             body: data,
             styles: { fontSize: 8 },
           });
-          yPos = doc.lastAutoTable.finalY + 10;
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Project Total: ${clientTotal}`, 10, yPos);
+          yPos += 15;
+          grandTotal += clientTotal;
         }
       });
+      if (grandTotal > 0) {
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ${grandTotal}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
     }
-
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
 
@@ -458,17 +548,37 @@ const ProjectReports = () => {
           >
             <option value="">Select Report Type</option>
             <option value="Total Projects">Total Projects</option>
+            <option value="Projects This Month">Projects This Month</option>
             <option value="Projects by Status">Projects by Status</option>
             <option value="Overdue Projects">Overdue Projects</option>
             <option value="Projects per Client">Projects per Client</option>
           </select>
+          {selectedReport === "Projects per Client" && (
+            <select
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
+              className="ml-4 bg-gray-200 text-black px-4 py-2 rounded"
+            >
+              <option value="All">All Clients</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.firstName} {client.lastName}
+                </option>
+              ))}
+            </select>
+          )}
+
           {selectedReport && (
             <>
               <CSVLink
                 data={exportCSVData}
                 filename={`${selectedReport
                   .replace(/\s+/g, "_")
-                  .toLowerCase()}.csv`}
+                  .toLowerCase()}_${
+                  selectedClient === "All"
+                    ? "all_clients"
+                    : "client_" + selectedClient
+                }.csv`}
                 className="export-button"
               >
                 Export CSV
@@ -486,6 +596,10 @@ const ProjectReports = () => {
           <h3 className="summary-title">Total Projects</h3>
           <p className="summary-value">{totalProjects}</p>
         </div>
+        <div className="summary-box">
+          <h3 className="summary-title">Projects This Month</h3>
+          <p className="summary-value">{projectsThisMonth}</p>
+        </div>
       </div>
       <div className="project-charts-container">
         {/* Projects by Status */}
@@ -495,7 +609,7 @@ const ProjectReports = () => {
             This chart displays the total number of projects categorized by
             their current status.
           </p>
-          <BarChart width={800} height={400} data={projectStatusCounts}>
+          <BarChart width={750} height={400} data={projectStatusCounts}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -512,7 +626,7 @@ const ProjectReports = () => {
             This chart shows projects that are delayed, along with the number of
             days overdue.
           </p>
-          <BarChart width={800} height={400} data={delayedProjects}>
+          <BarChart width={750} height={400} data={delayedProjects}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis />
@@ -531,7 +645,7 @@ const ProjectReports = () => {
           </p>
 
           <LineChart
-            width={1700}
+            width={1600}
             height={400}
             data={projectsByClient}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}

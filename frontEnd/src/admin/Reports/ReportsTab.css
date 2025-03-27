@@ -4,6 +4,7 @@
   padding: 10px;
   margin-left: 80px; /* Adjust if sidebar width changes */
   transition: margin-left 0.3s ease;
+  padding-top: 70px;
   background-color: #f4f4f9;
 }
 

@@ -523,37 +523,39 @@ const ClientsReports = () => {
         </div>
 
         {/* Clients Per Month Chart */}
-        <div className="clients-chart-container scrollable-chart">
-          <h3>Clients Per Month ({selectedYear})</h3>
-          <div className="clients-year-selector">
-            <label>Select Year:</label>
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
-            >
-              {Array.from(
-                { length: new Date().getFullYear() - 2023 },
-                (_, i) => 2024 + i
-              ).map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+        <div className="clients-clients-grid">
+          <div className="clients-chart-container scrollable-chart">
+            <h3>Clients Per Month ({selectedYear})</h3>
+            <div className="clients-year-selector">
+              <label>Select Year:</label>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+              >
+                {Array.from(
+                  { length: new Date().getFullYear() - 2023 },
+                  (_, i) => 2024 + i
+                ).map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <LineChart width={1700} height={350} data={clientsByMonth}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#4CAF50"
+                strokeWidth={2}
+              />
+            </LineChart>
           </div>
-          <LineChart width={1700} height={350} data={clientsByMonth}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="#4CAF50"
-              strokeWidth={2}
-            />
-          </LineChart>
         </div>
 
         {/* Clients Data Grid */}

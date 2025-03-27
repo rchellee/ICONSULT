@@ -32,6 +32,7 @@ const AppointmentReports = () => {
     month: "All",
   });
   const [selectedReport, setSelectedReport] = useState("");
+  const [selectedClient, setSelectedClient] = useState("All");
 
   useEffect(() => {
     fetchClients();
@@ -152,6 +153,48 @@ const AppointmentReports = () => {
       .length,
   }));
 
+  const formatTotalAppointmentsCSV = () => {
+    let csvData = [];
+
+    // Add headers
+    csvData.push([
+      "Client Name",
+      "Date",
+      "Time",
+      "Email",
+      "Contact",
+      "Consultation Type",
+      "Description",
+      "Company Name",
+      "Platform",
+      "Date Created",
+    ]);
+
+    // Determine which appointments to export based on filters
+    const appointmentsToExport =
+      filters.year === "All" && filters.month === "All"
+        ? appointments // Export all if no filters
+        : filteredAppointments; // Export filtered if year/month selected
+
+    // Populate CSV data
+    appointmentsToExport.forEach((a) => {
+      csvData.push([
+        a.name || "N/A",
+        a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+        a.time || "N/A",
+        a.email || "N/A",
+        a.contact || "N/A",
+        a.consultationType || "N/A",
+        a.additionalInfo || "N/A",
+        a.companyName || "N/A",
+        a.platform || "N/A",
+        a.created_at ? new Date(a.created_at).toLocaleDateString() : "N/A",
+      ]);
+    });
+
+    return csvData;
+  };
+
   const formatAppointmentsthisMonthCSV = () => {
     let csvData = [];
 
@@ -192,8 +235,15 @@ const AppointmentReports = () => {
   };
   const formatAppointmentsPerClientCSV = () => {
     let csvData = [];
+    let grandTotal = 0;
 
-    clients.forEach((client) => {
+    // Filter clients based on selection
+    const clientsToExport =
+      selectedClient === "All"
+        ? clients
+        : clients.filter((c) => c.id.toString() === selectedClient);
+
+    clientsToExport.forEach((client) => {
       const clientAppointments = appointments.filter(
         (a) => a.client_id === client.id
       );
@@ -206,21 +256,34 @@ const AppointmentReports = () => {
           "Email",
           "Consultation Type",
           "Company Name",
+          "Platform",
         ]); // Headers
+
+        let clientTotal = 0;
 
         clientAppointments.forEach((a) => {
           csvData.push([
-            a.date,
-            a.time,
-            a.email,
-            a.consultationType,
-            a.companyName,
+            a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+            a.time || "N/A",
+            a.email || "N/A",
+            a.consultationType || "N/A",
+            a.companyName || "N/A",
+            a.platform || "N/A",
           ]);
+          clientTotal++;
         });
 
+        csvData.push(["Client Total", clientTotal, "", "", "", ""]);
         csvData.push([]); // Blank row for spacing
+
+        grandTotal += clientTotal;
       }
     });
+
+    // Add grand total if there were any clients with appointments
+    if (grandTotal > 0) {
+      csvData.push(["GRAND TOTAL", grandTotal, "", "", "", ""]);
+    }
 
     return csvData;
   };
@@ -348,7 +411,6 @@ const AppointmentReports = () => {
         console.error("Error capturing chart:", error);
       }
     }
-
     if (selectedReport === "Total Appointments") {
       const headers = [
         [
@@ -364,17 +426,24 @@ const AppointmentReports = () => {
           "Date Created",
         ],
       ];
-      const data = appointments.map((a) => [
-        a.name,
-        a.date,
-        a.time,
-        a.email,
-        a.contact,
-        a.consultationType,
-        a.additionalInfo,
-        a.companyName,
-        a.platform,
-        a.created_at,
+
+      // Determine which appointments to export based on filters
+      const appointmentsToExport =
+        filters.year === "All" && filters.month === "All"
+          ? appointments // Export all if no filters
+          : filteredAppointments; // Export filtered if year/month selected
+
+      const data = appointmentsToExport.map((a) => [
+        a.name || "N/A",
+        a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+        a.time || "N/A",
+        a.email || "N/A",
+        a.contact || "N/A",
+        a.consultationType || "N/A",
+        a.additionalInfo || "N/A",
+        a.companyName || "N/A",
+        a.platform || "N/A",
+        a.created_at ? new Date(a.created_at).toLocaleDateString() : "N/A",
       ]);
 
       autoTable(doc, {
@@ -415,7 +484,15 @@ const AppointmentReports = () => {
     }
 
     if (selectedReport === "Appointments per Client") {
-      clients.forEach((client) => {
+      let grandTotal = 0;
+
+      // Filter clients based on selection
+      const clientsToExport =
+        selectedClient === "All"
+          ? clients
+          : clients.filter((c) => c.id.toString() === selectedClient);
+
+      clientsToExport.forEach((client) => {
         const clientAppointments = appointments.filter(
           (a) => a.client_id === client.id
         );
@@ -426,15 +503,19 @@ const AppointmentReports = () => {
           yPos += 10;
 
           const headers = [
-            ["Date", "Time", "Email", "Consultation Type", "Company Name"],
+            ["Date", "Time", "Consultation Type", "Company Name", "Platform"],
           ];
-          const data = clientAppointments.map((a) => [
-            a.date,
-            a.time,
-            a.email,
-            a.consultationType,
-            a.companyName,
-          ]);
+          let clientTotal = 0;
+          const data = clientAppointments.map((a) => {
+            clientTotal++;
+            return [
+              a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+              a.time || "N/A",
+              a.consultationType || "N/A",
+              a.companyName || "N/A",
+              a.platform || "N/A",
+            ];
+          });
 
           autoTable(doc, {
             startY: yPos,
@@ -442,9 +523,21 @@ const AppointmentReports = () => {
             body: data,
             styles: { fontSize: 10 },
           });
-          yPos = doc.lastAutoTable.finalY + 10;
+
+          // Add client total
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Client Total: ${clientTotal}`, 10, yPos);
+          yPos += 15; // Extra space before next client
+
+          grandTotal += clientTotal;
         }
       });
+      if (grandTotal > 0) {
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ${grandTotal}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
     }
 
     if (selectedReport === "Appointments by Platform") {
@@ -563,7 +656,9 @@ const AppointmentReports = () => {
 
   let exportCSVData = [];
 
-  if (selectedReport === "Appointments per Client") {
+  if (selectedReport === "Total Appointments") {
+    exportCSVData = formatTotalAppointmentsCSV();
+  } else if (selectedReport === "Appointments per Client") {
     exportCSVData = formatAppointmentsPerClientCSV();
   } else if (selectedReport === "Appointments This Month") {
     exportCSVData = formatAppointmentsthisMonthCSV();
@@ -626,13 +721,33 @@ const AppointmentReports = () => {
             </option>
           </select>
 
+          {/* Add client selection dropdown when Appointments per Client is selected */}
+          {selectedReport === "Appointments per Client" && (
+            <select
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
+              className="ml-4 bg-gray-200 text-black px-4 py-2 rounded"
+            >
+              <option value="All">All Clients</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.firstName} {client.lastName}
+                </option>
+              ))}
+            </select>
+          )}
+
           {selectedReport && (
             <>
               <CSVLink
                 data={exportCSVData}
                 filename={`${selectedReport
                   .replace(/\s+/g, "_")
-                  .toLowerCase()}.csv`}
+                  .toLowerCase()}_${
+                  selectedClient === "All"
+                    ? "all_clients"
+                    : "client_" + selectedClient
+                }.csv`}
                 className="bg-green-500 text-white px-4 py-2 rounded"
               >
                 Export CSV
@@ -648,6 +763,7 @@ const AppointmentReports = () => {
           )}
         </div>
       </div>
+
       <div id="summary-section">
         <div className="summary-box">
           <h2 className="summary-title">Total Appointments</h2>
