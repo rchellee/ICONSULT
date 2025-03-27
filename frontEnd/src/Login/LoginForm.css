@@ -4,6 +4,8 @@
   height: calc(100vh - 60px);
   justify-content: center; /* Center content horizontally */
   position: relative; /* To use positioning for right adjustment */
+  margin-left: 150px;
+  
 }
 
 /* Move the content further to the right */
@@ -169,6 +171,7 @@ footer {
   position: fixed; /* Fixed position to keep at the bottom */
   bottom: 0;
   left: 0;
+  
 }
 
 footer p {
@@ -183,6 +186,10 @@ footer a {
 
 footer a:hover {
   text-decoration: underline;
+}
+
+.separator{
+  color: white;
 }
 
 .change-password-overlay {
@@ -216,4 +223,13 @@ footer a:hover {
   border: none;
   font-size: 20px;
   cursor: pointer;
+}
+
+.eye-icon {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.eye-icon:hover {
+  color: #333;
 }
