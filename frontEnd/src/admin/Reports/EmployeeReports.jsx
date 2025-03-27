@@ -24,6 +24,7 @@ const EmployeeReports = () => {
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [tasksForSelectedEmployee, setTasksForSelectedEmployee] = useState([]);
   const [allTasksForCSV, setAllTasksForCSV] = useState([]);
+  const [exportOption, setExportOption] = useState("all");
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
@@ -60,7 +61,6 @@ const EmployeeReports = () => {
       setTasks([]);
     }
   };
-
   const fetchTasksForEmployee = async (employeeId) => {
     try {
       const response = await axios.get(
@@ -211,7 +211,14 @@ const EmployeeReports = () => {
       });
     }
     if (selectedReport === "Tasks Assigned to Each Employee") {
-      const tasksByEmployee = allTasksForCSV.reduce((acc, task) => {
+      const tasksToExport =
+        selectedEmployee === "All"
+          ? allTasksForCSV
+          : allTasksForCSV.filter(
+              (task) => task.employeeId == selectedEmployee
+            );
+
+      const tasksByEmployee = tasksToExport.reduce((acc, task) => {
         const key = task.employeeId;
         if (!acc[key]) {
           acc[key] = {
@@ -225,36 +232,39 @@ const EmployeeReports = () => {
         return acc;
       }, {});
 
+      let yPos = 20;
       Object.values(tasksByEmployee).forEach((employee) => {
-        doc.setFontSize(12);
         doc.text(employee.name, 10, yPos);
         yPos += 10;
-
-        const headers = [["Employee Name", "Task Name", "Status", "Due Date"]];
-        const data = employee.tasks.map((task) => [
-          "", // Empty for indentation
-          task.task_name || "N/A",
-          task.status || "N/A",
-          task.due_date ? formatDate(task.due_date) : "N/A",
-        ]);
-
         autoTable(doc, {
           startY: yPos,
-          head: headers,
-          body: data,
+          head: [["Task Name", "Fee", "Status", "Due Date"]],
+          body: employee.tasks.map((task) => [
+            task.task_name || "N/A",
+            task.amount,
+            task.status || "N/A",
+            task.due_date || "N/A",
+          ]),
           styles: { fontSize: 10 },
         });
         yPos = doc.lastAutoTable.finalY + 10;
       });
     }
-
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
   const formatTasksAssignedtoEachEmployeeCSV = () => {
-    let csvData = [["Employee Name", "Task Name", "Status", "Due Date"]];
+    let csvData = [["Employee", "Task", "Fee", "Total", "Status", "Due Date"]];
+
+    // Ensure filtering applies correctly
+    let tasksToExport =
+      selectedEmployee && selectedEmployee !== "All"
+        ? allTasksForCSV.filter((task) => task.employeeId == selectedEmployee)
+        : allTasksForCSV;
 
     // Group tasks by employee
-    const tasksByEmployee = allTasksForCSV.reduce((acc, task) => {
+    const tasksByEmployee = tasksToExport.reduce((acc, task) => {
+      if (!task.task_name) return acc; // Skip tasks with no name
+
       const key = task.employeeId;
       if (!acc[key]) {
         acc[key] = {
@@ -262,26 +272,26 @@ const EmployeeReports = () => {
           tasks: [],
         };
       }
-      if (task.task_name) {
-        acc[key].tasks.push(task);
-      }
+      acc[key].tasks.push(task);
       return acc;
     }, {});
 
     // Generate CSV data
     Object.values(tasksByEmployee).forEach((employee) => {
-      csvData.push([employee.name, "", "", ""]);
+      csvData.push([employee.name, "", "", ""]); // Employee row
 
       employee.tasks.forEach((task) => {
         csvData.push([
-          "", // empty for indentation
+          "", // Empty for indentation
           task.task_name || "N/A",
+          task.task_fee,
+          task.amount,
           task.status || "N/A",
           task.due_date ? formatDate(task.due_date) : "N/A",
         ]);
       });
 
-      csvData.push(["", "", "", ""]); // empty row between employees
+      csvData.push(["", "", "", ""]); // Empty row for spacing
     });
 
     return csvData;
@@ -299,7 +309,7 @@ const EmployeeReports = () => {
     <div className="employee-p-4">
       <div className="filter-container">
         <select
-          className="filter-select"
+          className="border p-2"
           value={selectedReport}
           onChange={(e) => setSelectedReport(e.target.value)}
         >
@@ -309,27 +319,44 @@ const EmployeeReports = () => {
             Tasks Assigned to Each Employee
           </option>
         </select>
-
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={exportCSVData}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export CSV
-            </CSVLink>
-            <button
-              onClick={exportPDF}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Export PDF
-            </button>
-          </>
-        )}
       </div>
+
+      {selectedReport === "Tasks Assigned to Each Employee" && (
+        <div className="mb-4">
+          <select
+            className="border p-2"
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
+          >
+            <option value="All">All</option>
+            {employees.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.firstName} {emp.lastName}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {selectedReport && (
+        <div className="flex gap-4">
+          <CSVLink
+            data={exportCSVData}
+            filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}_${
+              exportOption === "all" ? "all" : selectedEmployee
+            }.csv`}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+          >
+            Export CSV
+          </CSVLink>
+          <button
+            onClick={exportPDF}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Export PDF
+          </button>
+        </div>
+      )}
 
       <div className="employee-summary-card">
         Total Employees
