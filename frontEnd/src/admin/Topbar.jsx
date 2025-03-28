@@ -48,6 +48,11 @@ const Topbar = () => {
     navigate("/admin-reviews"); // Navigate to the account settings page
   };
 
+  const handleHelpAdminClick = () => {
+    setAnchorEl(null);
+    navigate("/AdminHelpCentre");
+  };
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -134,7 +139,7 @@ const Topbar = () => {
             <p>Feedbacks</p>
             <span>&gt;</span>
           </MenuItem>
-          <MenuItem onClick={handleReviewClick} className="sub-menu-link">
+          <MenuItem onClick={handleHelpAdminClick} className="sub-menu-link">
             <img src={help} alt="Help icon" />
             <p>Help & Support</p>
             <span>&gt;</span>
