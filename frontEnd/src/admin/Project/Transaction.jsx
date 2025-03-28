@@ -8,7 +8,7 @@ import TaskCreateForm from "./TaskCreateForm";
 import axios from "axios";
 import "./Transaction.css";
 
-const Transaction = ({ projectId }) => {
+const Transaction = ({ projectId, }) => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -16,7 +16,7 @@ const Transaction = ({ projectId }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [employees, setEmployees] = useState({});
-  const [projectName, setProjectName] = useState("");
+  
   const statusDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
 
@@ -412,17 +412,6 @@ const Transaction = ({ projectId }) => {
     <div>
       {/* Header with Project ID */}
       <div className="header-container">
-      <h3 className="project-id">
-        <span className="project-name">MyProject</span>
-          <IoChevronForward className="chevron-icon" />
-        <span className="project-name">{projectName}</span>
-      </h3>
-        <button
-          className="create-task-button"
-          onClick={navigateToCreateTask} // Use the navigate function
-        >
-          Create <IoCreateOutline className="create-task-icon" />
-        </button>
       </div>
       {/* Task Creation/Edit Form */}
       {showTaskForm && (
@@ -437,40 +426,40 @@ const Transaction = ({ projectId }) => {
         />
       )}
 
-<div className="details-container">
-  <div className="details-content">
-    {/* Left-aligned details */}
-    <div className="detail-row">
-      <div className="detail-item current-task">
-        <span className="detail-label">Current Task:</span>
-        <span className="detail-value">{transactions.length}</span>
-      </div>
-      <div className="detail-item past-dues">
-        <span className="detail-label">Past Dues:</span>
-        <span className="detail-value">
-          {
-            transactions.filter(
-              (transaction) =>
-                calculatePastDueDays(
-                  transaction.dueDate,
-                  transaction.status
-                ) > 0
-            ).length
-          }
-        </span>
-      </div>
-      <div className="progress-container">
-        <span className="progress-text">
-          Progress: {paymentProgress}%
-        </span>
-        <div className="progress-bar">
-          <div
-            className="progress-bar-fill"
-            style={{ width: `${paymentProgress}%` }}
-          ></div>
+      <div className="details-container">
+        <div className="details-content">
+        {/* Left-aligned details */}
+          <div className="detail-row">
+            <div className="detail-item current-task">
+              <span className="detail-label">Current Task:</span>
+              <span className="detail-value">{transactions.length}</span>
+            </div>
+            <div className="detail-item past-dues">
+              <span className="detail-label">Past Dues:</span>
+              <span className="detail-value">
+                {
+                  transactions.filter(
+                    (transaction) =>
+                      calculatePastDueDays(
+                        transaction.dueDate,
+                        transaction.status
+                    ) > 0
+                  ).length
+                }
+              </span>
+            </div>
+            <div className="progress-container">
+              <span className="progress-text">
+                Progress: {paymentProgress}%
+              </span>
+            <div className="progress-bar">
+              <div
+                className="progress-bar-fill"
+                style={{ width: `${paymentProgress}%` }}
+            ></div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
     {/* Right-aligned buttons */}
     <div className="button-row">

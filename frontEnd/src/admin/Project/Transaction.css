@@ -8,42 +8,9 @@
   margin-bottom: 20px;
 }
 
-.project-id {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  
-  
-}
-
 .past-due {
   color: red; /* Change this to your desired color */
   font-weight: bold; /* Optional: Make the text bold */
-}
-
-/* Create Button */
-.create-task-button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background-color: #547099;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
-  right: auto;
-  
-}
-
-.create-task-button:hover {
-  background-color: #45a049;
-}
-
-.create-task-icon {
-  font-size: 18px;
 }
 
 /* Progress Container */
