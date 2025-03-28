@@ -39,13 +39,13 @@ const Topbar = () => {
   };
 
   const handleAccountClick = () => {
-    setAnchorEl(null); // Close the menu
-    navigate("/admin-settings"); // Navigate to the account settings page
+    setAnchorEl(null);
+    navigate("/admin-settings");
   };
 
   const handleReviewClick = () => {
-    setAnchorEl(null); // Close the menu
-    navigate("/admin-reviews"); // Navigate to the account settings page
+    setAnchorEl(null);
+    navigate("/admin-reviews");
   };
 
   const handleHelpAdminClick = () => {

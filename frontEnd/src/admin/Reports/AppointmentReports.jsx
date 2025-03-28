@@ -17,9 +17,12 @@ import {
   Legend,
 } from "recharts";
 import "./ReportsTab.css";
+import landscapeTemplate from "../../assets/reports_landscape.jpg";
+import AppointmentTemplate from "../../assets/appointment_reports.jpg";
 
 const AppointmentReports = () => {
   const [appointments, setAppointments] = useState([]);
+  const [adminUsername, setAdminUsername] = useState("");
   const [clients, setClients] = useState([]);
   const [years, setYears] = useState([]);
   const [filters, setFilters] = useState({
@@ -35,6 +38,10 @@ const AppointmentReports = () => {
   const [selectedClient, setSelectedClient] = useState("All");
 
   useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (username) {
+      setAdminUsername(username);
+    }
     fetchClients();
     fetchAppointments();
     fetchYears();
@@ -155,8 +162,6 @@ const AppointmentReports = () => {
 
   const formatTotalAppointmentsCSV = () => {
     let csvData = [];
-
-    // Add headers
     csvData.push([
       "Client Name",
       "Date",
@@ -169,14 +174,10 @@ const AppointmentReports = () => {
       "Platform",
       "Date Created",
     ]);
-
-    // Determine which appointments to export based on filters
     const appointmentsToExport =
       filters.year === "All" && filters.month === "All"
-        ? appointments // Export all if no filters
-        : filteredAppointments; // Export filtered if year/month selected
-
-    // Populate CSV data
+        ? appointments
+        : filteredAppointments;
     appointmentsToExport.forEach((a) => {
       csvData.push([
         a.name || "N/A",
@@ -194,11 +195,8 @@ const AppointmentReports = () => {
 
     return csvData;
   };
-
   const formatAppointmentsthisMonthCSV = () => {
     let csvData = [];
-
-    // Add headers
     csvData.push([
       "Client Name",
       "Date",
@@ -208,8 +206,6 @@ const AppointmentReports = () => {
       "Company Name",
       "Platform",
     ]);
-
-    // Filter appointments for the current month
     const currentMonthAppointments = appointments.filter((a) => {
       const appointmentDate = new Date(a.date);
       return (
@@ -217,8 +213,6 @@ const AppointmentReports = () => {
         appointmentDate.getFullYear() === new Date().getFullYear()
       );
     });
-
-    // Populate CSV data
     currentMonthAppointments.forEach((a) => {
       csvData.push([
         a.name,
@@ -236,12 +230,12 @@ const AppointmentReports = () => {
   const formatAppointmentsPerClientCSV = () => {
     let csvData = [];
     let grandTotal = 0;
+    const isAllClients = selectedClient === "All";
 
     // Filter clients based on selection
-    const clientsToExport =
-      selectedClient === "All"
-        ? clients
-        : clients.filter((c) => c.id.toString() === selectedClient);
+    const clientsToExport = isAllClients
+      ? clients
+      : clients.filter((c) => c.id.toString() === selectedClient);
 
     clientsToExport.forEach((client) => {
       const clientAppointments = appointments.filter(
@@ -273,16 +267,16 @@ const AppointmentReports = () => {
           clientTotal++;
         });
 
-        csvData.push(["Client Total", clientTotal, "", "", "", ""]);
+        csvData.push(["Appointment Total", clientTotal, "", "", "", ""]);
         csvData.push([]); // Blank row for spacing
 
         grandTotal += clientTotal;
       }
     });
 
-    // Add grand total if there were any clients with appointments
-    if (grandTotal > 0) {
-      csvData.push(["GRAND TOTAL", grandTotal, "", "", "", ""]);
+    // Only add GRAND TOTAL if "All Clients" is selected
+    if (isAllClients && grandTotal > 0) {
+      csvData.push(["OVERALL TOTAL", grandTotal, "", "", "", ""]);
     }
 
     return csvData;
@@ -390,25 +384,35 @@ const AppointmentReports = () => {
   };
 
   const exportPDF = async () => {
-    const doc = new jsPDF("landscape", "mm", "a4");
-    doc.setFontSize(11);
-    doc.text(selectedReport, 10, 10);
+    const isLandscape = [
+      "Total Appointments",
+      "Appointments This Month",
+    ].includes(selectedReport);
+    const doc = new jsPDF(isLandscape ? "landscape" : "portrait", "mm", "a4");
+    doc.setFontSize(8);
+    doc.text(selectedReport, 8, 8);
 
     let yPos = 20;
 
-    const chartElement = document.getElementById("chart-container");
-
-    if (chartElement) {
-      try {
-        // Capture chart as an image
-        const canvas = await html2canvas(chartElement);
-        const imgData = canvas.toDataURL("image/png");
-
-        // Add image to the PDF
-        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
-        yPos += 90; // Adjust position for the table
-      } catch (error) {
-        console.error("Error capturing chart:", error);
+    if (
+      selectedReport === "Appointments per Client" &&
+      selectedClient === "All"
+    ) {
+      const pieChartElement = document.querySelector(
+        ".app-chart-box .app-chart"
+      );
+      if (pieChartElement) {
+        try {
+          const canvas = await html2canvas(pieChartElement);
+          const imgData = canvas.toDataURL("image/png");
+          const aspectRatio = canvas.width / canvas.height;
+          const imgWidth = 100; // Fixed width
+          const imgHeight = imgWidth / aspectRatio;
+          doc.addImage(imgData, "PNG", 30, yPos, imgWidth, imgHeight);
+          yPos += imgHeight + 10; // Adjust position for the table
+        } catch (error) {
+          console.error("Error capturing PieChart:", error);
+        }
       }
     }
     if (selectedReport === "Total Appointments") {
@@ -426,12 +430,10 @@ const AppointmentReports = () => {
           "Date Created",
         ],
       ];
-
-      // Determine which appointments to export based on filters
       const appointmentsToExport =
         filters.year === "All" && filters.month === "All"
-          ? appointments // Export all if no filters
-          : filteredAppointments; // Export filtered if year/month selected
+          ? appointments
+          : filteredAppointments;
 
       const data = appointmentsToExport.map((a) => [
         a.name || "N/A",
@@ -450,7 +452,7 @@ const AppointmentReports = () => {
         startY: yPos,
         head: headers,
         body: data,
-        styles: { fontSize: 10 },
+        styles: { fontSize: 8 },
       });
     }
 
@@ -479,18 +481,18 @@ const AppointmentReports = () => {
         startY: yPos,
         head: headers,
         body: data,
-        styles: { fontSize: 10 },
+        styles: { fontSize: 8 },
       });
     }
 
     if (selectedReport === "Appointments per Client") {
       let grandTotal = 0;
+      const isAllClients = selectedClient === "All";
 
       // Filter clients based on selection
-      const clientsToExport =
-        selectedClient === "All"
-          ? clients
-          : clients.filter((c) => c.id.toString() === selectedClient);
+      const clientsToExport = isAllClients
+        ? clients
+        : clients.filter((c) => c.id.toString() === selectedClient);
 
       clientsToExport.forEach((client) => {
         const clientAppointments = appointments.filter(
@@ -498,9 +500,9 @@ const AppointmentReports = () => {
         );
 
         if (clientAppointments.length > 0) {
-          doc.setFontSize(12);
-          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
-          yPos += 10;
+          doc.setFontSize(8);
+          doc.text(`${client.firstName} ${client.lastName}`, 8, yPos);
+          yPos += 8;
 
           const headers = [
             ["Date", "Time", "Consultation Type", "Company Name", "Platform"],
@@ -521,21 +523,22 @@ const AppointmentReports = () => {
             startY: yPos,
             head: headers,
             body: data,
-            styles: { fontSize: 10 },
+            styles: { fontSize: 8 },
           });
 
-          // Add client total
           yPos = doc.lastAutoTable.finalY + 5;
-          doc.text(`Client Total: ${clientTotal}`, 10, yPos);
-          yPos += 15; // Extra space before next client
+          doc.text(`Appointment Total: ${clientTotal}`, 8, yPos);
+          yPos += 15;
 
           grandTotal += clientTotal;
         }
       });
-      if (grandTotal > 0) {
-        doc.setFontSize(12);
+
+      // Only show Overall Total if "All Clients" is selected
+      if (isAllClients && grandTotal > 0) {
+        doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
-        doc.text(`GRAND TOTAL: ${grandTotal}`, 10, yPos);
+        doc.text(`Overall Total: ${grandTotal}`, 8, yPos);
         doc.setFont("helvetica", "normal");
       }
     }
@@ -555,9 +558,9 @@ const AppointmentReports = () => {
         );
 
         if (platformAppointments.length > 0) {
-          doc.setFontSize(12);
-          doc.text(platform, 10, yPos);
-          yPos += 10;
+          doc.setFontSize(10);
+          doc.text(platform, 8, yPos);
+          yPos += 8;
 
           const headers = [
             [
@@ -582,9 +585,9 @@ const AppointmentReports = () => {
             startY: yPos,
             head: headers,
             body: data,
-            styles: { fontSize: 10 },
+            styles: { fontSize: 8 },
           });
-          yPos = doc.lastAutoTable.finalY + 10;
+          yPos = doc.lastAutoTable.finalY + 8;
         }
       });
     }
@@ -617,9 +620,9 @@ const AppointmentReports = () => {
         );
 
         if (typeAppointments.length > 0) {
-          doc.setFontSize(12);
-          doc.text(type, 10, yPos);
-          yPos += 10;
+          doc.setFontSize(8);
+          doc.text(type, 8, yPos);
+          yPos += 8;
 
           const headers = [
             [
@@ -644,12 +647,24 @@ const AppointmentReports = () => {
             startY: yPos,
             head: headers,
             body: data,
-            styles: { fontSize: 10 },
+            styles: { fontSize: 8 },
           });
-          yPos = doc.lastAutoTable.finalY + 10;
+          yPos = doc.lastAutoTable.finalY + 8;
         }
       });
     }
+    const currentDate = new Date().toLocaleString();
+
+    yPos = doc.internal.pageSize.height - 20;
+    doc.setFontSize(8);
+    doc.setTextColor(100); // Gray color
+    doc.text(`Generated by: ${adminUsername || "System"}`, 14, yPos);
+    doc.text(
+      `Date Generated: ${currentDate}`,
+      doc.internal.pageSize.width - 60,
+      yPos,
+      { align: "right" }
+    );
 
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
@@ -777,15 +792,14 @@ const AppointmentReports = () => {
 
       {/* Charts Section */}
       <div id="report-content" className="app-charts-container">
-        {/* Appointments per Client */}
         {!filters.clientId && (
           <div className="app-chart-box">
             <h3 className="app-chart-title">Appointments per Client</h3>
             <p className="app-chart-description">
               Overview of client appointments in percentage format.
             </p>
-            <div className="app-chart-scroll">
-              <PieChart width={800} height={550}>
+            <div className="app-chart">
+              <PieChart width={550} height={550}>
                 <Pie
                   data={appointmentsByClient}
                   dataKey="value"
