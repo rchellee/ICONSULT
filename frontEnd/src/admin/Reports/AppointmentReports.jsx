@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import "./ReportsTab.css";
 import landscapeTemplate from "../../assets/reports_landscape.jpg";
-import AppointmentTemplate from "../../assets/appointment_reports.jpg";
+import AppointmentTemplate from "../../assets/reports_portrait.jpg";
 
 const AppointmentReports = () => {
   const [appointments, setAppointments] = useState([]);
@@ -389,10 +389,36 @@ const AppointmentReports = () => {
       "Appointments This Month",
     ].includes(selectedReport);
     const doc = new jsPDF(isLandscape ? "landscape" : "portrait", "mm", "a4");
-    doc.setFontSize(8);
-    doc.text(selectedReport, 8, 8);
 
-    let yPos = 20;
+    // Add template background
+    const template = isLandscape ? landscapeTemplate : AppointmentTemplate;
+    doc.addImage(
+      template,
+      "JPEG",
+      0,
+      0,
+      doc.internal.pageSize.getWidth(),
+      doc.internal.pageSize.getHeight()
+    );
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0); // Black text
+    
+    // Calculate center position for the title
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const textWidth = doc.getStringUnitWidth(selectedReport) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+    const textX = (pageWidth - textWidth) / 2;
+    
+    // Add title with top margin (30mm from top)
+    doc.text(selectedReport, textX, 45);
+    
+    // Reset font for the rest of the content
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+
+    // Start content below the title with proper margin
+    let yPos = 50;
 
     if (
       selectedReport === "Appointments per Client" &&
@@ -452,7 +478,14 @@ const AppointmentReports = () => {
         startY: yPos,
         head: headers,
         body: data,
-        styles: { fontSize: 8 },
+        styles: {
+          fontSize: 8,
+          textColor: [0, 0, 0], // Black text for visibility
+        },
+        headStyles: {
+          fillColor: [255, 255, 255], // White background for headers
+          textColor: [0, 0, 0], // Black text
+        },
       });
     }
 
@@ -481,7 +514,14 @@ const AppointmentReports = () => {
         startY: yPos,
         head: headers,
         body: data,
-        styles: { fontSize: 8 },
+        styles: {
+          fontSize: 8,
+          textColor: [0, 0, 0], // Black text for visibility
+        },
+        headStyles: {
+          fillColor: [255, 255, 255], // White background for headers
+          textColor: [0, 0, 0], // Black text
+        },
       });
     }
 
@@ -523,9 +563,15 @@ const AppointmentReports = () => {
             startY: yPos,
             head: headers,
             body: data,
-            styles: { fontSize: 8 },
+            styles: {
+              fontSize: 8,
+              textColor: [0, 0, 0], // Black text for visibility
+            },
+            headStyles: {
+              fillColor: [255, 255, 255], // White background for headers
+              textColor: [0, 0, 0], // Black text
+            },
           });
-
           yPos = doc.lastAutoTable.finalY + 5;
           doc.text(`Appointment Total: ${clientTotal}`, 8, yPos);
           yPos += 15;
@@ -585,7 +631,14 @@ const AppointmentReports = () => {
             startY: yPos,
             head: headers,
             body: data,
-            styles: { fontSize: 8 },
+            styles: {
+              fontSize: 8,
+              textColor: [0, 0, 0], // Black text for visibility
+            },
+            headStyles: {
+              fillColor: [255, 255, 255], // White background for headers
+              textColor: [0, 0, 0], // Black text
+            },
           });
           yPos = doc.lastAutoTable.finalY + 8;
         }
@@ -647,7 +700,14 @@ const AppointmentReports = () => {
             startY: yPos,
             head: headers,
             body: data,
-            styles: { fontSize: 8 },
+            styles: {
+              fontSize: 8,
+              textColor: [0, 0, 0], // Black text for visibility
+            },
+            headStyles: {
+              fillColor: [255, 255, 255], // White background for headers
+              textColor: [0, 0, 0], // Black text
+            },
           });
           yPos = doc.lastAutoTable.finalY + 8;
         }
