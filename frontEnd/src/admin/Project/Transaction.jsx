@@ -413,10 +413,10 @@ const Transaction = ({ projectId }) => {
       {/* Header with Project ID */}
       <div className="header-container">
       <h3 className="project-id">
-  <span className="project-name">MyProject</span>
-  <IoChevronForward className="chevron-icon" />
-  <span className="project-name">{projectName}</span>
-</h3>
+        <span className="project-name">MyProject</span>
+          <IoChevronForward className="chevron-icon" />
+        <span className="project-name">{projectName}</span>
+      </h3>
         <button
           className="create-task-button"
           onClick={navigateToCreateTask} // Use the navigate function
@@ -474,7 +474,6 @@ const Transaction = ({ projectId }) => {
 
     {/* Right-aligned buttons */}
     <div className="button-row">
-      <button className="export-task-button">Export</button>
       <div className="status-task" ref={statusDropdownRef}>
         <button
           className="status-task-button"

@@ -3,7 +3,8 @@
   justify-content: space-between;
   align-items: center;
   margin-left: 125px;
-  margin-right: 125px;
+  margin-right: 20px;
+  
   margin-bottom: 20px;
 }
 
@@ -11,6 +12,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  
+  
 }
 
 .past-due {
@@ -31,6 +34,8 @@
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.3s ease;
+  right: auto;
+  
 }
 
 .create-task-button:hover {
@@ -56,8 +61,8 @@
 /* Details Container */
 .details-container {
   margin-left: 125px;
-  margin-right: 125px;
-  margin-bottom: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
   position: relative;
 }
 
@@ -128,9 +133,11 @@
   display: flex;
   gap: 10px; /* Adjust spacing between buttons */
   align-items: center; /* Vertically center buttons */
+  margin-right: -5px;
+
 }
 
-.export-task-button,
+
 .sort-task-button,
 .status-task-button {
   padding: 8px 16px;
@@ -138,12 +145,6 @@
   cursor: pointer;
   color: #3b4f67;
   background: none;
-}
-
-.export-task-button:hover {
-  background-color: white;
-  color: rgb(48, 148, 255);
-  border: none;
 }
 
 .sort-task-button:hover {
@@ -240,15 +241,15 @@
   max-height: 520px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  margin-top: 40px;
-  margin-left: 125px;
+  
+  margin-left: 115px;
   margin-right: 205px;
   border-radius: 10px;
   background-color: transparent;
   padding: 10px;
   border: none;
   justify-content: center;
-  width: 90%;
+  width: 95%;
 }
 
 /* Webkit Custom Scrollbar */
@@ -270,7 +271,7 @@
   background-color: #365673;
 }
 
-/* Table Styles */
+/* Table Styles--------------------------------------------------- */
 .transaction-table {
   width: 100%;
   border-collapse: collapse;
@@ -323,6 +324,10 @@ td.amount-cell {
   padding-right: 30px;
   width: 120px;
 }
+
+
+/*---------------------------------------------------------------------*/
+
 
 .subtotal-amount {
   border-bottom: 2px solid black;

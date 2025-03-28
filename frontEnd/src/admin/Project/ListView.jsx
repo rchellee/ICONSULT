@@ -38,6 +38,8 @@ const ListView = ({
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
 
   // Refs for dropdown containers
   const statusDropdownRef = useRef(null);
@@ -98,6 +100,30 @@ const ListView = ({
     setShowStatusOptions(false);
   };
 
+  const handleEditClick = (e, projectId) => {
+    e.stopPropagation();
+    handleEdit(projectId);
+  };
+
+  const handleDeleteClick = (e, projectId) => {
+    e.stopPropagation();
+    setProjectToDelete(projectId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (projectToDelete) {
+      handleDelete(projectToDelete);
+    }
+    setShowDeleteConfirm(false);
+    setProjectToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setProjectToDelete(null);
+  };
+
   useEffect(() => {
     if (!projects) return;
     const filtered = projects.filter((project) => {
@@ -155,22 +181,6 @@ const ListView = ({
 
     setFilteredProjects(sorted);
   }, [searchTerm, projects, filterStatus, statuses, sortOrder]);
-
-  const handleEditClick = (e, projectId) => {
-    e.stopPropagation();
-    handleEdit(projectId);
-  };
-
-  const handleDeleteClick = (e, projectId) => {
-    e.stopPropagation();
-
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
-    if (confirmDelete) {
-      handleDelete(projectId);
-    }
-  };
 
   const statusCounts = projects?.reduce(
     (acc, project) => {
@@ -342,31 +352,31 @@ const ListView = ({
                   </span>
                 </td>
                 <td>
-                <div 
-  className="status-indicator"
-  style={{
-    backgroundColor:
-      statuses[project.id] === "Ongoing"
-        ? "rgba(64, 112, 244, 0.1)"
-        : statuses[project.id] === "Completed"
-        ? "rgba(59, 79, 103, 0.1)"
-        : statuses[project.id] === "Pending"
-        ? "rgba(252, 118, 118, 0.1)"
-        : statusColors[statuses[project.id]]
-        ? `${statusColors[statuses[project.id]]}20` // Add 20% opacity
-        : "rgba(0, 0, 0, 0.05)",
-    color:
-      statuses[project.id] === "Ongoing"
-        ? "#4070f4"
-        : statuses[project.id] === "Completed"
-        ? "#3b4f67"
-        : statuses[project.id] === "Pending"
-        ? "rgb(252, 118, 118)"
-        : statusColors[statuses[project.id]] || "#000",
-  }}
->
-  {statuses[project.id] || "Pending"}
-</div>
+                  <div 
+                    className="status-indicator"
+                    style={{
+                      backgroundColor:
+                        statuses[project.id] === "Ongoing"
+                        ? "rgba(64, 112, 244, 0.1)"
+                        : statuses[project.id] === "Completed"
+                        ? "rgba(59, 79, 103, 0.1)"
+                        : statuses[project.id] === "Pending"
+                        ? "rgba(252, 118, 118, 0.1)"
+                        : statusColors[statuses[project.id]]
+                        ? `${statusColors[statuses[project.id]]}20` 
+                        : "rgba(0, 0, 0, 0.05)",
+                      color:
+                        statuses[project.id] === "Ongoing"
+                        ? "#4070f4"
+                        : statuses[project.id] === "Completed"
+                        ? "#3b4f67"
+                        : statuses[project.id] === "Pending"
+                        ? "rgb(252, 118, 118)"
+                        : statusColors[statuses[project.id]] || "#000",
+                    }}
+                  >
+                    {statuses[project.id] || "Pending"}
+                  </div>
                 </td>
                 <td>
                   <div className="project-action">
@@ -380,9 +390,7 @@ const ListView = ({
                       className="project-delete"
                       onClick={(e) => handleDeleteClick(e, project.id)}
                     >
-                      <MdOutlineDeleteOutline
-                        style={{ fontSize: "1.5rem" }}
-                      />
+                      <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} />
                     </button>
                   </div>
                 </td>
@@ -391,6 +399,28 @@ const ListView = ({
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="delete-confirmation-modal">
+          <div className="delete-confirmation-content">
+            <div className="delete-confirmation-header">
+              <MdOutlineDeleteOutline className="delete-project-icon" />
+              <h3>Confirm Deletion</h3>
+            </div>
+            <p>Are you sure you want to delete this project?</p>
+           
+            <div className="delete-confirmation-buttons">
+              <button className="cancel-project-button" onClick={cancelDelete}>
+                Cancel
+              </button>
+              <button className="confirm-project-button" onClick={confirmDelete}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

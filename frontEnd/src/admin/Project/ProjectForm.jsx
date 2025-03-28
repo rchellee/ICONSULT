@@ -24,7 +24,7 @@ const ProjectForm = ({
 
   const handleSave = () => {
     if (!projectName || !clientId || !startDate || !endDate || !description) {
-      setValidationError("All fields except Transaction ID are required.");
+      setValidationError("All fields are required.");
       return;
     }
 

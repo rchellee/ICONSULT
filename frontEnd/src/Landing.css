@@ -32,7 +32,7 @@ nav {
   font-family: "Ubuntu", sans-serif;
 }
 nav.sticky {
-  background: #4070f4;
+  background: none;
   padding: 13px 0;
 }
 nav .navbar {
@@ -151,7 +151,7 @@ nav.sticky .menu-btn {
   border-radius: 6px;
   font-size: 25px;
   font-weight: 400;
-  background: #7E83C2;
+  background: #3b4f67;
   color: #fff;
   cursor: pointer;
   border: 2px solid transparent;
@@ -237,7 +237,7 @@ section .button button {
   border-radius: 4px;
   font-size: 25px;
   font-weight: 400;
-  background: #7E83C2;
+  background: #3b4f67;
   color: #fff;
   border: 2px solid transparent;
   cursor: pointer;
@@ -318,13 +318,13 @@ section .button button:hover {
   transition: all 0.4s ease;
 }
 .services .boxes .box:hover {
-  background: #999eda;
+  background: #3b4f67;
   color: #fff;
 }
 .services .boxes .box .icon {
   height: 50px;
   width: 50px;
-  background: #7777DF;
+  background: #3b4f67;
   border-radius: 50%;
   text-align: center;
   line-height: 50px;
@@ -336,7 +336,7 @@ section .button button:hover {
 
 .boxes .box:hover .icon {
   background-color: #fff;
-  color: #3b4f67;
+  color: #3b4f67; 
 }
 .services .boxes .box:hover .topic,
 .services .boxes .box:hover p {
@@ -360,9 +360,38 @@ section .button button:hover {
   text-align: center;
   margin: auto;
 }
+
+.contact .button button {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 0;
+  cursor: pointer;
+  border-radius: 30px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.contact .button button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #a777e3, #6e8efb);
+}
+
+.contact .button button a {
+  color: white;
+  text-decoration: none;
+}
+
 /* Footer CSS */
 footer {
-  background:  #7777DF;
+  background:  #77a6df;
   padding: 15px 0;
   text-align: center;
   font-family: "Poppins", sans-serif;
@@ -385,7 +414,7 @@ footer .text span a:hover {
   bottom: 20px;
   right: 20px;
   color: #fff;
-  background: #7E83C2;
+  background: #3b4f67;
   padding: 7px 12px;
   font-size: 18px;
   border-radius: 6px;

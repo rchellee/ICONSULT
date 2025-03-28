@@ -8,17 +8,37 @@ import FilesTab from "./FilesTab";
 import Sidebar from "../sidebar";
 import Topbar from "../Topbar";
 import Transaction from "./Transaction";
+import axios from "axios";
+import { IoChevronForward } from "react-icons/io5";
 
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
   const { searchTerm } = useContext(SearchContext);
   const [selectedProjectId, setSelectedProjectId] = useState(projectId);
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("transactions"); // Default to "transactions" tab
+  const [activeTab, setActiveTab] = useState("transactions");
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [projectName, setProjectName] = useState("");
 
-  // Handle tab switching
+  // Fetch project name
+  useEffect(() => {
+    if (!projectId) return;
+
+    const fetchProjectName = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8081/project/${projectId}`
+        );
+        setProjectName(response.data.projectName);
+      } catch (error) {
+        console.error("Error fetching project name:", error);
+      }
+    };
+
+    fetchProjectName();
+  }, [projectId]);
+
   const handleTabClick = (tab) => setActiveTab(tab);
 
   return (
@@ -27,6 +47,15 @@ const ProjectTask = ({ onBack }) => {
       <Sidebar />
       <div className="project-task-container">
         <div className="home-button-container"></div>
+        {/* Project Name Header */}
+        <div className="project-header">
+          <h3 className="project-id">
+            <span className="project-name">MyProject</span>
+            <IoChevronForward className="chevron-icon" />
+            <span className="project-name">{projectName}</span>
+          </h3>
+        </div>
+        
         <div className="project-task-tabs">
           <button
             className={activeTab === "transactions" ? "active" : ""}
@@ -41,15 +70,17 @@ const ProjectTask = ({ onBack }) => {
             Documents
           </button>
         </div>
+        
         {/* Tab Content */}
         <div className="project-task-content">
-          {/* Transaction History Tab */}
           {activeTab === "transactions" && (
             <ErrorBoundary>
-              <Transaction projectId={projectId} />
+              <Transaction 
+                projectId={projectId} 
+                projectName={projectName}  // Pass projectName as prop
+              />
             </ErrorBoundary>
           )}
-          {/* Documents Tab */}
           {activeTab === "files" && <FilesTab projectId={projectId} />}
         </div>
       </div>
