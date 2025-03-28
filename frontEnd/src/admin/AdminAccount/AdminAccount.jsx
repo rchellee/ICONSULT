@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { CiEdit } from "react-icons/ci";
 import Topbar from "../Topbar";
@@ -71,7 +75,7 @@ const AdminAccount = () => {
       <Sidebar />
       <div className="account-settings">
         <div className="content-admin">
-          <div className="password-admin">
+          <div className="passwordd-admin">
             <img
               src={password}
               alt="password"
@@ -86,6 +90,7 @@ const AdminAccount = () => {
                   <div className="admin-detail-row">
                     <span className="label-admin">Username</span>
                     <p>
+                      Username:{" "}
                       <span className="value-admin">
                         {adminDetails.username}
                       </span>
@@ -94,6 +99,7 @@ const AdminAccount = () => {
                   <div className="admin-detail-row">
                     <span className="label-admin">Email Address</span>
                     <p>
+                      Email:{" "}
                       <span className="value-admin">{adminDetails.email}</span>
                     </p>
                   </div>
@@ -112,7 +118,7 @@ const AdminAccount = () => {
                   </Button>
                 </>
               ) : (
-                <div className="update-form">
+                <div>
                   <TextField
                     label="Username"
                     value={updatedDetails.username || ""}
@@ -124,12 +130,10 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
-                    variant="outlined"
                     className="text-field"
                   />
                   <TextField
-                    label="Email Address"
-                    
+                    label="Email"
                     value={updatedDetails.email || ""}
                     onChange={(e) =>
                       setUpdatedDetails({
@@ -139,7 +143,6 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
-                    variant="outlined"
                     className="text-field"
                   />
                   <TextField
@@ -154,21 +157,20 @@ const AdminAccount = () => {
                     }
                     fullWidth
                     margin="normal"
-                    variant="outlined"
                     className="text-field"
                   />
                   <div className="button-group">
                     <Button
                       variant="contained"
                       onClick={handleUpdate}
-                      className="save-button"
+                      style={{ marginRight: "10px", marginTop: "20px" }}
                     >
                       Save
                     </Button>
                     <Button
                       variant="outlined"
                       onClick={() => setEditMode(false)}
-                      className="cancel-button"
+                      style={{ marginTop: "20px" }}
                     >
                       Cancel
                     </Button>

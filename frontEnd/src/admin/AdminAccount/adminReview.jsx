@@ -174,6 +174,7 @@ const AdminReview = () => {
                     </Box>
 
                     {/* User Information Section */}
+
                     <Box display="flex" alignItems="center" marginTop="10px">
                       <Avatar style={{ marginRight: "10px" }}>
                         {getClientName(review.client_id)

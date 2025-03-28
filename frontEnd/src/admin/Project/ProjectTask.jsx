@@ -11,6 +11,7 @@ import Transaction from "./Transaction";
 import axios from "axios";
 import { IoChevronForward } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
+import noTaskIllust from "../../assets/no-task-illust.png"; // Import the image
 
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
@@ -19,6 +20,7 @@ const ProjectTask = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState("transactions");
   const [projectName, setProjectName] = useState("");
   const [showCreateButton, setShowCreateButton] = useState(true);
+  const [hasTasks, setHasTasks] = useState(false); // New state to track if tasks exist
 
   // Fetch project name
   useEffect(() => {
@@ -30,8 +32,15 @@ const ProjectTask = ({ onBack }) => {
           `http://localhost:8081/project/${projectId}`
         );
         setProjectName(response.data.projectName);
+        
+        // Check if project has tasks
+        const tasksResponse = await axios.get(
+          `http://localhost:8081/admin/tasks?projectId=${projectId}`
+        );
+        setHasTasks(tasksResponse.data.tasks.length > 0);
       } catch (error) {
-        console.error("Error fetching project name:", error);
+        console.error("Error fetching project data:", error);
+        setHasTasks(false);
       }
     };
 
@@ -52,6 +61,11 @@ const ProjectTask = ({ onBack }) => {
     });
   };
 
+  // Function to update hasTasks state when tasks are modified
+  const handleTasksUpdate = (taskCount) => {
+    setHasTasks(taskCount > 0);
+  };
+
   return (
     <div className="project-task-page">
       <Topbar />
@@ -60,9 +74,11 @@ const ProjectTask = ({ onBack }) => {
         {/* Project Header with Breadcrumbs and Create Button */}
         <div className="project-header">
           <h3 className="project-id">
-            <span className="project-name">MyProject</span>
+            <span className="project-name">My Project</span>
             <IoChevronForward className="chevron-icon" />
-            <span className="project-name">{projectName}</span>
+            <span className="project-name" style={{  color: '#000' }}>
+              {projectName}
+            </span>
           </h3>
           
           {showCreateButton && (
@@ -95,10 +111,22 @@ const ProjectTask = ({ onBack }) => {
         <div className="project-task-content">
           {activeTab === "transactions" && (
             <ErrorBoundary>
-              <Transaction 
-                projectId={projectId}
-                projectName={projectName}
-              />
+              {hasTasks ? (
+                <Transaction 
+                  projectId={projectId}
+                  projectName={projectName}
+                  onTasksUpdate={handleTasksUpdate}
+                />
+              ) : (
+                <div className="no-tasks-message">
+                  <img 
+                    src={noTaskIllust} 
+                    alt="No tasks created" 
+                    className="no-task-illustration"
+                  />
+                  <p>No tasks created yet.</p>
+                </div>
+              )}
             </ErrorBoundary>
           )}
           {activeTab === "files" && (

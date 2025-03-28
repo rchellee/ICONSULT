@@ -19,7 +19,9 @@ const FilesTab = ({ projectId }) => {
     key: "name", // Default sort by name
     direction: "asc", // Default ascending order
   });
-  const [showSortOptions, setShowSortOptions] = useState(false); // State to toggle sort options
+  const [showSortOptions, setShowSortOptions] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState(null);
 
   // Create a ref for the file input
   const fileInputRef = useRef(null);
@@ -100,14 +102,29 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
-  const handleDelete = async (fileId) => {
+  const handleDeleteClick = (fileId) => {
+    setFileToDelete(fileId);
+    setShowDeleteConfirm(true);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setFileToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!fileToDelete) {
+      setShowDeleteConfirm(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:8081/files/${fileId}`, {
+      const response = await fetch(`http://localhost:8081/files/${fileToDelete}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+        setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileToDelete));
         console.log("File record deleted successfully.");
       } else {
         const errorData = await response.json();
@@ -115,6 +132,9 @@ const FilesTab = ({ projectId }) => {
       }
     } catch (error) {
       console.error("Error deleting file record:", error);
+    } finally {
+      setShowDeleteConfirm(false);
+      setFileToDelete(null);
     }
   };
 
@@ -190,6 +210,28 @@ const FilesTab = ({ projectId }) => {
 
   return (
     <div className="files-tab-content">
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="delete-confirmation-modal">
+          <div className="delete-confirmation-content">
+            <div className="delete-confirmation-header">
+              <MdOutlineDeleteOutline className="delete-project-icon" />
+              <h3>Confirm Deletion</h3>
+            </div>
+            <p>Are you sure you want to delete this file?</p>
+           
+            <div className="delete-confirmation-buttons">
+              <button className="cancel-project-button" onClick={cancelDelete}>
+                Cancel
+              </button>
+              <button className="confirm-project-button" onClick={confirmDelete}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="upload-files-section">
         {/* Upload Button */}
         <button className="upload-files-btn" onClick={handleUploadButtonClick}>
@@ -230,16 +272,10 @@ const FilesTab = ({ projectId }) => {
               <thead>
                 <tr>
                   <th onClick={() => changeSort("asc")} className="name-header">
-                    <CiFileOn className="file-icon" />
-                    Name{" "}
-                    {sortConfig.direction === "asc" ? (
-                      <FaArrowUp />
-                    ) : (
-                      <FaArrowDown />
-                    )}
+                    Name
                   </th>
-                  <th className="upload-date-header">Upload Date</th>
-                  <th className="uploaded-by-header">Uploaded By</th>
+                  <th className="upload-date-header">Modified Date</th>
+                  <th className="uploaded-by-header">Modified By</th>
                   <th className="action-files">Actions</th>
                 </tr>
               </thead>
@@ -273,7 +309,7 @@ const FilesTab = ({ projectId }) => {
                     </td>
                     <td>
                       <button
-                        className="files-action"
+                        className="files-admin"
                         onClick={() => {
                           const downloadLink =
                             file.webContentLink ||
@@ -289,8 +325,8 @@ const FilesTab = ({ projectId }) => {
                         <IoMdDownload /> {/* Download icon */}
                       </button>
                       <button
-                        className="files-action"
-                        onClick={() => handleDelete(file.id)}
+                        className="files-admin"
+                        onClick={() => handleDeleteClick(file.id)}
                       >
                         <MdOutlineDeleteOutline /> {/* Delete icon */}
                       </button>
@@ -302,16 +338,15 @@ const FilesTab = ({ projectId }) => {
           </div>
         )}
 
-        
-{files.length === 0 && (
-  <div className="no-files-container">
-    <img 
-      src={emptyFolder} 
-      alt="Empty folder" 
-      className="empty-folder-image"
-    />
-    <div className="no-files-message">No files uploaded yet.</div>
-  </div>
+        {files.length === 0 && (
+          <div className="no-files-container">
+            <img 
+              src={emptyFolder} 
+              alt="Empty folder" 
+              className="empty-folder-image"
+            />
+            <div className="no-files-message">No files uploaded yet.</div>
+          </div>
         )}
       </div>
     </div>

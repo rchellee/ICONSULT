@@ -403,17 +403,6 @@
   color: white;
 }
 
-/* eto sa mga button sa taas ng table */
-.sorting-button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  padding: 0.5rem 0;
-  width: 100%;
-  margin-top: 80px;
-}
-
 
 
 
@@ -453,7 +442,7 @@
 .counter-label {
   font-weight: 500;
   margin-right: 0.5rem;
-  color: #64748b;
+  color: #64748b; /*yung text*/
 }
 
 .status-value-list {
@@ -583,6 +572,18 @@
   position: relative;
 }
 
+
+/* eto sa mga button sa taas ng table */
+.sorting-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0.5rem 0;
+  width: 100%;
+  margin-top: 80px;
+}
+
 /* Dropdown styles */
 .sorting-dropdown {
   position: absolute;
@@ -704,7 +705,7 @@
   bottom: -5px;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #3b4f67, #74c69d);
+  background: linear-gradient(90deg, #9773de, #74c69d);
   border-radius: 2px;
   box-shadow: none;
   animation: slideIn 0.3s ease;

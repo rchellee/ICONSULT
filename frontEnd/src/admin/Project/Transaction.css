@@ -13,6 +13,8 @@
   font-weight: bold; /* Optional: Make the text bold */
 }
 
+/*INSIGHT -------------------------------------------------------------------------------*/
+
 /* Progress Container */
 .progress-container {
   display: flex;
@@ -77,7 +79,13 @@
 }
 
 .progress-text {
-  color: #333;
+  color: #64748b; 
+  font-weight: normal; 
+  font-size: 14px;
+}
+
+.progress-text span.value {
+  color: #6366f1; /* Indigo for the number */
   font-weight: bold;
 }
 
@@ -103,6 +111,78 @@
   margin-right: -5px;
 
 }
+
+
+/* Metrics Box */
+.metrics-box {
+  display: flex;
+  align-items: center;
+  gap: 50px; 
+  padding: 16px 24px;
+  
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Progress item can be styled differently if needed */
+.progress-item .metric-value {
+  color: #1890ff; /* Blue color for progress percentage */
+}
+
+/* Keep your existing details-container styles */
+.details-container {
+  margin-left: 125px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.details-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.current-task-value {
+  color: #1890ff; /* Blue for current tasks */
+  font-weight: bold;
+}
+
+.not-paid-value {
+  color: #ff4d4f; /* Red for not paid */
+  font-weight: bold;
+}
+
+.paid-value {
+  color: #52c41a; /* Green for paid */
+  font-weight: bold;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: #64748b; /* New slate gray color */
+  font-size: 14px;
+}
+
+
+/*INSIGHT -------------------------------------------------------------------------------*/
 
 
 .sort-task-button,
@@ -292,6 +372,23 @@ td.amount-cell {
   width: 120px;
 }
 
+/* Add to your Transaction.css */
+.number-column {
+  width: 40px; /* or whatever narrow width you prefer */
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+  padding: 8px 4px !important; /* Reduce side padding */
+  font-weight: bold;
+}
+
+
+/* Add to your Transaction.css */
+.transaction-table td:nth-child(3), 
+.transaction-table th:nth-child(3) { /* Targets 3rd column (Type) */
+  width: 200px; /* Set fixed width */
+  min-width: 200px; /* Prevent shrinking */
+}
 
 /*---------------------------------------------------------------------*/
 
