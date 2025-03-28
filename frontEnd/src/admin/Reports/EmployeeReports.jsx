@@ -238,9 +238,10 @@ const EmployeeReports = () => {
         yPos += 10;
         autoTable(doc, {
           startY: yPos,
-          head: [["Task Name", "Fee", "Status", "Due Date"]],
+          head: [["Task Name", "Fee", "Total Amount", "Status", "Due Date"]],
           body: employee.tasks.map((task) => [
             task.task_name || "N/A",
+            task.task_fee,
             task.amount,
             task.status || "N/A",
             task.due_date || "N/A",
@@ -284,8 +285,8 @@ const EmployeeReports = () => {
         csvData.push([
           "", // Empty for indentation
           task.task_name || "N/A",
-          task.task_fee,
-          task.amount,
+          task.task_fee || "N/A",
+          task.amount || "N/A",
           task.status || "N/A",
           task.due_date ? formatDate(task.due_date) : "N/A",
         ]);

@@ -35,6 +35,7 @@ const RevenueReports = () => {
   const [selectedReport, setSelectedReport] = useState("");
   const [selectedProject, setSelectedProject] = useState("All");
   const [selectedClient, setSelectedClient] = useState("All");
+  const [tasks, setTasks] = useState([]);
 
   const [detailedPaymentData, setDetailedPaymentData] = useState({
     receivedPayments: [],
@@ -66,6 +67,7 @@ const RevenueReports = () => {
     fetchRevenues();
     fetchPaymentsPerClient();
     fetchClients();
+    fetchTasks();
   }, [filters]);
 
   useEffect(() => {
@@ -180,6 +182,15 @@ const RevenueReports = () => {
       setRevenues(response.data);
     } catch (error) {
       console.error("Error fetching revenues", error);
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/tasksPayments");
+      setTasks(response.data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
     }
   };
   const COLORS = ["#4CAF50", "#FF5252"];
@@ -413,12 +424,28 @@ const RevenueReports = () => {
           doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
           yPos += 10;
 
-          const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
+          const headers = [
+            [
+              "Transaction ID",
+              "Project",
+              "Task",
+              "Paid by",
+              "Amount",
+              "MOP",
+              "Date Paid",
+            ],
+          ];
           let clientTotal = 0;
           const data = clientRevenues.map((r) => {
+            const project = projects.find((p) => p.id === r.project_id);
+            const task = (tasks || []).find((t) => t.id === r.task_id);
+
             clientTotal += r.amount;
             return [
               r.transaction_id || "N/A",
+              project ? project.projectName : "N/A",
+              task ? task.task_name : "N/A",
+              r.payer_name || "N/A",
               `₱${r.amount.toFixed(2)}`,
               r.mode_of_payment || "N/A",
               r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
@@ -466,12 +493,18 @@ const RevenueReports = () => {
           doc.text(`${project.projectName}`, 10, yPos);
           yPos += 10;
 
-          const headers = [["Transaction ID", "Amount", "MOP", "Date Paid"]];
+          const headers = [
+            ["Transaction ID", "Task", "Paid by", "Amount", "MOP", "Date Paid"],
+          ];
           let projectTotal = 0;
           const data = projectRevenues.map((r) => {
+            const task = (tasks || []).find((t) => t.id === r.task_id);
+
             projectTotal += r.amount;
             return [
               r.transaction_id || "N/A",
+              task ? task.task_name : "N/A",
+              r.payer_name || "N/A",
               `₱${r.amount.toFixed(2)}`,
               r.mode_of_payment || "N/A",
               r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
@@ -621,13 +654,28 @@ const RevenueReports = () => {
 
       if (clientRevenues.length > 0) {
         csvData.push([`${client.firstName} ${client.lastName}`]); // Add client name as a row
-        csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]); // Headers
+        csvData.push([
+          "Transaction ID",
+          "Project",
+          "Task",
+          "Paid by",
+          "Amount",
+          "MOP",
+          "Date Paid",
+        ]); // Headers
 
         let clientTotal = 0;
 
         clientRevenues.forEach((r) => {
+          const project = projects.find((p) => p.id === r.project_id);
+          // Safely get task name - use empty array if tasks not loaded yet
+          const task = (tasks || []).find((t) => t.id === r.task_id);
+
           csvData.push([
             r.transaction_id || "N/A",
+            project ? project.projectName : "N/A",
+            task ? task.task_name : "N/A",
+            r.payer_name || "N/A",
             `₱${r.amount.toFixed(2)}`,
             r.mode_of_payment || "N/A",
             r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
@@ -635,7 +683,15 @@ const RevenueReports = () => {
           clientTotal += r.amount;
         });
 
-        csvData.push(["Client Total", `₱${clientTotal.toFixed(2)}`, "", ""]);
+        csvData.push([
+          "Client Total",
+          "",
+          "",
+          "",
+          `₱${clientTotal.toFixed(2)}`,
+          "",
+          "",
+        ]);
         csvData.push([]); // Blank row for spacing
 
         grandTotal += clientTotal;
@@ -644,7 +700,15 @@ const RevenueReports = () => {
 
     // Add grand total if there were any clients with revenues
     if (grandTotal > 0) {
-      csvData.push(["GRAND TOTAL", `₱${grandTotal.toFixed(2)}`, "", ""]);
+      csvData.push([
+        "GRAND TOTAL",
+        "",
+        "",
+        "",
+        `₱${grandTotal.toFixed(2)}`,
+        "",
+        "",
+      ]);
     }
 
     return csvData;
@@ -666,13 +730,24 @@ const RevenueReports = () => {
 
       if (projectRevenues.length > 0) {
         csvData.push([`${project.projectName}`]); // Add project name as a row
-        csvData.push(["Transaction ID", "Amount", "MOP", "Date Paid"]);
+        csvData.push([
+          "Transaction ID",
+          "Task",
+          "Paid by",
+          "Amount",
+          "MOP",
+          "Date Paid",
+        ]); // Headers
 
         let projectTotal = 0;
 
         projectRevenues.forEach((r) => {
+          const task = (tasks || []).find((t) => t.id === r.task_id);
+
           csvData.push([
             r.transaction_id || "N/A",
+            task ? task.task_name : "N/A",
+            r.payer_name || "N/A",
             `₱${r.amount.toFixed(2)}`,
             r.mode_of_payment || "N/A",
             r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
@@ -680,7 +755,14 @@ const RevenueReports = () => {
           projectTotal += r.amount;
         });
 
-        csvData.push(["Project Total", `₱${projectTotal.toFixed(2)}`, "", ""]);
+        csvData.push([
+          "Project Total",
+          "",
+          "",
+          `₱${projectTotal.toFixed(2)}`,
+          "",
+          "",
+        ]);
         csvData.push([]); // Blank row for spacing
 
         grandTotal += projectTotal;
@@ -689,7 +771,14 @@ const RevenueReports = () => {
 
     // Add grand total if there were any projects with revenues
     if (grandTotal > 0) {
-      csvData.push(["GRAND TOTAL", `₱${grandTotal.toFixed(2)}`, "", ""]);
+      csvData.push([
+        "GRAND TOTAL",
+        "",
+        "",
+        `₱${grandTotal.toFixed(2)}`,
+        "",
+        "",
+      ]);
     }
 
     return csvData;
@@ -923,7 +1012,7 @@ const RevenueReports = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="total_amount" fill="#8884d8" />
+          <Bar dataKey="total_amount" fill="#8884d8" name="Total" />
         </BarChart>
       </div>
     </div>
