@@ -29,12 +29,18 @@
 select {
   font-size: 14px;
   width: 200px;
-  background-color: #fff;
+  background-color: #f4f4f9;
+  border-color: #222;
+  justify-content: center;
 }
 
 .reports-content {
   background: #fff;
   padding: 20px;
+}
+
+.reports-select{
+  justify-content: center;
 }
 /*------------------------- Filter Container with Grid ------------------*/
 .filter-container {
@@ -50,7 +56,8 @@ select {
   font-size: 14px;
   text-align-last: center;
   direction: rtl;
-  background-color: white;
+  background-color: #f4f4f9;
+  border: none;
 }
 
 /* Responsive Design */
@@ -465,6 +472,7 @@ select {
   padding: 8px;
   border-radius: 5px;
   background: #f9f9f9;
+  border:none;
 }
 .employee-filter-each {
   display: space-between;
@@ -479,6 +487,8 @@ select {
   cursor: pointer;
   min-width: 100px;
   font-size: 14px;
+  border:none;
+
 }
 
 .employee-filter-each select:focus {
@@ -614,6 +624,7 @@ select {
   padding: 10px;
   border-radius: 5px;
   font-size: 14px;
+
 }
 
 /* ------------------------------------------------------------------- */
