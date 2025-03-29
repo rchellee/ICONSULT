@@ -2,15 +2,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 125px;
+  margin-left: 90px;
   margin-right: 20px;
-  
   margin-bottom: 20px;
 }
 
 .past-due {
-  color: red; /* Change this to your desired color */
-  font-weight: bold; /* Optional: Make the text bold */
+  color: red; 
+  font-weight: bold;
 }
 
 /*INSIGHT -------------------------------------------------------------------------------*/
@@ -29,23 +28,24 @@
 
 /* Details Container */
 .details-container {
-  margin-left: 125px;
+  margin-left: 100px;
   margin-right: 20px;
   margin-bottom: 10px;
   position: relative;
+  padding-left: 0; 
 }
 
 .details-content {
   display: flex;
-  justify-content: space-between; /* Align children to the edges */
-  align-items: center; /* Vertically center children */
+  justify-content: space-between; 
+  align-items: center;
 }
 
 .detail-row {
   display: flex;
   align-items: center;
-  gap: 20px; /* Adjust spacing between elements */
-  flex-grow: 1; /* Allow this row to take up remaining space */
+  gap: 20px; 
+  flex-grow: 1; 
 }
 
 .detail-item,
@@ -71,8 +71,8 @@
   color: #555;
 }
 
-/* Progress Container */
-.progress-container {
+/* Progress Container------------------------------------------------------- */
+.progresstask-container {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -85,22 +85,26 @@
 }
 
 .progress-text span.value {
-  color: #6366f1; /* Indigo for the number */
+  color: #6366f1; 
   font-weight: bold;
 }
 
-.progress-bar {
+.progresstask-bar {
   width: 150px;
   height: 10px;
-  background-color: #e0e0e0;
+  background-color: #e0e0e0; /* Light gray background */
   border-radius: 5px;
   overflow: hidden;
+  position: relative;
 }
 
 .progress-bar-fill {
   height: 100%;
   background-color: #7d96e4;
   transition: width 0.3s ease;
+  /* Add these new properties */
+  min-width: 0;
+  display: block;
 }
 
 /* Button Row */
@@ -113,16 +117,20 @@
 }
 
 
-/* Metrics Box */
+/* Metrics Box------------------------------------------------------------------------- */
 .metrics-box {
   display: flex;
   align-items: center;
-  gap: 50px; 
+  gap: 30px; 
   padding: 16px 24px;
-  
+  margin-right: auto;
   border-radius: 12px;
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.metrics-box {
+  margin-left: 0 !important;
 }
 
 .metric-item {
@@ -144,20 +152,6 @@
 /* Progress item can be styled differently if needed */
 .progress-item .metric-value {
   color: #1890ff; /* Blue color for progress percentage */
-}
-
-/* Keep your existing details-container styles */
-.details-container {
-  margin-left: 125px;
-  margin-right: 20px;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-.details-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .current-task-value {
@@ -283,13 +277,13 @@
   color: #4caf50;
 }
 
-/* Table Container */
+/* Table Container--------------------------------- */
 .table-task {
   max-height: 520px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   
-  margin-left: 115px;
+  margin-left: 90px;
   margin-right: 205px;
   border-radius: 10px;
   background-color: transparent;

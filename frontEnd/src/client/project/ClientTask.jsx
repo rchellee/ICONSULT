@@ -32,85 +32,79 @@ const ClientTask = ({ tasks, projectId }) => {
     0
   );
 
+  // Check if there are no tasks at all
+  const noTasks = tasks.length === 0;
+
   return (
     <div className="task-container">
-      {/* Unpaid Tasks Box */}
-      <div className="task-box unpaid-box">
-        <h2>To Pay</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Task Name</th>
-              <th className="right-align">Fee</th>
-              <th>Due Date</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {unpaidTasks.map((task, index) => (
-              <tr key={`unpaid-${task.task_id || index}`}>
-                <td>{task.task_name}</td>
-                <td className="right-align">
-                  ₱ {parseFloat(task.amount || 0).toFixed(2)}
-                </td>
-                <td>{formatDueDate(task.due_date)}</td>
-                <td>{task.payment_status}</td>
-                <td>
-                  <button
-                    onClick={() => handlePay(task.id, task.amount, false)}
-                    className="pay-button"
-                  >
-                    Pay
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+      {/* Show "No tasks" message only when there are truly no tasks */}
+      {noTasks ? (
+        <div className="no-tasksclient-container">
+          <p className="no-tasksclient-message">No tasks created yet</p>
+        </div>
+      ) : (
+        <>
+          {/* Unpaid Tasks Box - Only show if there are unpaid tasks */}
           {unpaidTasks.length > 0 && (
-            <tfoot>
-              <tr className="total-row">
-                <td>Total</td>
-                <td className="right-align total-amount">
-                  ₱ {totalUnpaid.toFixed(2)}
-                </td>
-                <td colSpan="3"></td>
-              </tr>
-            </tfoot>
+            <div className="task-box unpaid-box">
+              <h2>To Pay</h2>
+              <div className="task-cards-container">
+                {unpaidTasks.map((task, index) => (
+                  <div key={`unpaid-${task.task_id || index}`} className="task-card unpaid-card">
+                    <div className="task-card-header">
+                      <span className="task-name">{task.task_name}</span>
+                      <span className="task-amount">
+                        ₱ {parseFloat(task.amount || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="task-date">
+                      Due date: {formatDueDate(task.due_date)}
+                    </div>
+                    <div className="task-status-row">
+                      <span className="task-status unpaid-status">Not Paid</span>
+                      <button
+                        onClick={() => handlePay(task.id, task.amount, false)}
+                        className="pay-button"
+                      >
+                        Pay Now
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="total-amount">
+                Total Due: ₱ {totalUnpaid.toFixed(2)}
+              </div>
+            </div>
           )}
-        </table>
-        {unpaidTasks.length === 0 && (
-          <p className="no-tasks">No unpaid tasks</p>
-        )}
-      </div>
 
-      {/* Paid Tasks Box */}
-      <div className="task-box paid-box">
-        <h2>Paid</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Task Name</th>
-              <th className="right-align">Fee</th>
-              <th>Date Paid</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paidTasks.map((task, index) => (
-              <tr key={`paid-${task.task_id || index}`}>
-                <td>{task.task_name}</td>
-                <td className="right-align">
-                  ₱ {parseFloat(task.amount || 0).toFixed(2)}
-                </td>
-                <td>
-                  {task.date_paid ? formatDueDate(task.date_paid) : "N/A"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {paidTasks.length === 0 && <p className="no-tasks">No paid tasks</p>}
-      </div>
+          {/* Paid Tasks Box - Only show if there are paid tasks */}
+          {paidTasks.length > 0 && (
+            <div className="task-box paid-box">
+              <h2>Paid</h2>
+              <div className="task-cards-container">
+                {paidTasks.map((task, index) => (
+                  <div key={`paid-${task.task_id || index}`} className="task-card paid-card">
+                    <div className="task-card-header">
+                      <span className="task-name">{task.task_name}</span>
+                      <span className="task-amount">
+                        ₱ {parseFloat(task.amount || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="task-date">
+                      Date Paid: {task.date_paid ? formatDueDate(task.date_paid) : "N/A"}
+                    </div>
+                    <div className="task-status-row">
+                      <span className="task-status paid-status">Paid</span>
+                      <span className="payment-badge">Completed</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Payment Overlay */}
       {isPaymentOverlayOpen && (

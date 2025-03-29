@@ -11,14 +11,6 @@
 }
 
 
-.upload-files-section {
-  display: flex;
-  gap: 30px; 
-  
-  margin-bottom: 10px;
-  background-color: transparent;
-  margin-top: -40px;
-}
 
 .sort-files {
   position: relative;
@@ -28,44 +20,42 @@
 
 /* Updated Upload--------------------------------------------------------------------------- */
 .upload-files-btn {
-  background-color: #4a6bff; /* Vibrant blue background */
-  color: white; /* White text */
+  background-color: #8c7bf9;
+  color: white; 
   padding: 10px 20px;
   border: none;
-  border-radius: 8px; /* Slightly larger radius */
+  border-radius: 8px; 
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px; /* Slightly more spacing between icon and text */
-  font-weight: 600; /* Semi-bold */
+  gap: 8px; 
+  font-weight: 600;
   font-size: 14px;
-  transition: all 0.3s ease; /* Smooth transitions */
-  box-shadow: 0 2px 5px rgba(74, 107, 255, 0.3); /* Subtle shadow */
-  border: 1px solid transparent; /* For hover effect */
+  transition: all 0.3s ease; 
+  box-shadow: 0 2px 5px rgba(74, 107, 255, 0.3);
+  border: 1px solid transparent;
 }
 
 .upload-files-btn:hover {
-  background-color: #3a5bef; /* Slightly darker on hover */
-  transform: translateY(-1px); /* Slight lift effect */
-  box-shadow: 0 4px 8px rgba(74, 107, 255, 0.3); /* Enhanced shadow on hover */
+  background-color: #8c7bf9;
+  transform: translateY(-1px); 
+  box-shadow: 0 4px 8px rgba(74, 107, 255, 0.3); 
 }
 
 .upload-files-btn:active {
-  transform: translateY(0); /* Remove lift when clicked */
-  box-shadow: 0 2px 3px rgba(74, 107, 255, 0.3); /* Reduced shadow */
+  transform: translateY(0); 
+  box-shadow: 0 2px 3px rgba(74, 107, 255, 0.3); 
 }
 
-/* Icon styling */
 .upload-files-btn svg {
-  font-size: 18px; /* Slightly larger icon */
+  font-size: 18px; 
   transition: transform 0.3s ease;
 }
 
 .upload-files-btn:hover svg {
-  transform: translateY(-2px); /* Animate icon slightly up on hover */
+  transform: translateY(-2px); 
 }
 
-/* Keep your existing styles for other elements */
 .truncate-text {
   max-width: 200px;
   white-space: nowrap;
@@ -81,10 +71,11 @@
 .upload-files-section {
   display: flex;
   gap: 30px;
-  margin-bottom: 10px;
+  margin-bottom: 25px;
   background-color: transparent;
-  margin-top: -40px;
+  margin-top: -18px;
 }
+/*--------------------------------------------------------------------------- */
 
 
 .sort-files-btn {
@@ -293,32 +284,40 @@ td {
   color: #333;
 }
 
-.files-admin {
+/* Action buttons --------------------------------------------------------------- */
+.action-buttons-container {
+  display: flex;
+  gap: 2px; 
+  align-items: center;
+}
+
+.files-admin, .filestwo-admin {
   background: none;
   border: none;
   cursor: pointer;
-  margin: 0 5px;
-  font-size: 30px;
+  margin: 0;
+  font-size: 20px; 
   color: #555;
-  appearance: none; /* Remove default browser styling */
-  -webkit-appearance: none; /* For Safari */
-  -moz-appearance: none; /* For Firefox */
-  padding: 0; 
+  padding: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .files-admin:hover {
-  color: #000;
-  background: none; 
+  color: #000000;
+  background: none;
 }
 
+.filestwo-admin:hover {
+  color: red;
+  background: none;
+}
 
 .files-admin:focus {
   outline: none;
 }
 
-
-
-/* No files container styles */
 .no-files-container {
   display: flex;
   flex-direction: column;
@@ -328,7 +327,6 @@ td {
   text-align: center;
   
 }
-
 
 .empty-folder-image {
   width: 300px;       
@@ -349,7 +347,7 @@ td {
 
 /* file color-------------------------------------------------------------- */
 .file-list a {
-  color: #000000; 
+  color: #242424; 
   text-decoration: none; 
 }
 

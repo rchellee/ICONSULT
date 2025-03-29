@@ -11,6 +11,7 @@ tbody {
   background-color: #f4f4f4; /* Light background for headers */
   font-weight: bold;
   color: #333; /* Change text color (dark gray or any color of your choice) */
+  
 }
 
 .ClientFiles .file-table {
@@ -66,16 +67,18 @@ tbody {
 
 .ClientFiles .left-section button {
   padding: 8px 15px;
-  background-color: transparent;
-  color: rgb(0, 0, 0);
-  border: 2px solid #758add; /* Border color */
+  background-color: #7683ba;
+  color: rgb(255, 255, 255);
+  border: 2px solid transparent;
   border-radius: 10px;
   cursor: pointer;
+  margin-top: 15px;
+  
 }
 
 .ClientFiles .left-section button:hover {
-  background-color: #bbc8ff;
-  border-color: #758add; /* Keep the same border color */
+  background-color: #7683ba;
+  border-color: transparent; /* Keep the same border color */
   outline: none; /* Remove any outline */
 }
 
@@ -139,3 +142,4 @@ tbody {
   /* Delete button */
   color: #dc3545; /* Red font color */
 }
+

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaFile, FaFileImage } from "react-icons/fa";
-import { CiViewList, CiGrid31 } from "react-icons/ci";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { MdUpload } from "react-icons/md";
+import emptyFolder from "../../assets/empty-folder.png";
 import "./ClientFiles.css";
 
 function Files({ projectId, clientId }) {
@@ -15,12 +16,11 @@ function Files({ projectId, clientId }) {
   const [actionVisible, setActionVisible] = useState(null);
   const [userName, setUserName] = useState(null);
   const [sortConfig, setSortConfig] = useState({
-    key: "name", // Default sorting by name
-    direction: "asc", // Ascending by default
+    key: "name",
+    direction: "asc",
   });
 
   useEffect(() => {
-    // Fetch files for the specific projectId
     axios
       .get("http://localhost:8081/files", {
         params: { project_id: projectId },
@@ -51,7 +51,7 @@ function Files({ projectId, clientId }) {
     const formData = new FormData();
     formData.append("file", selectedFile);
     formData.append("project_id", projectId);
-    formData.append("uploaded_by", clientId || "admin"); // Assume 'admin' if no clientId
+    formData.append("uploaded_by", clientId || "admin");
 
     axios
       .post("http://localhost:8081/upload", formData)
@@ -70,17 +70,14 @@ function Files({ projectId, clientId }) {
   };
 
   const handleActionClick = (fileId) => {
-    // Toggle the visibility of action options (edit/delete)
     setActionVisible(actionVisible === fileId ? null : fileId);
   };
 
   const handleEdit = (fileId) => {
-    // Implement edit logic here
     console.log("Edit file with id:", fileId);
   };
 
   useEffect(() => {
-    // Retrieve data from localStorage
     const clientId = localStorage.getItem("clientId");
     const firstName = localStorage.getItem("firstName");
     const lastName = localStorage.getItem("lastName");
@@ -88,9 +85,7 @@ function Files({ projectId, clientId }) {
     if (clientId && firstName && lastName) {
       setUserName(`${firstName} ${lastName}`);
     } else {
-      console.warn(
-        "No clientId, firstName, or lastName found in localStorage."
-      );
+      console.warn("No clientId, firstName, or lastName found in localStorage.");
     }
   }, []);
 
@@ -118,7 +113,7 @@ function Files({ projectId, clientId }) {
 
   const getFileIcon = (fileName) => {
     if (!fileName) {
-      return <FaFile className="file-type-icon" />; // Default icon for missing file names
+      return <FaFile className="file-type-icon" />;
     }
     const fileExtension = fileName.split(".").pop().toLowerCase();
 
@@ -158,21 +153,23 @@ function Files({ projectId, clientId }) {
 
   return (
     <div className="ClientFiles">
-      {/* Top section with buttons */}
       <div className="top-buttons">
         <div className="left-section">
           {!selectedFile ? (
-            // Show "New" button when no file is selected
-            <button onClick={openFileDialog} disabled={uploading}>
-              {uploading ? "Uploading..." : "New"}
+            <button 
+              onClick={openFileDialog} 
+              disabled={uploading}
+              className="upload-file-button"
+            >
+              {uploading ? "Uploading..." : <><MdUpload /> Upload</>}
             </button>
           ) : (
-            // Show "Upload" button when a file is selected
             <button
               onClick={handleUpload}
               disabled={uploading || !selectedFile}
+              className="upload-file-button"
             >
-              {uploading ? "Uploading..." : "Upload"}
+              {uploading ? "Uploading..." : "Upload File"}
             </button>
           )}
         </div>
@@ -181,12 +178,6 @@ function Files({ projectId, clientId }) {
             <p>Selected File: {selectedFile.name}</p>
           </div>
         )}
-
-        {/* <div className="right-section">
-          <button>Sort</button>
-          <CiViewList />
-          <CiGrid31 />
-        </div> */}
       </div>
 
       <input
@@ -198,108 +189,112 @@ function Files({ projectId, clientId }) {
       />
 
       {files.length === 0 ? (
-        <p className="loading">No files uploaded for this project.</p>
+        <div className="no-files-container">
+          <img 
+            src={emptyFolder} 
+            alt="Empty folder" 
+            className="empty-folder-image"
+          />
+          <div className="no-files-message">No files uploaded yet.</div>
+        </div>
       ) : (
-        <>
-          {/* Display files in a table */}
-          <table className="file-table">
-            <thead>
-              <tr>
-                <th onClick={() => handleSort("original_name")}>
-                  Name
-                  {sortConfig.key === "original_name" &&
-                    (sortConfig.direction === "asc" ? (
-                      <FaArrowUp />
-                    ) : (
-                      <FaArrowDown />
-                    ))}
-                </th>
-                <th onClick={() => handleSort("upload_date")}>
-                  Upload Date
-                  {sortConfig.key === "upload_date" &&
-                    (sortConfig.direction === "asc" ? (
-                      <FaArrowUp />
-                    ) : (
-                      <FaArrowDown />
-                    ))}
-                </th>
-                <th onClick={() => handleSort("uploaded_by")}>
-                  Uploaded By
-                  {sortConfig.key === "uploaded_by" &&
-                    (sortConfig.direction === "asc" ? (
-                      <FaArrowUp />
-                    ) : (
-                      <FaArrowDown />
-                    ))}
-                </th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedFiles.map((file) => (
-                <tr key={file.id}>
-                  <td>
-                    <a
-                      href={
-                        file.webViewLink ||
-                        `http://localhost:8081/uploads/${file.original_name}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={file.original_name}
-                    >
-                      {getFileIcon(file.original_name)} {file.original_name}
-                    </a>
-                  </td>
-                  <td>
-                    {new Date(file.upload_date).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </td>
-                  <td>
-                    {file.uploaded_by === "admin" ? (
-                      "Admin"
-                    ) : (
-                      <span>{userName || "Client Name"}</span>
+        <table className="file-table">
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("original_name")}>
+                Name
+                {sortConfig.key === "original_name" &&
+                  (sortConfig.direction === "asc" ? (
+                    <FaArrowUp />
+                  ) : (
+                    <FaArrowDown />
+                  ))}
+              </th>
+              <th onClick={() => handleSort("upload_date")}>
+                Upload Date
+                {sortConfig.key === "upload_date" &&
+                  (sortConfig.direction === "asc" ? (
+                    <FaArrowUp />
+                  ) : (
+                    <FaArrowDown />
+                  ))}
+              </th>
+              <th onClick={() => handleSort("uploaded_by")}>
+                Uploaded By
+                {sortConfig.key === "uploaded_by" &&
+                  (sortConfig.direction === "asc" ? (
+                    <FaArrowUp />
+                  ) : (
+                    <FaArrowDown />
+                  ))}
+              </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedFiles.map((file) => (
+              <tr key={file.id}>
+                <td>
+                  <a
+                    href={
+                      file.webViewLink ||
+                      `http://localhost:8081/uploads/${file.original_name}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={file.original_name}
+                  >
+                    {getFileIcon(file.original_name)} {file.original_name}
+                  </a>
+                </td>
+                <td>
+                  {new Date(file.upload_date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </td>
+                <td>
+                  {file.uploaded_by === "admin" ? (
+                    "Admin"
+                  ) : (
+                    <span>{userName || "Client Name"}</span>
+                  )}
+                </td>
+                <td>
+                  <div className="action-container">
+                    <BiDotsVerticalRounded
+                      onClick={() => handleActionClick(file.id)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    {actionVisible === file.id && (
+                      <div className="action-options">
+                        <button
+                          onClick={() => {
+                            const downloadLink =
+                              file.webContentLink ||
+                              `http://localhost:8081/uploads/${file.original_name}`;
+                            const a = document.createElement("a");
+                            a.href = downloadLink;
+                            a.download = file.original_name;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                          }}
+                        >
+                          Download
+                        </button>
+                        <button onClick={() => handleDelete(file.id)}>
+                          Delete
+                        </button>
+                      </div>
                     )}
-                  </td>
-                  <td>
-                    <div className="action-container">
-                      <BiDotsVerticalRounded
-                        onClick={() => handleActionClick(file.id)}
-                        style={{ cursor: "pointer" }}
-                      />
-                      {actionVisible === file.id && (
-                        <div className="action-options">
-                          <button
-                            onClick={() => {
-                              const downloadLink =
-                                file.webContentLink ||
-                                `http://localhost:8081/uploads/${file.original_name}`;
-                              const a = document.createElement("a");
-                              a.href = downloadLink;
-                              a.download = file.original_name;
-                              document.body.appendChild(a);
-                              a.click();
-                              document.body.removeChild(a);
-                            }}
-                          >
-                            Download
-                          </button>
-                          <button onClick={() => handleDelete(file.id)}>
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

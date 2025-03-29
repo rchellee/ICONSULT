@@ -104,8 +104,8 @@ const AccountingLedger = ({
 
   return (
     <div className="accounting-ledger">
-      <div className="sort-container">
-        <label style={{ marginLeft: "1190px" }}>Sort By: </label>
+      <div className="sortledger-container">
+        <label style={{ marginLeft: "1300px" }}>Sort By: </label>
         <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
@@ -116,7 +116,7 @@ const AccountingLedger = ({
           <option value="date_paid">Date Paid</option>
         </select>
       </div>
-      <div className="">
+      <div className="ok">
         <table className="accounting-table">
           <thead>
             <tr>

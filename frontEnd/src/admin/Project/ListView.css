@@ -33,7 +33,7 @@
 /*-------------------------------------------------------*/
 .create-project-btn {
   top: 20px;
-  background-color: #3b4f67;
+  background-color: #8c7bf9;
   color: white;
   border: none;
   padding: 16px 32px; 
@@ -54,7 +54,8 @@
 }
 
 .create-project-btn:hover {
-  background-color: #2c3a4d;
+  background-color: #8c7bf9;
+  color: white;
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }
@@ -185,6 +186,12 @@
   text-align: center;
 }
 
+.project-list-table th:nth-child(6),
+.project-list-table th:nth-child(7),
+.project-list-table th:nth-child(8) {
+  text-align: right;
+  padding-right: 20px;
+}
 
 
 
@@ -551,7 +558,7 @@
   align-items: center;
   padding: 0.5rem 1rem;
   border: none;
-  background: white;
+  background: none;
   cursor: pointer;
   color: #3b4f67;
   transition: color 0.2s ease;
@@ -560,7 +567,7 @@
 
 
 .action-button:hover {
-  background: white;
+  background: none;
   color: #4070f4;
 }
 
@@ -694,7 +701,7 @@
 }
 
 .toggle-button.active {
-  color: #3b4f67;
+  color: #8c7bf9;
   font-weight: bold;
 }
 

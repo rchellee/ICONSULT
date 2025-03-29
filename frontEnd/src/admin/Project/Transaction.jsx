@@ -79,7 +79,7 @@ const Transaction = ({ projectId }) => {
     return sum;
   }, 0);
 
-  const paymentProgress = ((totalPaid / totalAmount) * 100).toFixed(2);
+  const paymentProgress = Math.round((totalPaid / totalAmount) * 100);
 
   useEffect(() => {
     if (transactions.length > 0) {
@@ -489,15 +489,17 @@ const Transaction = ({ projectId }) => {
               </span>
             </div>
 
-            <div className="progress-container">
+            <div className="progresstask-container">
               <span className="progress-text">
                 Progress: <span className="value">{paymentProgress}%</span>
               </span>
-              <div className="progress-bar">
+              <div className="progresstask-bar">
+              {paymentProgress > 0 && (
                 <div
                   className="progress-bar-fill"
                   style={{ width: `${paymentProgress}%` }}
                 ></div>
+              )}
               </div>
             </div>
           </div>

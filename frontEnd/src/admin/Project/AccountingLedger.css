@@ -58,7 +58,7 @@
   position: relative;
   margin-right: 50px;
   margin-top: 10px;
-  top: 70px;
+  top: 10px;
   /* Ensure columns respect their widths */
 }
 
@@ -135,3 +135,61 @@
 .accounting-scroll::-webkit-scrollbar-thumb:hover {
   background-color: #365673;
 }
+
+
+
+/* sortledger dropdown-------------------------------------------------------------- */
+.sortledger-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 20px 125px 10px 0; /* Adjusted margins */
+}
+
+.sortledger-container label {
+  font-weight: 500;
+  color: #3b4f67;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.sortledger-container select {
+  padding: 8px 32px 8px 12px; /* Right padding for arrow */
+  border: none;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 14px;
+  color: #3b4f67;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none; /* Remove default arrow */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
+  min-width: 180px; /* Ensure consistent width */
+  color: #333;
+}
+
+.sortledger-container select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.sortledger-container select {
+  /* Remove default arrow */
+  -webkit-appearance: none; /* For Chrome, Safari */
+  -moz-appearance: none;    /* For Firefox */
+  appearance: none;         /* Standard syntax */
+  
+  /* Remove IE default arrow */
+  &::-ms-expand {
+    display: none;
+  }
+  
+  /* Your existing styles */
+  padding: 8px 12px; /* Adjust right padding since we removed the arrow */
+  background-image: none; /* Remove any background image */
+}
+

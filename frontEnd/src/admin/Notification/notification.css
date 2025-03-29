@@ -78,12 +78,16 @@ h3 {
 
 .filter-button {
   padding: 5px 10px;
-  background-color: #0d4976;
+  background-color: #5464bd;
   cursor: pointer;
   border-radius: 5px;
 }
 
+.filter-button:hover {
+  background-color: #5464bd;
+}
+
 .filter-button.active {
-  background-color: #031527;
+  background-color: #8c7bf9;
   color: #fff;
 }

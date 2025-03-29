@@ -3,11 +3,11 @@ import { AiOutlineEdit } from "react-icons/ai";
 import React, { useState, useEffect, useRef } from "react";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
-import { MdOutlineFileUpload } from "react-icons/md";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
-import emptyFolder from "../../assets/empty-folder.png"; // Adjusted path
+import emptyFolder from "../../assets/empty-folder.png"; 
+import { MdUpload } from "react-icons/md";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
@@ -235,7 +235,7 @@ const FilesTab = ({ projectId }) => {
       <div className="upload-files-section">
         {/* Upload Button */}
         <button className="upload-files-btn" onClick={handleUploadButtonClick}>
-          Upload <MdOutlineFileUpload />
+        <MdUpload />Upload 
           {/* Hidden file input */}
           <input
             type="file"
@@ -252,7 +252,7 @@ const FilesTab = ({ projectId }) => {
             className="sort-files-btn"
             onClick={() => setShowSortOptions(!showSortOptions)}
           >
-            Sort <FaArrowDown />
+           <FaArrowDown /> Sort 
           </button>
           {showSortOptions && (
             <div className="sort-files-options">
@@ -308,6 +308,7 @@ const FilesTab = ({ projectId }) => {
                         : clientNames[file.uploaded_by] || "Unknown"}
                     </td>
                     <td>
+                    <div className="action-buttons-container">
                       <button
                         className="files-admin"
                         onClick={() => {
@@ -325,11 +326,12 @@ const FilesTab = ({ projectId }) => {
                         <IoMdDownload /> {/* Download icon */}
                       </button>
                       <button
-                        className="files-admin"
+                        className="filestwo-admin"
                         onClick={() => handleDeleteClick(file.id)}
                       >
                         <MdOutlineDeleteOutline /> {/* Delete icon */}
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

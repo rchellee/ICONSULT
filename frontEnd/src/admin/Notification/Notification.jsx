@@ -89,6 +89,17 @@ const Notification = () => {
           <button
             className={`filter-button ${filter === "all" ? "active" : ""}`}
             onClick={() => setFilter("all")}
+            style={{
+              backgroundColor: filter === "all" ? "#8c7bf9" : "#f0f0f0",
+              color: filter === "all" ? "#ffffff" : "#333333",
+              border: "1px solid #e0e0e0",
+              padding: "8px 16px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              marginRight: "10px",
+              fontWeight: "500"
+            }}
           >
             All
           </button>
