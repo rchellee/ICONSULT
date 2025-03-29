@@ -718,6 +718,7 @@ const AppointmentReports = () => {
           body: data,
           styles: { fontSize: 8, textColor: [0, 0, 0] },
           headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+          showHead: "everyPage",
         });
       },
       "Appointments This Month": () => {
@@ -738,6 +739,7 @@ const AppointmentReports = () => {
           body: data,
           styles: { fontSize: 8, textColor: [0, 0, 0] },
           headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+          showHead: "everyPage",
         });
       },
     };
