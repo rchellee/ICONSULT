@@ -348,7 +348,6 @@ const ClientsReports = () => {
       });
     } else if (title.includes("Clients for")) {
       const year = title.match(/\d{4}/)?.[0] || selectedYear;
-
       // Add Clients Per Month chart
       try {
         const chartContainer = document.querySelector(
@@ -356,13 +355,13 @@ const ClientsReports = () => {
         )?.parentElement;
         if (chartContainer) {
           await new Promise((resolve) => setTimeout(resolve, 500));
-          const canvas = await html2canvas(chartContainer, { scale: 2 });
-          const chartWidth = doc.internal.pageSize.getWidth() - 40;
+          const canvas = await html2canvas(chartContainer, { scale: 3 });
+          const chartWidth = doc.internal.pageSize.getWidth() - 10;
           const chartHeight = (chartWidth * canvas.height) / canvas.width;
           doc.addImage(
             canvas.toDataURL("image/png"),
             "PNG",
-            20,
+            5,
             startY,
             chartWidth,
             chartHeight
@@ -419,6 +418,40 @@ const ClientsReports = () => {
         showHead: "everyPage",
       });
     } else if (title.includes("Clients by Age")) {
+      // First add the Clients by Age chart
+      try {
+        const chartContainer = document.querySelector(".clients-byAge-card");
+        if (chartContainer) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const canvas = await html2canvas(chartContainer, {
+            scale: 3,
+            logging: true,
+            useCORS: true,
+          });
+
+          const chartWidth = doc.internal.pageSize.getWidth() - 80;
+          const chartHeight = (chartWidth * canvas.height) / canvas.width;
+
+          // Add chart to first page
+          doc.addImage(
+            canvas.toDataURL("image/png"),
+            "PNG",
+            20,
+            startY,
+            chartWidth,
+            chartHeight
+          );
+          startY += chartHeight + 20;
+
+          // Add a new page for the data tables
+          doc.addPage();
+          setupPage(doc);
+          startY = 40;
+        }
+      } catch (error) {
+        console.error("Error capturing Clients by Age chart:", error);
+      }
+
       const groupedClients = groupClientsByAgeRange();
       Object.keys(groupedClients).forEach((ageRange, index) => {
         if (index > 0) {
@@ -970,15 +1003,18 @@ const ClientsReports = () => {
         <div className="clients-clients-grid">
           {/* Clients by Age */}
           <div className="clients-chart-card scrollable-chart">
-            <h3>Clients by Age</h3>
-            <BarChart width={460} height={320} data={clientsByAge}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" fill="#4CAF50" />
-            </BarChart>
+            <div className="clients-byAge-card">
+              {" "}
+              <h3 class>Clients by Age</h3>
+              <BarChart width={460} height={320} data={clientsByAge}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" fill="#4CAF50" />
+              </BarChart>
+            </div>
           </div>
 
           {/* Clients by Gender */}
