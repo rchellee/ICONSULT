@@ -21,7 +21,7 @@
 /*CREATE BUTTON------------------------------------------------------*/
 .create-task-button {
   top: 20px;
-  background-color: #8c7bf9;
+  background-color: #716cff;
   color: white;
   border: none;
   padding: 16px 32px; 
@@ -42,7 +42,7 @@
 }
 
 .create-task-button:hover {
-  background-color: #8c7bf9;
+  background-color: #716cff;
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }

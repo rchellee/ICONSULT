@@ -3,7 +3,7 @@ import axios from "axios"; // Import axios
 import "./LoginForm.css";
 import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo1.png";
+import logo from "../assets/logo3.png";
 import OtpVerification from "./OtpVerification";
 import Reset from "./Reset";
 
@@ -119,7 +119,7 @@ const Login = () => {
         </div>
         <div>
           <h2>Welcome back!</h2>
-          <p>Connect and start your productivity</p>
+          <p>Organize. Collaborate. Deliver.</p>
         </div>
       </div>
       <div className="right-side">

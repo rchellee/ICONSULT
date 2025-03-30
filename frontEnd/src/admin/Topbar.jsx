@@ -8,6 +8,7 @@ import help from "../assets/help.png";
 import logout from "../assets/logout.png";
 import profile from "../assets/profile.png";
 import admin from "../assets/admin.jpg";
+import logo from "../assets/logo3.png";
 import { IoIosSearch } from "react-icons/io";
 
 const Topbar = () => {
@@ -87,7 +88,17 @@ const Topbar = () => {
       zIndex: 100,
       boxShadow: "0 1px 1px rgba(0,0,0,0.1)"
     }}>
-      <div className="logo" style={{ color: "#6a5acd" }}>iConsult.</div>
+      <div className="logo">
+        <img 
+          src={logo} 
+          alt="iConsult Logo" 
+          style={{
+            height: "40px", // Adjust height as needed
+            width: "auto", // Maintain aspect ratio
+            objectFit: "contain"
+          }}
+        />
+      </div>
       <div className="search-icon" onClick={handleSearchClick}>
         <span className="fas fa-search"></span>
       </div>

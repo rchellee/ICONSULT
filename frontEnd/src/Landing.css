@@ -45,7 +45,7 @@ nav .navbar {
 nav .navbar .logo a {
   font-weight: 500;
   font-size: 35px;
-  color: #4070f4;
+  color: #8c7bf9;
 }
 nav.sticky .navbar .logo a {
   color: #fff;
@@ -125,17 +125,19 @@ nav.sticky .menu-btn {
 .home .text-one {
   font-size: 25px;
   color: #0e2431;
+  margin-bottom: 10px;
 }
 .home .text-two {
-  color: #0e2431;
+  color: #716cff;
   font-size: 75px;
   font-weight: 600;
   margin-left: -3px;
+  margin-bottom: -20px;
 }
 .home .text-three {
-  font-size: 40px;
+  font-size: 35px;
   margin: 5px 0;
-  color: #4070f4;
+  color: #818181;
 }
 .home .text-four {
   font-size: 23px;
@@ -151,11 +153,12 @@ nav.sticky .menu-btn {
   border-radius: 6px;
   font-size: 25px;
   font-weight: 400;
-  background: #3b4f67;
+  background: #716cff;
   color: #fff;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.4s ease;
+  box-shadow: 0 4px 8px rgba(106, 90, 205, 0.2);
 }
 .home .button-landing button:hover {
   border-color: #4070f4;
@@ -163,8 +166,7 @@ nav.sticky .menu-btn {
   color: #4070f4;
 }
 /* About Section Styling */
-/* Those Elements Where We Have Apply Same CSS,
- I'm Selecting Directly 'Section Tag' and 'Class'  */
+
 section {
   padding-top: 40px;
 }
@@ -219,7 +221,7 @@ section .title span::after {
   width: 55%;
 }
 section .topic {
-  color: #0e2431;
+  color: #6e8da0;
   font-size: 25px;
   font-weight: 500;
   margin-bottom: 10px;
@@ -237,7 +239,7 @@ section .button button {
   border-radius: 4px;
   font-size: 25px;
   font-weight: 400;
-  background: #3b4f67;
+  background: #716cff;
   color: #fff;
   border: 2px solid transparent;
   cursor: pointer;
@@ -299,7 +301,7 @@ section .button button:hover {
 }
 .skills-details .boxes .per {
   font-size: 60px;
-  color: #4070f4;
+  color: #3154b6;
 }
 /* My Services CSS */
 .services .boxes {
@@ -318,13 +320,13 @@ section .button button:hover {
   transition: all 0.4s ease;
 }
 .services .boxes .box:hover {
-  background: #3b4f67;
+  background: #8783ff;/*card hover*/
   color: #fff;
 }
 .services .boxes .box .icon {
   height: 50px;
   width: 50px;
-  background: #3b4f67;
+  background: #605bff; /*card */
   border-radius: 50%;
   text-align: center;
   line-height: 50px;
@@ -336,7 +338,7 @@ section .button button:hover {
 
 .boxes .box:hover .icon {
   background-color: #fff;
-  color: #3b4f67; 
+  color: #605bff; /*card */
 }
 .services .boxes .box:hover .topic,
 .services .boxes .box:hover p {
@@ -391,7 +393,7 @@ section .button button:hover {
 
 /* Footer CSS */
 footer {
-  background:  #77a6df;
+  background:  #6490ff;
   padding: 15px 0;
   text-align: center;
   font-family: "Poppins", sans-serif;
@@ -414,7 +416,7 @@ footer .text span a:hover {
   bottom: 20px;
   right: 20px;
   color: #fff;
-  background: #3b4f67;
+  background: #918dff;
   padding: 7px 12px;
   font-size: 18px;
   border-radius: 6px;

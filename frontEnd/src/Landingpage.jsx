@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "./Landing.css"; // Import your CSS file
 import logo from "./assets/about.png";
+import logo4 from "./assets/logo4.png"; 
 import { useNavigate } from "react-router-dom";
 
 const LandingPage = () => {
@@ -67,7 +68,19 @@ const LandingPage = () => {
       <nav>
         <div className="navbar">
           <div className="logo">
-            <a href="#">iConsult.</a>
+          <div className="logo">
+            <a href="#">
+              <img 
+                src={logo4} 
+                alt="iConsult Logo" 
+                style={{
+                  height: "50px", // Adjust as needed
+                  width: "auto",
+                  objectFit: "contain"
+                }}
+              />
+            </a>
+          </div>
           </div>
           <ul className="menu">
             <li>
@@ -124,8 +137,8 @@ const LandingPage = () => {
           <div className="text">
             <div className="text-one">Welcome to,</div>
             <div className="text-two">iConsult</div>
-            <div className="text-three">Connect and Start</div>
-            <div className="text-four">Your productivity</div>
+            <div className="text-three">Organize. Collaborate. Deliver.</div>
+            
           </div>
           <div className="button-landing">
             <button onClick={() => navigate("/login")}>LOGIN NOW</button>

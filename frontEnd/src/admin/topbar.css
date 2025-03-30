@@ -29,9 +29,13 @@
   width: auto;
 }
 
-.logo {
-  color: #8c7bf9;
+.logo img {
+  height: 40px;
+  width: auto;
+  margin-right: 10px;
 }
+
+
 
 
 .topbar-username {

@@ -33,7 +33,7 @@
 /*-------------------------------------------------------*/
 .create-project-btn {
   top: 20px;
-  background-color: #8c7bf9;
+  background-color: #716cff;
   color: white;
   border: none;
   padding: 16px 32px; 
@@ -54,7 +54,7 @@
 }
 
 .create-project-btn:hover {
-  background-color: #8c7bf9;
+  background-color: #716cff;
   color: white;
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
