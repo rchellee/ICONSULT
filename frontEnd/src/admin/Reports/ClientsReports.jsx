@@ -43,11 +43,20 @@ const ClientsReports = () => {
   const [selectedReport, setSelectedReport] = useState("");
   const [selectedClient, setSelectedClient] = useState("All");
   const [adminUsername, setAdminUsername] = useState("");
+  const [exportYear, setExportYear] = useState("All");
+  const [exportMonth, setExportMonth] = useState("All");
 
   useEffect(() => {
     fetchClients();
     fetchClientsWithProjects();
   }, []);
+
+  useEffect(() => {
+    // Reset selected report if it's a "Clients for [Year]" report when year changes
+    if (selectedReport && selectedReport.includes("Clients for")) {
+      setSelectedReport("");
+    }
+  }, [selectedYear]);
 
   const fetchClients = async () => {
     try {
@@ -67,42 +76,106 @@ const ClientsReports = () => {
     }
   };
 
+  const getAvailableYears = () => {
+    const years = new Set();
+    clients.forEach((client) => {
+      const year = new Date(client.created_at).getFullYear();
+      years.add(year);
+    });
+    return Array.from(years).sort((a, b) => b - a); // Sort descending
+  };
+
+  const filterClientsByDateRange = (clientsData, reportType = "") => {
+    let filtered = [...clientsData];
+
+    // Skip additional filtering for these report types
+    if (reportType.includes("Clients This Month")) {
+      return filtered.filter(
+        (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
+      );
+    }
+
+    // For "Clients for [Year]" reports, use the selectedYear from state
+    if (reportType.includes("Clients for")) {
+      return filtered.filter(
+        (c) => new Date(c.created_at).getFullYear() === selectedYear
+      );
+    }
+
+    // Filter by year if not "All"
+    if (exportYear !== "All") {
+      filtered = filtered.filter(
+        (c) => new Date(c.created_at).getFullYear() === parseInt(exportYear)
+      );
+    }
+
+    // Filter by month if not "All" and year is selected
+    if (exportMonth !== "All" && exportYear !== "All") {
+      filtered = filtered.filter(
+        (c) => new Date(c.created_at).getMonth() === parseInt(exportMonth)
+      );
+    }
+
+    return filtered;
+  };
+
   const groupClientsByAgeRange = () => {
+    const filteredClients = filterClientsByDateRange(clients);
     return {
-      "18-25": clients.filter((c) => c.age >= 18 && c.age <= 25),
-      "26-35": clients.filter((c) => c.age >= 26 && c.age <= 35),
-      "36-50": clients.filter((c) => c.age >= 36 && c.age <= 50),
-      "51+": clients.filter((c) => c.age > 50),
+      "18-25": filteredClients.filter((c) => c.age >= 18 && c.age <= 25),
+      "26-35": filteredClients.filter((c) => c.age >= 26 && c.age <= 35),
+      "36-50": filteredClients.filter((c) => c.age >= 36 && c.age <= 50),
+      "51+": filteredClients.filter((c) => c.age > 50),
     };
   };
 
-  const activeClients = clients.filter((c) => c.status === "active");
-  const inactiveClients = clients.filter((c) => c.status === "inactive");
-  const newClientsThisMonth = clients.filter(
+  const activeClients = filterClientsByDateRange(clients).filter(
+    (c) => c.status === "active"
+  );
+  const inactiveClients = filterClientsByDateRange(clients).filter(
+    (c) => c.status === "inactive"
+  );
+  const newClientsThisMonth = filterClientsByDateRange(clients).filter(
     (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
   ).length;
 
   const clientsByAge = [
     {
       name: "18-25",
-      value: clients.filter((c) => c.age >= 18 && c.age <= 25).length,
+      value: filterClientsByDateRange(clients).filter(
+        (c) => c.age >= 18 && c.age <= 25
+      ).length,
     },
     {
       name: "26-35",
-      value: clients.filter((c) => c.age >= 26 && c.age <= 35).length,
+      value: filterClientsByDateRange(clients).filter(
+        (c) => c.age >= 26 && c.age <= 35
+      ).length,
     },
     {
       name: "36-50",
-      value: clients.filter((c) => c.age >= 36 && c.age <= 50).length,
+      value: filterClientsByDateRange(clients).filter(
+        (c) => c.age >= 36 && c.age <= 50
+      ).length,
     },
-    { name: "51+", value: clients.filter((c) => c.age > 50).length },
+    {
+      name: "51+",
+      value: filterClientsByDateRange(clients).filter((c) => c.age > 50).length,
+    },
   ];
 
   const clientsByGender = [
-    { name: "Male", value: clients.filter((c) => c.gender === "Male").length },
+    {
+      name: "Male",
+      value: filterClientsByDateRange(clients).filter(
+        (c) => c.gender === "Male"
+      ).length,
+    },
     {
       name: "Female",
-      value: clients.filter((c) => c.gender === "Female").length,
+      value: filterClientsByDateRange(clients).filter(
+        (c) => c.gender === "Female"
+      ).length,
     },
   ];
 
@@ -114,7 +187,7 @@ const ClientsReports = () => {
   const clientsByMonth = Array.from({ length: 12 }, (_, index) => {
     return {
       month: new Date(0, index).toLocaleString("default", { month: "short" }),
-      value: clients.filter(
+      value: filterClientsByDateRange(clients).filter(
         (c) =>
           new Date(c.created_at).getFullYear() === selectedYear &&
           new Date(c.created_at).getMonth() === index
@@ -144,22 +217,17 @@ const ClientsReports = () => {
   };
 
   const exportPDF = async (data, title) => {
-    if (data.length === 0) {
-      alert("No data available to export.");
-      return;
-    }
+    if (data.length === 0) return alert("No data available to export.");
 
     const formatDate = (dateString) => {
       if (!dateString) return "";
       try {
-        const date = new Date(dateString);
-        return date.toISOString().split("T")[0];
+        return new Date(dateString).toISOString().split("T")[0];
       } catch (e) {
-        return dateString; // Return original if parsing fails
+        return dateString;
       }
     };
 
-    // Determine orientation and template based on report type
     const isLandscape =
       title.includes("Total Clients") ||
       title.includes("New Clients This Month");
@@ -168,7 +236,6 @@ const ClientsReports = () => {
       unit: "mm",
     });
 
-    // Common setup functions
     const setupPage = (pdfDoc) => {
       const template = isLandscape ? landscapeTemplate : AppointmentTemplate;
       pdfDoc.addImage(
@@ -179,18 +246,14 @@ const ClientsReports = () => {
         pdfDoc.internal.pageSize.getWidth(),
         pdfDoc.internal.pageSize.getHeight()
       );
-
-      pdfDoc.setFont("helvetica", "normal");
-      pdfDoc.setFontSize(8);
-
-      return { textX: 14 }; // Return a default left margin position
+      pdfDoc.setFont("helvetica", "normal").setFontSize(8);
+      return { textX: 14 };
     };
 
     const addFooter = (pdfDoc) => {
       const currentDate = new Date().toLocaleString();
       const yPos = pdfDoc.internal.pageSize.height - 3;
-      pdfDoc.setFontSize(8);
-      pdfDoc.setTextColor(100);
+      pdfDoc.setFontSize(8).setTextColor(100);
       pdfDoc.text(
         `Generated by: ${localStorage.getItem("username") || "System"}`,
         14,
@@ -204,10 +267,31 @@ const ClientsReports = () => {
       );
     };
 
-    // Setup first page
     const { textX } = setupPage(doc);
     let startY = 40;
 
+    // Add date/month info if needed
+    if (title.includes("Clients This Month")) {
+      const month = new Date().toLocaleString("default", { month: "long" });
+      doc
+        .setFontSize(12)
+        .text(`Month: ${month} ${new Date().getFullYear()}`, 14, startY);
+      startY += 10;
+    } else if (exportYear !== "All" || exportMonth !== "All") {
+      let rangeText = "Date Range: ";
+      if (exportYear !== "All") rangeText += `Year: ${exportYear}`;
+      if (exportMonth !== "All") {
+        const monthName = new Date(0, parseInt(exportMonth)).toLocaleString(
+          "default",
+          { month: "long" }
+        );
+        rangeText += `, Month: ${monthName}`;
+      }
+      doc.setFontSize(12).text(rangeText, 14, startY);
+      startY += 10;
+    }
+
+    // Handle different report types
     if (
       title.includes("Total Clients") ||
       title.includes("New Clients This Month")
@@ -231,25 +315,103 @@ const ClientsReports = () => {
         "Date Created",
       ];
 
+      doc
+        .setFontSize(20)
+        .setFont("helvetica", "bold")
+        .setTextColor(40)
+        .text("Clients Overview", 145, startY + 3, { align: "center" });
+
       autoTable(doc, {
-        startY,
+        startY: startY + 13,
         head: [headers],
         body: data.map((client) => [
-          client.firstName,
-          client.lastName,
+          client.firstName || "",
+          client.lastName || "",
           formatDate(client.birthday),
-          client.mobile_number,
-          client.email_add,
-          client.address,
-          client.status,
-          client.companyName,
-          client.age,
-          client.nationality,
-          client.city,
-          client.postalCode,
-          client.gender,
-          client.companyPosition,
-          client.companyContact,
+          client.mobile_number || "",
+          client.email_add || "",
+          client.address || "",
+          client.status || "",
+          client.companyName || "",
+          client.age || "",
+          client.nationality || "",
+          client.city || "",
+          client.postalCode || "",
+          client.gender || "",
+          client.companyPosition || "",
+          client.companyContact || "",
+          formatDate(client.created_at),
+        ]),
+        styles: { fontSize: 6, textColor: [0, 0, 0] },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+        showHead: "everyPage",
+      });
+    } else if (title.includes("Clients for")) {
+      const year = title.match(/\d{4}/)?.[0] || selectedYear;
+
+      // Add Clients Per Month chart
+      try {
+        const chartContainer = document.querySelector(
+          ".clients-for-container"
+        )?.parentElement;
+        if (chartContainer) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const canvas = await html2canvas(chartContainer, { scale: 2 });
+          const chartWidth = doc.internal.pageSize.getWidth() - 40;
+          const chartHeight = (chartWidth * canvas.height) / canvas.width;
+          doc.addImage(
+            canvas.toDataURL("image/png"),
+            "PNG",
+            20,
+            startY,
+            chartWidth,
+            chartHeight
+          );
+          startY += chartHeight + 20;
+        }
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
+      doc.addPage();
+      setupPage(doc);
+      startY = 47;
+      doc
+        .setFontSize(20)
+        .setFont("helvetica", "bold")
+        .setTextColor(40)
+        .text(`Clients for ${year}`, doc.internal.pageSize.width / 2, startY, {
+          align: "center",
+        });
+
+      doc
+        .setFontSize(8)
+        .setFont("helvetica", "bolditalic")
+        .text(`Total Clients for ${year}: ${data.length}`, 14, startY + 15);
+
+      const headers = [
+        "Firstname",
+        "Lastname",
+        "Mobile Number",
+        "Email",
+        "Address",
+        "Status",
+        "Company",
+        "Company Contact",
+        "Date Created",
+      ];
+
+      autoTable(doc, {
+        startY: startY + 25,
+        head: [headers],
+        body: data.map((client) => [
+          client.firstName || "",
+          client.lastName || "",
+          client.mobile_number || "",
+          client.email_add || "",
+          client.address || "",
+          client.status || "",
+          client.companyName || "",
+          client.companyContact || "",
           formatDate(client.created_at),
         ]),
         styles: { fontSize: 6, textColor: [0, 0, 0] },
@@ -265,198 +427,158 @@ const ClientsReports = () => {
           startY = 40;
         }
 
-        doc.setFontSize(20);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(40);
-        doc.text("Client Demographics by Age", 105, (startY += 3), {
-          align: "center",
-        });
-        startY += 15;
+        doc
+          .setFontSize(20)
+          .setFont("helvetica", "bold")
+          .setTextColor(40)
+          .text("Client Demographics by Age", 105, startY + 3, {
+            align: "center",
+          });
 
         doc
           .setFontSize(12)
           .setFont("helvetica", "bolditalic")
-          .text(`Age Range: ${ageRange}`, 14, startY);
-        startY += 8;
+          .text(`Age Range: ${ageRange}`, 14, startY + 18);
 
         const clientData = groupedClients[ageRange];
         if (clientData.length > 0) {
           autoTable(doc, {
-            startY,
-            head: [["ID", "Name", "Age", "Company Name", "Email"]],
+            startY: startY + 26,
+            head: [
+              ["ID", "Name", "Age", "Company Name", "Email", "Date Created"],
+            ],
             body: clientData.map((c) => [
               c.id,
               `${c.firstName} ${c.lastName}`,
               c.age,
               c.companyName,
               c.email_add,
+              formatDate(c.created_at),
             ]),
-            styles: {
-              fontSize: 8,
-              textColor: [0, 0, 0],
-            },
+            styles: { fontSize: 8, textColor: [0, 0, 0] },
             headStyles: {
               fillColor: [255, 255, 255],
               textColor: [0, 0, 0],
               fontStyle: "bold",
             },
-            alternateRowStyles: {
-              fillColor: [245, 245, 245],
-            },
-            margin: { top: startY },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
           });
         } else {
-          doc.text("No clients in this range.", 14, startY);
+          doc.text("No clients in this range.", 14, startY + 26);
         }
       });
     } else if (title.includes("Clients by Gender")) {
-      // Male Clients
-      const maleClients = clients.filter((c) => c.gender === "Male");
-      doc
-        .setFontSize(12)
-        .setFont("helvetica", "bolditalic")
-        .text("Male Clients", 14, startY);
-      startY += 8;
+      const renderGenderTable = (gender, clients) => {
+        doc
+          .setFontSize(20)
+          .setFont("helvetica", "bold")
+          .setTextColor(40)
+          .text("Client Demographics by Gender", 105, startY + 3, {
+            align: "center",
+          });
 
-      if (maleClients.length > 0) {
-        autoTable(doc, {
-          head: [["ID", "Name", "Age", "Company Name", "Email"]],
-          body: maleClients.map((c) => [
-            c.id,
-            `${c.firstName} ${c.lastName}`,
-            c.age,
-            c.companyName,
-            c.email_add,
-          ]),
-          styles: {
-            fontSize: 8,
-            textColor: [0, 0, 0],
-          },
-          headStyles: {
-            fillColor: [255, 255, 255],
-            textColor: [0, 0, 0],
-            fontStyle: "bold",
-          },
-          alternateRowStyles: {
-            fillColor: [245, 245, 245],
-          },
-          margin: { top: startY },
-        });
-      } else {
-        doc.text("No Male Clients.", 10, 30);
-      }
+        doc
+          .setFontSize(12)
+          .setFont("helvetica", "bolditalic")
+          .text(`${gender} Clients`, 14, startY + 18);
 
+        if (clients.length > 0) {
+          autoTable(doc, {
+            startY: startY + 26,
+            head: [
+              [
+                "ID",
+                "Name",
+                "Age",
+                "Company Name",
+                "Email",
+                "Contact Number",
+                "Date Created",
+              ],
+            ],
+            body: clients.map((c) => [
+              c.id,
+              `${c.firstName} ${c.lastName}`,
+              c.age,
+              c.companyName,
+              c.email_add,
+              c.mobile_number,
+              formatDate(c.created_at),
+            ]),
+            styles: { fontSize: 8, textColor: [0, 0, 0] },
+            headStyles: {
+              fillColor: [255, 255, 255],
+              textColor: [0, 0, 0],
+              fontStyle: "bold",
+            },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+          });
+        } else {
+          doc.text(`No ${gender} Clients.`, 14, startY + 26);
+        }
+      };
+
+      renderGenderTable(
+        "Male",
+        filterClientsByDateRange(clients).filter((c) => c.gender === "Male")
+      );
       doc.addPage();
       setupPage(doc);
-      doc
-        .setFontSize(12)
-        .setFont("helvetica", "bolditalic")
-        .text("Female Clients", 14, startY);
-      startY += 8;
-      const femaleClients = clients.filter((c) => c.gender === "Female");
-      if (femaleClients.length > 0) {
-        autoTable(doc, {
-          head: [["ID", "Name", "Age", "Company Name", "Email"]],
-          body: femaleClients.map((c) => [
-            c.id,
-            `${c.firstName} ${c.lastName}`,
-            c.age,
-            c.companyName,
-            c.email_add,
-          ]),
-          styles: {
-            fontSize: 8,
-            textColor: [0, 0, 0],
-          },
-          headStyles: {
-            fillColor: [255, 255, 255],
-            textColor: [0, 0, 0],
-            fontStyle: "bold",
-          },
-          alternateRowStyles: {
-            fillColor: [245, 245, 245],
-          },
-          margin: { top: startY },
-        });
-      } else {
-        doc.text("No Female Clients.", 10, 30);
-      }
+      renderGenderTable(
+        "Female",
+        filterClientsByDateRange(clients).filter((c) => c.gender === "Female")
+      );
     } else if (title.includes("Active vs Inactive Clients")) {
-      doc.text("Active Clients", 10, 20);
-      if (activeClients.length > 0) {
-        autoTable(doc, {
-          head: [["ID", "Name", "Age", "Company Name", "Email"]],
-          body: activeClients.map((c) => [
-            c.id,
-            `${c.firstName} ${c.lastName}`,
-            c.age,
-            c.companyName,
-            c.email_add,
-          ]),
-          startY: 30,
-          theme: "grid",
-          margin: { top: 30 },
-        });
-      } else {
-        doc.text("No Active Clients.", 10, 30);
-      }
+      const renderStatusTable = (status, clients) => {
+        doc
+          .setFontSize(12)
+          .setFont("helvetica", "bolditalic")
+          .text(`${status} Clients`, 14, startY);
 
+        if (clients.length > 0) {
+          autoTable(doc, {
+            startY: startY + 8,
+            head: [
+              [
+                "ID",
+                "Name",
+                "Age",
+                "Company Name",
+                "Email",
+                "Contact Number",
+                "Date Created",
+              ],
+            ],
+            body: clients.map((c) => [
+              c.id,
+              `${c.firstName} ${c.lastName}`,
+              c.age,
+              c.companyName,
+              c.email_add,
+              c.mobile_number,
+              formatDate(c.created_at),
+            ]),
+            styles: { fontSize: 8, textColor: [0, 0, 0] },
+            headStyles: {
+              fillColor: [255, 255, 255],
+              textColor: [0, 0, 0],
+              fontStyle: "bold",
+            },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+          });
+        } else {
+          doc.text(`No ${status} Clients.`, 14, startY + 8);
+        }
+      };
+
+      renderStatusTable("Active", activeClients);
       doc.addPage();
-      doc.text("Inactive Clients", 10, 20);
-      if (inactiveClients.length > 0) {
-        autoTable(doc, {
-          head: [["ID", "Name", "Age", "Company Name", "Email"]],
-          body: inactiveClients.map((c) => [
-            c.id,
-            `${c.firstName} ${c.lastName}`,
-            c.age,
-            c.companyName,
-            c.email_add,
-          ]),
-          startY: 30,
-          theme: "grid",
-          margin: { top: 30 },
-        });
-      } else {
-        doc.text("No Inactive Clients.", 10, 30);
-      }
-    } else if (title.includes("Client Projects")) {
-      doc.text("Client Projects", 10, 20);
-      autoTable(doc, {
-        head: [["ID", "First Name", "Last Name", "Projects"]],
-        body: data.map((client) => [
-          client.id,
-          client.firstName,
-          client.lastName,
-          client.projects.map((p) => p.projectName).join(", "),
-        ]),
-        startY: 30,
-        theme: "grid",
-        margin: { top: 30 },
-      });
-    }
-
-    // Add chart if available
-    if (chartRef.current) {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        const canvas = await html2canvas(chartRef.current, { scale: 3 });
-        const imgData = canvas.toDataURL("image/png");
-
-        doc.addPage(isLandscape ? "landscape" : "portrait");
-        setupPage(doc);
-
-        const chartWidth = doc.internal.pageSize.getWidth() - 40;
-        const chartHeight = (chartWidth * canvas.height) / canvas.width;
-        doc.addImage(imgData, "PNG", 20, 60, chartWidth, chartHeight);
-      } catch (error) {
-        console.error("Error capturing chart:", error);
-      }
+      setupPage(doc);
+      renderStatusTable("Inactive", inactiveClients);
     }
 
     // Add footer to all pages
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
+    for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
       doc.setPage(i);
       addFooter(doc);
     }
@@ -468,9 +590,33 @@ const ClientsReports = () => {
     const groupedClients = groupClientsByAgeRange();
     let csvData = [];
 
+    // Add date range information if filtered
+    if (exportYear !== "All" || exportMonth !== "All") {
+      let rangeText = "Date Range: ";
+      if (exportYear !== "All") {
+        rangeText += `Year: ${exportYear}`;
+      }
+      if (exportMonth !== "All") {
+        const monthName = new Date(0, parseInt(exportMonth)).toLocaleString(
+          "default",
+          { month: "long" }
+        );
+        rangeText += `, Month: ${monthName}`;
+      }
+      csvData.push([rangeText]);
+      csvData.push([]);
+    }
+
     Object.keys(groupedClients).forEach((ageRange) => {
       csvData.push([`Age Range: ${ageRange}`]);
-      csvData.push(["ID", "Name", "Age", "Company Name", "Email"]);
+      csvData.push([
+        "ID",
+        "Name",
+        "Age",
+        "Company Name",
+        "Email",
+        "Date Created",
+      ]);
       groupedClients[ageRange].forEach((c) => {
         csvData.push([
           c.id,
@@ -478,6 +624,7 @@ const ClientsReports = () => {
           c.age,
           c.companyName,
           c.email_add,
+          c.created_at,
         ]);
       });
       csvData.push([]);
@@ -488,6 +635,23 @@ const ClientsReports = () => {
   const exportGenderCSVData = () => {
     let csvData = [];
 
+    // Add date range information if filtered
+    if (exportYear !== "All" || exportMonth !== "All") {
+      let rangeText = "Date Range: ";
+      if (exportYear !== "All") {
+        rangeText += `Year: ${exportYear}`;
+      }
+      if (exportMonth !== "All") {
+        const monthName = new Date(0, parseInt(exportMonth)).toLocaleString(
+          "default",
+          { month: "long" }
+        );
+        rangeText += `, Month: ${monthName}`;
+      }
+      csvData.push([rangeText]);
+      csvData.push([]);
+    }
+
     // Male Clients
     csvData.push(["Male Clients"]);
     csvData.push([
@@ -497,8 +661,9 @@ const ClientsReports = () => {
       "Age",
       "Company Name",
       "Email",
+      "Date Created",
     ]);
-    clients
+    filterClientsByDateRange(clients)
       .filter((c) => c.gender === "Male")
       .forEach((c) => {
         csvData.push([
@@ -508,6 +673,7 @@ const ClientsReports = () => {
           c.age,
           c.companyName,
           c.email_add,
+          c.created_at,
         ]);
       });
     csvData.push([]); // Empty row for spacing
@@ -521,8 +687,9 @@ const ClientsReports = () => {
       "Age",
       "Company Name",
       "Email",
+      "Date Created",
     ]);
-    clients
+    filterClientsByDateRange(clients)
       .filter((c) => c.gender === "Female")
       .forEach((c) => {
         csvData.push([
@@ -532,6 +699,7 @@ const ClientsReports = () => {
           c.age,
           c.companyName,
           c.email_add,
+          c.created_at,
         ]);
       });
 
@@ -539,8 +707,31 @@ const ClientsReports = () => {
   };
   const exportStatusCSVData = () => {
     let csvData = [];
+    if (exportYear !== "All" || exportMonth !== "All") {
+      let rangeText = "Date Range: ";
+      if (exportYear !== "All") {
+        rangeText += `Year: ${exportYear}`;
+      }
+      if (exportMonth !== "All") {
+        const monthName = new Date(0, parseInt(exportMonth)).toLocaleString(
+          "default",
+          { month: "long" }
+        );
+        rangeText += `, Month: ${monthName}`;
+      }
+      csvData.push([rangeText]);
+      csvData.push([]);
+    }
+
     csvData.push(["Active Clients"]);
-    csvData.push(["ID", "Name", "Age", "Comapny Name", "Email"]);
+    csvData.push([
+      "ID",
+      "Name",
+      "Age",
+      "Comapny Name",
+      "Email",
+      "Date Created",
+    ]);
     activeClients.forEach((c) => {
       csvData.push([
         c.id,
@@ -548,12 +739,20 @@ const ClientsReports = () => {
         c.age,
         c.companyName,
         c.email_add,
+        c.created_at,
       ]);
     });
     csvData.push([]);
 
     csvData.push(["Inactive Clients"]);
-    csvData.push(["ID", "Name", "Age", "Comapny Name", "Email"]);
+    csvData.push([
+      "ID",
+      "Name",
+      "Age",
+      "Comapny Name",
+      "Email",
+      "Date Created",
+    ]);
     inactiveClients.forEach((c) => {
       csvData.push([
         c.id,
@@ -561,72 +760,76 @@ const ClientsReports = () => {
         c.age,
         c.companyName,
         c.email_add,
+        c.created_at,
       ]);
     });
 
     return csvData;
-  };
-  const exportProjectCSVData = () => {
-    return clientProjects.map((client) => ({
-      id: client.id,
-      firstName: client.firstName,
-      lastName: client.lastName,
-      projects: client.projects.map((p) => p.projectName).join(", "), // Extract project names
-    }));
   };
 
   const exportOptions = [
     {
       label: "Total Clients(CSV)",
       type: "csv",
-      data: filterClientData(clients),
+      data: filterClientData(
+        filterClientsByDateRange(clients, "Total Clients")
+      ),
     },
     {
       label: "Total Clients(PDF)",
       type: "pdf",
-      data: filterClientData(clients),
+      data: filterClientData(
+        filterClientsByDateRange(clients, "Total Clients")
+      ),
     },
     {
-      label: "CSV New Clients This Month",
+      label: "Clients This Month (CSV)",
       type: "csv",
-      data: clients.filter(
-        (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
+      data: filterClientData(
+        clients.filter(
+          (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
+        )
       ),
     },
     {
       label: "PDF New Clients This Month",
       type: "pdf",
-      data: clients.filter(
-        (c) => new Date(c.created_at).getMonth() === new Date().getMonth()
+      data: filterClientData(
+        filterClientsByDateRange(clients, "Clients This Month")
       ),
     },
     {
-      label: `CSV Clients for ${selectedYear}`,
+      label: `Clients for ${selectedYear} (CSV)`,
       type: "csv",
-      data: clients.filter(
-        (c) => new Date(c.created_at).getFullYear() === selectedYear
+      data: filterClientData(
+        filterClientsByDateRange(clients, `Clients for ${selectedYear}`)
       ),
     },
-    { label: "CSV Clients by Age", type: "csv", data: exportCSVData() },
-    { label: "PDF Clients by Age", type: "pdf", data: clientsByAge },
     {
-      label: "CSV Clients by Gender",
+      label: `Clients for ${selectedYear} (PDF)`,
+      type: "pdf",
+      data: filterClientData(
+        filterClientsByDateRange(clients, `Clients for ${selectedYear}`)
+      ),
+    },
+    { label: "Clients by Age (CSV)", type: "csv", data: exportCSVData() },
+    { label: "Clients by Age (PDF)", type: "pdf", data: clientsByAge },
+    {
+      label: "Clients by Gender (CSV)",
       type: "csv",
       data: exportGenderCSVData(),
     },
-    { label: "PDF Clients by Gender", type: "pdf", data: clientsByGender },
+    { label: "Clients by Gender (PDF)", type: "pdf", data: clientsByGender },
     {
-      label: "CSV Active vs Inactive Clients",
+      label: "Active vs Inactive Clients (CSV)",
       type: "csv",
       data: exportStatusCSVData(),
     },
     {
-      label: "PDF Active vs Inactive Clients",
+      label: "Active vs Inactive Clients (PDF)",
       type: "pdf",
       data: clientsByStatus,
     },
-    { label: "CSV Client Projects", type: "csv", data: exportProjectCSVData() },
-    { label: "PDF Client Projects", type: "pdf", data: clientProjects },
   ];
 
   return (
@@ -644,39 +847,73 @@ const ClientsReports = () => {
             </option>
           ))}
         </select>
+        <div className="flex items-center space-x-2">
+          {selectedReport &&
+            !selectedReport.includes("Clients This Month") &&
+            !selectedReport.includes("Clients for") &&
+            !selectedReport.includes("Clients by Age") &&
+            !selectedReport.includes("Clients by Gender") &&
+            !selectedReport.includes("Active vs Inactive Clients") && (
+              <div className="flex space-x-2">
+                <select
+                  className="bg-gray-200 text-black px-2 py-1 rounded"
+                  value={exportYear}
+                  onChange={(e) => setExportYear(e.target.value)}
+                >
+                  <option value="All">All Years</option>
+                  {getAvailableYears().map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
 
-        {selectedReport && (
-          <div className="flex space-x-2">
-            {selectedReport.includes("CSV") ? (
-              <CSVLink
-                data={
-                  exportOptions.find((opt) => opt.label === selectedReport)
-                    ?.data
-                }
-                filename={`${selectedReport
-                  .replace(/\s+/g, "_")
-                  .toLowerCase()}.csv`}
-                className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"
-                title="Download CSV"
-              >
-                <Download size={18} />
-              </CSVLink>
-            ) : (
-              <button
-                onClick={() => {
-                  const option = exportOptions.find(
-                    (opt) => opt.label === selectedReport
-                  );
-                  if (option) exportPDF(option.data, option.label);
-                }}
-                className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
-                title="Download PDF"
-              >
-                <Download size={18} />
-              </button>
+                <select
+                  className="bg-gray-200 text-black px-2 py-1 rounded"
+                  value={exportMonth}
+                  onChange={(e) => setExportMonth(e.target.value)}
+                  disabled={exportYear === "All"}
+                >
+                  <option value="All">All Months</option>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i} value={i}>
+                      {new Date(0, i).toLocaleString("default", {
+                        month: "long",
+                      })}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
-          </div>
-        )}
+
+          {selectedReport.includes("CSV") ? (
+            <CSVLink
+              data={
+                exportOptions.find((opt) => opt.label === selectedReport)?.data
+              }
+              filename={`${selectedReport
+                .replace(/\s+/g, "_")
+                .toLowerCase()}.csv`}
+              className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"
+              title="Download CSV"
+            >
+              <Download size={18} />
+            </CSVLink>
+          ) : (
+            <button
+              onClick={() => {
+                const option = exportOptions.find(
+                  (opt) => opt.label === selectedReport
+                );
+                if (option) exportPDF(option.data, option.label);
+              }}
+              className="bg-red-500 text-white p-2 rounded hover:bg-red-600 transition-colors"
+              title="Download PDF"
+            >
+              <Download size={18} />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="clients-reports-container">
@@ -711,19 +948,21 @@ const ClientsReports = () => {
                 ))}
               </select>
             </div>
-            <LineChart width={1700} height={350} data={clientsByMonth}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#4CAF50"
-                strokeWidth={2}
-              />
-            </LineChart>
+            <div className="clients-for-container">
+              <LineChart width={1500} height={350} data={clientsByMonth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#4CAF50"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </div>
           </div>
         </div>
 
@@ -732,7 +971,7 @@ const ClientsReports = () => {
           {/* Clients by Age */}
           <div className="clients-chart-card scrollable-chart">
             <h3>Clients by Age</h3>
-            <BarChart width={1000} height={300} data={clientsByAge}>
+            <BarChart width={460} height={320} data={clientsByAge}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
