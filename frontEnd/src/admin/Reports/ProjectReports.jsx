@@ -29,11 +29,8 @@ const ProjectReports = () => {
     month: "All Months",
     clientId: "",
   });
-  const [adminUsername, setAdminUsername] = useState("");
   const [selectedReport, setSelectedReport] = useState("");
   const [selectedClient, setSelectedClient] = useState("All");
-  const statusChartRef = useRef(null);
-  const overdueChartRef = useRef(null);
   const clientChartRef = useRef(null);
 
   useEffect(() => {
@@ -819,7 +816,6 @@ const ProjectReports = () => {
           const count = projects.filter((p) => p.clientId === client.id).length;
           return [`${client.firstName} ${client.lastName}`, count];
         });
-
         autoTable(doc, {
           startY: 45,
           head: summaryHeaders,
@@ -831,7 +827,6 @@ const ProjectReports = () => {
             fontStyle: "bold",
           },
         });
-
         doc
           .setFontSize(10)
           .setFont("helvetica", "bolditalic")
@@ -842,7 +837,6 @@ const ProjectReports = () => {
           );
       }
     }
-    // Add footer to all pages
     for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
       doc.setPage(i);
       addFooter(doc);
