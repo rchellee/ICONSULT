@@ -274,8 +274,9 @@ const ClientsReports = () => {
     if (title.includes("Clients This Month")) {
       const month = new Date().toLocaleString("default", { month: "long" });
       doc
-        .setFontSize(12)
-        .text(`Month: ${month} ${new Date().getFullYear()}`, 14, startY);
+        .setFontSize(8)
+        .setFont("helvetica", "bolditalic")
+        .text(`${month} ${new Date().getFullYear()}`, 14, startY);
       startY += 10;
     } else if (exportYear !== "All" || exportMonth !== "All") {
       let rangeText = "Date Range: ";
@@ -362,7 +363,7 @@ const ClientsReports = () => {
             canvas.toDataURL("image/png"),
             "PNG",
             5,
-            startY,
+            startY += 40,
             chartWidth,
             chartHeight
           );
@@ -436,8 +437,8 @@ const ClientsReports = () => {
           doc.addImage(
             canvas.toDataURL("image/png"),
             "PNG",
-            20,
-            startY,
+            40,
+            startY += 40,
             chartWidth,
             chartHeight
           );
@@ -501,6 +502,38 @@ const ClientsReports = () => {
         }
       });
     } else if (title.includes("Clients by Gender")) {
+      try {
+        const chartContainer = document.querySelector(".clients-gender-card");
+        if (chartContainer) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const canvas = await html2canvas(chartContainer, {
+            scale: 3,
+            logging: true,
+            useCORS: true,
+          });
+
+          const chartWidth = doc.internal.pageSize.getWidth() - 80;
+          const chartHeight = (chartWidth * canvas.height) / canvas.width;
+
+          // Add chart to first page
+          doc.addImage(
+            canvas.toDataURL("image/png"),
+            "PNG",
+            40,
+            startY += 40,
+            chartWidth,
+            chartHeight
+          );
+          startY += chartHeight + 20;
+
+          // Add a new page for the data tables
+          doc.addPage();
+          setupPage(doc);
+          startY = 40;
+        }
+      } catch (error) {
+        console.error("Error capturing Clients by Age chart:", error);
+      }
       const renderGenderTable = (gender, clients) => {
         doc
           .setFontSize(20)
@@ -562,6 +595,38 @@ const ClientsReports = () => {
         filterClientsByDateRange(clients).filter((c) => c.gender === "Female")
       );
     } else if (title.includes("Active vs Inactive Clients")) {
+      try {
+        const chartContainer = document.querySelector(
+          ".clients-activeVsinactive-card"
+        );
+        if (chartContainer) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const canvas = await html2canvas(chartContainer, {
+            scale: 3,
+            logging: true,
+            useCORS: true,
+          });
+
+          const chartWidth = doc.internal.pageSize.getWidth() - 80;
+          const chartHeight = (chartWidth * canvas.height) / canvas.width;
+
+          // Add chart to first page
+          doc.addImage(
+            canvas.toDataURL("image/png"),
+            "PNG",
+            40,
+            startY += 40,
+            chartWidth,
+            chartHeight
+          );
+          startY += chartHeight + 20;
+          doc.addPage();
+          setupPage(doc);
+          startY = 40;
+        }
+      } catch (error) {
+        console.error("Error capturing Clients by Age chart:", error);
+      }
       const renderStatusTable = (status, clients) => {
         doc
           .setFontSize(12)
@@ -1019,52 +1084,56 @@ const ClientsReports = () => {
 
           {/* Clients by Gender */}
           <div className="clients-chart-card">
-            <h3>Clients by Gender</h3>
-            <PieChart width={400} height={300}>
-              <Pie
-                data={clientsByGender}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={110}
-                label
-              >
-                {clientsByGender.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={["#0088FE", "#FF69B4"][index]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
+            <div className="clients-gender-card">
+              <h3>Clients by Gender</h3>
+              <PieChart width={400} height={300}>
+                <Pie
+                  data={clientsByGender}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={110}
+                  label
+                >
+                  {clientsByGender.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={["#0088FE", "#FF69B4"][index]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </div>
           </div>
 
           {/* Active vs Inactive Clients */}
           <div className="clients-chart-card">
-            <h3>Active vs Inactive Clients</h3>
-            <PieChart width={400} height={300}>
-              <Pie
-                data={clientsByStatus}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={110}
-                label
-              >
-                {clientsByStatus.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={["#4CAF50", "#FF5252"][index]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
+            <div className="clients-activeVsinactive-card">
+              <h3>Active vs Inactive Clients</h3>
+              <PieChart width={400} height={300}>
+                <Pie
+                  data={clientsByStatus}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={110}
+                  label
+                >
+                  {clientsByStatus.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={["#4CAF50", "#FF5252"][index]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </div>
           </div>
         </div>
       </div>
