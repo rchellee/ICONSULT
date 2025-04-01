@@ -17,9 +17,12 @@ import {
   Legend,
 } from "recharts";
 import "./ReportsTab.css";
+import landscapeTemplate from "../../assets/reports_landscape.jpg";
+import AppointmentTemplate from "../../assets/reports_portrait.jpg";
 
 const AppointmentReports = () => {
   const [appointments, setAppointments] = useState([]);
+  const [adminUsername, setAdminUsername] = useState("");
   const [clients, setClients] = useState([]);
   const [years, setYears] = useState([]);
   const [filters, setFilters] = useState({
@@ -32,8 +35,13 @@ const AppointmentReports = () => {
     month: "All",
   });
   const [selectedReport, setSelectedReport] = useState("");
+  const [selectedClient, setSelectedClient] = useState("All");
 
   useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (username) {
+      setAdminUsername(username);
+    }
     fetchClients();
     fetchAppointments();
     fetchYears();
@@ -152,10 +160,43 @@ const AppointmentReports = () => {
       .length,
   }));
 
+  const formatTotalAppointmentsCSV = () => {
+    let csvData = [];
+    csvData.push([
+      "Client Name",
+      "Date",
+      "Time",
+      "Email",
+      "Contact",
+      "Consultation Type",
+      "Description",
+      "Company Name",
+      "Platform",
+      "Date Created",
+    ]);
+    const appointmentsToExport =
+      filters.year === "All" && filters.month === "All"
+        ? appointments
+        : filteredAppointments;
+    appointmentsToExport.forEach((a) => {
+      csvData.push([
+        a.name || "N/A",
+        a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+        a.time || "N/A",
+        a.email || "N/A",
+        a.contact || "N/A",
+        a.consultationType || "N/A",
+        a.additionalInfo || "N/A",
+        a.companyName || "N/A",
+        a.platform || "N/A",
+        a.created_at ? new Date(a.created_at).toLocaleDateString() : "N/A",
+      ]);
+    });
+
+    return csvData;
+  };
   const formatAppointmentsthisMonthCSV = () => {
     let csvData = [];
-
-    // Add headers
     csvData.push([
       "Client Name",
       "Date",
@@ -165,8 +206,6 @@ const AppointmentReports = () => {
       "Company Name",
       "Platform",
     ]);
-
-    // Filter appointments for the current month
     const currentMonthAppointments = appointments.filter((a) => {
       const appointmentDate = new Date(a.date);
       return (
@@ -174,8 +213,6 @@ const AppointmentReports = () => {
         appointmentDate.getFullYear() === new Date().getFullYear()
       );
     });
-
-    // Populate CSV data
     currentMonthAppointments.forEach((a) => {
       csvData.push([
         a.name,
@@ -190,10 +227,17 @@ const AppointmentReports = () => {
 
     return csvData;
   };
-  const formatAppointmentsPerClientCSV = () => {
+  const formatClientAppointmentSummaryCSV = () => {
     let csvData = [];
+    let grandTotal = 0;
+    const isAllClients = selectedClient === "All";
 
-    clients.forEach((client) => {
+    // Filter clients based on selection
+    const clientsToExport = isAllClients
+      ? clients
+      : clients.filter((c) => c.id.toString() === selectedClient);
+
+    clientsToExport.forEach((client) => {
       const clientAppointments = appointments.filter(
         (a) => a.client_id === client.id
       );
@@ -206,21 +250,34 @@ const AppointmentReports = () => {
           "Email",
           "Consultation Type",
           "Company Name",
+          "Platform",
         ]); // Headers
+
+        let clientTotal = 0;
 
         clientAppointments.forEach((a) => {
           csvData.push([
-            a.date,
-            a.time,
-            a.email,
-            a.consultationType,
-            a.companyName,
+            a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+            a.time || "N/A",
+            a.email || "N/A",
+            a.consultationType || "N/A",
+            a.companyName || "N/A",
+            a.platform || "N/A",
           ]);
+          clientTotal++;
         });
 
+        csvData.push(["Appointment Total", clientTotal, "", "", "", ""]);
         csvData.push([]); // Blank row for spacing
+
+        grandTotal += clientTotal;
       }
     });
+
+    // Only add GRAND TOTAL if "All Clients" is selected
+    if (isAllClients && grandTotal > 0) {
+      csvData.push(["OVERALL TOTAL", grandTotal, "", "", "", ""]);
+    }
 
     return csvData;
   };
@@ -327,247 +384,383 @@ const AppointmentReports = () => {
   };
 
   const exportPDF = async () => {
-    const doc = new jsPDF("landscape", "mm", "a4");
-    doc.setFontSize(11);
-    doc.text(selectedReport, 10, 10);
+    const isLandscape = [
+      "Total Appointments",
+      "Appointments This Month",
+    ].includes(selectedReport);
+    const doc = new jsPDF(isLandscape ? "landscape" : "portrait", "mm", "a4");
 
-    let yPos = 20;
+    // Common setup functions
+    const setupPage = (pdfDoc) => {
+      pdfDoc.addImage(
+        isLandscape ? landscapeTemplate : AppointmentTemplate,
+        "JPEG",
+        0,
+        0,
+        pdfDoc.internal.pageSize.getWidth(),
+        pdfDoc.internal.pageSize.getHeight()
+      );
+      pdfDoc.setFontSize(18);
+      pdfDoc.setFont("helvetica", "bold");
+      pdfDoc.setTextColor(0);
+      const textX =
+        (pdfDoc.internal.pageSize.getWidth() -
+          (pdfDoc.getStringUnitWidth(selectedReport) *
+            pdfDoc.internal.getFontSize()) /
+            pdfDoc.internal.scaleFactor) /
+        2;
+      pdfDoc.text(selectedReport, textX, 45);
+      pdfDoc.setFont("helvetica", "normal");
+      pdfDoc.setFontSize(8);
+      return { textX };
+    };
 
-    const chartElement = document.getElementById("chart-container");
+    const addFooter = (pdfDoc) => {
+      const currentDate = new Date().toLocaleString();
+      const yPos = pdfDoc.internal.pageSize.height - 20;
+      pdfDoc.setFontSize(8);
+      pdfDoc.setTextColor(100);
+      pdfDoc.text(`Generated by: ${adminUsername || "System"}`, 14, yPos);
+      pdfDoc.text(
+        `Date Generated: ${currentDate}`,
+        pdfDoc.internal.pageSize.width - 60,
+        yPos,
+        { align: "right" }
+      );
+    };
 
-    if (chartElement) {
+    // Handle special reports with charts
+    const handleChartReports = async (chartSelector, dataProcessor) => {
       try {
-        // Capture chart as an image
+        const chartElement = document.querySelector(chartSelector);
+        if (!chartElement) throw new Error("Chart element not found");
+
         const canvas = await html2canvas(chartElement);
         const imgData = canvas.toDataURL("image/png");
+        const imgWidth = chartSelector.includes("client") ? 150 : 180;
+        const imgHeight = imgWidth / (canvas.width / canvas.height);
 
-        // Add image to the PDF
-        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
-        yPos += 90; // Adjust position for the table
+        // Chart page
+        const chartDoc = new jsPDF("portrait", "mm", "a4");
+        const { textX } = setupPage(chartDoc);
+        const centerX = (chartDoc.internal.pageSize.getWidth() - imgWidth) / 2;
+        chartDoc.addImage(imgData, "PNG", centerX, 60, imgWidth, imgHeight);
+        addFooter(chartDoc);
+
+        // Data pages
+        const dataDoc = new jsPDF("portrait", "mm", "a4");
+        const setup = setupPage(dataDoc);
+        await dataProcessor(dataDoc, setup.textX);
+        addFooter(dataDoc);
+
+        // Merge PDFs
+        const { PDFDocument } = await import("pdf-lib");
+        const mergedPdf = await PDFDocument.create();
+        const [chartPage] = await mergedPdf.copyPages(
+          await PDFDocument.load(chartDoc.output("arraybuffer")),
+          [0]
+        );
+        mergedPdf.addPage(chartPage);
+        const dataPages = await mergedPdf.copyPages(
+          await PDFDocument.load(dataDoc.output("arraybuffer")),
+          (
+            await PDFDocument.load(dataDoc.output("arraybuffer"))
+          ).getPageIndices()
+        );
+        dataPages.forEach((page) => mergedPdf.addPage(page));
+
+        const blob = new Blob([await mergedPdf.save()], {
+          type: "application/pdf",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${selectedReport
+          .replace(/\s+/g, "_")
+          .toLowerCase()}.pdf`;
+        link.click();
+        return true;
       } catch (error) {
-        console.error("Error capturing chart:", error);
+        console.error("Error generating PDF:", error);
+        return false;
       }
+    };
+
+    // Try to handle as chart report first
+    const chartHandlers = {
+      "Client Appointment Summary": {
+        selector: "#client-appointment-chart .app-chart",
+        processor: async (dataDoc, textX) => {
+          let contentY = 50;
+          const clientsToExport =
+            selectedClient === "All"
+              ? clients
+              : clients.filter((c) => c.id.toString() === selectedClient);
+
+          for (const [i, client] of clientsToExport.entries()) {
+            const clientAppointments = appointments.filter(
+              (a) => a.client_id === client.id
+            );
+            if (!clientAppointments.length) continue;
+
+            if (i > 0) {
+              dataDoc.addPage();
+              contentY = 50;
+              setupPage(dataDoc);
+            }
+
+            dataDoc
+              .setFontSize(12)
+              .setFont("helvetica", "bolditalic")
+              .text(`${client.firstName} ${client.lastName}`, 8, contentY);
+            contentY += 8;
+
+            autoTable(dataDoc, {
+              startY: contentY,
+              head: [
+                [
+                  "Date",
+                  "Time",
+                  "Consultation Type",
+                  "Company Name",
+                  "Platform",
+                ],
+              ],
+              body: clientAppointments.map((a) => [
+                a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+                a.time || "N/A",
+                a.consultationType || "N/A",
+                a.companyName || "N/A",
+                a.platform || "N/A",
+              ]),
+              styles: { fontSize: 8, textColor: [0, 0, 0] },
+              headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+            });
+            contentY = dataDoc.lastAutoTable.finalY + 15;
+          }
+        },
+      },
+      "Consultation Platforms Summary": {
+        selector: "#platforms-summary-chart .app-chart-scroll",
+        processor: async (dataDoc, textX) => {
+          let contentY = 50;
+          const platforms = [
+            "In-Person",
+            "Zoom",
+            "Google Meet",
+            "Phone Call",
+            "Microsoft Teams",
+          ];
+
+          for (const [i, platform] of platforms.entries()) {
+            const platformAppointments = appointments.filter(
+              (a) => a.platform === platform
+            );
+            if (!platformAppointments.length) continue;
+
+            if (i > 0) {
+              dataDoc.addPage();
+              contentY = 50;
+              setupPage(dataDoc);
+            }
+
+            dataDoc
+              .setFontSize(12)
+              .setFont("helvetica", "bolditalic")
+              .text(platform, 8, contentY);
+            contentY += 8;
+
+            autoTable(dataDoc, {
+              startY: contentY,
+              head: [
+                [
+                  "Name",
+                  "Date",
+                  "Time",
+                  "Email",
+                  "Consultation Type",
+                  "Company Name",
+                ],
+              ],
+              body: platformAppointments.map((a) => [
+                a.name,
+                a.date,
+                a.time,
+                a.email,
+                a.consultationType,
+                a.companyName,
+              ]),
+              styles: { fontSize: 8, textColor: [0, 0, 0] },
+              headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+            });
+            contentY = dataDoc.lastAutoTable.finalY + 8;
+          }
+        },
+      },
+      "Consultation Type Overview": {
+        selector: "#app-appointments-consultation .app-chart-scroll",
+        processor: async (dataDoc, textX) => {
+          let contentY = 50;
+          const types = [
+            "Strategic Planning Consultation",
+            "Corporate Governance Review",
+            "Business Process Improvement",
+            "Risk Management Consultation",
+            "Organizational Development Advisory",
+            "Financial Advisory",
+            "Accounting Consultation",
+            "Legal Advisory",
+            "Tax Advisory",
+            "Payroll System Setup Consultation",
+            "Employee Benefits and Compliance Advisory",
+            "Startup Planning",
+            "Business Structuring and Licensing Advisory",
+            "Business Name Registration",
+            "SEC/DTI/Mayor's Permit Assistance",
+            "Compliance Consultation",
+            "Follow up",
+            "Others",
+          ];
+
+          for (const [i, type] of types.entries()) {
+            const typeAppointments = appointments.filter(
+              (a) => a.consultationType === type
+            );
+            if (!typeAppointments.length) continue;
+
+            if (i > 0) {
+              dataDoc.addPage();
+              contentY = 50;
+              setupPage(dataDoc);
+            }
+
+            dataDoc
+              .setFont("helvetica", "bolditalic")
+              .setFontSize(10)
+              .text(type, 8, contentY);
+            dataDoc.setFont("helvetica", "normal");
+            contentY += 8;
+
+            autoTable(dataDoc, {
+              startY: contentY,
+              head: [
+                [
+                  "Name",
+                  "Date",
+                  "Time",
+                  "Email",
+                  "Consultation Type",
+                  "Company Name",
+                ],
+              ],
+              body: typeAppointments.map((a) => [
+                a.name,
+                a.date,
+                a.time,
+                a.email,
+                a.consultationType,
+                a.companyName,
+              ]),
+              styles: { fontSize: 8, textColor: [0, 0, 0] },
+              headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+            });
+            contentY = dataDoc.lastAutoTable.finalY + 8;
+          }
+        },
+      },
+    };
+
+    if (chartHandlers[selectedReport]) {
+      const success = await handleChartReports(
+        chartHandlers[selectedReport].selector,
+        chartHandlers[selectedReport].processor
+      );
+      if (success) return;
     }
 
-    if (selectedReport === "Total Appointments") {
-      const headers = [
-        [
-          "Client Name",
-          "Date",
-          "Time",
-          "Email",
-          "Contact",
-          "Consultation Type",
-          "Description",
-          "Company Name",
-          "Platform",
-          "Date Created",
-        ],
-      ];
-      const data = appointments.map((a) => [
-        a.name,
-        a.date,
-        a.time,
-        a.email,
-        a.contact,
-        a.consultationType,
-        a.additionalInfo,
-        a.companyName,
-        a.platform,
-        a.created_at,
-      ]);
+    // Handle regular reports
+    setupPage(doc);
+    let yPos = 50;
 
-      autoTable(doc, {
-        startY: yPos,
-        head: headers,
-        body: data,
-        styles: { fontSize: 10 },
-      });
-    }
-
-    if (selectedReport === "Appointments This Month") {
-      // Filter appointments for the current month
-      const currentMonthAppointments = appointments.filter((a) => {
-        const appointmentDate = new Date(a.date);
-        return (
-          appointmentDate.getMonth() === new Date().getMonth() &&
-          appointmentDate.getFullYear() === new Date().getFullYear()
-        );
-      });
-
-      const headers = [
-        ["Date", "Time", "Email", "Consultation Type", "Company Name"],
-      ];
-      const data = currentMonthAppointments.map((a) => [
-        a.date,
-        a.time,
-        a.email,
-        a.consultationType,
-        a.companyName,
-      ]);
-
-      autoTable(doc, {
-        startY: yPos,
-        head: headers,
-        body: data,
-        styles: { fontSize: 10 },
-      });
-    }
-
-    if (selectedReport === "Appointments per Client") {
-      clients.forEach((client) => {
-        const clientAppointments = appointments.filter(
-          (a) => a.client_id === client.id
-        );
-
-        if (clientAppointments.length > 0) {
-          doc.setFontSize(12);
-          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
-          yPos += 10;
-
-          const headers = [
+    const reportHandlers = {
+      "Total Appointments": () => {
+        const data = (
+          filters.year === "All" && filters.month === "All"
+            ? appointments
+            : filteredAppointments
+        ).map((a) => [
+          a.name || "N/A",
+          a.date ? new Date(a.date).toLocaleDateString() : "N/A",
+          a.time || "N/A",
+          a.email || "N/A",
+          a.contact || "N/A",
+          a.consultationType || "N/A",
+          a.additionalInfo || "N/A",
+          a.companyName || "N/A",
+          a.platform || "N/A",
+          a.created_at ? new Date(a.created_at).toLocaleDateString() : "N/A",
+        ]);
+        autoTable(doc, {
+          startY: yPos,
+          head: [
+            [
+              "Client Name",
+              "Date",
+              "Time",
+              "Email",
+              "Contact",
+              "Consultation Type",
+              "Description",
+              "Company Name",
+              "Platform",
+              "Date Created",
+            ],
+          ],
+          body: data,
+          styles: { fontSize: 8, textColor: [0, 0, 0] },
+          headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+          showHead: "everyPage",
+        });
+      },
+      "Appointments This Month": () => {
+        const data = appointments
+          .filter((a) => new Date(a.date).getMonth() === new Date().getMonth())
+          .map((a) => [
+            a.date,
+            a.time,
+            a.email,
+            a.consultationType,
+            a.companyName,
+          ]);
+        autoTable(doc, {
+          startY: yPos,
+          head: [
             ["Date", "Time", "Email", "Consultation Type", "Company Name"],
-          ];
-          const data = clientAppointments.map((a) => [
-            a.date,
-            a.time,
-            a.email,
-            a.consultationType,
-            a.companyName,
-          ]);
+          ],
+          body: data,
+          styles: { fontSize: 8, textColor: [0, 0, 0] },
+          headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
+          showHead: "everyPage",
+        });
+      },
+    };
 
-          autoTable(doc, {
-            startY: yPos,
-            head: headers,
-            body: data,
-            styles: { fontSize: 10 },
-          });
-          yPos = doc.lastAutoTable.finalY + 10;
-        }
-      });
+    if (reportHandlers[selectedReport]) {
+      reportHandlers[selectedReport]();
     }
 
-    if (selectedReport === "Appointments by Platform") {
-      const platforms = [
-        "In-Person",
-        "Zoom",
-        "Google Meet",
-        "Phone Call",
-        "Microsoft Teams",
-      ];
-
-      platforms.forEach((platform) => {
-        const platformAppointments = appointments.filter(
-          (a) => a.platform === platform
-        );
-
-        if (platformAppointments.length > 0) {
-          doc.setFontSize(12);
-          doc.text(platform, 10, yPos);
-          yPos += 10;
-
-          const headers = [
-            [
-              "Name",
-              "Date",
-              "Time",
-              "Email",
-              "Consultation Type",
-              "Company Name",
-            ],
-          ];
-          const data = platformAppointments.map((a) => [
-            a.name,
-            a.date,
-            a.time,
-            a.email,
-            a.consultationType,
-            a.companyName,
-          ]);
-
-          autoTable(doc, {
-            startY: yPos,
-            head: headers,
-            body: data,
-            styles: { fontSize: 10 },
-          });
-          yPos = doc.lastAutoTable.finalY + 10;
-        }
-      });
-    }
-
-    if (selectedReport === "Consultation Type Overview") {
-      const consultationTypes = [
-        "Strategic Planning Consultation",
-        "Corporate Governance Review",
-        "Business Process Improvement",
-        "Risk Management Consultation",
-        "Organizational Development Advisory",
-        "Financial Advisory",
-        "Accounting Consultation",
-        "Legal Advisory",
-        "Tax Advisory",
-        "Payroll System Setup Consultation",
-        "Employee Benefits and Compliance Advisory",
-        "Startup Planning",
-        "Business Structuring and Licensing Advisory",
-        "Business Name Registration",
-        "SEC/DTI/Mayor’s Permit Assistance",
-        "Compliance Consultation",
-        "Follow up",
-        "Others",
-      ];
-
-      consultationTypes.forEach((type) => {
-        const typeAppointments = appointments.filter(
-          (a) => a.consultationType === type
-        );
-
-        if (typeAppointments.length > 0) {
-          doc.setFontSize(12);
-          doc.text(type, 10, yPos);
-          yPos += 10;
-
-          const headers = [
-            [
-              "Name",
-              "Date",
-              "Time",
-              "Email",
-              "Consultation Type",
-              "Company Name",
-            ],
-          ];
-          const data = typeAppointments.map((a) => [
-            a.name,
-            a.date,
-            a.time,
-            a.email,
-            a.consultationType,
-            a.companyName,
-          ]);
-
-          autoTable(doc, {
-            startY: yPos,
-            head: headers,
-            body: data,
-            styles: { fontSize: 10 },
-          });
-          yPos = doc.lastAutoTable.finalY + 10;
-        }
-      });
-    }
-
+    addFooter(doc);
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
 
   let exportCSVData = [];
 
-  if (selectedReport === "Appointments per Client") {
-    exportCSVData = formatAppointmentsPerClientCSV();
+  if (selectedReport === "Total Appointments") {
+    exportCSVData = formatTotalAppointmentsCSV();
+  } else if (selectedReport === "Client Appointment Summary") {
+    exportCSVData = formatClientAppointmentSummaryCSV();
   } else if (selectedReport === "Appointments This Month") {
     exportCSVData = formatAppointmentsthisMonthCSV();
-  } else if (selectedReport === "Appointments by Platform") {
+  } else if (selectedReport === "Consultation Platforms Summary") {
     exportCSVData = formatAppointmentsByPlatformCSV();
   } else if (selectedReport === "Consultation Type Overview") {
     exportCSVData = formatConsultationTypeCSV();
@@ -604,50 +797,71 @@ const AppointmentReports = () => {
           ))}
         </select>
 
-      <div className="mt-4 flex justify-start items-center space-x-4">
-        <select
-          className="bg-gray-200 text-black px-4 py-2 rounded"
-          value={selectedReport}
-          onChange={(e) => setSelectedReport(e.target.value)}
-        >
-          <option value="">Select Report Type</option>
-          <option value="Total Appointments">Total Appointments</option>
-          <option value="Appointments This Month">
-            Appointments This Month
-          </option>
-          <option value="Appointments per Client">
-            Appointments per Client
-          </option>
-          <option value="Appointments by Platform">
-            Appointments by Platform
-          </option>
-          <option value="Consultation Type Overview">
-            Consultation Type Overview
-          </option>
-        </select>
+        <div className="mt-4 flex justify-start items-center space-x-4">
+          <select
+            className="bg-gray-200 text-black px-4 py-2 rounded"
+            value={selectedReport}
+            onChange={(e) => setSelectedReport(e.target.value)}
+          >
+            <option value="">Select Report Type</option>
+            <option value="Total Appointments">Total Appointments</option>
+            <option value="Appointments This Month">
+              Appointments This Month
+            </option>
+            <option value="Client Appointment Summary">
+              Client Appointment Summary
+            </option>
+            <option value="Consultation Platforms Summary">
+              Consultation Platforms Summary
+            </option>
+            <option value="Consultation Type Overview">
+              Consultation Type Overview
+            </option>
+          </select>
 
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={exportCSVData}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
+          {/* Add client selection dropdown when Client Appointment Summary is selected */}
+          {selectedReport === "Client Appointment Summary" && (
+            <select
+              value={selectedClient}
+              onChange={(e) => setSelectedClient(e.target.value)}
+              className="ml-4 bg-gray-200 text-black px-4 py-2 rounded"
             >
-              Export CSV
-            </CSVLink>
+              <option value="All">All Clients</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.firstName} {client.lastName}
+                </option>
+              ))}
+            </select>
+          )}
 
-            <button
-              onClick={exportPDF}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Export PDF
-            </button>
-          </>
-        )}
+          {selectedReport && (
+            <>
+              <CSVLink
+                data={exportCSVData}
+                filename={`${selectedReport
+                  .replace(/\s+/g, "_")
+                  .toLowerCase()}_${
+                  selectedClient === "All"
+                    ? "all_clients"
+                    : "client_" + selectedClient
+                }.csv`}
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Export CSV
+              </CSVLink>
+
+              <button
+                onClick={exportPDF}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Export PDF
+              </button>
+            </>
+          )}
+        </div>
       </div>
-      </div>
+
       <div id="summary-section">
         <div className="summary-box">
           <h2 className="summary-title">Total Appointments</h2>
@@ -661,15 +875,14 @@ const AppointmentReports = () => {
 
       {/* Charts Section */}
       <div id="report-content" className="app-charts-container">
-        {/* Appointments per Client */}
         {!filters.clientId && (
-          <div className="app-chart-box">
-            <h3 className="app-chart-title">Appointments per Client</h3>
+          <div className="app-chart-box" id="client-appointment-chart">
+            <h3 className="app-chart-title">Client Appointment Summary</h3>
             <p className="app-chart-description">
               Overview of client appointments in percentage format.
             </p>
-            <div className="app-chart-scroll">
-              <PieChart width={800} height={550}>
+            <div className="app-chart">
+              <PieChart width={550} height={550}>
                 <Pie
                   data={appointmentsByClient}
                   dataKey="value"
@@ -698,9 +911,9 @@ const AppointmentReports = () => {
           </div>
         )}
 
-        {/* Appointments by Platform */}
-        <div className="app-chart-box">
-          <h3 className="app-chart-title">Appointments by Platform</h3>
+        {/* Consultation Platforms Summary */}
+        <div className="app-chart-box" id="platforms-summary-chart">
+          <h3 className="app-chart-title">Consultation Platforms Summary</h3>
           <p className="app-chart-description">
             Distribution of appointments across various platforms.
           </p>

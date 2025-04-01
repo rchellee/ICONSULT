@@ -8,7 +8,6 @@
   background-color: #f4f4f9;
 }
 
-
 .reports-tab-container h2 {
   font-size: 1.5rem;
   font-weight: bold;
@@ -25,22 +24,15 @@
   margin-left: 16px;
 }
 
-
 select {
   font-size: 14px;
   width: 200px;
-  background-color: #f4f4f9;
-  border-color: #222;
-  justify-content: center;
+  background-color: #fff;
 }
 
 .reports-content {
   background: #fff;
   padding: 20px;
-}
-
-.reports-select{
-  justify-content: center;
 }
 /*------------------------- Filter Container with Grid ------------------*/
 .filter-container {
@@ -56,8 +48,7 @@ select {
   font-size: 14px;
   text-align-last: center;
   direction: rtl;
-  background-color: #f4f4f9;
-  border: none;
+  background-color: white;
 }
 
 /* Responsive Design */
@@ -310,7 +301,7 @@ select {
   background-color: white;
 }
 
-.project-charts-container{
+.project-charts-container {
   justify-content: center;
 }
 
@@ -368,7 +359,6 @@ select {
   margin-bottom: 20px;
 }
 
-
 /* Responsive Design */
 @media (max-width: 1200px) {
   .chart-row {
@@ -392,7 +382,10 @@ select {
 
 .tasks-grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr)); /* Auto-adjust columns */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(600px, 1fr)
+  ); /* Auto-adjust columns */
   gap: 20px; /* Spacing between charts */
   justify-content: center;
 }
@@ -407,7 +400,6 @@ select {
   font-size: 14px;
   color: #555;
 }
-
 
 .graph-box {
   background: white;
@@ -472,7 +464,6 @@ select {
   padding: 8px;
   border-radius: 5px;
   background: #f9f9f9;
-  border:none;
 }
 .employee-filter-each {
   display: space-between;
@@ -487,8 +478,6 @@ select {
   cursor: pointer;
   min-width: 100px;
   font-size: 14px;
-  border:none;
-
 }
 
 .employee-filter-each select:focus {
@@ -500,7 +489,7 @@ select {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   font-weight: bold;
-  font-size:24px;
+  font-size: 24px;
 }
 
 .employee-summary-card p {
@@ -592,7 +581,6 @@ select {
   transition: background 0.3s ease-in-out;
 }
 
-
 /* -------------------------- Review ------------------------------ */
 
 /* Grid Layout - Two Charts per Row */
@@ -624,7 +612,6 @@ select {
   padding: 10px;
   border-radius: 5px;
   font-size: 14px;
-
 }
 
 /* ------------------------------------------------------------------- */
@@ -820,7 +807,6 @@ select {
   background-color: #ddd;
 }
 
-
 .Display-Chart-button {
   background-color: #ffffff; /* White background */
   color: rgb(56, 56, 56); /* Text color */
@@ -837,42 +823,42 @@ select {
 .total-appointments {
   margin-top: 8rem; /* Add top margin to prevent overlap */
 }
-.employee-graphs h3{
+.employee-graphs h3 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
   margin-bottom: 16px;
 }
 
-.chart-container h3{
+.chart-container h3 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
   margin-bottom: 16px;
 }
-.project-chart-box h3{
+.project-chart-box h3 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 16px; 
+  margin-bottom: 16px;
 }
-.clients-chart-container h3{
+.clients-chart-container h3 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 16px; 
-}
-
-.clients-summary-card h3{
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 16px; 
+  margin-bottom: 16px;
 }
 
-.clients-chart-card h3{
+.clients-summary-card h3 {
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 16px; 
+  margin-bottom: 16px;
+}
+
+.clients-chart-card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 16px;
 }
