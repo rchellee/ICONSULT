@@ -20,7 +20,7 @@ span:hover {
 }
 
 .content-fullcalendar {
-  margin-top: -17px;
+  margin-top: 70px;
   margin-left: 70px;
   padding: 20px;
   transition: margin-left 0.4s ease;
@@ -76,6 +76,7 @@ select {
   /* border: 1px solid #ccc; */
   border-radius: 4px;
 }
+
 
 button:disabled {
   background-color: #ddd;
@@ -167,6 +168,86 @@ button:disabled {
 .confirmation-buttons button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+/* Alert Message Styles */
+.alert-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: fadeInDown 0.4s ease-out forwards;
+  z-index: 1000;
+  max-width: 90%;
+  width: max-content;
+}
+
+.alert-message.error {
+  background-color: #fff8f8;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.alert-message.success {
+  background-color: #f1f8e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-icon {
+  font-size: 20px;
+}
+
+.alert-close {
+  margin-left: 16px;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 0;
+}
+
+.alert-close:hover {
+  opacity: 1;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
 }
 
 /************************Calendar sa appointment ng admin and availability ****************/

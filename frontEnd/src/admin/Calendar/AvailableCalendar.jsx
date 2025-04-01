@@ -170,9 +170,9 @@ const AvailableCalendar = ({ availableDates, onDateSelect }) => {
                   }
                 }}
                 style={{
-                  backgroundColor: day.available ? "#fbfbfb" : "#eaeaea",
+                  backgroundColor: day.available ? "lightGreen" : "#eaeaea",
                   color:
-                    day.currentMonth && !day.available ? "#aaa" : "inherit",
+                    day.currentMonth && !day.available ? "black" : "inherit",
                 }}
               >
                 {day.date}

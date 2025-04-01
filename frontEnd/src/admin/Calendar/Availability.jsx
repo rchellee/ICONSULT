@@ -24,6 +24,14 @@ const Availability = () => {
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
+  
+  // Alert state
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    type: "error" // 'error' or 'success'
+  });
+
   const times = [
     "07:00 AM",
     "08:00 AM",
@@ -40,27 +48,59 @@ const Availability = () => {
     "07:00 PM",
   ];
 
+  const showAlert = (message, type = "error") => {
+    setAlert({
+      show: true,
+      message,
+      type
+    });
+    setTimeout(() => {
+      setAlert(prev => ({ ...prev, show: false }));
+    }, 6000);
+  };
+
+  const AlertMessage = () => {
+    if (!alert.show) return null;
+
+    return (
+      <div className={`alert-message ${alert.type}`}>
+        <div className="alert-content">
+          <span className="alert-icon">
+            {alert.type === 'error' ? '⚠️' : '✅'}
+          </span>
+          <span>{alert.message}</span>
+          <button 
+            className="alert-close" 
+            onClick={() => setAlert(prev => ({ ...prev, show: false }))}
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   useEffect(() => {
-    // Fetch existing availability data from the backend
     fetch("http://localhost:8081/availability")
       .then((response) => response.json())
       .then((data) => {
         const fetchedDates = data.reduce(
           (acc, { dates, start_time, end_time }) => {
-            acc[dates] = { start_time, end_time }; // Store both start and end times
+            acc[dates] = { start_time, end_time };
             return acc;
           },
           {}
         );
         console.log(fetchedDates);
         setExistingDates(fetchedDates);
-        setLoading(false); // Once data is fetched, stop loading
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching existing availability:", error);
         setLoading(false);
       });
   }, []);
+
   useEffect(() => {
     fetch("http://localhost:8081/appointments")
       .then((response) => response.json())
@@ -70,15 +110,12 @@ const Availability = () => {
 
   const handleDateSelect = (dateStr) => {
     if (existingDates[dateStr]) {
-      return; // Don't allow selecting dates already saved
+      return;
     }
     setSelectedDates((prevSelectedDates) => {
-      // Check if the date is already selected
       if (prevSelectedDates.some((item) => item.date === dateStr)) {
-        // Remove the selected date
         return prevSelectedDates.filter((item) => item.date !== dateStr);
       } else {
-        // Add the new date with default time values
         return [
           ...prevSelectedDates,
           { date: dateStr, startTime: "", endTime: "" },
@@ -91,7 +128,6 @@ const Availability = () => {
     setSelectedDates([]);
   };
 
-  // Handle time change for a selected date
   const handleTimeChange = (index, type, value) => {
     const updatedDates = [...selectedDates];
     updatedDates[index][type] = value;
@@ -118,35 +154,42 @@ const Availability = () => {
       (appointment) => appointment.date === date
     );
     if (hasAppointments) {
-      alert(
+      showAlert(
         "You cannot delete this availability because there are appointments scheduled on this date."
       );
       return;
     }
-    if (
-      window.confirm(
-        `Are you sure you want to delete availability for ${date}?`
-      )
-    ) {
-      // Delete from backend
+    
+    showAlert(
+      `Are you sure you want to delete availability for ${date}?`,
+      "confirm"
+    );
+    
+    // In a real implementation, you would replace this with a proper confirmation dialog
+    const userConfirmed = window.confirm(
+      `Are you sure you want to delete availability for ${date}?`
+    );
+    
+    if (userConfirmed) {
       fetch(`http://localhost:8081/availability/${date}`, {
         method: "DELETE",
       })
         .then((response) => {
           if (response.ok) {
-            console.log(`Date ${date} deleted successfully`);
-
-            // Update local state
+            showAlert(`Availability for ${date} deleted successfully`, "success");
             setExistingDates((prevDates) => {
               const updatedDates = { ...prevDates };
               delete updatedDates[date];
               return updatedDates;
             });
           } else {
-            console.error("Error deleting date");
+            showAlert("Error deleting availability", "error");
           }
         })
-        .catch((error) => console.error("Error deleting date:", error));
+        .catch((error) => {
+          console.error("Error deleting date:", error);
+          showAlert("Error deleting availability", "error");
+        });
     }
   };
 
@@ -158,14 +201,17 @@ const Availability = () => {
         !isTimeInvalid(date.startTime, date.endTime)
     );
 
-    // Prepare data for submission
+    if (validSelections.length === 0) {
+      showAlert("Please select valid time ranges for all dates", "error");
+      return;
+    }
+
     const dataToSend = validSelections.map((date) => ({
       start_time: date.startTime,
       end_time: date.endTime,
       dates: date.date,
     }));
 
-    // Use the POST endpoint
     fetch("http://localhost:8081/availability", {
       method: "POST",
       headers: {
@@ -175,9 +221,7 @@ const Availability = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Data saved/updated successfully:", data);
-
-        // Update local state to reflect changes
+        showAlert("Availability saved successfully!", "success");
         setExistingDates((prevDates) => {
           const updatedDates = { ...prevDates };
           validSelections.forEach(({ date, startTime, endTime }) => {
@@ -185,11 +229,11 @@ const Availability = () => {
           });
           return updatedDates;
         });
-
-        setSelectedDates([]); // Clear selections
+        setSelectedDates([]);
       })
       .catch((error) => {
-        console.error("Error saving/updating data:", error);
+        console.error("Error saving availability:", error);
+        showAlert("Error saving availability", "error");
       });
   };
 
@@ -200,7 +244,6 @@ const Availability = () => {
     });
   };
 
-  // Return loading state or render the availability component
   if (loading) {
     return <Typography variant="h6">Loading...</Typography>;
   }
@@ -208,6 +251,7 @@ const Availability = () => {
   return (
     <div>
       <Topbar />
+      <AlertMessage />
       <div className="admin-appointment-form-container">
         <Sidebar />
         <div className="content-availability">
@@ -234,10 +278,10 @@ const Availability = () => {
               {selectedDates.length > 0 ? (
                 <List
                   sx={{
-                    maxHeight: 100, // Set a fixed height for the scrollable list
-                    overflowY: "auto", // Enable vertical scrolling
-                    backgroundColor: "#ffffff", // Optional: Background color for the scrollable area
-                    border: "1px solid #ccc", // Optional: Border for better visual separation
+                    maxHeight: 100,
+                    overflowY: "auto",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #ccc",
                     borderRadius: 2,
                     padding: 1,
                   }}
@@ -320,7 +364,7 @@ const Availability = () => {
                 }}
               >
                 {getFilteredDates()
-                  .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB)) // Sort by date
+                  .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB))
                   .map(([date, { start_time, end_time }]) => (
                     <ListItem
                       key={date}
