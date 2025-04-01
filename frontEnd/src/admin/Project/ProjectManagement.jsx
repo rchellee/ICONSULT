@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
-import { FaPlus } from "react-icons/fa";
 import pic4 from "../../assets/pic4.jpg";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
@@ -88,10 +87,6 @@ const ProjectManagement = () => {
       .then((data) => setClients(data))
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   const openModal = () => {
     setIsModalOpen(true);

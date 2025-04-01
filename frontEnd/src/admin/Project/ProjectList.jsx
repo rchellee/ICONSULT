@@ -38,9 +38,6 @@ const ProjectList = ({
   const [finishDates, setFinishDates] = useState({});
   const [tasksInfo, setTasksInfo] = useState({});
   const [totalTasks, setTotalTasks] = useState({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
 
   const filteredProjects = useMemo(() => {
     return initialFilteredProjects;
@@ -171,7 +168,6 @@ const ProjectList = ({
   return (
     <div className="project-list-wrapper">
       <div className="list-view-header">
-        <div className="projects-title">My Projects</div>
         <div className="toggle-buttons">
           <button
             className={`toggle-button ${
@@ -190,7 +186,7 @@ const ProjectList = ({
             }`}
             onClick={() => setActiveView("accounting")}
           >
-            Accounting Ledger
+            Transaction
           </button>
         </div>
 
