@@ -2992,6 +2992,7 @@ app.get("/payments-per-client", (req, res) => {
 
   let sql = `
     SELECT 
+     p.client_id, 
       p.payer_name AS name,
       SUM(p.amount) AS total_amount,
       pr.projectName AS project_name,

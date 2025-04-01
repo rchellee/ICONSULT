@@ -39,6 +39,7 @@ const RevenueReports = () => {
   const [selectedClient, setSelectedClient] = useState("All");
   const [tasks, setTasks] = useState([]);
   const [availableYears, setAvailableYears] = useState([]);
+  const [exportType, setExportType] = useState("All");
   const [exportFilters, setExportFilters] = useState({
     year: "All",
     month: "All",
@@ -81,11 +82,14 @@ const RevenueReports = () => {
   ];
 
   useEffect(() => {
-    fetchProjects();
-    fetchRevenues();
-    fetchPaymentsPerClient();
-    fetchClients();
-    fetchTasks();
+    const fetchData = async () => {
+      await fetchClients();
+      await fetchTasks(); // Load tasks first
+      await fetchProjects();
+      await fetchRevenues();
+      await fetchPaymentsPerClient(); // Now this will have tasks data available
+    };
+    fetchData();
   }, [filters]);
 
   useEffect(() => {
@@ -169,7 +173,16 @@ const RevenueReports = () => {
           },
         }
       );
-      setPaymentsPerClient(response.data);
+
+      // Transform data to include task names by joining with tasks data
+      const dataWithTasks = response.data.map((item) => ({
+        ...item,
+        task_name: item.task_name || "No Task Assigned", // Directly use API response
+        client_name:
+          clients.find((c) => c.id === item.client_id)?.name || item.name,
+      }));
+
+      setPaymentsPerClient(dataWithTasks);
     } catch (error) {
       console.error("Error fetching payments per client:", error);
     }
@@ -247,6 +260,31 @@ const RevenueReports = () => {
         <div className="custom-tooltip">
           <p className="intro">{`Due Date: ${task.due_date}`}</p>
           <p className="intro">{`Amount: ₱ ${task.amount}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+  const CustomClientTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div
+          className="custom-tooltip"
+          style={{
+            backgroundColor: "#fff",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+          }}
+        >
+          <p>
+            <strong>Client:</strong> {data.client_name || data.name}
+          </p>
+          <p>
+            <strong>Amount:</strong> ₱{data.total_amount?.toFixed(2) || "0.00"}
+          </p>
         </div>
       );
     }
@@ -444,11 +482,10 @@ const RevenueReports = () => {
       });
     }
     if (selectedReport === "Accounts Receivable Overview") {
-      // First page - Chart
       try {
-        // Capture the chart element
+        // Always include the chart page
         const chartElement = document.querySelector(
-          "#project-status .recharts-wrapper"
+          "#receivable-graph .recharts-wrapper"
         );
         if (chartElement) {
           const canvas = await html2canvas(chartElement, {
@@ -460,12 +497,11 @@ const RevenueReports = () => {
           const imgWidth = 160;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-          // Add chart to first page
           doc
             .setFontSize(16)
             .setFont("helvetica", "bold")
             .setTextColor(40)
-            .text("Projects by Status Overview", 105, 45, { align: "center" });
+            .text("Accounts Receivable Overview", 105, 45, { align: "center" });
 
           doc.addImage(
             imgData,
@@ -476,74 +512,62 @@ const RevenueReports = () => {
             imgHeight
           );
 
-          // Add description below chart
           doc
             .setFontSize(10)
             .setTextColor(80)
             .text(
-              "This chart shows the distribution of projects by their current status.",
+              "Compares received payments and pending payments for a clearer view of outstanding balances.",
               105,
               50 + imgHeight + 10,
               { align: "center" }
             );
         }
-      } catch (error) {
-        console.error("Error capturing chart:", error);
-      }
 
-      // Add new page for status details
-      doc.addPage();
-      setupPage(doc);
+        // Add pages based on selected export type
+        if (exportType === "All" || exportType === "Received") {
+          doc.addPage();
+          setupPage(doc);
+          let yPos = 40;
 
-      const statuses = ["Pending", "Ongoing", "Completed"];
-
-      statuses.forEach((status, index) => {
-        const projectStatus = projects.filter((p) => p.status === status);
-
-        if (projectStatus.length > 0) {
-          // Add new page for each status (except first one after chart)
-          if (index > 0) {
-            doc.addPage();
-            setupPage(doc);
-          }
-
-          // Reset Y position for new page
-          let startY = 40;
-
-          // Add status title
           doc
             .setFontSize(16)
             .setFont("helvetica", "bold")
             .setTextColor(40)
-            .text(`${status} Projects`, 105, startY, { align: "center" });
+            .text("Received Payments", 105, yPos, { align: "center" });
 
-          startY += 15;
+          yPos += 15;
 
-          // Add table
-          const headers = [
-            [
-              "Project Name",
-              "Client Name",
-              "Description",
-              "Start Date",
-              "End Date",
-              "Created At",
-            ],
+          const receivedHeaders = [
+            "Task ID",
+            "Task Name",
+            "Amount",
+            "Transaction ID",
+            "MOP",
+            "Date Paid",
           ];
 
-          const data = projectStatus.map((p) => [
-            p.projectName,
-            p.clientName,
-            p.description,
-            p.startDate ? new Date(p.startDate).toLocaleDateString() : "N/A",
-            p.endDate ? new Date(p.endDate).toLocaleDateString() : "N/A",
-            p.created_at ? new Date(p.created_at).toLocaleDateString() : "N/A",
-          ]);
+          const receivedRows = detailedPaymentData.receivedPayments.map(
+            (payment) => [
+              payment.task_id,
+              payment.task_name,
+              `${payment.amount.toFixed(2)}`,
+              payment.transaction_id || "N/A",
+              payment.mode_of_payment || "N/A",
+              payment.date_paid
+                ? new Date(payment.date_paid).toLocaleDateString()
+                : "N/A",
+            ]
+          );
+
+          const receivedTotal = detailedPaymentData.receivedPayments.reduce(
+            (sum, payment) => sum + payment.amount,
+            0
+          );
 
           autoTable(doc, {
-            startY: startY,
-            head: headers,
-            body: data,
+            startY: yPos,
+            head: [receivedHeaders],
+            body: receivedRows,
             styles: {
               fontSize: 8,
               cellPadding: 3,
@@ -559,62 +583,124 @@ const RevenueReports = () => {
             },
           });
 
-          // Add status summary
-          startY = doc.lastAutoTable.finalY + 10;
+          yPos = doc.lastAutoTable.finalY + 5;
           doc
             .setFontSize(10)
+            .setFont("helvetica", "bolditalic")
             .setTextColor(40)
-            .text(
-              `Total ${status} Projects: ${projectStatus.length}`,
-              14,
-              startY
-            );
-
-          // Add footer to this page
-          addFooter(doc);
+            .text(`Total Amount: ${receivedTotal.toFixed(2)}`, 14, yPos);
         }
-      });
+
+        if (exportType === "All" || exportType === "Pending") {
+          doc.addPage();
+          setupPage(doc);
+          let yPos = 40;
+
+          doc
+            .setFontSize(16)
+            .setFont("helvetica", "bold")
+            .setTextColor(40)
+            .text("Pending Payments", 105, yPos, { align: "center" });
+
+          yPos += 15;
+
+          const pendingHeaders = ["Task ID", "Task Name", "Amount", "Due Date"];
+
+          const pendingRows = detailedPaymentData.pendingPayments.map(
+            (payment) => [
+              payment.task_id,
+              payment.task_name,
+              `${payment.amount.toFixed(2)}`,
+              payment.due_date
+                ? new Date(payment.due_date).toLocaleDateString()
+                : "N/A",
+            ]
+          );
+
+          const pendingTotal = detailedPaymentData.pendingPayments.reduce(
+            (sum, payment) => sum + payment.amount,
+            0
+          );
+
+          autoTable(doc, {
+            startY: yPos,
+            head: [pendingHeaders],
+            body: pendingRows,
+            styles: {
+              fontSize: 8,
+              cellPadding: 3,
+              overflow: "linebreak",
+            },
+            headStyles: {
+              fillColor: [220, 220, 220],
+              textColor: [0, 0, 0],
+              fontStyle: "bold",
+            },
+            alternateRowStyles: {
+              fillColor: [245, 245, 245],
+            },
+          });
+
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc
+            .setFontSize(10)
+            .setFont("helvetica", "bolditalic")
+            .setTextColor(40)
+            .text(`Total Amount: ${pendingTotal.toFixed(2)}`, 14, yPos);
+        }
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+      }
     }
     if (selectedReport === "Payments per Client") {
+      let grandTotal = 0;
+      let hasData = false; // Flag to track if any client has data
+
+      // Filter clients based on selection
+      const clientsToExport =
+        selectedClient === "All"
+          ? clients
+          : clients.filter((c) => c.id.toString() === selectedClient);
+
+      // First Page - Chart
       try {
-        // Capture the chart element
         const chartElement = document.querySelector(
-          "#overdue-projects .recharts-wrapper"
+          "#payments-chart .recharts-wrapper"
         );
         if (chartElement) {
           const canvas = await html2canvas(chartElement, {
             scale: 3,
             logging: true,
             useCORS: true,
+            height: chartElement.offsetHeight * 1.5,
+            windowHeight: chartElement.offsetHeight * 1.5,
           });
           const imgData = canvas.toDataURL("image/png");
-          const imgWidth = 160;
+          const imgWidth = 190;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-          // Add chart to first page
           doc
             .setFontSize(16)
             .setFont("helvetica", "bold")
             .setTextColor(40)
-            .text("Overdue Projects", 105, 45, { align: "center" });
+            .text("Payments per Client", 105, 50, { align: "center" });
 
           doc.addImage(
             imgData,
             "PNG",
             (doc.internal.pageSize.getWidth() - imgWidth) / 2,
-            50,
+            70,
             imgWidth,
             imgHeight
           );
 
-          // Add description below chart
           doc
             .setFontSize(10)
             .setTextColor(80)
             .text(
-              "This chart shows projects that are delayed, along with the number of days overdue.",
+              "This chart shows the total payments received from each client.",
               105,
-              50 + imgHeight + 10,
+              70 + imgHeight + 10,
               { align: "center" }
             );
         }
@@ -622,66 +708,154 @@ const RevenueReports = () => {
         console.error("Error capturing chart:", error);
       }
 
-      // Add new page for status details
+      // Second Page - Start client data
       doc.addPage();
       setupPage(doc);
+      let startY = 40;
 
-      const headers = [
-        [
-          "Project Name",
-          "Client Name",
-          "Description",
-          "Status",
-          "End Date",
-          "Days Overdue",
-        ],
-      ];
-      const overdueProjects = projects
-        .filter((p) => p.isDelayed === 1)
-        .map((p) => [
-          p.projectName,
-          p.clientName,
-          p.description,
-          p.status,
-          formatDate(p.endDate),
-          p.delayedDays, // Ensure this field exists in your backend response
-        ]);
+      // Process each client's data
+      for (const client of clientsToExport) {
+        const clientRevenues = revenues.filter(
+          (r) => r.client_id === client.id
+        );
 
-      doc
-        .setFontSize(20)
-        .setFont("helvetica", "bold")
-        .setTextColor(40)
-        .text("Overdue Projects", 105, startY + 3, {
-          align: "center",
+        if (clientRevenues.length > 0) {
+          hasData = true; // We found data for at least one client
+
+          // Client header
+          doc
+            .setFontSize(12)
+            .setFont("helvetica", "bold")
+            .text(`${client.firstName} ${client.lastName}`, 14, startY);
+          startY += 10;
+
+          // Client payments table
+          const headers = [
+            [
+              "Transaction ID",
+              "Project",
+              "Task",
+              "Paid by",
+              "Amount",
+              "MOP",
+              "Date Paid",
+            ],
+          ];
+
+          let clientTotal = 0;
+          const data = clientRevenues.map((r) => {
+            const project = projects.find((p) => p.id === r.project_id);
+            const task = tasks?.find((t) => t.id === r.task_id);
+            clientTotal += r.amount;
+
+            return [
+              r.transaction_id || "N/A",
+              project?.projectName || "N/A",
+              task?.task_name || "N/A",
+              r.payer_name || "N/A",
+              `${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+            ];
+          });
+
+          autoTable(doc, {
+            startY: startY,
+            head: headers,
+            body: data,
+            styles: {
+              fontSize: 8,
+              overflow: "linebreak",
+            },
+            headStyles: {
+              fillColor: [220, 220, 220],
+              textColor: [0, 0, 0],
+              fontStyle: "bold",
+            },
+            alternateRowStyles: {
+              fillColor: [245, 245, 245],
+            },
+          });
+
+          // Client total
+          startY = doc.lastAutoTable.finalY + 10;
+          doc
+            .setFontSize(10)
+            .setFont("helvetica", "bolditalic")
+            .text(`Client Total: ${clientTotal.toFixed(2)}`, 14, startY);
+          startY += 15;
+
+          grandTotal += clientTotal;
+
+          // Add page break if we're running out of space
+          if (startY > doc.internal.pageSize.height - 100) {
+            doc.addPage();
+            setupPage(doc);
+            startY = 40;
+          }
+        }
+      }
+
+      // If no data was found for any client
+      if (!hasData) {
+        doc
+          .setFontSize(12)
+          .setTextColor(100)
+          .text("No payment data found for the selected client(s)", 14, startY);
+        return; // Skip the summary since there's no data
+      }
+
+      // Add summary page if multiple clients
+      if (clientsToExport.length > 1 && grandTotal > 0) {
+        doc.addPage();
+        setupPage(doc);
+        startY = 40;
+
+        // Summary title
+        doc
+          .setFontSize(16)
+          .setFont("helvetica", "bold")
+          .setTextColor(40)
+          .text("Payments Summary", 105, startY, { align: "center" });
+        startY += 20;
+
+        // Summary table
+        const summaryHeaders = [["Client Name", "Total Payments"]];
+        const summaryData = clientsToExport.map((client) => {
+          const clientTotal = revenues
+            .filter((r) => r.client_id === client.id)
+            .reduce((sum, r) => sum + r.amount, 0);
+          return [
+            `${client.firstName} ${client.lastName}`,
+            `${clientTotal.toFixed(2)}`,
+          ];
         });
 
-      startY += 15;
+        autoTable(doc, {
+          startY: startY,
+          head: summaryHeaders,
+          body: summaryData,
+          styles: { fontSize: 8 },
+          headStyles: {
+            fillColor: [220, 220, 220],
+            textColor: [0, 0, 0],
+            fontStyle: "bold",
+          },
+        });
 
-      autoTable(doc, {
-        startY: startY,
-        head: headers,
-        body: overdueProjects,
-        styles: {
-          fontSize: 8,
-          textColor: [0, 0, 0],
-          cellPadding: 3,
-        },
-        headStyles: {
-          fillColor: [220, 220, 220],
-          textColor: [0, 0, 0],
-          fontStyle: "bold",
-        },
-        alternateRowStyles: {
-          fillColor: [245, 245, 245],
-        },
-        margin: { top: 15 },
-      });
+        // Grand total
+        startY = doc.lastAutoTable.finalY + 10;
+        doc
+          .setFontSize(12)
+          .setFont("helvetica", "bold")
+          .text(`TOTAL: ${grandTotal.toFixed(2)}`, 14, startY);
+      }
     }
     if (selectedReport === "Revenue per Project") {
       try {
         // Capture the chart element
         const chartElement = document.querySelector(
-          "#projects-per-client .recharts-wrapper"
+          "#revenue-chart .recharts-wrapper"
         );
         if (chartElement) {
           const canvas = await html2canvas(chartElement, {
@@ -698,13 +872,13 @@ const RevenueReports = () => {
             .setFontSize(16)
             .setFont("helvetica", "bold")
             .setTextColor(40)
-            .text("Client Project List", 105, 45, { align: "center" });
+            .text("Revenue per Project", 105, 45, { align: "center" });
 
           doc.addImage(
             imgData,
             "PNG",
             (doc.internal.pageSize.getWidth() - imgWidth) / 2,
-            50,
+            60,
             imgWidth,
             imgHeight
           );
@@ -714,9 +888,9 @@ const RevenueReports = () => {
             .setFontSize(10)
             .setTextColor(80)
             .text(
-              " This line chart represents the number of projects associated with each client.",
+              "This chart shows the revenue generated by each project.",
               105,
-              50 + imgHeight + 10,
+              60 + imgHeight + 10,
               { align: "center" }
             );
         }
@@ -724,67 +898,70 @@ const RevenueReports = () => {
         console.error("Error capturing chart:", error);
       }
 
-      // Add new page for status details
+      // Add new page for project details
       doc.addPage();
       setupPage(doc);
 
-      let grandTotal = 0;
-      const clientsToExport =
-        selectedClient === "All"
-          ? clients
-          : clients.filter((c) => c.id.toString() === selectedClient);
+      let grandTotalRevenue = 0;
+      let totalProjects = 0;
+      const projectsToExport =
+        selectedProject === "All"
+          ? projects
+          : projects.filter((p) => p.id.toString() === selectedProject);
 
-      clientsToExport.forEach((client, index) => {
-        const clientProjects = projects.filter((p) => p.clientId === client.id);
+      projectsToExport.forEach((project, index) => {
+        const projectRevenues = revenues.filter(
+          (r) => r.project_id === project.id
+        );
+        const projectClient = clients.find((c) => c.id === project.clientId);
 
-        if (clientProjects.length > 0) {
-          // Add new page for each client (except first one)
+        if (projectRevenues.length > 0) {
+          // Add new page if not first project and we're running out of space
           if (index > 0) {
             doc.addPage();
-            setupPage(doc); // Re-setup page template
+            setupPage(doc);
           }
 
-          // Reset Y position for new page
-          let startY = 45;
+          let startY = 47;
 
-          // Client header
+          // Project header with client name
           doc
             .setFontSize(12)
             .setFont("helvetica", "bolditalic")
             .setTextColor(40)
-            .text(
-              `${client.firstName} ${client.lastName}'s Projects`,
-              105,
-              startY,
-              { align: "center" }
-            );
+            .text(`Project: ${project.projectName}`, 14, startY);
 
-          startY += 20;
+          startY += 7;
 
-          // Projects table
+          // Display client name or fallback to payer_name from revenues
+          const clientDisplayName = projectClient
+            ? `${projectClient.firstName} ${projectClient.lastName}`
+            : projectRevenues[0]?.payer_name || "Client Not Specified";
+
+          doc
+            .setFontSize(10)
+            .setTextColor(80)
+            .text(`Client: ${clientDisplayName}`, 14, startY);
+
+          startY += 10;
+
+          // Project revenues table
           const headers = [
-            [
-              "Project Name",
-              "Description",
-              "Status",
-              "Start Date",
-              "End Date",
-              "Created At",
-            ],
+            ["Transaction ID", "Task", "Paid by", "Amount", "MOP", "Date Paid"],
           ];
 
-          let clientTotal = 0;
-          const data = clientProjects.map((p) => {
-            clientTotal++;
+          let projectTotal = 0;
+          const data = projectRevenues.map((r) => {
+            const task = tasks.find((t) => t.id === r.task_id);
+            projectTotal += r.amount;
+
             return [
-              p.projectName || "N/A",
-              p.description || "N/A",
-              p.status || "N/A",
-              p.startDate ? new Date(p.startDate).toLocaleDateString() : "N/A",
-              p.endDate ? new Date(p.endDate).toLocaleDateString() : "N/A",
-              p.created_at
-                ? new Date(p.created_at).toLocaleDateString()
-                : "N/A",
+              r.transaction_id || "N/A",
+              task?.task_name || "N/A",
+              r.payer_name || "N/A",
+              `₱${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
             ];
           });
 
@@ -807,56 +984,87 @@ const RevenueReports = () => {
             },
           });
 
-          // Client summary
+          // Project summary
           startY = doc.lastAutoTable.finalY + 10;
           doc
             .setFontSize(10)
-            .setFont("helvetica", "italic")
+            .setFont("helvetica", "bolditalic")
             .text(
-              `Total Projects for ${client.firstName} ${client.lastName}: ${clientTotal}`,
+              `Project Revenue Total: ₱${projectTotal.toFixed(2)}`,
               14,
               startY
             );
 
-          grandTotal += clientTotal;
+          grandTotalRevenue += projectTotal;
+          totalProjects++;
         }
       });
 
-      // Add summary page if multiple clients
-      if (clientsToExport.length > 1 && grandTotal > 0) {
+      // Add summary page if multiple projects
+      if (projectsToExport.length > 1 && grandTotalRevenue > 0) {
         doc.addPage();
         setupPage(doc);
+        let startY = 40;
 
+        // Summary title
         doc
-          .setFontSize(16)
+          .setFontSize(14)
           .setFont("helvetica", "bold")
           .setTextColor(40)
-          .text("Projects Summary by Client", 105, 40, { align: "center" });
+          .text("Revenue Summary by Project", 105, startY, { align: "center" });
 
-        const summaryHeaders = [["Client Name", "Number of Projects"]];
-        const summaryData = clientsToExport.map((client) => {
-          const count = projects.filter((p) => p.clientId === client.id).length;
-          return [`${client.firstName} ${client.lastName}`, count];
+        startY += 10;
+
+        // Summary table
+        const summaryHeaders = [["Project Name", "Revenue"]];
+        const summaryData = projectsToExport.map((project) => {
+          const projectRevenues = revenues.filter(
+            (r) => r.project_id === project.id
+          );
+          const projectTotal = projectRevenues.reduce(
+            (sum, r) => sum + r.amount,
+            0
+          );
+
+          return [project.projectName, `₱${projectTotal.toFixed(2)}`];
         });
+
         autoTable(doc, {
-          startY: 45,
+          startY: startY,
           head: summaryHeaders,
           body: summaryData,
-          styles: { fontSize: 6 },
+          styles: {
+            fontSize: 8,
+            cellPadding: 3,
+          },
           headStyles: {
             fillColor: [220, 220, 220],
             textColor: [0, 0, 0],
             fontStyle: "bold",
           },
+          alternateRowStyles: {
+            fillColor: [245, 245, 245],
+          },
         });
+
+        // Grand total
+        startY = doc.lastAutoTable.finalY + 15;
         doc
           .setFontSize(10)
-          .setFont("helvetica", "bolditalic")
+          .setFont("helvetica", "bold")
           .text(
-            `Overall Total: ${grandTotal} projects`,
+            `Total Revenue for ${totalProjects} Projects: ₱${grandTotalRevenue.toFixed(
+              2
+            )}`,
             14,
-            doc.lastAutoTable.finalY + 15
+            startY
           );
+      } else if (projectsToExport.length === 0) {
+        // Handle case where no projects were found
+        doc
+          .setFontSize(12)
+          .setTextColor(100)
+          .text("No project data found with the current filters", 14, 50);
       }
     }
     for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
@@ -867,6 +1075,28 @@ const RevenueReports = () => {
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
   const formatREVENUETHISMonthCSV = () => {
+    const formatDate = (dateString) => {
+      if (!dateString) return "";
+      try {
+        return new Date(dateString).toISOString().split("T")[0];
+      } catch (e) {
+        return dateString;
+      }
+    };
+    const clientNames = {};
+    clients.forEach((client) => {
+      clientNames[client.id] = `${client.firstName} ${client.lastName}`;
+    });
+
+    const projectNames = {};
+    projects.forEach((project) => {
+      projectNames[project.id] = project.projectName;
+    });
+
+    const taskNames = {};
+    tasks.forEach((task) => {
+      taskNames[task.id] = task.task_name;
+    });
     let csvData = [];
 
     // Add headers
@@ -898,17 +1128,17 @@ const RevenueReports = () => {
     currentMonthRevenues.forEach((r) => {
       csvData.push([
         r.id,
-        r.client_id,
-        r.project_id,
-        r.task_id,
+        clientNames[r.client_id] || `Client ID: ${r.client_id}`,
+        projectNames[r.project_id] || `Project ID: ${r.project_id}`,
+        taskNames[r.task_id] || `Task ID: ${r.task_id}`,
         r.transaction_id,
         r.payer_name,
         r.payer_email,
         r.amount,
         r.currency,
         r.mode_of_payment,
-        r.date_paid,
-        r.created_at,
+        formatDate(r.date_paid),
+        formatDate(r.created_at),
       ]);
     });
 
@@ -1147,6 +1377,18 @@ const RevenueReports = () => {
           <option value="Revenue per Project">Revenue per Project</option>
         </select>
 
+        {selectedReport === "Accounts Receivable Overview" && (
+          <select
+            value={exportType}
+            onChange={(e) => setExportType(e.target.value)}
+            className="ml-4"
+          >
+            <option value="All">All Payments</option>
+            <option value="Received">Received Payments Only</option>
+            <option value="Pending">Pending Payments Only</option>
+          </select>
+        )}
+
         {/* Add project selection dropdown when Revenue per Project is selected */}
         {selectedReport === "Revenue per Project" && (
           <select
@@ -1231,23 +1473,30 @@ const RevenueReports = () => {
               </div>
             )}
 
-            <CSVLink
-              data={exportCSVData}
-              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}_${
-                selectedReport === "Revenue per Project"
-                  ? selectedProject === "All"
-                    ? "all_projects"
-                    : "project_" + selectedProject
-                  : selectedReport === "Payments per Client"
-                  ? selectedClient === "All"
-                    ? "all_clients"
-                    : "client_" + selectedClient
-                  : "report"
-              }.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export CSV
-            </CSVLink>
+            {(selectedReport !== "Payments per Client" ||
+              selectedClient === "All") &&
+              (selectedReport !== "Accounts Receivable Overview" ||
+                exportType === "All") && (
+                <CSVLink
+                  data={exportCSVData}
+                  filename={`${selectedReport
+                    .replace(/\s+/g, "_")
+                    .toLowerCase()}_${
+                    selectedReport === "Revenue per Project"
+                      ? selectedProject === "All"
+                        ? "all_projects"
+                        : "project_" + selectedProject
+                      : selectedReport === "Payments per Client"
+                      ? selectedClient === "All"
+                        ? "all_clients"
+                        : "client_" + selectedClient
+                      : "report"
+                  }.csv`}
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                  Export CSV
+                </CSVLink>
+              )}
 
             <button
               onClick={() => exportPDF(exportFilters)}
@@ -1272,7 +1521,7 @@ const RevenueReports = () => {
       </div>
 
       <div className="revenue-grid">
-        <div className="chart-container">
+        <div className="chart-container" id="receivable-graph">
           <h3>Accounts Receivable Overview</h3>
           <p>
             Compares received payments and pending payments for a clearer view
@@ -1323,7 +1572,7 @@ const RevenueReports = () => {
         </div>
 
         {/* Total Revenue per Project */}
-        <div className="chart-container scrollable-chart">
+        <div className="chart-container scrollable-chart" id="revenue-chart">
           <h3>Total Revenue per Project</h3>
           <p>Displays the total revenue generated by each project.</p>{" "}
           <div className="filter-buttons">
@@ -1384,16 +1633,23 @@ const RevenueReports = () => {
         </div>
       </div>
 
-      <div className="chart-container scrollable-chart">
+      <div className="chart-container scrollable-chart" id="payments-chart">
         <h3>Payments per Client</h3>
-        <p>Shows the total payments received from each client.</p>{" "}
-        <BarChart width={1700} height={400} data={paymentsPerClient}>
+        <p>Shows the total payments received from each client.</p>
+        <BarChart width={1550} height={580} data={paymentsPerClient}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis
+            dataKey="task_name"
+            angle={-20}
+            tickFormatter={(value) =>
+              value?.length > 15 ? `${value.substring(0, 15)}...` : value
+            }
+            height={70} // Give more space for angled labels
+          />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={<CustomClientTooltip />} />
           <Legend />
-          <Bar dataKey="total_amount" fill="#8884d8" name="Total" />
+          <Bar dataKey="total_amount" fill="#8884d8" name="Total Payments" />
         </BarChart>
       </div>
     </div>
