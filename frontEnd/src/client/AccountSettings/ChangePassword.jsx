@@ -7,7 +7,28 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  TextField,
+  Paper,
+  Grid,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  maxWidth: 500,
+  margin: "auto",
+  marginTop: theme.spacing(2),
+  border: 'none',       
+  boxShadow: 'none',
+  
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  marginRight: theme.spacing(1),
+}));
 
 const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
   const [newPassword, setNewPassword] = useState("");
@@ -20,6 +41,7 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const clientId = localStorage.getItem("clientId");
 
   const sendVerificationCode = async () => {
@@ -28,6 +50,7 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch(
         "http://localhost:8081/sendVerificationCode",
@@ -42,7 +65,7 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
 
       if (response.ok) {
         const data = await response.json();
-        setVerificationCode(data.code); // Simulated backend-generated code
+        setVerificationCode(data.code);
         setCodeSent(true);
         setMessage("Verification code sent to your email.");
       } else {
@@ -51,13 +74,18 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
     } catch (error) {
       console.error("Error sending verification code:", error);
       setMessage("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const verifyCodeAndProceed = async () => {
-    console.log("Sending email:", clientDetails.email_add);
-    console.log("Sending code:", enteredCode);
+    if (!enteredCode) {
+      setMessage("Please enter the verification code");
+      return;
+    }
 
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:8081/verifyCode", {
         method: "POST",
@@ -83,14 +111,16 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
     } catch (error) {
       console.error("Error verifying code:", error);
       setMessage("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDialogClose = (confirm) => {
     if (confirm) {
-      handlePasswordChange(); // Proceed with password change if confirmed
+      handlePasswordChange();
     }
-    setOpenDialog(false); // Close the dialog
+    setOpenDialog(false);
   };
 
   const handlePasswordChange = async (event) => {
@@ -101,8 +131,7 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
       return;
     }
 
-    console.log(clientId);
-
+    setIsLoading(true);
     try {
       const response = await fetch(
         "http://localhost:8081/updateclientPassword",
@@ -132,86 +161,140 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
     } catch (error) {
       console.error("Error updating password:", error);
       alert("An unexpected error occurred.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div>
-      <form onSubmit={(e) => e.preventDefault()}>
-        {!codeSent && (
-          <>
-            <div>
-              <label>New Password:</label>
-              <input
+    <Box sx={{ padding: 3, marginTop: '-200px' }}>
+      <StyledPaper elevation={0}>
+        <Typography variant="h5" gutterBottom>
+          Change Password
+        </Typography>
+
+        {message && (
+          <Alert severity={isVerified ? "success" : "error"} sx={{ mb: 2 }}>
+            {message}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={(e) => e.preventDefault()}>
+          {!codeSent ? (
+            <>
+              <TextField
+                fullWidth
+                margin="normal"
+                label="New Password"
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                required
               />
-            </div>
-            <div>
-              <label>Confirm New Password:</label>
-              <input
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Confirm New Password"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                error={newPassword !== confirmPassword && confirmPassword !== ""}
+                helperText={
+                  newPassword !== confirmPassword && confirmPassword !== ""
+                    ? "Passwords don't match"
+                    : ""
+                }
               />
-            </div>
-          </>
-        )}
-        {!codeSent ? (
-          <button type="button" onClick={sendVerificationCode}>
-            Submit
-          </button>
-        ) : (
-          <>
-            <div>
-              <label>Enter Verification Code:</label>
-              <input
-                type="text"
+              <Box sx={{ mt: 2 }}>
+                <StyledButton
+                  variant="contained"
+                  color="primary"
+                  onClick={sendVerificationCode}
+                  disabled={isLoading || newPassword !== confirmPassword}
+                  sx={{ 
+                    width: '150px', 
+                    backgroundColor: '#716cff;', 
+                  '&:hover': {
+                      backgroundColor: '#5a55e0;', 
+                    },
+                  }}
+                >
+                  {isLoading ? <CircularProgress size={24} /> : "Send Code"}
+                </StyledButton>
+                <StyledButton
+                  variant="outlined"
+                  onClick={() => {
+                    setIsUpdatingPassword(false);
+                    setMessage("");
+                    setCodeSent(false);
+                    setIsVerified(false);
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  }}
+                  sx={{
+                    '&:hover': {
+                      color: 'white',       
+                      borderColor: '#716cff;', 
+                      backgroundColor: '#716cff;'
+                    },
+                  }}
+                >
+                  Cancel
+                </StyledButton>
+              </Box>
+            </>
+          ) : (
+            <>
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Verification Code"
                 value={enteredCode}
                 onChange={(e) => setEnteredCode(e.target.value)}
+                required
               />
-            </div>
-            <button type="button" onClick={verifyCodeAndProceed}>
-              Submit
-            </button>
-          </>
-        )}
-        {isVerified && (
-          <button type="button" onClick={handlePasswordChange}>
-            Confirm Changes
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={() => {
-            setIsUpdatingPassword(false);
-            setMessage("");
-            setCodeSent(false);
-            setIsVerified(false);
-            setNewPassword("");
-            setConfirmPassword("");
-          }}
-        >
-          Cancel
-        </button>
-        {message && <div className="message">{message}</div>}
-      </form>
+              <Box sx={{ mt: 2 }}>
+                <StyledButton
+                  variant="contained"
+                  color="primary"
+                  onClick={verifyCodeAndProceed}
+                  disabled={isLoading}
+                >
+                  {isLoading ? <CircularProgress size={24} /> : "Verify Code"}
+                </StyledButton>
+                <StyledButton
+                  variant="outlined"
+                  onClick={() => {
+                    setCodeSent(false);
+                    setMessage("");
+                  }}
+                >
+                  Back
+                </StyledButton>
+              </Box>
+            </>
+          )}
+        </Box>
+      </StyledPaper>
+
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogTitle>Confirm Password Change</DialogTitle>
         <DialogContent>
           <Typography>{confirmationMessage}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleDialogClose(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => handleDialogClose(true)} color="primary">
+          <Button onClick={() => handleDialogClose(false)}>Cancel</Button>
+          <Button
+            onClick={() => handleDialogClose(true)}
+            color="primary"
+            variant="contained"
+          >
             Confirm
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 };
 

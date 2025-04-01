@@ -506,7 +506,6 @@ charts-diagrams:
     - chart-area
     - chart-bar
     - chart-column
-    - chart-diagram
     - chart-gantt
     - chart-line
     - chart-pie
@@ -516,8 +515,6 @@ charts-diagrams:
     - diagram-predecessor
     - diagram-project
     - diagram-successor
-    - hexagon-nodes
-    - hexagon-nodes-bolt
     - square-poll-horizontal
     - square-poll-vertical
   label: Charts + Diagrams
@@ -573,7 +570,6 @@ coding:
     - box-archive
     - bug
     - bug-slash
-    - chart-diagram
     - circle-nodes
     - code
     - code-branch
@@ -582,8 +578,6 @@ coding:
     - code-fork
     - code-merge
     - code-pull-request
-    - comment-nodes
-    - css
     - cube
     - cubes
     - diagram-project
@@ -597,8 +591,6 @@ coding:
     - font-awesome
     - gear
     - gears
-    - hexagon-nodes
-    - hexagon-nodes-bolt
     - keyboard
     - laptop-code
     - microchip
@@ -610,7 +602,6 @@ coding:
     - shield
     - shield-halved
     - sitemap
-    - square-binary
     - terminal
     - user-secret
     - web-awesome
@@ -629,7 +620,6 @@ communication:
     - comment
     - comment-dots
     - comment-medical
-    - comment-nodes
     - comment-slash
     - comment-sms
     - comments
@@ -1042,8 +1032,6 @@ files:
     - file-csv
     - file-excel
     - file-export
-    - file-fragment
-    - file-half-dashed
     - file-image
     - file-import
     - file-lines
@@ -2512,7 +2500,6 @@ shapes:
     - shapes
     - shield
     - square
-    - square-binary
     - star
     - ticket-simple
   label: Shapes
@@ -2603,7 +2590,6 @@ social:
     - share
     - share-from-square
     - share-nodes
-    - square-bluesky
     - square-poll-horizontal
     - square-poll-vertical
     - square-share-nodes

@@ -18,6 +18,10 @@
   overflow: hidden;
 }
 
+.account-settings{
+  background-color: rgb(85, 52, 52);
+}
+
 .account-settings h2 {
   display: flex;
   justify-content: flex-start;

@@ -1668,6 +1668,25 @@ app.get("/appointments", (req, res) => {
     return res.json(data);
   });
 });
+// Add this to your server code
+app.get("/appointments/client-check", (req, res) => {
+  const { clientId, date } = req.query;
+
+  const sql = `
+    SELECT COUNT(*) as appointmentCount 
+    FROM appointments 
+    WHERE client_id = ? AND date = ?
+  `;
+
+  db.query(sql, [clientId, date], (err, results) => {
+    if (err) {
+      console.error("Error checking client appointments:", err);
+      return res.status(500).json({ error: "Error checking appointments" });
+    }
+
+    res.json({ hasAppointment: results[0].appointmentCount > 0 });
+  });
+});
 app.get("/appointments-details/:clientId", (req, res) => {
   const { clientId } = req.params;
 
@@ -1902,6 +1921,27 @@ app.post("/payments/bulk", (req, res) => {
       console.error("Error processing payments:", err);
       res.status(500).json({ error: "Error processing payments" });
     });
+});
+// Clean up duplicate payments (keep the most recent one)
+app.post("/payments/clean-duplicates", (req, res) => {
+  const query = `
+    DELETE t1 FROM payments t1
+    INNER JOIN payments t2 
+    WHERE 
+      t1.id < t2.id AND 
+      t1.task_id = t2.task_id
+  `;
+
+  db.query(query, (err, result) => {
+    if (err) {
+      console.error("Error cleaning duplicates:", err);
+      return res.status(500).json({ error: "Error cleaning duplicates" });
+    }
+    res.status(200).json({
+      message: "Duplicate payments cleaned successfully",
+      affectedRows: result.affectedRows,
+    });
+  });
 });
 // Fetch all payments sorted by date_paid
 app.get("/paymentLedger", (req, res) => {
@@ -2753,10 +2793,25 @@ app.get("/taskReports", (req, res) => {
 });
 app.get("/ETReports", (req, res) => {
   const sql = `
-    SELECT e.firstName, e.lastName, t.created_at, t.status, t.amount, t.due_date, t.task_name, COUNT(t.id) AS task_count
+    SELECT e.firstName, e.lastName, t.created_at, t.status, t.task_fee, t.amount, t.due_date, t.task_name, COUNT(t.id) AS task_count
     FROM employee e
     LEFT JOIN tasks t ON e.id = t.employee
     GROUP BY e.id
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) return res.json({ error: "Error fetching tasks", details: err });
+    res.json(result);
+  });
+});
+// Add this new endpoint
+app.get("/allEmployeeTasks", (req, res) => {
+  const sql = `
+    SELECT e.id as employeeId, e.firstName, e.lastName, 
+           t.task_name, t.status, t.due_date, t.amount, t.task_fee
+    FROM employee e
+    LEFT JOIN tasks t ON e.id = t.employee
+    ORDER BY e.id, t.due_date
   `;
 
   db.query(sql, (err, result) => {
@@ -2775,7 +2830,7 @@ app.get("/employeeReports", (req, res) => {
 app.get("/tasksForEmployee/:employeeId", (req, res) => {
   const { employeeId } = req.params;
   const sql = `
-    SELECT t.task_name, t.due_date, t.status, t.amount
+    SELECT t.task_name, t.due_date, t.status, t.amount, t.task_fee
     FROM tasks t
     WHERE t.employee = ?
     ORDER BY t.due_date
@@ -2787,43 +2842,58 @@ app.get("/tasksForEmployee/:employeeId", (req, res) => {
 });
 //financial reports
 app.get("/payment-status", (req, res) => {
-  const currentMonth = new Date().getMonth() + 1;
-  const currentYear = new Date().getFullYear();
+  const paidTasksQuery = `
+    SELECT 
+      t.id AS task_id,
+      t.task_name,
+      t.amount,
+      t.transaction_id,
+      t.mode_of_payment,
+      t.date_paid
+    FROM tasks t
+    WHERE t.payment_status = 'Paid'
+  `;
 
-  const sql =
-    "SELECT payment_status, amount, DATE(date_paid) AS paid_date FROM tasks";
+  const pendingTasksQuery = `
+    SELECT 
+      t.id AS task_id,
+      t.task_name,
+      t.amount,
+      t.due_date
+    FROM tasks t
+    WHERE t.payment_status != 'Paid' OR t.payment_status IS NULL
+  `;
 
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error fetching payment status data:", err);
-      return res.status(500).json({ message: "Internal server error" });
+  db.query(paidTasksQuery, (paidErr, paidResults) => {
+    if (paidErr) {
+      console.error("Error fetching paid tasks:", paidErr);
+      return res.status(500).json({ message: "Error fetching paid tasks" });
     }
 
-    // Calculate total received and pending payments
-    let receivedPayments = 0;
-    let revenueThisMonth = 0;
-    let pendingPayments = 0;
-
-    results.forEach((task) => {
-      if (task.payment_status === "Paid") {
-        receivedPayments += task.amount;
-        // Check if payment is from the current month
-        const taskDate = new Date(task.paid_date);
-        if (
-          taskDate.getMonth() + 1 === currentMonth &&
-          taskDate.getFullYear() === currentYear
-        ) {
-          revenueThisMonth += task.amount;
-        }
-      } else if (task.payment_status === "Not Paid") {
-        pendingPayments += task.amount;
+    db.query(pendingTasksQuery, (pendingErr, pendingResults) => {
+      if (pendingErr) {
+        console.error("Error fetching pending tasks:", pendingErr);
+        return res
+          .status(500)
+          .json({ message: "Error fetching pending tasks" });
       }
-    });
 
-    res.status(200).json({
-      receivedPayments,
-      revenueThisMonth,
-      pendingPayments,
+      // Calculate totals
+      const receivedPayments = paidResults.reduce(
+        (sum, task) => sum + task.amount,
+        0
+      );
+      const pendingPayments = pendingResults.reduce(
+        (sum, task) => sum + task.amount,
+        0
+      );
+
+      res.status(200).json({
+        paidTasks: paidResults,
+        pendingTasks: pendingResults,
+        receivedPayments,
+        pendingPayments,
+      });
     });
   });
 });
@@ -2852,16 +2922,23 @@ app.get("/total-revenue-per-project", (req, res) => {
   let sql = `
     SELECT 
       p.projectName AS project_name, 
-      SUM(t.amount) AS total_revenue 
+      SUM(t.amount) AS total_revenue,
+      t.task_name,
+      py.payer_name,
+      t.id AS task_id,
+      py.transaction_id,
+      py.mode_of_payment,
+      py.date_paid
     FROM tasks t
     JOIN project p ON t.project_id = p.id
+    LEFT JOIN payments py ON t.id = py.task_id
   `;
 
   if (paymentStatus) {
     sql += ` WHERE t.payment_status = ?`;
   }
 
-  sql += ` GROUP BY p.projectName`;
+  sql += ` GROUP BY p.projectName, t.task_name, py.payer_name, t.id, py.transaction_id, py.mode_of_payment, py.date_paid`;
 
   db.query(sql, [paymentStatus], (err, results) => {
     if (err) {
@@ -2915,23 +2992,29 @@ app.get("/payments-per-client", (req, res) => {
 
   let sql = `
     SELECT 
-      payer_name AS name,
-      SUM(amount) AS total_amount
-    FROM payments
+     p.client_id, 
+      p.payer_name AS name,
+      SUM(p.amount) AS total_amount,
+      pr.projectName AS project_name,
+      t.task_name,
+      p.payer_name AS paid_by
+    FROM payments p
+    LEFT JOIN tasks t ON p.task_id = t.id
+    LEFT JOIN project pr ON p.project_id = pr.id
   `;
 
   // Add filters for year and month
   if (year !== "All") {
-    sql += ` WHERE YEAR(date_paid) = ${year}`;
+    sql += ` WHERE YEAR(p.date_paid) = ${year}`;
   }
   if (month !== "All") {
     sql +=
       year !== "All"
-        ? ` AND MONTH(date_paid) = ${months.indexOf(month) + 1}`
-        : ` WHERE MONTH(date_paid) = ${months.indexOf(month) + 1}`;
+        ? ` AND MONTH(p.date_paid) = ${months.indexOf(month) + 1}`
+        : ` WHERE MONTH(p.date_paid) = ${months.indexOf(month) + 1}`;
   }
 
-  sql += ` GROUP BY payer_name`;
+  sql += ` GROUP BY p.payer_name, pr.projectName, t.task_name, p.payer_name`;
 
   db.query(sql, (err, results) => {
     if (err) {
@@ -2939,6 +3022,16 @@ app.get("/payments-per-client", (req, res) => {
       return res.status(500).json({ message: "Internal server error" });
     }
 
+    res.status(200).json(results);
+  });
+});
+app.get("/tasksPayments", (req, res) => {
+  const query = "SELECT * FROM tasks";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching tasks:", err.message);
+      return res.status(500).json({ error: err.message });
+    }
     res.status(200).json(results);
   });
 });
