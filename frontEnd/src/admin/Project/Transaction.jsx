@@ -549,7 +549,7 @@ const Transaction = ({ projectId }) => {
               <th>Task Name</th>
               <th>Type</th>
               <th>Amount</th>
-              <th>Assign Employee</th>
+              <th>Assigned Employee</th>
               <th>Due Date</th>
               <th>Date Paid</th>
               <th>Status</th>

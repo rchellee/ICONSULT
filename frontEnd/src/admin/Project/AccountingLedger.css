@@ -57,7 +57,7 @@
   font-size: 18px;
   position: relative;
   margin-right: 50px;
-  margin-top: 100px;
+  margin-top: 30px;
   top: 10px;
   /* Ensure columns respect their widths */
 }
@@ -144,6 +144,8 @@
   align-items: center;
   justify-content: flex-end;
   margin: 20px 125px 10px 0; /* Adjusted margins */
+  top: 100px;
+  margin-top: -60px;
 }
 
 .sortledger-container label {
