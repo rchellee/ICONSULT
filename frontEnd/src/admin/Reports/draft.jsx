@@ -7,1063 +7,494 @@ import autoTable from "jspdf-autotable";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Tooltip,
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
   Legend,
+  ResponsiveContainer,
   Cell,
 } from "recharts";
 
-const TaskReports = () => {
+const EmployeeReports = () => {
+  const [employees, setEmployees] = useState([]);
   const [tasks, setTasks] = useState([]);
-  const [projects, setProjects] = useState({});
-  const [employees, setEmployees] = useState({});
-  const [selectedStatus, setSelectedStatus] = useState("All");
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState("All");
-  const [selectedProject, setSelectedProject] = useState("All");
-  const [statusYear, setStatusYear] = useState(new Date().getFullYear());
-  const [statusMonth, setStatusMonth] = useState("All");
   const [selectedReport, setSelectedReport] = useState("");
-  const [exportProjectSelection, setExportProjectSelection] = useState("All");
-
-  useEffect(() => {
-    fetchTasks();
-    fetchProjects();
-    fetchEmployees();
-  }, []);
-
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get("http://localhost:8081/taskReports");
-      setTasks(response.data);
-    } catch (error) {
-      console.error("Error fetching tasks", error);
-    }
-  };
-
-  const fetchProjects = async () => {
-    try {
-      const response = await axios.get("http://localhost:8081/project");
-      const projectData = response.data.reduce((acc, project) => {
-        acc[project.id] = project.projectName;
-        return acc;
-      }, {});
-      setProjects(projectData);
-    } catch (error) {
-      console.error("Error fetching projects", error);
-    }
-  };
+  const [taskStatusFilter, setTaskStatusFilter] = useState("All");
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [tasksForSelectedEmployee, setTasksForSelectedEmployee] = useState([]);
+  const [allTasksForCSV, setAllTasksForCSV] = useState([]);
+  const [exportOption, setExportOption] = useState("all");
+  const [filters, setFilters] = useState({
+    startDate: "",
+    endDate: "",
+    year: "All",
+    month: "All",
+  });
 
   const fetchEmployees = async () => {
     try {
       const response = await axios.get("http://localhost:8081/employeeReports");
-      const employeeData = response.data.reduce((acc, emp) => {
-        acc[emp.id] = `${emp.firstName} ${emp.lastName}`;
-        return acc;
-      }, {});
-      setEmployees(employeeData);
+      setEmployees(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error("Error fetching employees", error);
+      console.error("Error fetching employee reports", error);
+      setEmployees([]);
+    }
+  };
+  const fetchAllTasksForCSV = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/allEmployeeTasks"
+      );
+      setAllTasksForCSV(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching all tasks for CSV", error);
+      setAllTasksForCSV([]);
+    }
+  };
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/ETReports");
+      setTasks(Array.isArray(response.data) ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching task reports", error);
+      setTasks([]);
+    }
+  };
+  const fetchTasksForEmployee = async (employeeId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8081/tasksForEmployee/${employeeId}`
+      );
+      setTasksForSelectedEmployee(
+        Array.isArray(response.data) ? response.data : []
+      );
+    } catch (error) {
+      console.error("Error fetching tasks for employee", error);
+      setTasksForSelectedEmployee([]);
     }
   };
 
-  const months = [
-    "All",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+  useEffect(() => {
+    fetchEmployees();
+    fetchTasks();
+    fetchAllTasksForCSV();
+  }, []);
+
+  useEffect(() => {
+    if (employees.length > 0) {
+      setSelectedEmployee(employees[0].id);
+    }
+  }, [employees]);
+
+  useEffect(() => {
+    if (selectedEmployee) {
+      fetchTasksForEmployee(selectedEmployee);
+    }
+  }, [selectedEmployee]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    const date = new Date(dateString);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US", options);
+  };
+
+  // Filter tasks for the "Tasks Assigned to Each Employee" chart
+  const filteredTasks = tasks.filter((task) => {
+    if (!task.created_at) return false;
+    const taskDate = new Date(task.created_at);
+    const taskYear = taskDate.getFullYear().toString();
+    const taskMonth = taskDate.toLocaleString("default", { month: "long" });
+
+    const statusMatch =
+      taskStatusFilter === "All" ||
+      (taskStatusFilter === "Completed" &&
+        task.status?.toLowerCase() === "completed") ||
+      (taskStatusFilter === "Ongoing" &&
+        task.status?.toLowerCase() !== "completed");
+
+    return (
+      statusMatch &&
+      (filters.year === "All" || taskYear === filters.year) &&
+      (filters.month === "All" || taskMonth === filters.month)
+    );
+  });
+  const colors = [
+    "#3498db", // Blue
+    "#2ecc71", // Green
+    "#e74c3c", // Red
+    "#f39c12", // Yellow-Orange
+    "#9b59b6", // Purple
+    "#1abc9c", // Teal
+    "#e67e22", // Dark Orange
+    "#95a5a6", // Gray
   ];
 
-  const totalTasks = tasks.length;
+  const taskColors = [
+    "#3498db", // Blue
+    "#2ecc71", // Green
+    "#e74c3c", // Red
+    "#f39c12", // Yellow-Orange
+    "#9b59b6", // Purple
+    "#1abc9c", // Teal
+    "#e67e22", // Dark Orange
+    "#95a5a6", // Gray
+    "#c0392b", // Dark Red
+    "#8e44ad", // Deep Purple
+  ];
 
-  const currentMonth = new Date().getMonth() + 1; // Months are 0-indexed
-  const tasksThisMonth = tasks.filter((task) => {
-    const taskDate = new Date(task.due_date);
-    return (
-      taskDate.getMonth() + 1 === currentMonth &&
-      taskDate.getFullYear() === new Date().getFullYear()
-    );
-  }).length;
-
-  const filteredTasks = tasks.filter((task) => {
-    const taskDate = new Date(task.due_date);
-    const matchesYear =
-      selectedYear === "All" || taskDate.getFullYear() === selectedYear;
-    const matchesMonth =
-      selectedMonth === "All" ||
-      months[taskDate.getMonth() + 1] === selectedMonth;
-    const matchesStatus =
-      selectedStatus === "All" || task.status === selectedStatus;
-    const matchesProject =
-      selectedProject === "All" || task.project_id === Number(selectedProject);
-    return matchesYear && matchesMonth && matchesStatus && matchesProject;
-  });
-
-  const filteredTaskStatusCounts = ["Pending", "Ongoing", "Completed"].map(
-    (status) => ({
-      name: status,
-      value: tasks.filter((task) => {
-        const taskDate = new Date(task.due_date);
-        const matchesYear = taskDate.getFullYear() === statusYear;
-        const matchesMonth =
-          statusMonth === "All" || months[taskDate.getMonth()] === statusMonth;
-        return matchesYear && matchesMonth && task.status === status;
-      }).length,
-    })
-  );
-
-  const taskPaymentData = filteredTasks.map((task) => ({
-    name: task.task_name,
-    amount: task.amount,
+  // Map tasks for the "Tasks Assigned to Each Employee" chart
+  const taskData = filteredTasks.map((task, index) => ({
+    name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
+    tasks: task.task_count || 0,
+    color: taskColors[index % taskColors.length], // Assign color dynamically
   }));
+  const exportPDF = async () => {
+    const doc = new jsPDF("landscape", "mm", "a4");
+    doc.setFontSize(8);
+    doc.text(selectedReport, 10, 10);
+    let yPos = 20;
+    const chartElement = document.getElementById("chart-container");
+    if (chartElement) {
+      try {
+        // Capture chart as an image
+        const canvas = await html2canvas(chartElement);
+        const imgData = canvas.toDataURL("image/png");
 
-  const filteredTaskDueData = tasks
-    .filter(
-      (task) =>
-        new Date(task.due_date).getFullYear() === selectedYear &&
-        task.status !== "Completed"
-    )
-    .map((task) => ({
-      task_name: task.task_name,
-      due_date: new Date(task.due_date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-    }));
-
-  const today = new Date();
-  const overdueTasks = tasks.filter(
-    (task) => new Date(task.due_date) < today && task.status !== "Completed"
-  );
-
-  const overdueTasksByMonth = months.reduce((acc, month) => {
-    acc[month] = 0;
-    return acc;
-  }, {});
-
-  overdueTasks.forEach((task) => {
-    const monthIndex = new Date(task.due_date).getMonth();
-    const monthName = months[monthIndex];
-    overdueTasksByMonth[monthName] += 1;
-  });
-
-  const filteredTasksForProjects = tasks.filter((task) => {
-    return selectedStatus === "All" || task.status === selectedStatus;
-  });
-
-  const tasksPerProject = filteredTasksForProjects.reduce((acc, task) => {
-    const projectName =
-      projects[task.project_id] || `Project ${task.project_id}`;
-    acc[projectName] = (acc[projectName] || 0) + 1;
-    return acc;
-  }, {});
-
-  const projectTaskData = Object.keys(tasksPerProject).map((name) => ({
-    name,
-    value: tasksPerProject[name],
-  }));
-
-  const formatTotalTasksCSV = () => {
-    return [
-      ["Report Type", "Count"],
-      ["Total Tasks", totalTasks],
-      [], // empty row for spacing
-      ["Detailed Task Information"],
-      [
-        "Task Name",
-        "Project Name",
-        "Assigned Employee",
-        "Status",
-        "Due Date",
-        "Amount",
-      ],
-      ...tasks.map((task) => [
-        task.task_name,
-        projects[task.project_id] || `Project ${task.project_id}`,
-        employees[task.employee] || `Employee ${task.employee}`,
-        task.status,
-        task.due_date,
-        task.amount,
-      ]),
-    ];
-  };
-  const formatTasksThisMonthCSV = () => {
-    const currentMonthTasks = tasks.filter((task) => {
-      const taskDate = new Date(task.due_date);
-      return (
-        taskDate.getMonth() + 1 === currentMonth &&
-        taskDate.getFullYear() === new Date().getFullYear()
-      );
-    });
-
-    return [
-      ["Report Type", "Count"],
-      ["Tasks This Month", tasksThisMonth],
-      [], // empty row for spacing
-      ["Tasks Due This Month"],
-      [
-        "Task Name",
-        "Project Name",
-        "Assigned Employee",
-        "Status",
-        "Due Date",
-        "Amount",
-      ],
-      ...currentMonthTasks.map((task) => [
-        task.task_name,
-        projects[task.project_id] || `Project ${task.project_id}`,
-        employees[task.employee] || `Employee ${task.employee}`,
-        task.status,
-        task.due_date,
-        task.amount,
-      ]),
-    ];
-  };
-  const formatTaskbyStatusCSV = () => {
-    let csvData = [];
-
-    const status = ["Ongoing", "Completed"];
-
-    status.forEach((status) => {
-      const statusTasks = tasks.filter((t) => t.status === status);
-
-      if (statusTasks.length > 0) {
-        csvData.push([status]);
-        csvData.push([
-          "Task Name",
-          "Project Name",
-          "Assigned Employee",
-          "Miscellaneous",
+        // Add image to the PDF
+        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
+        yPos += 90; // Adjust position for the table
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
+    }
+    if (selectedReport === "Total Employees") {
+      const headers = [
+        [
+          "id",
+          "First Name",
+          "Last Name",
+          "Address",
+          "Mobile Number",
+          "Email",
           "Status",
-          "Task Fee",
-          "Total Amount",
-          "Task Due",
-          "Task Completed",
-          "Date Created",
-        ]);
-
-        statusTasks.forEach((t) => {
-          csvData.push([
-            t.task_name,
-            projects[t.project_id] || `Project ${t.project_id}`,
-            employees[t.employee] || `Employee ${t.employee}`,
-            t.miscellaneous,
-            t.status,
-            t.task_fee,
-            t.amount,
-            t.due_date,
-            t.actual_finish,
-            t.created_at,
-          ]);
-        });
-
-        csvData.push([]); // Blank row for spacing
-      }
-    });
-
-    return csvData;
-  };
-  const formatTasksPerProjectCSV = () => {
-    let csvData = [];
-
-    // Group tasks by project
-    const tasksByProject = {};
-    tasks.forEach((task) => {
-      const projectName =
-        projects[task.project_id] || `Project ${task.project_id}`;
-      if (!tasksByProject[projectName]) {
-        tasksByProject[projectName] = [];
-      }
-      tasksByProject[projectName].push(task);
-    });
-
-    // If a specific project is selected for export, filter to only that project
-    const projectsToExport =
-      exportProjectSelection === "All"
-        ? Object.keys(tasksByProject)
-        : [exportProjectSelection];
-
-    // Loop through selected projects and their tasks
-    projectsToExport.forEach((projectName) => {
-      const projectTasks = tasksByProject[projectName];
-      if (!projectTasks) return; // Skip if no tasks for this project
-
-      csvData.push([projectName]); // Add project name as a row header
-
-      csvData.push([
-        "Task Name",
-        "Assigned Employee",
-        "Task Fee",
-        "Status",
-        "Total Amount",
-        "Task Due",
-        "Task Completed",
-        "Date Created",
+          "Birthday",
+          "Age",
+          "gender",
+          "Role",
+          "Date Updated",
+        ],
+      ];
+      const data = employees.map((e) => [
+        e.id,
+        e.firstName,
+        e.lastName,
+        e.address,
+        e.mobile_number,
+        e.email_add,
+        e.status,
+        e.birthday,
+        e.age,
+        e.gender,
+        e.role,
+        e.date_paid,
+        e.modified_date,
       ]);
 
-      projectTasks.forEach((task) => {
-        csvData.push([
-          task.task_name,
-          employees[task.employee] || `Employee ${task.employee}`,
-          task.task_fee,
-          task.status,
-          task.amount,
-          task.due_date,
-          task.date_paid || "Not Paid",
-          task.created_at,
-        ]);
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
       });
+    }
+    if (selectedReport === "Tasks Assigned to Each Employee") {
+      const tasksToExport =
+        selectedEmployee === "All"
+          ? allTasksForCSV
+          : allTasksForCSV.filter(
+              (task) => task.employeeId == selectedEmployee
+            );
 
-      csvData.push([]); // Blank row for spacing
-    });
+      const tasksByEmployee = tasksToExport.reduce((acc, task) => {
+        const key = task.employeeId;
+        if (!acc[key]) {
+          acc[key] = {
+            name: `${task.firstName} ${task.lastName}`,
+            tasks: [],
+          };
+        }
+        if (task.task_name) {
+          acc[key].tasks.push(task);
+        }
+        return acc;
+      }, {});
 
-    return csvData;
+      let yPos = 20;
+      Object.values(tasksByEmployee).forEach((employee) => {
+        doc.text(employee.name, 10, yPos);
+        yPos += 10;
+        autoTable(doc, {
+          startY: yPos,
+          head: [["Task Name", "Fee", "Total Amount", "Status", "Due Date"]],
+          body: employee.tasks.map((task) => [
+            task.task_name || "N/A",
+            task.task_fee,
+            task.amount,
+            task.status || "N/A",
+            task.due_date || "N/A",
+          ]),
+          styles: { fontSize: 10 },
+        });
+        yPos = doc.lastAutoTable.finalY + 10;
+      });
+    }
+    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
-  const formatTaskDueCSV = () => {
-    let csvData = [];
+  const formatTasksAssignedtoEachEmployeeCSV = () => {
+    let csvData = [["Employee", "Task", "Fee", "Total", "Status", "Due Date"]];
 
-    // Group tasks by Year & Month
-    const tasksByMonthYear = tasks.reduce((acc, task) => {
-      const taskDate = new Date(task.due_date);
-      const year = taskDate.getFullYear();
-      const month = months[taskDate.getMonth() + 1]; // Get month name
+    // Ensure filtering applies correctly
+    let tasksToExport =
+      selectedEmployee && selectedEmployee !== "All"
+        ? allTasksForCSV.filter((task) => task.employeeId == selectedEmployee)
+        : allTasksForCSV;
 
-      const key = `${month} ${year}`;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(task);
+    // Group tasks by employee
+    const tasksByEmployee = tasksToExport.reduce((acc, task) => {
+      if (!task.task_name) return acc; // Skip tasks with no name
+
+      const key = task.employeeId;
+      if (!acc[key]) {
+        acc[key] = {
+          name: `${task.firstName} ${task.lastName}`,
+          tasks: [],
+        };
+      }
+      acc[key].tasks.push(task);
       return acc;
     }, {});
 
-    // Loop through each Month-Year and format CSV
-    Object.keys(tasksByMonthYear).forEach((monthYear) => {
-      csvData.push([monthYear]); // Section header
-      csvData.push([
-        "Task Name",
-        "Project Name",
-        "Assigned Employee",
-        "Miscellaneous",
-        "Status",
-        "Task Fee",
-        "Total Amount",
-        "Due Date",
-        "Actual Finish",
-        "Created At",
-      ]); // Column headers
+    // Generate CSV data
+    Object.values(tasksByEmployee).forEach((employee) => {
+      csvData.push([employee.name, "", "", ""]); // Employee row
 
-      tasksByMonthYear[monthYear].forEach((task) => {
+      employee.tasks.forEach((task) => {
         csvData.push([
-          task.task_name,
-          projects[task.project_id] || `Project ${task.project_id}`,
-          employees[task.employee] || `Employee ${task.employee}`,
-          task.miscellaneous || "N/A",
-          task.status,
-          task.task_fee || 0,
-          task.amount || 0,
-          task.due_date,
-          task.actual_finish || "N/A",
-          task.created_at,
+          "", // Empty for indentation
+          task.task_name || "N/A",
+          task.task_fee || "N/A",
+          task.amount || "N/A",
+          task.status || "N/A",
+          task.due_date ? formatDate(task.due_date) : "N/A",
         ]);
       });
 
-      csvData.push([]); // Blank row for spacing
+      csvData.push(["", "", "", ""]); // Empty row for spacing
     });
-
-    return csvData;
-  };
-  const formatTaskPaymentStatusCSV = () => {
-    let csvData = [];
-
-    // Group tasks into Paid and Not Paid
-    const notPaidTasks = tasks.filter((task) => task.status !== "Completed");
-    const paidTasks = tasks.filter((task) => task.status === "Completed");
-
-    if (notPaidTasks.length > 0) {
-      csvData.push(["Not Paid"]); // Section title
-      csvData.push([
-        "task_name",
-        "projectName",
-        "miscellaneous",
-        "task_fee",
-        "amount",
-        "due_date",
-      ]); // Headers
-
-      notPaidTasks.forEach((task) => {
-        csvData.push([
-          task.task_name,
-          projects[task.project_id] || `Project ${task.project_id}`,
-          task.miscellaneous || "N/A",
-          task.task_fee || 0,
-          task.amount || 0,
-          task.due_date,
-        ]);
-      });
-
-      csvData.push([]); // Blank row for spacing
-    }
-
-    if (paidTasks.length > 0) {
-      csvData.push(["Paid"]); // Section title
-      csvData.push([
-        "task_name",
-        "projectName",
-        "miscellaneous",
-        "task_fee",
-        "amount",
-        "due_date",
-      ]); // Headers
-
-      paidTasks.forEach((task) => {
-        csvData.push([
-          task.task_name,
-          projects[task.project_id] || `Project ${task.project_id}`,
-          task.miscellaneous || "N/A",
-          task.task_fee || 0,
-          task.amount || 0,
-          task.due_date,
-        ]);
-      });
-
-      csvData.push([]); // Blank row for spacing
-    }
 
     return csvData;
   };
 
   let exportCSVData = [];
 
-  if (selectedReport === "Total Tasks") {
-    exportCSVData = formatTotalTasksCSV();
-  } else if (selectedReport === "Tasks This Month") {
-    exportCSVData = formatTasksThisMonthCSV();
-  } else if (selectedReport === "Task Status") {
-    exportCSVData = formatTaskbyStatusCSV();
-  } else if (selectedReport === "Tasks Per Project") {
-    exportCSVData = formatTasksPerProjectCSV();
-  } else if (selectedReport === "Task Due") {
-    exportCSVData = formatTaskDueCSV();
-  } else if (selectedReport === "Task Payment") {
-    exportCSVData = formatTaskPaymentStatusCSV();
+  if (selectedReport === "Tasks Assigned to Each Employee") {
+    exportCSVData = formatTasksAssignedtoEachEmployeeCSV();
   } else {
-    exportCSVData = projects;
+    exportCSVData = employees;
   }
 
-  const exportPDF = async () => {
-    const doc = new jsPDF("landscape", "mm", "a4");
-    doc.setFontSize(10);
-    doc.text(selectedReport, 10, 10);
-
-    let yPos = 20;
-
-    const chartElement = document.getElementById("chart-container");
-
-    if (chartElement) {
-      try {
-        const canvas = await html2canvas(chartElement);
-        const imgData = canvas.toDataURL("image/png");
-        doc.addImage(imgData, "PNG", 10, yPos, 120, 80);
-        yPos += 90;
-      } catch (error) {
-        console.error("Error capturing chart:", error);
-      }
-    }
-    if (selectedReport === "Total Tasks") {
-      doc.text("Total Tasks Report", 10, 10);
-
-      // Add summary section
-      autoTable(doc, {
-        startY: 20,
-        head: [["Metric", "Count"]],
-        body: [["Total Tasks", totalTasks]],
-        styles: {
-          fontSize: 12,
-          cellPadding: 6,
-          halign: "center",
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-      });
-
-      // Add detailed tasks table
-      doc.text("All Tasks List", 10, doc.lastAutoTable.finalY + 15);
-
-      const headers = [
-        "Task Name",
-        "Project",
-        "Assigned To",
-        "Status",
-        "Due Date",
-        "Amount",
-      ];
-
-      const data = tasks.map((task) => [
-        task.task_name,
-        projects[task.project_id] || `Project ${task.project_id}`,
-        employees[task.employee] || `Employee ${task.employee}`,
-        task.status,
-        new Date(task.due_date).toLocaleDateString(),
-        `₱${task.amount || 0}`,
-      ]);
-
-      autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 20,
-        head: [headers],
-        body: data,
-        styles: {
-          fontSize: 9,
-          cellPadding: 3,
-          overflow: "linebreak",
-        },
-        headStyles: {
-          fillColor: [52, 152, 219],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-        columnStyles: {
-          0: { cellWidth: 40 }, // Task Name
-          1: { cellWidth: 30 }, // Project
-          2: { cellWidth: 30 }, // Assigned To
-          3: { cellWidth: 20 }, // Status
-          4: { cellWidth: 25 }, // Due Date
-          5: { cellWidth: 20 }, // Amount
-        },
-      });
-
-      doc.save("total_tasks_report.pdf");
-      return;
-    }
-    if (selectedReport === "Tasks This Month") {
-      doc.text("Tasks This Month Report", 10, 10);
-      const currentMonthTasks = tasks.filter((task) => {
-        const taskDate = new Date(task.due_date);
-        return (
-          taskDate.getMonth() + 1 === currentMonth &&
-          taskDate.getFullYear() === new Date().getFullYear()
-        );
-      });
-      autoTable(doc, {
-        startY: 20,
-        head: [["Metric", "Count"]],
-        body: [["Tasks This Month", tasksThisMonth]],
-        styles: {
-          fontSize: 12,
-          cellPadding: 6,
-          halign: "center",
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-      });
-
-      // Add detailed tasks table
-      doc.text("Tasks Due This Month", 10, doc.lastAutoTable.finalY + 15);
-
-      const headers = [
-        "Task Name",
-        "Project",
-        "Assigned To",
-        "Status",
-        "Due Date",
-        "Amount",
-      ];
-
-      const data = currentMonthTasks.map((task) => [
-        task.task_name,
-        projects[task.project_id] || `Project ${task.project_id}`,
-        employees[task.employee] || `Employee ${task.employee}`,
-        task.status,
-        new Date(task.due_date).toLocaleDateString(),
-        `₱${task.amount || 0}`,
-      ]);
-
-      autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 20,
-        head: [headers],
-        body: data,
-        styles: {
-          fontSize: 9,
-          cellPadding: 3,
-          overflow: "linebreak",
-        },
-        headStyles: {
-          fillColor: [52, 152, 219],
-          textColor: 255,
-          fontStyle: "bold",
-        },
-        columnStyles: {
-          0: { cellWidth: 40 },
-          1: { cellWidth: 30 },
-          2: { cellWidth: 30 },
-          3: { cellWidth: 20 },
-          4: { cellWidth: 25 },
-          5: { cellWidth: 20 },
-        },
-      });
-
-      doc.save("tasks_this_month_report.pdf");
-      return;
-    }
-    if (selectedReport === "Task Status") {
-      const statuses = ["Ongoing", "Completed"];
-      let hasData = false;
-
-      statuses.forEach((status) => {
-        const taskStatus = tasks.filter((t) => t.status === status);
-
-        if (taskStatus.length > 0) {
-          hasData = true;
-          doc.setFontSize(12);
-          doc.text(status, 10, yPos);
-          yPos += 10;
-
-          const headers = [
-            [
-              "Task Name",
-              "Project Name",
-              "Assigned Employee",
-              "Miscellaneous",
-              "Status",
-              "Task Fee",
-              "Total Amount",
-              "Task Due",
-              "Task Completed",
-              "Date Created",
-            ],
-          ];
-          const data = taskStatus.map((t) => [
-            t.task_name,
-            projects[t.project_id] || `Project ${t.project_id}`,
-            employees[t.employee] || `Employee ${t.employee}`,
-            t.miscellaneous,
-            t.status,
-            t.task_fee,
-            t.amount,
-            t.due_date,
-            t.actual_finish,
-            t.created_at,
-          ]);
-
-          autoTable(doc, {
-            startY: yPos,
-            head: headers,
-            body: data,
-            styles: { fontSize: 8 },
-          });
-          yPos = doc.lastAutoTable.finalY + 10;
-        }
-      });
-
-      if (!hasData) {
-        doc.text("No tasks found for the selected status.", 10, yPos);
-      }
-    }
-    if (selectedReport === "Tasks Per Project") {
-      const tasksByProject = {};
-
-      // Group tasks by project
-      tasks.forEach((task) => {
-        const projectName =
-          projects[task.project_id] || `Project ${task.project_id}`;
-        if (!tasksByProject[projectName]) {
-          tasksByProject[projectName] = [];
-        }
-        tasksByProject[projectName].push(task);
-      });
-
-      let hasData = false;
-
-      // Determine which projects to include based on selection
-      const projectsToExport =
-        exportProjectSelection === "All"
-          ? Object.keys(tasksByProject)
-          : [exportProjectSelection];
-
-      // Iterate over selected projects and generate table
-      projectsToExport.forEach((projectName) => {
-        const projectTasks = tasksByProject[projectName];
-        if (!projectTasks || projectTasks.length === 0) return;
-
-        hasData = true;
-        doc.setFontSize(12);
-        doc.text(`Project: ${projectName}`, 10, yPos);
-        yPos += 6;
-
-        const headers = [
-          "Task Name",
-          "Assigned Employee",
-          "Status",
-          "Task Fee",
-          "Total Amount",
-          "Task Due",
-          "Task Completed",
-          "Date Created",
-        ];
-
-        // Format task data for the table
-        const data = projectTasks.map((t) => [
-          t.task_name,
-          employees[t.employee] || `Employee ${t.employee}`,
-          t.status,
-          t.task_fee ? `₱${t.task_fee}` : "N/A",
-          t.amount ? `₱${t.amount}` : "N/A",
-          t.due_date,
-          t.date_paid || "Not Paid",
-          t.created_at,
-        ]);
-
-        autoTable(doc, {
-          startY: yPos,
-          head: [headers],
-          body: data,
-          styles: { fontSize: 8 },
-        });
-
-        yPos = doc.lastAutoTable.finalY + 10;
-      });
-
-      if (!hasData) {
-        doc.text("No tasks found for the selected project.", 10, yPos);
-      }
-    }
-    if (selectedReport === "Task Due") {
-      const tasksByMonthYear = tasks.reduce((acc, task) => {
-        const taskDate = new Date(task.due_date);
-        const year = taskDate.getFullYear();
-        const month = months[taskDate.getMonth() + 1]; // Get month name
-
-        const key = `${month} ${year}`;
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(task);
-        return acc;
-      }, {});
-
-      let hasData = false;
-
-      Object.keys(tasksByMonthYear).forEach((monthYear) => {
-        hasData = true;
-        doc.setFontSize(12);
-        doc.text(`Tasks Due in: ${monthYear}`, 10, yPos);
-        yPos += 6;
-
-        const headers = [
-          [
-            "Task Name",
-            "Project Name",
-            "Assigned Employee",
-            "Miscellaneous",
-            "Status",
-            "Task Fee",
-            "Total Amount",
-            "Due Date",
-            "Actual Finish",
-            "Created At",
-          ],
-        ];
-
-        const data = tasksByMonthYear[monthYear].map((t) => [
-          t.task_name,
-          projects[t.project_id] || `Project ${t.project_id}`,
-          employees[t.employee] || `Employee ${t.employee}`,
-          t.miscellaneous || "N/A",
-          t.status,
-          t.task_fee || 0,
-          t.amount || 0,
-          t.due_date,
-          t.actual_finish || "N/A",
-          t.created_at,
-        ]);
-
-        autoTable(doc, {
-          startY: yPos,
-          head: headers,
-          body: data,
-          styles: { fontSize: 8 },
-        });
-
-        yPos = doc.lastAutoTable.finalY + 10;
-      });
-
-      if (!hasData) {
-        doc.text("No tasks found for any due date.", 10, yPos);
-      }
-    }
-    if (selectedReport === "Task Payment") {
-      const notPaidTasks = tasks.filter((t) => t.status !== "Completed"); // Not paid tasks
-      const paidTasks = tasks.filter((t) => t.status === "Completed"); // Paid tasks
-
-      const formatTasks = (taskList) =>
-        taskList.map((t) => [
-          t.task_name,
-          projects[t.project_id] || `Project ${t.project_id}`,
-          formatMiscellaneous(t.miscellaneous),
-          t.task_fee ? `₱${t.task_fee}` : "N/A",
-          t.amount ? `₱${t.amount}` : "N/A",
-          t.due_date || "N/A",
-        ]);
-
-      const headers = [
-        [
-          "Task Name",
-          "Project Name",
-          "Miscellaneous",
-          "Task Fee",
-          "Amount",
-          "Due Date",
-        ],
-      ];
-
-      let hasData = false;
-      doc.setFontSize(12);
-
-      if (notPaidTasks.length > 0) {
-        hasData = true;
-        doc.text("Not Paid", 10, yPos);
-        yPos += 6;
-
-        autoTable(doc, {
-          startY: yPos,
-          head: headers,
-          body: formatTasks(notPaidTasks),
-          styles: { fontSize: 8 },
-        });
-
-        yPos = doc.lastAutoTable.finalY + 10;
-      }
-
-      if (paidTasks.length > 0) {
-        hasData = true;
-        doc.text("Paid", 10, yPos);
-        yPos += 6;
-
-        autoTable(doc, {
-          startY: yPos,
-          head: headers,
-          body: formatTasks(paidTasks),
-          styles: { fontSize: 8 },
-        });
-
-        yPos = doc.lastAutoTable.finalY + 10;
-      }
-
-      if (!hasData) {
-        doc.text("No tasks found for Task Payment.", 10, yPos);
-      }
-    }
-    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
-  };
-
-  const formatMiscellaneous = (miscData) => {
-    try {
-      const parsed = JSON.parse(miscData);
-      return parsed.map((item) => `${item.name}: P${item.fee}`).join(", ");
-    } catch (error) {
-      return "N/A";
-    }
-  };
-
   return (
-    <div className="tasks-p-4">
-      <div className="mt-4 flex space-x-4">
+    <div className="employee-p-4">
+      <div className="filter-container">
         <select
-          className="bg-gray-200 text-black px-4 py-2 rounded"
+          className="border p-2"
           value={selectedReport}
           onChange={(e) => setSelectedReport(e.target.value)}
         >
           <option value="">Select Report Type</option>
-          <option value="Total Tasks">Total Tasks</option>
-          <option value="Tasks This Month">Tasks This Month</option>
-          <option value="Task Status">Task Status</option>
-          <option value="Tasks Per Project">Tasks Per Project</option>
-          <option value="Task Due">Task Due</option>
-          <option value="Task Payment">Task Payment</option>
+          <option value="Total Employees">Total Employees</option>
+          <option value="Tasks Assigned to Each Employee">
+            Tasks Assigned to Each Employee
+          </option>
         </select>
+      </div>
 
-        {selectedReport === "Tasks Per Project" && (
+      {selectedReport === "Tasks Assigned to Each Employee" && (
+        <div className="mb-4">
           <select
-            className="bg-gray-200 text-black px-4 py-2 rounded"
-            value={exportProjectSelection}
-            onChange={(e) => setExportProjectSelection(e.target.value)}
+            className="border p-2"
+            value={selectedEmployee}
+            onChange={(e) => setSelectedEmployee(e.target.value)}
           >
-            <option value="All">All Projects</option>
-            {Object.entries(projects).map(([id, name]) => (
-              <option key={id} value={name}>
-                {name}
+            <option value="All">All</option>
+            {employees.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.firstName} {emp.lastName}
               </option>
             ))}
           </select>
-        )}
+        </div>
+      )}
 
-        {selectedReport && (
-          <>
-            <CSVLink
-              data={exportCSVData}
-              filename={`${selectedReport
-                .replace(/\s+/g, "_")
-                .toLowerCase()}.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export CSV
-            </CSVLink>
-            <button
-              onClick={exportPDF}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Export PDF
-            </button>
-          </>
-        )}
-      </div>
-      <div className="summary-container flex justify-between mb-6 p-4 bg-gray-100 rounded-lg">
-        <div className="summary-box bg-white p-6 rounded-lg shadow-md text-center w-1/2 mr-4">
-          <h3 className="summary-title text-lg font-semibold text-gray-700">
-            Total Tasks
-          </h3>
-          <p className="summary-value text-3xl font-bold text-blue-600 mt-2">
-            {totalTasks}
-          </p>
-        </div>
-        <div className="summary-box bg-white p-6 rounded-lg shadow-md text-center w-1/2">
-          <h3 className="summary-title text-lg font-semibold text-gray-700">
-            Tasks This Month
-          </h3>
-          <p className="summary-value text-3xl font-bold text-green-600 mt-2">
-            {tasksThisMonth}
-          </p>
-        </div>
-      </div>
-      <div className="tasks-grid-container">
-        <div className="tasks-graph-container scrollable-chart">
-          <h3>Task Status</h3>
-          <p>
-            Displays the distribution of tasks based on their current status:
-            Pending, Ongoing, or Completed.
-          </p>
-          <PieChart width={500} height={400}>
-            <Pie
-              data={filteredTaskStatusCounts}
-              dataKey="value"
-              nameKey="name"
-              cx="75%"
-              cy="50%"
-              outerRadius={100}
-            >
-              {filteredTaskStatusCounts.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={["#8884d8", "#82ca9d", "#ff8042"][index % 3]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </div>
-
-        <div className="tasks-graph-container scrollable-chart">
-          <h3>Tasks Per Project</h3>
-          <p>Illustrates the number of tasks assigned to each project.</p>
-          <select
-            className="mb-4 p-2 border rounded"
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
+      {selectedReport && (
+        <div className="flex gap-4">
+          <CSVLink
+            data={exportCSVData}
+            filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}_${
+              exportOption === "all" ? "all" : selectedEmployee
+            }.csv`}
+            className="bg-green-500 text-white px-4 py-2 rounded"
           >
-            <option value="All">All Status</option>
-            <option value="Ongoing">Ongoing</option>
+            Export CSV
+          </CSVLink>
+          <button
+            onClick={exportPDF}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Export PDF
+          </button>
+        </div>
+      )}
+
+      <div className="employee-summary-card">
+        Total Employees
+        <p>{employees.length}</p>
+      </div>
+      <div className="employee-graph-container">
+        <div className="employee-graphs">
+          <h3>Tasks Assigned to Each Employee</h3>
+          <p className="graph-description">
+            Shows the number of tasks assigned to employees.
+          </p>
+          <select
+            className="employee-filter-each"
+            value={filters.year}
+            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          >
+            <option value="All">Year</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+          </select>
+          <select
+            className="border p-2"
+            value={filters.month}
+            onChange={(e) => setFilters({ ...filters, month: e.target.value })}
+          >
+            <option value="All">Month</option>
+            {[
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+            ].map((month) => (
+              <option key={month} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border p-2 mb-4"
+            value={taskStatusFilter}
+            onChange={(e) => setTaskStatusFilter(e.target.value)}
+          >
+            <option value="All">Task</option>
             <option value="Completed">Completed</option>
+            <option value="Ongoing">Ongoing</option>
           </select>
 
-          <BarChart width={1100} height={400} data={projectTaskData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" angle={-10} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="value" fill="#82ca9d" name="Task Count" />
-          </BarChart>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart layout="vertical" data={taskData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" width={150} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="tasks">
+                {taskData.map((entry, index) => (
+                  <Cell key={index} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-
-        <div className="tasks-graph-container scrollable-chart">
-          <h3>Task Due Dates</h3>
-          <p>
-            Shows the upcoming due dates of tasks, helping in tracking
-            deadlines.
-          </p>
-          <LineChart width={1000} height={450} data={filteredTaskDueData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="task_name" angle={-10}/>
-            <YAxis dataKey="due_date" type="category" />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="due_date"
-              stroke="#FF0000"
-              name="Due Date"
-            />
-          </LineChart>
-        </div>
-
-        <div className="tasks-graph-container scrollable-chart">
-          <div className="mb-4">
-            <h3>Task Payment</h3>
-            <p>Displays the total payments associated with each task.</p>
-            <label className="mr-2">Filter by Status:</label>
+        <div className="employee-graphs">
+          <h3>Tasks for selected Employee</h3>
+          <p className="graph-description">
+            Displays tasks for the selected employee.
+          </p>{" "}
+          <div className="space-x-4 mb-4">
             <select
-              className="p-2 border rounded"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="employee-filter-each"
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
             >
-              <option value="All">All</option>
-              <option value="Completed">Paid (Completed)</option>
-              <option value="Ongoing">Not Paid (Ongoing)</option>
-            </select>
-            <label className="mr-2">Filter by Project:</label>
-            <select
-              className="p-2 border rounded"
-              value={selectedProject}
-              onChange={(e) => setSelectedProject(e.target.value)}
-            >
-              <option value="All">All Projects</option>
-              {Object.entries(projects).map(([id, name]) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
+              {employees.map((emp) => (
+                <option
+                  key={emp.id}
+                  value={emp.id}
+                >{`${emp.firstName} ${emp.lastName}`}</option>
               ))}
             </select>
-          </div>
 
-          <BarChart width={1100} height={400} data={taskPaymentData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" angle={-10} />
-            <YAxis />
-            <Tooltip formatter={(value) => [`Amount: P${value}`]} />
-            <Legend />
-            <Bar dataKey="amount" fill="#FF0000" name="Amount" />
-          </BarChart>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                layout="vertical"
+                data={tasksForSelectedEmployee}
+                margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis dataKey="task_name" type="category" width={150} />
+                <Tooltip
+                  content={({ payload }) => {
+                    if (payload && payload.length) {
+                      const task = payload[0].payload;
+                      return (
+                        <div className="bg-white p-2 border rounded shadow">
+                          <p className="text-xs text-gray-600">
+                            Status: {task.status}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            Amount: {task.amount}
+                          </p>
+                          <p className="text-xs text-gray-600">
+                            Task Due: {task.due_date}
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Legend />
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis dataKey="task_name" type="category" width={150} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="amount">
+                  {tasksForSelectedEmployee.map((_, index) => (
+                    <Cell key={index} fill={colors[index % colors.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default TaskReports;
+export default EmployeeReports;
