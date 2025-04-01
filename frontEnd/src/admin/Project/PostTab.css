@@ -45,7 +45,7 @@
   height: 100%;
 }
 
-.project-name-container{
+.project-name-container {
   text-align: left;
   margin-top: 20px;
 }
@@ -85,8 +85,6 @@
 
 .create-task-button:hover 
   background-color: #3a5b84; */
- 
-
 
 /* Task Table Container */
 .table-container {
@@ -200,14 +198,11 @@
 }
 */
 
-
-
 .create-button-container {
   display: flex;
   justify-content: flex-end; /* Align to the right */
   margin-top: 20px;
 }
-
 
 .task-details {
   padding: 20px;
@@ -228,7 +223,6 @@
   border-bottom: 1px dashed #ccc;
 }*/
 
-
 .align-right {
   text-align: right;
 }
@@ -241,7 +235,6 @@
   border-bottom: none;
   padding-bottom: 0;
 }
-
 
 .task-detail-row:nth-child(3) {
   border-bottom: none;
@@ -292,11 +285,10 @@
   background-color: #ddd;
 }
 
-
 .total-amount-container {
   display: flex;
-  align-items: center; 
-  margin-bottom: -40px; 
+  align-items: center;
+  margin-bottom: -40px;
   margin-right: 225px;
   margin-top: 20px;
   gap: 10px;

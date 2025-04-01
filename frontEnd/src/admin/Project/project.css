@@ -2,19 +2,20 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 122px; 
-  display: inline-block; 
+  max-width: 122px;
+  display: inline-block;
 }
 
 .truncate:hover {
   overflow: visible;
-  white-space: normal; 
-  z-index: 1; 
+  white-space: normal;
+  z-index: 1;
 }
 
 .project-management-page {
   height: 100vh;
   /*position: relative;*/
+  background-color: rgb(248, 248, 248);
 }
 .content-project {
   margin-left: 100px;
@@ -39,21 +40,15 @@ h1 {
   padding: 0;
 }
 
-
-
-
-
 .action-container {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
   background-color: transparent;
   position: absolute;
-  right: 0; 
+  right: 0;
   margin-right: 50px;
   margin-top: 20px;
-  
-  
 }
 
 .create-button {
@@ -75,8 +70,5 @@ h1 {
 }
 
 .icon {
-  font-size: 14px; 
+  font-size: 14px;
 }
-
-
-

@@ -15,45 +15,94 @@
   margin-top: 20px;
 }
 
+/*-------------------------------------------------------*/
 .list-view-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* This ensures left and right items stay at edges */
   align-items: center;
   position: relative;
   z-index: 100;
   margin-bottom: 20px;
-}
-
-.toggle-buttons {
-  display: flex;
-  gap: 10px;
+  width: 100%; /* Ensure it takes full width */
+  margin-top: 10px;
 }
 
 .create-project-btn {
-  background-color: #3b4f67;
+  top: auto;
+  background-color: #716cff;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
+  padding: 16px 32px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-right: 10px;
   font-size: 20px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+  height: 56px;
+  margin-left: auto;
+  margin-top: 15px;
 }
 
 .create-project-btn:hover {
-  background-color: #2c3a4d;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #716cff;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.create-project-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .create-project-btn .icon {
   font-size: 20px;
+  transition: transform 0.3s ease;
 }
+
+.create-project-btn:hover .icon {
+  transform: scale(1.15);
+}
+
+/* Ripple effect */
+.create-project-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.create-project-btn:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
+
+/*-----------------------------------------------------------------------*/
 
 .title-project {
   position: relative;
@@ -75,10 +124,6 @@
   max-height: 687px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
-
-.right-align {
-  text-align: right;
 }
 
 .center-align {
@@ -119,47 +164,35 @@
 }
 
 /* Keep your existing number alignment */
-.project-list-table td:nth-child(5),
 .project-list-table td:nth-child(6),
-.project-list-table td:nth-child(7) {
+.project-list-table td:nth-child(7),
+.project-list-table td:nth-child(8) {
   text-align: right;
   padding-right: 20px;
   font-family: "Roboto Mono", monospace;
 }
 
-/* Optional: Add subtle hover effect for rows */
+.project-list-table td:nth-child(9) {
+  text-align: center;
+}
+
+.project-list-table th:nth-child(9) {
+  text-align: center;
+}
+
+.project-list-table th:nth-child(6),
+.project-list-table th:nth-child(7),
+.project-list-table th:nth-child(8) {
+  text-align: right;
+  padding-right: 20px;
+}
+
 .project-list-table tr:hover td {
   background-color: rgb(226, 226, 226);
 }
 
-.layout-toggle-icons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  align-items: center;
-  justify-content: flex-end;
-  cursor: pointer;
-  padding-right: 50px;
-}
-
-.layout-toggle-icons svg {
-  font-size: 30px;
-  color: #333;
-  cursor: pointer;
-}
-
-/* Grid view styles */
-.grid-view {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.grid-item {
-  background: #f1f1f1;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.num-column {
+  font-weight: bold;
 }
 
 .project-list-table {
@@ -203,7 +236,6 @@
   width: auto;
 }
 
-/* Custom style to remove the default dropdown icon */
 .status-dropdown::-ms-expand {
   display: none; /* For Internet Explorer */
 }
@@ -336,59 +368,142 @@
   color: white;
 }
 
-/* eto sa mga button sa taas ng table */
-.sorting-button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  padding: 0.5rem 0;
-  width: 100%;
-  margin-top: 80px;
-}
+/* total projects, ongoing, pending, completed, progress------------------------------------- */
 
-/* Status counters */
 .status-counters {
   display: flex;
   gap: 1.5rem;
   align-items: center;
   font-size: 0.9rem;
+  top: auto;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: auto;
+
+  margin-right: auto;
 }
 
 .status-counter {
   display: flex;
   align-items: center;
-  color: #3b4f67;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: none;
+  transition: all 0.3s ease;
+}
+
+.status-counter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .counter-label {
   font-weight: 500;
-  margin-right: 0.3rem;
+  margin-right: 0.5rem;
+  color: #64748b; /*yung text*/
+}
+
+.status-value-list {
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Specific status colors */
+.status-counter:nth-child(1) .status-value-list {
+  /* Total Projects */
+  color: #334155;
+}
+
+.status-counter:nth-child(2) .status-value-list {
+  /* Ongoing */
+  color: #3b82f6;
+}
+
+.status-counter:nth-child(3) .status-value-list {
+  /* Pending */
+  color: #f59e0b;
+}
+
+.status-counter:nth-child(4) .status-value-list {
+  /* Completed */
+  color: #10b981;
 }
 
 .progress-counter {
   display: flex;
   align-items: center;
-  font-weight: 600;
-  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
 }
 
-.progress-label,
-.status-counter {
-  color: #3b4f67;
+.progress-counter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.progress-value,
-.status-value-list {
-  color: #6685ab; /* Green icon */
-  margin-right: 0.3rem;
-  font-weight: 600;
+.progress-label {
+  font-weight: 500;
+  color: #64748b;
 }
+
+.progress-value {
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.progress-bar-container {
+  width: 120px;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+}
+
+/* Animation for progress bar */
+.progress-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+/*----------------------------------------------------------------------------*/
 
 /* Action buttons */
 .action-list-buttons {
   display: flex;
   gap: 0.8rem;
+  margin-left: auto;
 }
 
 .action-button {
@@ -396,15 +511,15 @@
   align-items: center;
   padding: 0.5rem 1rem;
   border: none;
-  background: white;
+  background: none;
   cursor: pointer;
-  color: #333;
+  color: #3b4f67;
   transition: color 0.2s ease;
+  font-weight: 500;
 }
 
-/* Change ONLY the text color on hover */
 .action-button:hover {
-  background: white;
+  background: none;
   color: #4070f4;
 }
 
@@ -416,7 +531,18 @@
   position: relative;
 }
 
-/* Dropdown styles (keep your existing ones) */
+/* eto sa mga button sa taas ng table */
+.sorting-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0.5rem 0;
+  width: 100%;
+  margin-top: -10px;
+}
+
+/* Dropdown styles */
 .sorting-dropdown {
   position: absolute;
   right: 0;
@@ -464,62 +590,6 @@
   font-size: 15px;
 }
 
-.progress-counter {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #4070f4;
-  gap: 0.75rem;
-}
-
-.progress-bar-container {
-  width: 150px;
-  height: 10px;
-  background: #f0f0f0;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #7d96e4, #6b89e2);
-  border-radius: 4px;
-  transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-  position: relative;
-}
-
-/* Optional: Add striped animation */
-.progress-bar.animated::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.15) 25%,
-    transparent 25%,
-    transparent 50%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.15) 75%,
-    transparent 75%,
-    transparent
-  );
-  background-size: 20px 20px;
-  animation: progressStripes 1s linear infinite;
-}
-
-@keyframes progressStripes {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 20px 0;
-  }
-}
-
 .project-action {
   display: flex;
   gap: 8;
@@ -555,11 +625,8 @@
 
 .toggle-buttons {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  position: absolute;
-  top: 70px;
+  gap: 10px; /* Space between the toggle buttons */
+  margin-right: auto; /* Pushes the toggle buttons to the left */
 }
 
 .toggle-button {
@@ -580,7 +647,7 @@
 }
 
 .toggle-button.active {
-  color: #3b4f67;
+  color: #8c7bf9;
   font-weight: bold;
 }
 
@@ -591,7 +658,7 @@
   bottom: -5px;
   width: 100%;
   height: 3px;
-  background: linear-gradient(90deg, #3b4f67, #74c69d);
+  background: linear-gradient(90deg, #9773de, #74c69d);
   border-radius: 2px;
   box-shadow: none;
   animation: slideIn 0.3s ease;
@@ -603,5 +670,173 @@
   }
   to {
     transform: scaleX(1);
+  }
+}
+
+/* Table Project Status --------------------------------------------------------- */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 80px;
+  text-align: center;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Optional hover effect */
+.status-indicator:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific status styles */
+.status-indicator[style*="Ongoing"] {
+  border-color: rgba(64, 112, 244, 0.3);
+}
+
+.status-indicator[style*="Completed"] {
+  border-color: rgba(59, 79, 103, 0.3);
+}
+
+.status-indicator[style*="Pending"] {
+  border-color: rgba(252, 118, 118, 0.3);
+}
+
+/*----------------------------------------------------------------------*/
+
+/* Delete Confirmation Modal Styles */
+.delete-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  animation: fadeIn 0.2s ease-out;
+}
+
+.delete-confirmation-content {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transform: translateY(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.delete-project-icon-container {
+  background-color: #fff6f6;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  border: 1px solid #ffebee;
+}
+
+.delete-project-icon {
+  font-size: 2.5rem;
+  color: #ff4d4f;
+}
+
+.delete-confirmation-text {
+  margin-bottom: 2rem;
+}
+
+.delete-confirmation-text h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.delete-confirmation-text p {
+  margin: 0.5rem 0;
+  color: #718096;
+  line-height: 1.5;
+}
+
+.warning-text {
+  color: #ff4d4f !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%; /* Add this */
+}
+
+.delete-confirmation-buttons button {
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  min-width: 120px; /* Changed from flex/max-width */
+}
+
+.cancel-project-button {
+  background-color: #f8f9fa;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.cancel-project-button:hover {
+  background-color: #edf2f7;
+  transform: translateY(-1px);
+}
+
+.confirm-project-button {
+  background-color: #ff4d4f;
+  color: white;
+  box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
+}
+
+.confirm-project-button:hover:hover {
+  background-color: #ff383a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 77, 79, 0.4);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
