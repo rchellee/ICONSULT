@@ -5,152 +5,208 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
+  LineChart,
+  Line,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
-  ResponsiveContainer,
-  Cell,
 } from "recharts";
+import "./ReportsTab.css";
 
-const EmployeeReports = () => {
-  const [employees, setEmployees] = useState([]);
-  const [tasks, setTasks] = useState([]);
+const RevenueReports = () => {
+  const [revenues, setRevenues] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [paymentData, setPaymentData] = useState([]);
+  const [overduePayments, setOverduePayments] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [totalPerProject, setTotalPerProject] = useState([]);
+  const [receivedVsRemaining, setReceivedVsRemaining] = useState([]);
+  const [paymentsPerClient, setPaymentsPerClient] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [revenueThisMonth, setRevenueThisMonth] = useState(0);
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState("All");
   const [selectedReport, setSelectedReport] = useState("");
-  const [taskStatusFilter, setTaskStatusFilter] = useState("All");
-  const [selectedEmployee, setSelectedEmployee] = useState("");
-  const [tasksForSelectedEmployee, setTasksForSelectedEmployee] = useState([]);
-  const [allTasksForCSV, setAllTasksForCSV] = useState([]);
-  const [exportOption, setExportOption] = useState("all");
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    year: "All",
-    month: "All",
+  const [selectedProject, setSelectedProject] = useState("All");
+  const [selectedClient, setSelectedClient] = useState("All");
+  const [tasks, setTasks] = useState([]);
+
+  const [detailedPaymentData, setDetailedPaymentData] = useState({
+    receivedPayments: [],
+    pendingPayments: [],
   });
 
-  const fetchEmployees = async () => {
-    try {
-      const response = await axios.get("http://localhost:8081/employeeReports");
-      setEmployees(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching employee reports", error);
-      setEmployees([]);
-    }
-  };
-  const fetchAllTasksForCSV = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8081/allEmployeeTasks"
-      );
-      setAllTasksForCSV(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching all tasks for CSV", error);
-      setAllTasksForCSV([]);
-    }
-  };
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get("http://localhost:8081/ETReports");
-      setTasks(Array.isArray(response.data) ? response.data : []);
-    } catch (error) {
-      console.error("Error fetching task reports", error);
-      setTasks([]);
-    }
-  };
-  const fetchTasksForEmployee = async (employeeId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8081/tasksForEmployee/${employeeId}`
-      );
-      setTasksForSelectedEmployee(
-        Array.isArray(response.data) ? response.data : []
-      );
-    } catch (error) {
-      console.error("Error fetching tasks for employee", error);
-      setTasksForSelectedEmployee([]);
-    }
-  };
+  const [filters, setFilters] = useState({
+    month: "All",
+    year: new Date().getFullYear(),
+  });
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
   useEffect(() => {
-    fetchEmployees();
+    fetchProjects();
+    fetchRevenues();
+    fetchPaymentsPerClient();
+    fetchClients();
     fetchTasks();
-    fetchAllTasksForCSV();
+  }, [filters]);
+
+  useEffect(() => {
+    fetchPaymentStatus();
+    fetchOverduePayments();
   }, []);
 
   useEffect(() => {
-    if (employees.length > 0) {
-      setSelectedEmployee(employees[0].id);
+    fetchTotalRevenuePerProject();
+  }, [paymentStatusFilter]);
+
+  const fetchTotalRevenuePerProject = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/total-revenue-per-project",
+        {
+          params: {
+            paymentStatus:
+              paymentStatusFilter === "All" ? undefined : paymentStatusFilter,
+          },
+        }
+      );
+      setTotalPerProject(response.data);
+    } catch (error) {
+      console.error("Error fetching total revenue per project:", error);
     }
-  }, [employees]);
-
-  useEffect(() => {
-    if (selectedEmployee) {
-      fetchTasksForEmployee(selectedEmployee);
-    }
-  }, [selectedEmployee]);
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-
-    const date = new Date(dateString);
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return date.toLocaleDateString("en-US", options);
   };
 
-  // Filter tasks for the "Tasks Assigned to Each Employee" chart
-  const filteredTasks = tasks.filter((task) => {
-    if (!task.created_at) return false;
-    const taskDate = new Date(task.created_at);
-    const taskYear = taskDate.getFullYear().toString();
-    const taskMonth = taskDate.toLocaleString("default", { month: "long" });
+  const fetchPaymentStatus = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/payment-status");
+      const { paidTasks, pendingTasks, receivedPayments, pendingPayments } =
+        response.data;
 
-    const statusMatch =
-      taskStatusFilter === "All" ||
-      (taskStatusFilter === "Completed" &&
-        task.status?.toLowerCase() === "completed") ||
-      (taskStatusFilter === "Ongoing" &&
-        task.status?.toLowerCase() !== "completed");
+      // Format for the pie chart
+      setPaymentData([
+        { name: "Received Payments", value: receivedPayments },
+        { name: "Pending Payments", value: pendingPayments },
+      ]);
 
-    return (
-      statusMatch &&
-      (filters.year === "All" || taskYear === filters.year) &&
-      (filters.month === "All" || taskMonth === filters.month)
-    );
-  });
-  const colors = [
-    "#3498db", // Blue
-    "#2ecc71", // Green
-    "#e74c3c", // Red
-    "#f39c12", // Yellow-Orange
-    "#9b59b6", // Purple
-    "#1abc9c", // Teal
-    "#e67e22", // Dark Orange
-    "#95a5a6", // Gray
-  ];
+      // Store detailed data for CSV export
+      setDetailedPaymentData({
+        receivedPayments: paidTasks,
+        pendingPayments: pendingTasks,
+      });
 
-  const taskColors = [
-    "#3498db", // Blue
-    "#2ecc71", // Green
-    "#e74c3c", // Red
-    "#f39c12", // Yellow-Orange
-    "#9b59b6", // Purple
-    "#1abc9c", // Teal
-    "#e67e22", // Dark Orange
-    "#95a5a6", // Gray
-    "#c0392b", // Dark Red
-    "#8e44ad", // Deep Purple
-  ];
+      setTotalRevenue(receivedPayments);
+      setRevenueThisMonth(receivedPayments); // Assuming you want to update this too
+    } catch (error) {
+      console.error("Error fetching payment status data:", error);
+    }
+  };
 
-  // Map tasks for the "Tasks Assigned to Each Employee" chart
-  const taskData = filteredTasks.map((task, index) => ({
-    name: `${task.firstName.charAt(0)}. ${task.lastName || "Unknown"}`,
-    tasks: task.task_count || 0,
-    color: taskColors[index % taskColors.length], // Assign color dynamically
-  }));
+  const fetchOverduePayments = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/overdue-payments"
+      );
+      setOverduePayments(response.data);
+    } catch (error) {
+      console.error("Error fetching overdue payments:", error);
+    }
+  };
+  const fetchClients = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/clients");
+      setClients(response.data);
+    } catch (error) {
+      console.error("Error fetching clients", error);
+    }
+  };
+
+  const fetchPaymentsPerClient = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8081/payments-per-client",
+        {
+          params: {
+            year: filters.year,
+            month: filters.month,
+          },
+        }
+      );
+      setPaymentsPerClient(response.data);
+    } catch (error) {
+      console.error("Error fetching payments per client:", error);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/projects");
+      setProjects(response.data);
+
+      // Format the data for the "Payment Received vs. Remaining Balances" chart
+      const formattedData = response.data.map((project) => ({
+        name: project.projectName,
+        received: project.paid_amount,
+        remaining: project.remaining,
+      }));
+      setReceivedVsRemaining(formattedData);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  const fetchRevenues = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/payments", {
+        params: filters,
+      });
+      setRevenues(response.data);
+    } catch (error) {
+      console.error("Error fetching revenues", error);
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get("http://localhost:8081/tasksPayments");
+      setTasks(response.data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+  const COLORS = ["#4CAF50", "#FF5252"];
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const task = payload[0].payload;
+      return (
+        <div className="custom-tooltip">
+          <p className="intro">{`Due Date: ${task.due_date}`}</p>
+          <p className="intro">{`Amount: ₱ ${task.amount}`}</p>
+        </div>
+      );
+    }
+    return null;
+  };
   const exportPDF = async () => {
     const doc = new jsPDF("landscape", "mm", "a4");
     doc.setFontSize(8);
@@ -170,37 +226,36 @@ const EmployeeReports = () => {
         console.error("Error capturing chart:", error);
       }
     }
-    if (selectedReport === "Total Employees") {
+    if (selectedReport === "TOTAL REVENUE") {
       const headers = [
         [
           "id",
-          "First Name",
-          "Last Name",
-          "Address",
-          "Mobile Number",
+          "Client",
+          "Project",
+          "Task",
+          "Transaction ID",
+          "Paid by",
           "Email",
-          "Status",
-          "Birthday",
-          "Age",
-          "gender",
-          "Role",
-          "Date Updated",
+          "Amount",
+          "Currency",
+          "MOP",
+          "Date Paid",
+          "Date Created",
         ],
       ];
-      const data = employees.map((e) => [
-        e.id,
-        e.firstName,
-        e.lastName,
-        e.address,
-        e.mobile_number,
-        e.email_add,
-        e.status,
-        e.birthday,
-        e.age,
-        e.gender,
-        e.role,
-        e.date_paid,
-        e.modified_date,
+      const data = revenues.map((r) => [
+        r.id,
+        r.client_id,
+        r.project_id,
+        r.task_id,
+        r.transaction_id,
+        r.payer_name,
+        r.payer_email,
+        r.amount,
+        r.currency,
+        r.mode_of_payment,
+        r.date_paid,
+        r.created_at,
       ]);
 
       autoTable(doc, {
@@ -210,291 +265,758 @@ const EmployeeReports = () => {
         styles: { fontSize: 8 },
       });
     }
-    if (selectedReport === "Tasks Assigned to Each Employee") {
-      const tasksToExport =
-        selectedEmployee === "All"
-          ? allTasksForCSV
-          : allTasksForCSV.filter(
-              (task) => task.employeeId == selectedEmployee
-            );
+    if (selectedReport === "REVENUE THIS MONTH") {
+      // Filter revenues for the current month
+      const currentMonthRevenues = revenues.filter((r) => {
+        const revenuesDate = new Date(r.date_paid);
+        return (
+          revenuesDate.getMonth() === new Date().getMonth() &&
+          revenuesDate.getFullYear() === new Date().getFullYear()
+        );
+      });
 
-      const tasksByEmployee = tasksToExport.reduce((acc, task) => {
-        const key = task.employeeId;
-        if (!acc[key]) {
-          acc[key] = {
-            name: `${task.firstName} ${task.lastName}`,
-            tasks: [],
-          };
-        }
-        if (task.task_name) {
-          acc[key].tasks.push(task);
-        }
-        return acc;
-      }, {});
+      const headers = [
+        [
+          "id",
+          "Client",
+          "Project",
+          "Task",
+          "Transaction ID",
+          "Paid by",
+          "Email",
+          "Amount",
+          "Currency",
+          "MOP",
+          "Date Paid",
+          "Date Created",
+        ],
+      ];
+      const data = currentMonthRevenues.map((r) => [
+        r.id,
+        r.client_id,
+        r.project_id,
+        r.task_id,
+        r.transaction_id,
+        r.payer_name,
+        r.payer_email,
+        r.amount,
+        r.currency,
+        r.mode_of_payment,
+        r.date_paid,
+        r.created_at,
+      ]);
 
-      let yPos = 20;
-      Object.values(tasksByEmployee).forEach((employee) => {
-        doc.text(employee.name, 10, yPos);
-        yPos += 10;
-        autoTable(doc, {
-          startY: yPos,
-          head: [["Task Name", "Fee", "Total Amount", "Status", "Due Date"]],
-          body: employee.tasks.map((task) => [
-            task.task_name || "N/A",
-            task.task_fee,
-            task.amount,
-            task.status || "N/A",
-            task.due_date || "N/A",
-          ]),
-          styles: { fontSize: 10 },
-        });
-        yPos = doc.lastAutoTable.finalY + 10;
+      autoTable(doc, {
+        startY: yPos,
+        head: headers,
+        body: data,
+        styles: { fontSize: 8 },
       });
     }
-    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
-  };
-  const formatTasksAssignedtoEachEmployeeCSV = () => {
-    let csvData = [["Employee", "Task", "Fee", "Total", "Status", "Due Date"]];
+    if (selectedReport === "Accounts Receivable Overview") {
+      doc.setFontSize(8);
 
-    // Ensure filtering applies correctly
-    let tasksToExport =
-      selectedEmployee && selectedEmployee !== "All"
-        ? allTasksForCSV.filter((task) => task.employeeId == selectedEmployee)
-        : allTasksForCSV;
+      // Add report title
+      doc.text("Accounts Receivable Overview", 14, yPos);
+      yPos += 10;
 
-    // Group tasks by employee
-    const tasksByEmployee = tasksToExport.reduce((acc, task) => {
-      if (!task.task_name) return acc; // Skip tasks with no name
+      // Add Received Payments section header
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.text("Received Payments", 14, yPos);
+      yPos += 7;
 
-      const key = task.employeeId;
-      if (!acc[key]) {
-        acc[key] = {
-          name: `${task.firstName} ${task.lastName}`,
-          tasks: [],
-        };
-      }
-      acc[key].tasks.push(task);
-      return acc;
-    }, {});
+      // Add Received Payments table headers
+      doc.setFont("helvetica", "normal");
+      const receivedHeaders = [
+        "Task ID",
+        "Task Name",
+        "Amount",
+        "Transaction ID",
+        "MOP",
+        "Date Paid",
+      ];
 
-    // Generate CSV data
-    Object.values(tasksByEmployee).forEach((employee) => {
-      csvData.push([employee.name, "", "", ""]); // Employee row
+      // Prepare Received Payments data
+      const receivedRows = detailedPaymentData.receivedPayments.map(
+        (payment) => [
+          payment.task_id,
+          payment.task_name,
+          `₱${payment.amount.toFixed(2)}`,
+          payment.transaction_id || "N/A",
+          payment.mode_of_payment || "N/A",
+          payment.date_paid
+            ? new Date(payment.date_paid).toLocaleDateString()
+            : "N/A",
+        ]
+      );
 
-      employee.tasks.forEach((task) => {
-        csvData.push([
-          "", // Empty for indentation
-          task.task_name || "N/A",
-          task.task_fee || "N/A",
-          task.amount || "N/A",
-          task.status || "N/A",
-          task.due_date ? formatDate(task.due_date) : "N/A",
-        ]);
+      // Calculate received total
+      const receivedTotal = detailedPaymentData.receivedPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0
+      );
+
+      // Add Received Payments table
+      autoTable(doc, {
+        startY: yPos,
+        head: [receivedHeaders],
+        body: receivedRows,
+        margin: { left: 14 },
+        styles: { fontSize: 8, cellPadding: 2 },
+      });
+      yPos = doc.lastAutoTable.finalY + 5;
+      doc.text(`Total Amount: ₱${receivedTotal.toFixed(2)}`, 14, yPos);
+      yPos += 10;
+
+      doc.setFont("helvetica", "bold");
+      doc.text("Pending Payments", 14, yPos);
+      yPos += 7;
+
+      doc.setFont("helvetica", "normal");
+      const pendingHeaders = ["Task ID", "Task Name", "Amount", "Due Date"];
+
+      // Prepare Pending Payments data
+      const pendingRows = detailedPaymentData.pendingPayments.map((payment) => [
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.due_date
+          ? new Date(payment.due_date).toLocaleDateString()
+          : "N/A",
+      ]);
+
+      // Calculate pending total
+      const pendingTotal = detailedPaymentData.pendingPayments.reduce(
+        (sum, payment) => sum + payment.amount,
+        0
+      );
+
+      // Add Pending Payments table
+      autoTable(doc, {
+        startY: yPos,
+        head: [pendingHeaders],
+        body: pendingRows,
+        margin: { left: 14 },
+        styles: { fontSize: 8, cellPadding: 2 },
       });
 
-      csvData.push(["", "", "", ""]); // Empty row for spacing
+      // Add Pending Payments total
+      yPos = doc.lastAutoTable.finalY + 5;
+      doc.text(`Total Amount: ₱${pendingTotal.toFixed(2)}`, 14, yPos);
+    }
+    if (selectedReport === "Payments per Client") {
+      let grandTotal = 0;
+
+      // Filter clients based on selection
+      const clientsToExport =
+        selectedClient === "All"
+          ? clients
+          : clients.filter((c) => c.id.toString() === selectedClient);
+
+      clientsToExport.forEach((client) => {
+        const clientRevenues = revenues.filter(
+          (r) => r.client_id === client.id
+        );
+
+        if (clientRevenues.length > 0) {
+          doc.setFontSize(8);
+          doc.text(`${client.firstName} ${client.lastName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            [
+              "Transaction ID",
+              "Project",
+              "Task",
+              "Paid by",
+              "Amount",
+              "MOP",
+              "Date Paid",
+            ],
+          ];
+          let clientTotal = 0;
+          const data = clientRevenues.map((r) => {
+            const project = projects.find((p) => p.id === r.project_id);
+            const task = (tasks || []).find((t) => t.id === r.task_id);
+
+            clientTotal += r.amount;
+            return [
+              r.transaction_id || "N/A",
+              project ? project.projectName : "N/A",
+              task ? task.task_name : "N/A",
+              r.payer_name || "N/A",
+              `₱${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+            ];
+          });
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+            styles: { fontSize: 8 },
+          });
+
+          // Add client total
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Client Total: ₱${clientTotal.toFixed(2)}`, 10, yPos);
+          yPos += 15; // Extra space before next client
+
+          grandTotal += clientTotal;
+        }
+      });
+      if (grandTotal > 0) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ₱${grandTotal.toFixed(2)}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
+    }
+    if (selectedReport === "Revenue per Project") {
+      let grandTotal = 0;
+
+      // Filter projects based on selection
+      const projectsToExport =
+        selectedProject === "All"
+          ? projects
+          : projects.filter((p) => p.id.toString() === selectedProject);
+
+      projectsToExport.forEach((project) => {
+        const projectRevenues = revenues.filter(
+          (r) => r.project_id === project.id
+        );
+
+        if (projectRevenues.length > 0) {
+          doc.setFontSize(8);
+          doc.text(`${project.projectName}`, 10, yPos);
+          yPos += 10;
+
+          const headers = [
+            ["Transaction ID", "Task", "Paid by", "Amount", "MOP", "Date Paid"],
+          ];
+          let projectTotal = 0;
+          const data = projectRevenues.map((r) => {
+            const task = (tasks || []).find((t) => t.id === r.task_id);
+
+            projectTotal += r.amount;
+            return [
+              r.transaction_id || "N/A",
+              task ? task.task_name : "N/A",
+              r.payer_name || "N/A",
+              `₱${r.amount.toFixed(2)}`,
+              r.mode_of_payment || "N/A",
+              r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+            ];
+          });
+
+          autoTable(doc, {
+            startY: yPos,
+            head: headers,
+            body: data,
+          });
+
+          // Add project total
+          yPos = doc.lastAutoTable.finalY + 5;
+          doc.text(`Project Total: ₱${projectTotal.toFixed(2)}`, 10, yPos);
+          yPos += 15; // Extra space before next project
+
+          grandTotal += projectTotal;
+        }
+      });
+      if (grandTotal > 0) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`GRAND TOTAL: ₱${grandTotal.toFixed(2)}`, 10, yPos);
+        doc.setFont("helvetica", "normal");
+      }
+    }
+
+    doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
+  };
+  const formatREVENUETHISMonthCSV = () => {
+    let csvData = [];
+
+    // Add headers
+    csvData.push([
+      "id",
+      "Client",
+      "Project",
+      "Task",
+      "Transaction ID",
+      "Paid by",
+      "Email",
+      "Amount",
+      "Currency",
+      "MOP",
+      "Date Paid",
+      "Date Created",
+    ]);
+
+    // Filter appointments for the current month
+    const currentMonthRevenues = revenues.filter((r) => {
+      const revenuesDate = new Date(r.date_paid);
+      return (
+        revenuesDate.getMonth() === new Date().getMonth() &&
+        revenuesDate.getFullYear() === new Date().getFullYear()
+      );
     });
+
+    // Populate CSV data
+    currentMonthRevenues.forEach((r) => {
+      csvData.push([
+        r.id,
+        r.client_id,
+        r.project_id,
+        r.task_id,
+        r.transaction_id,
+        r.payer_name,
+        r.payer_email,
+        r.amount,
+        r.currency,
+        r.mode_of_payment,
+        r.date_paid,
+        r.created_at,
+      ]);
+    });
+
+    return csvData;
+  };
+  const formatAccountsReceivableOverviewCSV = () => {
+    let csvData = [];
+    csvData.push(["Received Payments"]);
+    csvData.push([
+      "Task ID",
+      "Task Name",
+      "Amount",
+      "Transaction ID",
+      "MOP",
+      "Date Paid",
+    ]);
+
+    let receivedTotal = 0;
+    detailedPaymentData.receivedPayments.forEach((payment) => {
+      csvData.push([
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.transaction_id,
+        payment.mode_of_payment,
+        payment.date_paid
+          ? new Date(payment.date_paid).toLocaleDateString()
+          : "N/A",
+      ]);
+      receivedTotal += payment.amount;
+    });
+
+    csvData.push([
+      "Total Amount",
+      "",
+      `₱${receivedTotal.toFixed(2)}`,
+      "",
+      "",
+      "",
+    ]);
+    csvData.push([]);
+    csvData.push(["Pending Payments"]);
+    csvData.push(["Task ID", "Task Name", "Amount", "Due Date"]);
+
+    let pendingTotal = 0;
+    detailedPaymentData.pendingPayments.forEach((payment) => {
+      csvData.push([
+        payment.task_id,
+        payment.task_name,
+        `₱${payment.amount.toFixed(2)}`,
+        payment.due_date
+          ? new Date(payment.due_date).toLocaleDateString()
+          : "N/A",
+      ]);
+      pendingTotal += payment.amount;
+    });
+
+    csvData.push(["Total Amount", "", `₱${pendingTotal.toFixed(2)}`, ""]);
+
+    return csvData;
+  };
+  const formatPaymentsperClientCSV = () => {
+    let csvData = [];
+    let grandTotal = 0;
+
+    // Filter clients based on selection
+    const clientsToExport =
+      selectedClient === "All"
+        ? clients
+        : clients.filter((c) => c.id.toString() === selectedClient);
+
+    clientsToExport.forEach((client) => {
+      const clientRevenues = revenues.filter((r) => r.client_id === client.id);
+
+      if (clientRevenues.length > 0) {
+        csvData.push([`${client.firstName} ${client.lastName}`]); // Add client name as a row
+        csvData.push([
+          "Transaction ID",
+          "Project",
+          "Task",
+          "Paid by",
+          "Amount",
+          "MOP",
+          "Date Paid",
+        ]); // Headers
+
+        let clientTotal = 0;
+
+        clientRevenues.forEach((r) => {
+          const project = projects.find((p) => p.id === r.project_id);
+          // Safely get task name - use empty array if tasks not loaded yet
+          const task = (tasks || []).find((t) => t.id === r.task_id);
+
+          csvData.push([
+            r.transaction_id || "N/A",
+            project ? project.projectName : "N/A",
+            task ? task.task_name : "N/A",
+            r.payer_name || "N/A",
+            `₱${r.amount.toFixed(2)}`,
+            r.mode_of_payment || "N/A",
+            r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+          ]);
+          clientTotal += r.amount;
+        });
+
+        csvData.push([
+          "Client Total",
+          "",
+          "",
+          "",
+          `₱${clientTotal.toFixed(2)}`,
+          "",
+          "",
+        ]);
+        csvData.push([]); // Blank row for spacing
+
+        grandTotal += clientTotal;
+      }
+    });
+
+    // Add grand total if there were any clients with revenues
+    if (grandTotal > 0) {
+      csvData.push([
+        "GRAND TOTAL",
+        "",
+        "",
+        "",
+        `₱${grandTotal.toFixed(2)}`,
+        "",
+        "",
+      ]);
+    }
+
+    return csvData;
+  };
+  const formatRevenueperProjectCSV = () => {
+    let csvData = [];
+    let grandTotal = 0;
+
+    // Filter projects based on selection
+    const projectsToExport =
+      selectedProject === "All"
+        ? projects
+        : projects.filter((p) => p.id.toString() === selectedProject);
+
+    projectsToExport.forEach((project) => {
+      const projectRevenues = revenues.filter(
+        (r) => r.project_id === project.id
+      );
+
+      if (projectRevenues.length > 0) {
+        csvData.push([`${project.projectName}`]); // Add project name as a row
+        csvData.push([
+          "Transaction ID",
+          "Task",
+          "Paid by",
+          "Amount",
+          "MOP",
+          "Date Paid",
+        ]); // Headers
+
+        let projectTotal = 0;
+
+        projectRevenues.forEach((r) => {
+          const task = (tasks || []).find((t) => t.id === r.task_id);
+
+          csvData.push([
+            r.transaction_id || "N/A",
+            task ? task.task_name : "N/A",
+            r.payer_name || "N/A",
+            `₱${r.amount.toFixed(2)}`,
+            r.mode_of_payment || "N/A",
+            r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
+          ]);
+          projectTotal += r.amount;
+        });
+
+        csvData.push([
+          "Project Total",
+          "",
+          "",
+          `₱${projectTotal.toFixed(2)}`,
+          "",
+          "",
+        ]);
+        csvData.push([]); // Blank row for spacing
+
+        grandTotal += projectTotal;
+      }
+    });
+
+    // Add grand total if there were any projects with revenues
+    if (grandTotal > 0) {
+      csvData.push([
+        "GRAND TOTAL",
+        "",
+        "",
+        `₱${grandTotal.toFixed(2)}`,
+        "",
+        "",
+      ]);
+    }
 
     return csvData;
   };
 
   let exportCSVData = [];
 
-  if (selectedReport === "Tasks Assigned to Each Employee") {
-    exportCSVData = formatTasksAssignedtoEachEmployeeCSV();
+  if (selectedReport === "REVENUE THIS MONTH") {
+    exportCSVData = formatREVENUETHISMonthCSV();
+  } else if (selectedReport === "Accounts Receivable Overview") {
+    exportCSVData = formatAccountsReceivableOverviewCSV();
+  } else if (selectedReport === "Payments per Client") {
+    exportCSVData = formatPaymentsperClientCSV();
+  } else if (selectedReport === "Revenue per Project") {
+    exportCSVData = formatRevenueperProjectCSV();
   } else {
-    exportCSVData = employees;
+    exportCSVData = revenues; // Default case for Total Appointments & Appointments This Month
   }
-
   return (
-    <div className="employee-p-4">
-      <div className="filter-container">
+    <div className="revenue-p-4">
+      {/* Report Type Selection */}
+      <div className="filter-buttons">
         <select
-          className="border p-2"
+          className="revenue-report-type"
           value={selectedReport}
           onChange={(e) => setSelectedReport(e.target.value)}
         >
           <option value="">Select Report Type</option>
-          <option value="Total Employees">Total Employees</option>
-          <option value="Tasks Assigned to Each Employee">
-            Tasks Assigned to Each Employee
+          <option value="TOTAL REVENUE">Total revenue</option>
+          <option value="REVENUE THIS MONTH">Revenue this Month</option>
+          <option value="Accounts Receivable Overview">
+            Accounts Receivable Overview
           </option>
+          <option value="Payments per Client">Payments per Client</option>
+          <option value="Revenue per Project">Revenue per Project</option>
         </select>
-      </div>
 
-      {selectedReport === "Tasks Assigned to Each Employee" && (
-        <div className="mb-4">
+        {/* Add project selection dropdown when Revenue per Project is selected */}
+        {selectedReport === "Revenue per Project" && (
           <select
-            className="border p-2"
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
+            value={selectedProject}
+            onChange={(e) => setSelectedProject(e.target.value)}
+            className="ml-4"
           >
-            <option value="All">All</option>
-            {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {emp.firstName} {emp.lastName}
+            <option value="All">All Projects</option>
+            {projects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.projectName}
               </option>
             ))}
           </select>
-        </div>
-      )}
+        )}
 
-      {selectedReport && (
-        <div className="flex gap-4">
-          <CSVLink
-            data={exportCSVData}
-            filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}_${
-              exportOption === "all" ? "all" : selectedEmployee
-            }.csv`}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Export CSV
-          </CSVLink>
-          <button
-            onClick={exportPDF}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Export PDF
-          </button>
-        </div>
-      )}
-
-      <div className="employee-summary-card">
-        Total Employees
-        <p>{employees.length}</p>
-      </div>
-      <div className="employee-graph-container">
-        <div className="employee-graphs">
-          <h3>Tasks Assigned to Each Employee</h3>
-          <p className="graph-description">
-            Shows the number of tasks assigned to employees.
-          </p>
+        {/* Add client selection dropdown when Payments per Client is selected */}
+        {selectedReport === "Payments per Client" && (
           <select
-            className="employee-filter-each"
-            value={filters.year}
-            onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+            value={selectedClient}
+            onChange={(e) => setSelectedClient(e.target.value)}
+            className="ml-4"
           >
-            <option value="All">Year</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-          </select>
-          <select
-            className="border p-2"
-            value={filters.month}
-            onChange={(e) => setFilters({ ...filters, month: e.target.value })}
-          >
-            <option value="All">Month</option>
-            {[
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ].map((month) => (
-              <option key={month} value={month}>
-                {month}
+            <option value="All">All Clients</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.firstName} {client.lastName}
               </option>
             ))}
           </select>
-          <select
-            className="border p-2 mb-4"
-            value={taskStatusFilter}
-            onChange={(e) => setTaskStatusFilter(e.target.value)}
-          >
-            <option value="All">Task</option>
-            <option value="Completed">Completed</option>
-            <option value="Ongoing">Ongoing</option>
-          </select>
+        )}
 
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart layout="vertical" data={taskData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={150} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="tasks">
-                {taskData.map((entry, index) => (
-                  <Cell key={index} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="employee-graphs">
-          <h3>Tasks for selected Employee</h3>
-          <p className="graph-description">
-            Displays tasks for the selected employee.
-          </p>{" "}
-          <div className="space-x-4 mb-4">
-            <select
-              className="employee-filter-each"
-              value={selectedEmployee}
-              onChange={(e) => setSelectedEmployee(e.target.value)}
+        {selectedReport && (
+          <>
+            <CSVLink
+              data={exportCSVData}
+              filename={`${selectedReport.replace(/\s+/g, "_").toLowerCase()}_${
+                selectedReport === "Revenue per Project"
+                  ? selectedProject === "All"
+                    ? "all_projects"
+                    : "project_" + selectedProject
+                  : selectedReport === "Payments per Client"
+                  ? selectedClient === "All"
+                    ? "all_clients"
+                    : "client_" + selectedClient
+                  : "report"
+              }.csv`}
+              className="bg-green-500 text-white px-4 py-2 rounded"
             >
-              {employees.map((emp) => (
-                <option
-                  key={emp.id}
-                  value={emp.id}
-                >{`${emp.firstName} ${emp.lastName}`}</option>
-              ))}
-            </select>
+              Export CSV
+            </CSVLink>
 
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                layout="vertical"
-                data={tasksForSelectedEmployee}
-                margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="task_name" type="category" width={150} />
-                <Tooltip
-                  content={({ payload }) => {
-                    if (payload && payload.length) {
-                      const task = payload[0].payload;
-                      return (
-                        <div className="bg-white p-2 border rounded shadow">
-                          <p className="text-xs text-gray-600">
-                            Status: {task.status}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            Amount: {task.amount}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            Task Due: {task.due_date}
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Legend />
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="task_name" type="category" width={150} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="amount">
-                  {tasksForSelectedEmployee.map((_, index) => (
-                    <Cell key={index} fill={colors[index % colors.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+            <button
+              onClick={exportPDF}
+              className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              Export PDF
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Reports Grid */}
+      <div id="summary-section">
+        <div className="summary-box">
+          <h2 className="summary-title">Total Revenue</h2>
+          <p className="summary-value">₱ {totalRevenue.toLocaleString()}</p>
         </div>
+        <div className="summary-box">
+          <h2 className="summary-title">Revenue this Month </h2>
+          <p className="summary-value">₱ {revenueThisMonth.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <div className="revenue-grid">
+        <div className="chart-container">
+          <h3>Accounts Receivable Overview</h3>
+          <p>
+            Compares received payments and pending payments for a clearer view
+            of outstanding balances.
+          </p>
+          <PieChart width={400} height={300}>
+            <Pie
+              data={paymentData}
+              dataKey="value"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label
+            >
+              {paymentData.map((entry, index) => (
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </div>
+
+        {/* Overdue Payments */}
+        <div className="chart-container scrollable-chart">
+          <h3>Overdue Payments</h3>
+          <p>
+            Displays overdue payments, showing their due dates and amounts.
+          </p>{" "}
+          <LineChart
+            width={1500}
+            height={400}
+            data={overduePayments}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" angle={-15} />
+            <YAxis />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#FF5252"
+              activeDot={{ r: 8 }}
+            />
+          </LineChart>
+        </div>
+
+        {/* Total Revenue per Project */}
+        <div className="chart-container scrollable-chart">
+          <h3>Total Revenue per Project</h3>
+          <p>Displays the total revenue generated by each project.</p>{" "}
+          <div className="filter-buttons">
+            <label>
+              Filter by Payment Status:
+              <select
+                value={paymentStatusFilter}
+                onChange={(e) => setPaymentStatusFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Paid">Paid</option>
+                <option value="Not Paid">Unpaid</option>
+              </select>
+            </label>
+          </div>
+          <BarChart width={1500} height={400} data={totalPerProject}>
+            <XAxis dataKey="project_name" angle={-15} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="total_revenue" fill="#82ca9d" />
+          </BarChart>
+        </div>
+
+        {/* Payment Received vs. Remaining Balances */}
+        <div className="chart-container scrollable-chart">
+          <h3>Payment Received vs. Remaining Balances</h3>
+          <p>
+            Compares payments already received with remaining balances for
+            various projects.
+          </p>{" "}
+          <LineChart
+            width={1500}
+            height={400}
+            data={receivedVsRemaining}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" angle={-15} />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="received"
+              stroke="#4CAF50"
+              activeDot={{ r: 8 }}
+              name="Received"
+            />
+            <Line
+              type="monotone"
+              dataKey="remaining"
+              stroke="#FF5252"
+              activeDot={{ r: 8 }}
+              name="Remaining"
+            />
+          </LineChart>
+        </div>
+      </div>
+
+      <div className="chart-container scrollable-chart">
+        <h3>Payments per Client</h3>
+        <p>Shows the total payments received from each client.</p>{" "}
+        <BarChart width={1700} height={400} data={paymentsPerClient}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="total_amount" fill="#8884d8" name="Total" />
+        </BarChart>
       </div>
     </div>
   );
 };
 
-export default EmployeeReports;
+export default RevenueReports;
