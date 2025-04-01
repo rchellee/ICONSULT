@@ -171,7 +171,7 @@ const ProjectList = ({
   return (
     <div className="project-list-wrapper">
       <div className="list-view-header">
-        <div className="projects-title">My Projects</div>
+        {/*<div className="projects-title">My Projects</div>*/}
         <div className="toggle-buttons">
           <button
             className={`toggle-button ${
@@ -190,7 +190,7 @@ const ProjectList = ({
             }`}
             onClick={() => setActiveView("accounting")}
           >
-            Accounting Ledger
+            Transaction
           </button>
         </div>
 

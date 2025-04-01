@@ -311,7 +311,7 @@ const ListView = ({
               <th>
                 Project <br /> Status
               </th>
-              <th>Action</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>

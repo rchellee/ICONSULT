@@ -15,24 +15,24 @@
   margin-top: 20px;
 }
 
+
+
+
+
+
+/*-------------------------------------------------------*/
 .list-view-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* This ensures left and right items stay at edges */
   align-items: center;
   position: relative;
   z-index: 100;
   margin-bottom: 20px;
+  width: 100%; /* Ensure it takes full width */
 }
 
-.toggle-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-
-/*-------------------------------------------------------*/
 .create-project-btn {
-  top: 20px;
+  top: auto;
   background-color: #716cff;
   color: white;
   border: none;
@@ -51,6 +51,8 @@
   overflow: hidden;
   min-width: 160px; 
   height: 56px; 
+  margin-left: auto; 
+  margin-top: 15px;
 }
 
 .create-project-btn:hover {
@@ -202,39 +204,7 @@
 }
 
 .num-column {
-  
- 
   font-weight: bold;
-}
-
-.layout-toggle-icons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  align-items: center;
-  justify-content: flex-end;
-  cursor: pointer;
-  padding-right: 50px;
-}
-
-.layout-toggle-icons svg {
-  font-size: 30px;
-  color: #333;
-  cursor: pointer;
-}
-
-/* Grid view styles */
-.grid-view {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.grid-item {
-  background: #f1f1f1;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .project-list-table {
@@ -410,15 +380,6 @@
   color: white;
 }
 
-
-
-
-
-
-
-
-
-
 /* total projects, ongoing, pending, completed, progress------------------------------------- */
 
 .status-counters {
@@ -426,10 +387,13 @@
   gap: 1.5rem;
   align-items: center;
   font-size: 0.9rem;
-  
+  top: auto;
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: auto;
+  
+  margin-right: auto;
 }
 
 .status-counter {
@@ -551,6 +515,7 @@
 .action-list-buttons {
   display: flex;
   gap: 0.8rem;
+  margin-left: auto; 
 }
 
 .action-button {
@@ -588,7 +553,7 @@
   margin-bottom: 10px;
   padding: 0.5rem 0;
   width: 100%;
-  margin-top: 80px;
+  margin-top: 10px;
 }
 
 /* Dropdown styles */
@@ -676,11 +641,9 @@
 
 .toggle-buttons {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  position: absolute;
-  top: 70px;
+  gap: 10px; /* Space between the toggle buttons */
+  margin-right: auto; /* Pushes the toggle buttons to the left */
+  
 }
 
 .toggle-button {

@@ -553,7 +553,7 @@ const Transaction = ({ projectId }) => {
               <th>Due Date</th>
               <th>Date Paid</th>
               <th>Status</th>
-              <th>Action</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
