@@ -14,7 +14,7 @@
   align-items: center;
   margin-left: 109px;
   padding-right: 20px;
-  margin-top: 10px;
+
 }
 
 /*CREATE BUTTON------------------------------------------------------*/
@@ -119,7 +119,6 @@
   justify-content: flex-start;
   margin-top: auto;
   margin-left: 109px;
-  width: 100%;
 
   cursor: pointer;
   position: relative;

@@ -1,5 +1,6 @@
 .eto-parent {
   position: relative;
+  height: 100%;
 }
 
 .task-table .numeric-column {
@@ -540,6 +541,9 @@
   padding: 0.5rem 0;
   width: 100%;
   margin-top: -10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 /* Dropdown styles */

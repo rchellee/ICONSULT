@@ -67,13 +67,13 @@ const ProjectTask = ({ onBack }) => {
       <Sidebar />
       <div className="project-task-container">
         <div className="project-header">
-          <h3 className="project-id">
-            <span className="project-name">My Project</span>
+          <h4 className="project-id">
+            <span className="project-name">Project</span>
             <IoChevronForward className="chevron-icon" />
             <span className="project-name" style={{ color: "#000" }}>
               {projectName}
             </span>
-          </h3>
+          </h4>
 
           {showCreateButton && (
             <button className="create-task-button" onClick={handleCreateTask}>
