@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import "./LoginForm.css";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo1.png";
 import OtpVerification from "./OtpVerification";
@@ -11,11 +11,15 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [otpMessage, setOtpMessage] = useState("");
   const [isOtpOverlayVisible, setIsOtpOverlayVisible] = useState(false);
   const [isResetOverlayVisible, setIsResetOverlayVisible] = useState(false);
   const [otpOverlayData, setOtpOverlayData] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleForgotPassword = async () => {
     try {
@@ -73,21 +77,16 @@ const Login = () => {
         username,
         password,
       });
-
-      // Check if the client needs to change their password
       if (data.changePassword) {
         navigate("/change-password", { state: { clientId: data.clientId } });
         return;
       }
-
-      // Navigate based on the role
       if (data.role === "admin") {
         localStorage.setItem("adminId", data.adminId);
         localStorage.setItem("username", data.username);
         navigate("/admin");
       } else if (data.role === "client") {
-        // After a successful login as a client, store firstName and lastName in localStorage
-        localStorage.setItem("clientId", data.clientId); // Save clientId
+        localStorage.setItem("clientId", data.clientId);
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
         navigate("/clientproject");
@@ -114,7 +113,7 @@ const Login = () => {
         </div>
         <div>
           <h2>Welcome back!</h2>
-          <p>Connect and start your productivity</p>
+          <p>Organize. Collaborate. Deliver.</p>
         </div>
       </div>
       <div className="right-side">
@@ -133,13 +132,18 @@ const Login = () => {
 
             <div className="input-box">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <FaLock className="icon" />
+              <span
+                className="icon eye-icon"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <FaEye /> : <FaEyeSlash />}
+              </span>
             </div>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
@@ -160,15 +164,23 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <footer className="footer">
+      <footer className="footer" style={{ color: "white" }}>
         <p>
-          {/* Modified the About link to use navigate and scroll to the About section */}
-          <a href="#about" onClick={() => navigate("/", { hash: "about" })}>
+          <a
+            href="#about"
+            onClick={() => navigate("/", { hash: "about" })}
+            style={{ color: "white" }}
+          >
             About
           </a>{" "}
-          | <a href="#contact">Contact</a>
+          <span className="separator"> | </span>
+          <a href="#contact" style={{ color: "white" }}>
+            Contact
+          </a>
         </p>
-        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2025</p>
+        <p style={{ color: "white" }}>
+          &copy; Bautista, Cabigting, Rueras, Sandiego 2025
+        </p>
       </footer>
 
       {isOtpOverlayVisible && (

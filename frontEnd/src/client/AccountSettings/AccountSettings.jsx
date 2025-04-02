@@ -3,7 +3,6 @@ import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AccountSettings.css";
 import { IoMdArrowDropright } from "react-icons/io";
-import image from "../../assets/image.png";
 import ChangePassword from "./ChangePassword"; // Import the new component
 
 const AccountSettings = () => {
