@@ -94,7 +94,6 @@ const Transaction = ({ projectId }) => {
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase());
 
-      // Also search in miscellaneous items if they're expanded
       const miscItemsMatch = transaction.subItems?.some((item) =>
         item.expenses?.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -509,7 +508,6 @@ const Transaction = ({ projectId }) => {
 
   return (
     <div>
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="delete-confirmation-modal">
           <div className="delete-confirmation-content">
@@ -636,7 +634,6 @@ const Transaction = ({ projectId }) => {
           <tbody>
             {filteredAndSortedTransactions.map((transaction, index) => {
               const subtotal = transaction.amount;
-              const pastDueDays = calculatePastDueDays(transaction.dueDate);
               const assignedEmployeeName =
                 employees[transaction.assignedEmployee] || "Unknown";
               return (

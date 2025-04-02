@@ -15,22 +15,6 @@ const ProjectList = ({
   toggleDropdown,
   activeDropdown,
   openModal,
-  clients,
-  onSave,
-  editingProjectId,
-  projectName,
-  setProjectName,
-  clientId,
-  setClientId,
-  clientName,
-  setClientName,
-  startDate,
-  setStartDate,
-  endDate,
-  setEndDate,
-  description,
-  setDescription,
-  onCancel,
 }) => {
   const [activeView, setActiveView] = useState("overview");
   const [statuses, setStatuses] = useState({});

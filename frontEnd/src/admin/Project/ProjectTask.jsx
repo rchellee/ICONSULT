@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { SearchContext } from "../../components/SearchProvider";
 import ErrorBoundary from "../../components/ErrorBoundary";
 import { useParams, useNavigate } from "react-router-dom";
 import "./Task.css";
@@ -45,10 +44,8 @@ const ProjectTask = ({ onBack }) => {
     fetchProjectName();
   }, [projectId]);
 
-  // Handle tab switching
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    // Hide create button when on Documents tab
     setShowCreateButton(tab === "transactions");
   };
 
@@ -69,7 +66,6 @@ const ProjectTask = ({ onBack }) => {
       <Topbar />
       <Sidebar />
       <div className="project-task-container">
-        {/* Project Header with Breadcrumbs and Create Button */}
         <div className="project-header">
           <h3 className="project-id">
             <span className="project-name">My Project</span>
@@ -85,8 +81,6 @@ const ProjectTask = ({ onBack }) => {
             </button>
           )}
         </div>
-
-        {/* Tab Navigation */}
         <div className="project-task-tabs">
           <button
             className={activeTab === "transactions" ? "active" : ""}
@@ -101,8 +95,6 @@ const ProjectTask = ({ onBack }) => {
             Documents
           </button>
         </div>
-
-        {/* Tab Content */}
         <div className="project-task-content">
           {activeTab === "transactions" && (
             <ErrorBoundary>

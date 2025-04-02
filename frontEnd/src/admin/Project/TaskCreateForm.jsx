@@ -28,7 +28,6 @@ const TaskCreateForm = () => {
   const [projectDetails, setProjectDetails] = useState(null);
 
   const validateTransactionId = (id) => {
-    // Check if the ID contains only letters and numbers
     return /^[A-Za-z0-9]*$/.test(id);
   };
 
@@ -44,7 +43,7 @@ const TaskCreateForm = () => {
         });
     }
   }, [projectId]);
-  
+
   useEffect(() => {
     axios
       .get("http://localhost:8081/employees/id")
@@ -55,7 +54,6 @@ const TaskCreateForm = () => {
         console.error("Error fetching employees:", error);
       });
   }, []);
-  // Pre-fill form if editing a task
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
@@ -84,7 +82,6 @@ const TaskCreateForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate Transaction ID if it's provided
     if (transactionId && !validateTransactionId(transactionId)) {
       alert(
         "Transaction ID can only contain letters and numbers (no special characters)"
@@ -119,10 +116,9 @@ const TaskCreateForm = () => {
       paidDate: paidDate || null,
     };
     if (taskToEdit) {
-      // Update task if editing
       try {
         const response = await axios.put(
-          `http://localhost:8081/tasks/${taskToEdit.id}`, // Use the task ID to update
+          `http://localhost:8081/tasks/${taskToEdit.id}`,
           {
             taskName: newTask.expenses,
             taskFee: newTask.subItems[0].amount,
@@ -138,13 +134,12 @@ const TaskCreateForm = () => {
 
         if (response.status === 200) {
           console.log("Task updated successfully:", response.data);
-          navigate(-1); // Go back to the previous page
+          navigate(-1);
         }
       } catch (error) {
         console.error("Error updating task:", error);
       }
     } else {
-      // Create new task if not editing
       try {
         const response = await axios.post("http://localhost:8081/tasks", {
           taskName: newTask.expenses,
@@ -160,7 +155,7 @@ const TaskCreateForm = () => {
 
         if (response.status === 201) {
           console.log("Task created successfully:", response.data);
-          navigate(-1); // Go back to the previous page
+          navigate(-1);
         }
       } catch (error) {
         console.error("Error creating task:", error);
@@ -183,7 +178,6 @@ const TaskCreateForm = () => {
           <h2>{taskToEdit ? "" : ""}</h2>
         </div>
         <form onSubmit={handleSubmit}>
-          {/* Task Details Section */}
           <div className="form-section">
             <h3>Task Details</h3>
             <div className="form-row">
@@ -237,7 +231,6 @@ const TaskCreateForm = () => {
                 <MdAddCircleOutline />
               </button>
             </div>
-            {/* Display Added Miscellaneous Items */}
             <div className="misc-list-container">
               <div className="misc-grid">
                 {subItems.map((item, index) => (
@@ -325,8 +318,6 @@ const TaskCreateForm = () => {
               </div>
             </div>
           )}
-
-          {/* Form Actions */}
           <div className="form-actions">
             <button type="submit">{taskToEdit ? "Update" : "Create"}</button>
           </div>

@@ -26,13 +26,6 @@ const ListView = ({
   formatDate,
   statuses,
   statusColors,
-  handleProgressChange,
-  handleStatusChange,
-  startDates,
-  finishDates,
-  tasksInfo,
-  totalTasks,
-  handleRightClick,
   handleEdit,
   handleDelete,
 }) => {
@@ -45,8 +38,6 @@ const ListView = ({
   const [filterStatus, setFilterStatus] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState(null);
-
-  // Refs for dropdown containers
   const statusDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
   const statusButtonRef = useRef(null);
@@ -304,8 +295,6 @@ const ListView = ({
           </div>
         </div>
       </div>
-
-      {/* Table */}
       <div className="table-scroll-wrapper">
         <table className="project-list-table">
           <thead>

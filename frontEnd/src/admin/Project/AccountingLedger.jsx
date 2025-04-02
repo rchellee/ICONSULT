@@ -124,15 +124,6 @@ const AccountingLedger = ({
     if (a[sortCriteria] > b[sortCriteria]) return 1;
     return 0;
   });
-
-  // const sortedPayments = [...payments].sort((a, b) => {
-  //   if (sortCriteria === "date_paid") {
-  //     return new Date(a.date_paid) - new Date(b.date_paid);
-  //   }
-  //   if (a[sortCriteria] < b[sortCriteria]) return -1;
-  //   if (a[sortCriteria] > b[sortCriteria]) return 1;
-  //   return 0;
-  // });
   useEffect(() => {
     if (sortCriteria === "date_paid") {
       setSubtotals({});
@@ -212,7 +203,6 @@ const AccountingLedger = ({
                   <td>{payment.mode_of_payment}</td>
                   <td>{formatDate(payment.date_paid)}</td>
                 </tr>
-                {/* Display subtotal for the project */}
                 {sortCriteria !== "date_paid" &&
                 (index === filteredAndSortedPayments.length - 1 ||
                   filteredAndSortedPayments[index + 1][sortCriteria] !==
