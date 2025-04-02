@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import { useNavigate } from "react-router-dom";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
-import { IoChevronForward } from "react-icons/io5";
 import { TbArrowsSort } from "react-icons/tb";
-import { FaTasks } from "react-icons/fa";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import TaskCreateForm from "./TaskCreateForm";
 import axios from "axios";
 import "./Transaction.css";
 
 const Transaction = ({ projectId }) => {
   const navigate = useNavigate();
+  const { searchTerm } = useContext(SearchContext);
   const [transactions, setTransactions] = useState([]);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -72,12 +70,46 @@ const Transaction = ({ projectId }) => {
     }
   };
 
+  const calculatePastDueDays = (dueDate, status) => {
+    if (!dueDate || status === "Paid") return 0;
+    const today = new Date();
+    const due = new Date(dueDate);
+    const timeDiff = today - due;
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    return daysDiff > 0 ? daysDiff : 0;
+  };
+
+  const filterTransactions = (transactions, searchTerm, employees) => {
+    if (!searchTerm) return transactions;
+
+    return transactions.filter((transaction) => {
+      const taskNameMatch = transaction.expenses
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const employeeName = employees[transaction.assignedEmployee] || "";
+      const employeeNameMatch = employeeName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const statusMatch = transaction.status
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      // Also search in miscellaneous items if they're expanded
+      const miscItemsMatch = transaction.subItems?.some((item) =>
+        item.expenses?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      return (
+        taskNameMatch || employeeNameMatch || statusMatch || miscItemsMatch
+      );
+    });
+  };
+
   const sortTransactions = (transactions, option) => {
     const sorted = [...transactions];
 
     switch (option) {
       case "All":
-        // Default sorting (same as initial load)
         return sorted.sort((a, b) => {
           if (a.status === "Paid" && b.status !== "Paid") return 1;
           if (b.status === "Paid" && a.status !== "Paid") return -1;
@@ -85,19 +117,16 @@ const Transaction = ({ projectId }) => {
         });
 
       case "Paid":
-        // Show only paid transactions, sorted by payment date (newest first)
         return sorted
           .filter((t) => t.status === "Paid")
           .sort((a, b) => new Date(b.date_paid) - new Date(a.date_paid));
 
       case "Unpaid":
-        // Show only unpaid transactions, sorted by due date (earliest first)
         return sorted
           .filter((t) => t.status !== "Paid")
           .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
       case "Overdue":
-        // Show only overdue unpaid transactions, sorted by most overdue first
         return sorted
           .filter(
             (t) =>
@@ -111,12 +140,9 @@ const Transaction = ({ projectId }) => {
           );
 
       case "Due Date":
-        // Sort all by due date (earliest first)
         return sorted.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
       case "Date Paid":
-        // Sort paid transactions by payment date (newest first)
-        // Unpaid transactions will appear after paid ones
         return sorted.sort((a, b) => {
           if (a.status === "Paid" && b.status !== "Paid") return -1;
           if (b.status === "Paid" && a.status !== "Paid") return 1;
@@ -127,7 +153,6 @@ const Transaction = ({ projectId }) => {
         });
 
       default:
-        // Default sorting (same as initial load)
         return sorted.sort((a, b) => {
           if (a.status === "Paid" && b.status !== "Paid") return 1;
           if (b.status === "Paid" && a.status !== "Paid") return -1;
@@ -135,7 +160,10 @@ const Transaction = ({ projectId }) => {
         });
     }
   };
-  const sortedTransactions = sortTransactions(transactions, sortOption);
+  const filteredAndSortedTransactions = sortTransactions(
+    filterTransactions(transactions, searchTerm, employees),
+    sortOption
+  );
 
   const totalAmount = transactions.reduce((sum, transaction) => {
     return sum + (transaction.amount || 0);
@@ -461,15 +489,6 @@ const Transaction = ({ projectId }) => {
     });
   };
 
-  const calculatePastDueDays = (dueDate, status) => {
-    if (!dueDate || status === "Paid") return 0;
-    const today = new Date();
-    const due = new Date(dueDate);
-    const timeDiff = today - due;
-    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    return daysDiff > 0 ? daysDiff : 0;
-  };
-
   const toggleDropdown = (dropdownName) => {
     if (openDropdown === dropdownName) {
       setOpenDropdown(null);
@@ -568,33 +587,6 @@ const Transaction = ({ projectId }) => {
           </div>
 
           <div className="button-row">
-            <div className="status-task" ref={statusDropdownRef}>
-              <button
-                className="status-task-button"
-                onClick={() => toggleDropdown("status")}
-              >
-                <FaTasks size={20} className="button-icon" />
-                <span>Status</span>
-              </button>
-              {openDropdown === "status" && (
-                <div className="dropdown-task">
-                  <button onClick={() => setSortOption("All")}>All</button>
-                  <button onClick={() => setSortOption("Paid")}>Paid</button>
-                  <button onClick={() => setSortOption("Unpaid")}>
-                    Unpaid
-                  </button>
-                  <button onClick={() => setSortOption("Overdue")}>
-                    Overdue
-                  </button>
-                  <button onClick={() => setSortOption("Due Date")}>
-                    Due Date
-                  </button>
-                  <button onClick={() => setSortOption("Date Paid")}>
-                    Date Paid
-                  </button>
-                </div>
-              )}
-            </div>
             <div className="sort-container" ref={sortDropdownRef}>
               <button
                 className="sort-task-button"
@@ -642,7 +634,7 @@ const Transaction = ({ projectId }) => {
             </tr>
           </thead>
           <tbody>
-            {sortedTransactions.map((transaction, index) => {
+            {filteredAndSortedTransactions.map((transaction, index) => {
               const subtotal = transaction.amount;
               const pastDueDays = calculatePastDueDays(transaction.dueDate);
               const assignedEmployeeName =
