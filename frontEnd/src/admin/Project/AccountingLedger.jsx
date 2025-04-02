@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import axios from "axios";
 import "./AccountingLedger.css";
 import { FaTasks } from "react-icons/fa";
@@ -13,6 +14,25 @@ const AccountingLedger = ({
   const [payments, setPayments] = useState([]);
   const [subtotals, setSubtotals] = useState({});
   const [sortCriteria, setSortCriteria] = useState("projectName");
+  const { searchTerm } = useContext(SearchContext);
+
+  const filterPayments = (payments, searchTerm) => {
+    if (!searchTerm) return payments;
+
+    const term = searchTerm.toLowerCase();
+
+    return payments.filter((payment) => {
+      return (
+        payment.projectName?.toLowerCase().includes(term) ||
+        payment.transaction_id?.toLowerCase().includes(term) ||
+        payment.payer_name?.toLowerCase().includes(term) ||
+        payment.description?.toLowerCase().includes(term) ||
+        payment.amount?.toString().includes(term) ||
+        payment.mode_of_payment?.toLowerCase().includes(term) ||
+        formatDate(payment.date_paid)?.toLowerCase().includes(term)
+      );
+    });
+  };
 
   useEffect(() => {
     const fetchAndSavePaidTasks = async () => {
@@ -93,7 +113,10 @@ const AccountingLedger = ({
       maximumFractionDigits: 2,
     })}`;
   };
-  const sortedPayments = [...payments].sort((a, b) => {
+
+  const filteredAndSortedPayments = [
+    ...filterPayments(payments, searchTerm),
+  ].sort((a, b) => {
     if (sortCriteria === "date_paid") {
       return new Date(a.date_paid) - new Date(b.date_paid);
     }
@@ -102,10 +125,48 @@ const AccountingLedger = ({
     return 0;
   });
 
+  // const sortedPayments = [...payments].sort((a, b) => {
+  //   if (sortCriteria === "date_paid") {
+  //     return new Date(a.date_paid) - new Date(b.date_paid);
+  //   }
+  //   if (a[sortCriteria] < b[sortCriteria]) return -1;
+  //   if (a[sortCriteria] > b[sortCriteria]) return 1;
+  //   return 0;
+  // });
+  useEffect(() => {
+    if (sortCriteria === "date_paid") {
+      setSubtotals({});
+      return;
+    }
+
+    const calculateFilteredSubtotals = () => {
+      const subtotalsMap = filteredAndSortedPayments.reduce((acc, payment) => {
+        let key = payment.projectName;
+
+        if (sortCriteria === "mode_of_payment") {
+          key = payment.mode_of_payment;
+        } else if (sortCriteria === "payer_name") {
+          key = payment.payer_name;
+        }
+
+        if (!acc[key]) {
+          acc[key] = 0;
+        }
+
+        acc[key] += parseFloat(payment.amount) || 0;
+        return acc;
+      }, {});
+
+      setSubtotals(subtotalsMap);
+    };
+
+    calculateFilteredSubtotals();
+  }, [sortCriteria, filteredAndSortedPayments]);
+
   return (
     <div className="accounting-ledger">
-      <div className="sort-container">
-        <label style={{ marginLeft: "1190px" }}>Sort By: </label>
+      <div className="sortledger-container">
+        <label style={{ marginLeft: "1300px" }}>Sort By: </label>
         <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
@@ -116,7 +177,7 @@ const AccountingLedger = ({
           <option value="date_paid">Date Paid</option>
         </select>
       </div>
-      <div className="">
+      <div className="ok">
         <table className="accounting-table">
           <thead>
             <tr>
@@ -132,7 +193,7 @@ const AccountingLedger = ({
             </tr>
           </thead>
           <tbody>
-            {sortedPayments.map((payment, index) => (
+            {filteredAndSortedPayments.map((payment, index) => (
               <React.Fragment key={index}>
                 <tr>
                   <td>{payment.projectName}</td>
@@ -153,8 +214,8 @@ const AccountingLedger = ({
                 </tr>
                 {/* Display subtotal for the project */}
                 {sortCriteria !== "date_paid" &&
-                (index === sortedPayments.length - 1 ||
-                  sortedPayments[index + 1][sortCriteria] !==
+                (index === filteredAndSortedPayments.length - 1 ||
+                  filteredAndSortedPayments[index + 1][sortCriteria] !==
                     payment[sortCriteria]) ? (
                   <tr className="subtotal-row">
                     <td colSpan="4">

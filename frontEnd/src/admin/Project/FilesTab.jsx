@@ -15,7 +15,7 @@ const FilesTab = ({ projectId }) => {
   const [uploading, setUploading] = useState(false);
   const [clientNames, setClientNames] = useState({});
   const [sortConfig, setSortConfig] = useState({
-    key: "name", 
+    key: "name",
     direction: "asc",
   });
   const [showSortOptions, setShowSortOptions] = useState(false);

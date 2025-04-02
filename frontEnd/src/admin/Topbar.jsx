@@ -9,7 +9,7 @@ import logout from "../assets/logout.png";
 import profile from "../assets/profile.png";
 import admin from "../assets/admin.jpg";
 import logo from "../assets/logo3.png";
-import { IoIosSearch } from "react-icons/io";
+
 
 const Topbar = () => {
   const [menuActive, setMenuActive] = useState(false);
