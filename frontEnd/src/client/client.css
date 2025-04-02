@@ -1,3 +1,57 @@
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 69px;
+  bottom: 0;
+  width: 80px;
+  background: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 20px 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.sidebar-links li {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sidebar-links a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  padding: 10px 0;
+  position: relative;
+}
+
+.sidebar-links .icon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.link-text {
+  font-size: 12px;
+}
+
+.notification-mark {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+}
+
 .content-client {
   margin-left: 100px;
   padding: 40px 20px 20px;
@@ -154,4 +208,53 @@ span:hover {
 .notification-item.read {
   background-color: #fff;
   font-weight: normal;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 60px;
+  }
+
+  .sidebar-links {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+    height: 60px;
+  }
+
+  .sidebar-links li {
+    margin: 0;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sidebar-links a {
+    flex-direction: column-reverse;
+    padding: 5px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sidebar-links .icon {
+    margin-bottom: 0;
+    margin-top: 3px;
+    font-size: 20px;
+  }
+
+  .link-text {
+    font-size: 10px;
+  }
+
+  /* Adjust content margin for mobile */
+  .content-client {
+    margin-left: 0;
+    padding-bottom: 80px; /* Add padding to account for bottom bar */
+  }
 }
