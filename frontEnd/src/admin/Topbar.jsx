@@ -10,7 +10,6 @@ import profile from "../assets/profile.png";
 import admin from "../assets/admin.jpg";
 import logo from "../assets/logo3.png";
 
-
 const Topbar = () => {
   const [menuActive, setMenuActive] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
@@ -81,107 +80,112 @@ const Topbar = () => {
   };
 
   return (
-    <nav
-      style={{
-        backgroundColor: "#fff",
-        height: "80px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 20px",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
-      }}
-    >
-      <div className="logo">
-        <img
-          src={logo}
-          alt="iConsult Logo"
-          style={{
-            height: "40px", // Adjust height as needed
-            width: "auto", // Maintain aspect ratio
-            objectFit: "contain",
-          }}
-        />
-      </div>
-      <div className="search-icon" onClick={handleSearchClick}>
-        <span className="fas fa-search"></span>
-      </div>
-      <div
-        className={`cancel-icon ${menuActive || searchActive ? "show" : ""}`}
-        onClick={handleCancelClick}
-      >
-        <span className="fas fa-times"></span>
-      </div>
-      <form
-        className={`search-form ${
-          searchActive ? "active gradient-border" : ""
-        }`}
-      >
-        <input
-          type="search"
-          className="search-data"
-          placeholder="Search"
-          required
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </form>
-      {/* <div className="logo">{userName}</div> */}
-      <div
-        className="user-pic"
+    <div style={{ position: "relative" }}>
+      <nav
         style={{
-          backgroundColor: userColor,
+          backgroundColor: "#fff",
+          height: "80px",
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
-          color: "#ccc",
-          borderRadius: "50%",
-          width: "40px",
-          height: "40px",
-          fontSize: "16px",
-          cursor: "pointer",
+          justifyContent: "space-between",
+          padding: "0 20px",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
         }}
-        onClick={handleMenuOpen}
       >
-        {getUserInitials(userName)}
-      </div>
-      <div className="sub-menu-wrap">
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
+        <div className="logo">
+          <img
+            src={logo}
+            alt="iConsult Logo"
+            style={{
+              height: "40px", // Adjust height as needed
+              width: "auto", // Maintain aspect ratio
+              objectFit: "contain",
+            }}
+          />
+        </div>
+        <div className="search-icon" onClick={handleSearchClick}>
+          <span className="fas fa-search"></span>
+        </div>
+        <div
+          className={`cancel-icon ${menuActive || searchActive ? "show" : ""}`}
+          onClick={handleCancelClick}
         >
-          <div className="user-info">
-            <img alt={userName} src={admin} />
-            <h2>{userName}</h2>
-          </div>
-          <hr />
-          <MenuItem onClick={handleAccountClick} className="sub-menu-link">
-            <img src={profile} alt="Profile icon" />
-            <p>Edit Profile</p>
-            <span>&gt;</span>
-          </MenuItem>
-          <MenuItem onClick={handleReviewClick} className="sub-menu-link">
-            <img src={profile} alt="Feedback icon" />
-            <p>Feedbacks</p>
-            <span>&gt;</span>
-          </MenuItem>
-          <MenuItem onClick={handleHelpAdminClick} className="sub-menu-link">
-            <img src={help} alt="Help icon" />
-            <p>Help & Support</p>
-            <span>&gt;</span>
-          </MenuItem>
-          <MenuItem onClick={handleLogout} className="sub-menu-link">
-            <img src={logout} alt="Logout icon" />
-            <p>Logout</p>
-            <span>&gt;</span>
-          </MenuItem>
-        </Menu>
-      </div>
-    </nav>
+          <span className="fas fa-times"></span>
+        </div>
+        <form
+          className={`search-form ${
+            searchActive ? "active gradient-border" : ""
+          }`}
+        >
+          <input
+            type="search"
+            className="search-data"
+            placeholder="Search"
+            required
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </form>
+        {/* <div className="logo">{userName}</div> */}
+        <div
+          className="user-pic"
+          style={{
+            backgroundColor: userColor,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#ccc",
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            fontSize: "16px",
+            cursor: "pointer",
+          }}
+          onClick={handleMenuOpen}
+        >
+          {getUserInitials(userName)}
+        </div>
+        <div className="sub-menu-wrap">
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <div className="user-info">
+              <img alt={userName} src={admin} />
+              <h2>{userName}</h2>
+            </div>
+            <hr />
+            <MenuItem onClick={handleAccountClick} className="sub-menu-link">
+              <img src={profile} alt="Profile icon" />
+              <p>Edit Profile</p>
+              <span>&gt;</span>
+            </MenuItem>
+            <MenuItem onClick={handleReviewClick} className="sub-menu-link">
+              <img src={profile} alt="Feedback icon" />
+              <p>Feedbacks</p>
+              <span>&gt;</span>
+            </MenuItem>
+            <MenuItem onClick={handleHelpAdminClick} className="sub-menu-link">
+              <img src={help} alt="Help icon" />
+              <p>Help & Support</p>
+              <span>&gt;</span>
+            </MenuItem>
+            <MenuItem onClick={handleLogout} className="sub-menu-link">
+              <img src={logout} alt="Logout icon" />
+              <p>Logout</p>
+              <span>&gt;</span>
+            </MenuItem>
+          </Menu>
+        </div>
+      </nav>
+      <div style={{ height: "80px" }}></div>
+    </div>
   );
 };
 

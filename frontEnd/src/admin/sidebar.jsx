@@ -56,12 +56,6 @@ const Sidebar = () => {
             <span>Projects</span>
           </Link>
         </li>
-        <li>
-          <Link to="/transactions" data-tooltip="Transactions">
-            <div className="material-symbols-outlined icon">payments</div>
-            <span>Transactions</span>
-          </Link>
-        </li>
 
         <li>
           <Link to="/reports" data-tooltip="Reports">
