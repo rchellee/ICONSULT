@@ -1,216 +1,203 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
 .update-profile-form {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    width: 1000px;
-    max-width: 90%;
-  }
-  
-  .form-header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-  
-  .close-profile-icon {
-    font-size: 50px;
-    cursor: pointer;
-    color: #888;
-
-  }
-  
-  .close-profile-icon:hover {
-    color: #000;
-  }
-  
-  .form-update-section,
-  .form-section {
-    margin-bottom: 30px;
-  }
-  
-  .form-update-section h3,
-  .form-section h3 {
-    margin-bottom: 15px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .form-update-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  input {
-    width: 100%;  /* Ensure input fields span the full width of their container */
-    padding: 12px; /* Increase padding for larger input fields */
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .submit-btn {
-    padding: 12px 20px;  /* Increase padding for larger button */
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .submit-btn:hover {
-    background-color: #45a049;
-  }
-  
-  /* Layout adjustments for side-by-side fields */
-  .form-update-section .form-update-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-  }
-  
-  .form-update-group div {
-    width: 100%; /* Ensure each group of inputs take the full width available */
-  }
-  
-  .form-update-group input {
-    width: 100%; /* Ensure inputs inside the group fill the available space */
-  }
-  
-  .form-update-group input:nth-child(2) {
-    width: 100%; /* Ensure inputs inside the group fill the available space */
-  }
-  
-  .form-update-group input:nth-child(3) {
-    width: 100%; /* Ensure inputs inside the group fill the available space */
-  }
-  
-  .form-section .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-section .form-group input {
-    width: 100%; /* Make sure contact info fields span the entire available width */
-  }
-  
-  .form-update-section .form-update-group:last-child {
-    width: 100%; /* Ensure the last group spans the full width */
-  }
-  
-
-
-
-/*contact info*/
-
-/* UpdateProfileForm.css */
-
-.form-section {
-    margin-bottom: 20px;
-  }
-  
-  .form-contact-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
-  
-  .contact-item {
-    display: flex;
-    flex-direction: column;
-    width: 45%; /* Adjust to make them fit side by side */
-  }
-  
-  .contact-item label {
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .contact-item input {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-
-  /*company*/
-
-
-
-  /* UpdateProfileForm.css */
-
-.form-company-section {
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .company-item {
-    display: flex;
-    flex-direction: column;
-    width: 45%; /* Adjust to make them fit side by side */
-  }
-  
-  .company-item label {
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .company-item input {
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .form-group {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
-
-  
-
-
-
-  /*buttons*/
-
-  .form-update-group {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px; /* Add some spacing above the buttons */
-  }
-  
-  .cancel-profile-btn:hover {
-    background-color: #dcdcdc;
-  }
-  
-  .submit-profile-btn:hover {
-    background-color: #dcdcdc;
-  }
-  
-
-  .submit-profile-btn,
-.cancel-profile-btn {
-  padding: 10px 20px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  width: 10%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgb(130, 106, 251);
 }
 
-.cancel-profile-btn{
-background-color: #ccc;
+.container-profile {
+  position: relative;
+  max-width: 1700px;
+  width: 100%;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.container-profile header {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 500;
+  text-align: center;
+}
+
+.container-profile .form-profile {
+  margin-top: 30px;
+}
+
+.form-profile .input-box-profile {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.input-box-profile label {
+  color: #333;
+}
+
+.form-profile :where(.input-box-profile input, .select-box) {
+  position: relative;
+  height: 50px;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  color: #707070;
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0 15px;
+}
+
+.input-box-profile input:focus {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.form-profile .column-profile {
+  display: flex;
+  column-gap: 15px;
+}
+
+.form-profile .gender-box-profile {
+  margin-top: 20px;
+}
+
+.gender-box-profile h3 {
+  color: #333;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.form-profile :where(.gender-option-profile, .gender-profile) {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.form-profile .gender-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gender-profile input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #707070;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.gender-profile input[type="radio"]:checked {
+  border-color: rgb(130, 106, 251);
+}
+.gender-profile input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  background: rgb(130, 106, 251);
+  border-radius: 50%;
+}
+.gender-profile input {
+  accent-color: rgb(130, 106, 251);
+}
+
+.form-profile :where(.gender-profile input, .gender-profile label) {
+  cursor: pointer;
+}
+
+.gender-profile label {
+  color: #707070;
+  font-size: 0.9rem;
+  cursor: pointer;
+  order: 2;
+}
+
+.gender-profile:hover input[type="radio"] {
+  border-color: rgb(130, 106, 251);
+}
+
+.address :where(input, .select-box) {
+  margin-top: 15px;
+}
+
+.select-box select {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: #707070;
+  font-size: 1rem;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 2px;
+}
+
+.form-buttons button {
+  height: 55px;
+  width: 10%;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 400;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.submit-button {
+  background: rgb(130, 106, 251);
+}
+
+.submit-button:hover {
+  background: rgb(88, 56, 250);
+}
+
+.cancel-button {
+  background: #f44336;
+}
+
+.cancel-button:hover {
+  background: #d32f2f;
+}
+.read-only {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #f44336;
+  margin-top: 15px;
+  text-align: center;
+}
+
+/* Responsive */
+@media screen and (max-width: 500px) {
+  .form-profile .column-profile {
+    flex-wrap: wrap;
+  }
+
+  .form-profile :where(.gender-option-profile, .gender-profile) {
+    row-gap: 15px;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
 }

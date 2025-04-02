@@ -509,7 +509,6 @@ input[type="radio"] {
 }
 input[type="radio"] + label {
   display: inline-block;
-  width: 50%;
   text-align: center;
   border-radius: 0;
   padding: 1em;
