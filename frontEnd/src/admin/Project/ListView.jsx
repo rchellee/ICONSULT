@@ -43,6 +43,8 @@ const ListView = ({
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
 
   // Refs for dropdown containers
   const statusDropdownRef = useRef(null);
@@ -174,13 +176,21 @@ const ListView = ({
 
   const handleDeleteClick = (e, projectId) => {
     e.stopPropagation();
+    setProjectToDelete(projectId);
+    setShowDeleteConfirm(true);
+  };
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
-    if (confirmDelete) {
-      handleDelete(projectId);
+  const confirmDelete = () => {
+    if (projectToDelete) {
+      handleDelete(projectToDelete);
     }
+    setShowDeleteConfirm(false);
+    setProjectToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setProjectToDelete(null);
   };
 
   const statusCounts = projects?.reduce(
@@ -203,8 +213,11 @@ const ListView = ({
   return (
     <div className="eto-parent">
       <div className="sorting-button-container">
-        {/* Left side - Status counters and progress */}
         <div className="status-counters">
+          <span className="status-counter">
+            <span className="counter-label">Total Projects:</span>
+            <span className="status-value-list">{totalProjects}</span>
+          </span>
           <span className="status-counter">
             <span className="counter-label">Ongoing:</span>
             <span className="status-value-list">
@@ -235,7 +248,6 @@ const ListView = ({
           </span>
         </div>
         <div className="action-list-buttons">
-          {/* <button className="action-button export-button">Export</button> */}
           <div className="dropdown-list-container">
             <button
               className="action-button status-list-button"
@@ -298,6 +310,7 @@ const ListView = ({
         <table className="project-list-table">
           <thead>
             <tr>
+              <th>No.</th>
               <th>Project</th>
               <th>Client</th>
               <th>Progress</th>
@@ -310,96 +323,117 @@ const ListView = ({
               <th>
                 Project <br /> Status
               </th>
-              <th>Action</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            {filteredProjects.map((project) => {
-              const startDate = startDates[project.id]
-                ? new Date(startDates[project.id])
-                : null;
-              const finishDate = finishDates[project.id]
-                ? new Date(finishDates[project.id])
-                : null;
-
-              return (
-                <tr
-                  key={project.id}
-                  onClick={(e) => handleRowClick(e, project.id)}
-                  className="clickable-row"
-                >
-                  <td title={project.description}>{project.projectName}</td>
-                  <td title={project.clientName}>{project.clientName}</td>
-
-                  {/* Progress */}
-                  <td>{project.progress}%</td>
-
-                  {/* Planned Duration */}
-                  <td>
-                    <div title={formatDate(project.startDate)}>
-                      {formatDate(project.startDate)}
-                    </div>{" "}
-                    -
-                    <div title={formatDate(project.endDate)}>
-                      {formatDate(project.endDate)}
-                    </div>
-                  </td>
-
-                  <td>{formatCurrency(project.total_amount)}</td>
-                  <td>
-                    <span className="currency-value">
-                      {formatCurrency(project.paid_amount || 0.0)}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="currency-value">
-                      {formatCurrency(
-                        project.total_amount - (project.paid_amount || 0)
-                      )}
-                    </span>
-                  </td>
-                  {/* Status Dropdown */}
-                  <td>
-                    <div
-                      className="status-text"
-                      style={{
-                        color:
-                          statuses[project.id] === "Ongoing"
-                            ? "#4070f4" // blue for Ongoing
-                            : statuses[project.id] === "Completed"
-                            ? "#3b4f67" // Dark blue for Completed
-                            : statuses[project.id] === "Pending"
-                            ? "rgb(252, 118, 118)" // Red for Pending
-                            : statusColors[statuses[project.id]] || "#000", // Default to black
-                      }}
+            {filteredProjects.map((project, index) => (
+              <tr
+                key={project.id}
+                onClick={(e) => handleRowClick(e, project.id)}
+                className="clickable-row"
+              >
+                <td className="num-column">{index + 1}</td>
+                <td title={project.description}>{project.projectName}</td>
+                <td title={project.clientName}>{project.clientName}</td>
+                <td>{project.progress}%</td>
+                <td>
+                  <div title={formatDate(project.startDate)}>
+                    {formatDate(project.startDate)}
+                  </div>{" "}
+                  -
+                  <div title={formatDate(project.endDate)}>
+                    {formatDate(project.endDate)}
+                  </div>
+                </td>
+                <td>
+                  <span className="currency-value">
+                    {formatCurrency(project.total_amount)}
+                  </span>
+                </td>
+                <td>
+                  <span className="currency-value">
+                    {formatCurrency(project.paid_amount || 0.0)}
+                  </span>
+                </td>
+                <td>
+                  <span className="currency-value">
+                    {formatCurrency(
+                      project.total_amount - (project.paid_amount || 0)
+                    )}
+                  </span>
+                </td>
+                <td>
+                  <div
+                    className="status-indicator"
+                    style={{
+                      backgroundColor:
+                        statuses[project.id] === "Ongoing"
+                          ? "rgba(64, 112, 244, 0.1)"
+                          : statuses[project.id] === "Completed"
+                          ? "rgba(59, 79, 103, 0.1)"
+                          : statuses[project.id] === "Pending"
+                          ? "rgba(252, 118, 118, 0.1)"
+                          : statusColors[statuses[project.id]]
+                          ? `${statusColors[statuses[project.id]]}20`
+                          : "rgba(0, 0, 0, 0.05)",
+                      color:
+                        statuses[project.id] === "Ongoing"
+                          ? "#4070f4"
+                          : statuses[project.id] === "Completed"
+                          ? "#3b4f67"
+                          : statuses[project.id] === "Pending"
+                          ? "rgb(252, 118, 118)"
+                          : statusColors[statuses[project.id]] || "#000",
+                    }}
+                  >
+                    {statuses[project.id] || "Pending"}
+                  </div>
+                </td>
+                <td>
+                  <div className="project-action">
+                    <button
+                      className="project-edit"
+                      onClick={(e) => handleEditClick(e, project.id)}
                     >
-                      {statuses[project.id] || "Pending"}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="project-action">
-                      <button
-                        className="project-edit"
-                        onClick={(e) => handleEditClick(e, project.id)}
-                      >
-                        <AiOutlineEdit style={{ fontSize: "1.5rem" }} />
-                      </button>
-                      <button
-                        className="project-delete"
-                        onClick={(e) => handleDeleteClick(e, project.id)}
-                      >
-                        <MdOutlineDeleteOutline
-                          style={{ fontSize: "1.5rem" }}
-                        />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+                      <AiOutlineEdit style={{ fontSize: "1.5rem" }} />
+                    </button>
+                    <button
+                      className="project-delete"
+                      onClick={(e) => handleDeleteClick(e, project.id)}
+                    >
+                      <MdOutlineDeleteOutline style={{ fontSize: "1.5rem" }} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+      {showDeleteConfirm && (
+        <div className="delete-confirmation-modal">
+          <div className="delete-confirmation-content">
+            <div className="delete-confirmation-header">
+              <MdOutlineDeleteOutline className="delete-project-icon" />
+              <h3>Confirm Deletion</h3>
+            </div>
+            <p>Are you sure you want to delete this project?</p>
+
+            <div className="delete-confirmation-buttons">
+              <button className="cancel-project-button" onClick={cancelDelete}>
+                Cancel
+              </button>
+              <button
+                className="confirm-project-button"
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
