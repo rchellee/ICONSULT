@@ -1,70 +1,157 @@
+/* Add this to your CSS file */
+.account-details-section > h2 {
+  color: #716cff;
+  text-align: left;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
 .account-settings {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
-  background-color: #f4f4f4;
-  min-height: 95vh;
-}
-
-.review-section {
-  margin-left: 85px;
-  padding: 20px;
-}
-
-.settings-content {
-  width: 100%;
-  max-width: 600px;
-  padding: 30px;
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-height: 95vh;
+  margin-left: 200px;
 }
 
-.content-admin h2 {
-  text-align: center;
-  margin-top: 20px;
+/* Account container with left (image) and right (details) sections */
+.account-container {
+  display: flex;
+  gap: 20px; /* Increased gap for better separation */
+  margin-top: 40px;
+  align-items: flex-start;
+  width: 90%;
+  max-width: 1200px;
+}
+
+/* Left section - User image */
+.user-image-section {
+  flex: 1;
+  max-width: 4000px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: sticky;
+  top: 20px;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.user-image {
+  width: 300px;
+  height: 400px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: none;
+}
+
+/* Right section - Account details */
+.account-details-section {
+  flex: 2;
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.account-details-section h2 {
+  text-align: left;
+  margin-bottom: 30px;
   color: #333;
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 600;
 }
 
-.form-group {
-  margin-bottom: 20px;
+/* Detail rows styling */
+.admin-detail-row {
+  margin-bottom: 30px;
 }
 
-.form-group label {
+.label-admin {
+  font-weight: 600;
   display: block;
   margin-bottom: 8px;
-  font-weight: bold;
+  color: #444;
+  font-size: 18px;
+}
+
+.value-admin {
+  color: #555;
+  font-size: 16px;
+  padding: 8px 0;
+  font-weight: 500;
+}
+
+/* Form elements */
+.text-field {
+  margin-bottom: 20px !important;
+  width: 80%;
+  max-width: 500px;
+}
+
+.text-field label {
+  font-size: 16px;
   color: #333;
 }
 
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.text-field input {
+  padding: 12px;
   font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 100%;
+  transition: border-color 0.3s;
+}
+
+.text-field input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.text-field .MuiOutlinedInput-root {
+  background-color: #ffffff; /* Light gray background */
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.text-field .MuiOutlinedInput-notchedOutline {
+  border-color: #4947b2; /* Light gray border */
+}
+
+/* Text color inside input */
+.text-field .MuiOutlinedInput-input {
+  color: #333; /* Dark text */
+  padding: 14px;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
 }
 
 .update-btn {
-  width: 100%;
-  padding: 12px;
+  padding: 12px 24px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 20px;
+  font-weight: 500;
   transition: background-color 0.3s ease;
 }
 
 .update-btn:hover {
-  background-color: #0056b3;
+  background-color: #0069d9;
 }
 
+/* Dialog/message styles */
 .message {
   margin-top: 20px;
   padding: 12px;
@@ -74,162 +161,54 @@
   border-radius: 4px;
 }
 
-.profile-form,
-.password-form {
-  margin-bottom: 30px;
-}
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .account-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
 
-.profile-form button,
-.password-form button {
-  width: 100%;
-  margin: 0 auto;
-  padding: 12px;
-  background-color: #28a745;
-  color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.profile-form button:hover,
-.password-form button:hover {
-  background-color: #218838;
-}
-/* Center the entire admin account settings content to the screen */
-.account-settings {
-  display: flex;
-  align-items: center; /* Centers horizontally */
-  justify-content: center; /* Centers vertically */
-  flex-direction: column;
-}
-
-/* Style for the content inside the account settings */
-.account-settings .content-admin {
-  display: flex;
-  flex-direction: column; /* Stack content vertically */
-  align-items: center; /* Centers content horizontally */
-  text-align: center;
-  margin-top: -200px;
-}
-
-/* Centered styling for Username and Email */
-.admin-account-settings {
-  font-size: 16px;
-  margin: 20px 0; /* Space between sections */
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-}
-
-/* Style for the label */
-.admin-account-settings .label-admin {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px; /* Space between the label and the value */
-}
-
-/* Style for the value below the label */
-.admin-account-settings .value-admin {
-  font-weight: normal;
-  color: #555;
-  font-size: 5px;
-}
-
-/* Center and style the edit button */
-.account-settings .content button {
-  margin-top: 10px; /* Adds spacing above the button */
-}
-
-/* Add space between the heading and the details */
-.account-settings .content h2 {
-  margin-bottom: 5px; /* Space between heading and username/email */
-}
-
-/* Style for the admin detail row */
-/* Style for the admin detail row */
-.admin-detail-row {
-  display: flex;
-  flex-direction: column; /* Stack label and value vertically */
-  /* Add space between rows */
-  align-items: flex-start; /* Align to the left */
-  margin: 50px 0;
-  margin-top: 5px;
-}
-
-/* Style for the label */
-/* Style for the label */
-.admin-detail-row .label-admin {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px; /* Increased space between label and value */
-  font-size: 20px; /* Adjust the font size of the label */
-}
-
-/* Style for the value below the label */
-.admin-detail-row .value-admin {
-  margin-top: 5px; /* Optional: adjust the space between the value and any following content */
-  font-weight: bold;
-  color: #464646;
-}
-
-/* Style for the passwordd-admin div */
-.passwordd-admin {
-  display: flex;
-  justify-content: center; /* Centers the content horizontally */
-  align-items: center; /* Centers the content vertically */
-  margin-top: 100px; /* Adds space above the image */
-  margin-bottom: -20px;
-}
-
-/* Style for the password image */
-.password-image-admin {
-  width: 134px; /* Adjust width as needed */
-  height: 146px; /* Adjust height as needed */
-  object-fit: cover; /* Ensures the image doesn't stretch */
-}
-
-.text-field {
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #f4f4f4;
-}
-
-.text-field label {
-  font-size: 14px;
-  color: #333;
-}
-
-.text-field input {
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-}
-
-.text-field input:focus {
-  border-color: #007bff;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-@media (max-width: 768px) {
-  .content {
-    padding: 20px;
-    width: 90%;
+  .user-image-section {
+    position: static;
     max-width: 100%;
   }
 
-  .form-group input {
-    font-size: 14px;
+  .user-image {
+    width: 250px;
+    height: 250px;
   }
 
-  h2 {
-    font-size: 20px;
+  .account-details-section {
+    width: 100%;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 576px) {
+  .account-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .user-image {
+    width: 200px;
+    height: 200px;
+  }
+
+  .account-details-section {
+    padding: 20px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .admin-detail-row {
+    margin-bottom: 20px;
+  }
+
+  .label-admin {
+    font-size: 16px;
   }
 }
