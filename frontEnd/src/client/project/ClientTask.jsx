@@ -18,16 +18,34 @@ const ClientTask = ({ tasks, projectId }) => {
     setIsPaymentOverlayOpen(true);
   };
 
-  // Separate tasks into paid and unpaid
+  // Get current date for comparison
+  const currentDate = new Date();
+  
+  // Separate tasks into categories
   const paidTasks = tasks.filter(
     (task) => task.payment_status?.toLowerCase() === "paid"
   );
+  
   const unpaidTasks = tasks.filter(
     (task) => task.payment_status?.toLowerCase() !== "paid"
   );
+  
+  // Separate unpaid tasks into past due and to pay
+  const pastDueTasks = unpaidTasks.filter(
+    (task) => new Date(task.due_date) < currentDate
+  );
+  
+  const toPayTasks = unpaidTasks.filter(
+    (task) => new Date(task.due_date) >= currentDate
+  );
 
-  // Calculate total unpaid amount
-  const totalUnpaid = unpaidTasks.reduce(
+  // Calculate total amounts
+  const totalPastDue = pastDueTasks.reduce(
+    (sum, task) => sum + parseFloat(task.amount || 0),
+    0
+  );
+  
+  const totalToPay = toPayTasks.reduce(
     (sum, task) => sum + parseFloat(task.amount || 0),
     0
   );
@@ -44,12 +62,46 @@ const ClientTask = ({ tasks, projectId }) => {
         </div>
       ) : (
         <>
-          {/* Unpaid Tasks Box - Only show if there are unpaid tasks */}
-          {unpaidTasks.length > 0 && (
+          {/* Past Due Tasks Box - Only show if there are past due tasks */}
+          {pastDueTasks.length > 0 && (
+            <div className="task-box past-due-box">
+              <h2>Past Due</h2>
+              <div className="task-cards-container">
+                {pastDueTasks.map((task, index) => (
+                  <div key={`past-due-${task.task_id || index}`} className="task-card past-due-card">
+                    <div className="task-card-header">
+                      <span className="task-name">{task.task_name}</span>
+                      <span className="task-amount">
+                        ₱ {parseFloat(task.amount || 0).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="task-date overdue-date">
+                      Was due: {formatDueDate(task.due_date)}
+                    </div>
+                    <div className="task-status-row">
+                      <span className="task-status overdue-status">Overdue</span>
+                      <button
+                        onClick={() => handlePay(task.id, task.amount, false)}
+                        className="pay-button overdue-button"
+                      >
+                        Pay Now
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="total-amount overdue-total">
+                Total Overdue: ₱ {totalPastDue.toFixed(2)}
+              </div>
+            </div>
+          )}
+
+          {/* To Pay Tasks Box - Only show if there are tasks to pay */}
+          {toPayTasks.length > 0 && (
             <div className="task-box unpaid-box">
               <h2>To Pay</h2>
               <div className="task-cards-container">
-                {unpaidTasks.map((task, index) => (
+                {toPayTasks.map((task, index) => (
                   <div key={`unpaid-${task.task_id || index}`} className="task-card unpaid-card">
                     <div className="task-card-header">
                       <span className="task-name">{task.task_name}</span>
@@ -73,7 +125,7 @@ const ClientTask = ({ tasks, projectId }) => {
                 ))}
               </div>
               <div className="total-amount">
-                Total Due: ₱ {totalUnpaid.toFixed(2)}
+                Total Due: ₱ {totalToPay.toFixed(2)}
               </div>
             </div>
           )}

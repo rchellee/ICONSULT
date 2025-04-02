@@ -11,7 +11,7 @@ import { CiEdit } from "react-icons/ci";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "./AdminAccount.css";
-import password from "../../assets/passimg.png";
+import user from "../../assets/user.png"; // User image import
 
 const AdminAccount = () => {
   const [adminDetails, setAdminDetails] = useState(null);
@@ -23,7 +23,7 @@ const AdminAccount = () => {
   useEffect(() => {
     const fetchAdminDetails = async () => {
       try {
-        const adminId = 1; // Replace with the actual admin ID you want to fetch
+        const adminId = 1;
         const response = await fetch(`http://localhost:8081/admins/${adminId}`);
         if (response.ok) {
           const data = await response.json();
@@ -74,113 +74,123 @@ const AdminAccount = () => {
       <Topbar />
       <Sidebar />
       <div className="account-settings">
-        <div className="content-admin">
-          <div className="passwordd-admin">
-            <img
-              src={password}
-              alt="password"
-              className="password-image-admin"
-            />
+        <div className="account-container">
+          {/* Left side with user image */}
+          <div className="user-image-section">
+            <img src={user} alt="User" className="user-image" />
           </div>
-          <h2>Account Settings</h2>
-          {adminDetails ? (
-            <div>
-              {!editMode ? (
-                <>
-                  <div className="admin-detail-row">
-                    <span className="label-admin">Username</span>
-                    <p>
-                      Username:{" "}
-                      <span className="value-admin">
-                        {adminDetails.username}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="admin-detail-row">
-                    <span className="label-admin">Email Address</span>
-                    <p>
-                      Email:{" "}
-                      <span className="value-admin">{adminDetails.email}</span>
-                    </p>
-                  </div>
-                  <div className="admin-detail-row">
-                    <span className="label-admin">Password</span>
-                    <p>
-                      <span className="value-admin">**********</span>
-                    </p>
-                  </div>
-                  <Button
-                    variant="contained"
-                    onClick={() => setEditMode(true)}
-                    style={{ marginTop: "10px" }}
-                  >
-                    <CiEdit /> UPDATE PROFILE
-                  </Button>
-                </>
-              ) : (
-                <div>
-                  <TextField
-                    label="Username"
-                    value={updatedDetails.username || ""}
-                    onChange={(e) =>
-                      setUpdatedDetails({
-                        ...updatedDetails,
-                        username: e.target.value,
-                      })
-                    }
-                    fullWidth
-                    margin="normal"
-                    className="text-field"
-                  />
-                  <TextField
-                    label="Email"
-                    value={updatedDetails.email || ""}
-                    onChange={(e) =>
-                      setUpdatedDetails({
-                        ...updatedDetails,
-                        email: e.target.value,
-                      })
-                    }
-                    fullWidth
-                    margin="normal"
-                    className="text-field"
-                  />
-                  <TextField
-                    label="New Password"
-                    type="password"
-                    value={updatedDetails.password || ""}
-                    onChange={(e) =>
-                      setUpdatedDetails({
-                        ...updatedDetails,
-                        password: e.target.value,
-                      })
-                    }
-                    fullWidth
-                    margin="normal"
-                    className="text-field"
-                  />
-                  <div className="button-group">
+          
+          {/* Right side with account details */}
+          <div className="account-details-section">
+            <h2>Account Settings</h2>
+            {adminDetails ? (
+              <div>
+                {!editMode ? (
+                  <>
+                    <div className="admin-detail-row">
+                      <span className="label-admin">Username</span>
+                      <p>
+                        Username:{" "}
+                        <span className="value-admin">
+                          {adminDetails.username}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="admin-detail-row">
+                      <span className="label-admin">Email Address</span>
+                      <p>
+                        Email:{" "}
+                        <span className="value-admin">{adminDetails.email}</span>
+                      </p>
+                    </div>
+                    <div className="admin-detail-row">
+                      <span className="label-admin">Password</span>
+                      <p>
+                        <span className="value-admin">**********</span>
+                      </p>
+                    </div>
                     <Button
                       variant="contained"
-                      onClick={handleUpdate}
-                      style={{ marginRight: "10px", marginTop: "20px" }}
+                      onClick={() => setEditMode(true)}
+                      style={{ marginTop: "10px" }}
                     >
-                      Save
+                      <CiEdit /> UPDATE PROFILE
                     </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => setEditMode(false)}
-                      style={{ marginTop: "20px" }}
-                    >
-                      Cancel
-                    </Button>
+                  </>
+                ) : (
+                  <div>
+                    <TextField
+                      label="Username"
+                      value={updatedDetails.username || ""}
+                      onChange={(e) =>
+                        setUpdatedDetails({
+                          ...updatedDetails,
+                          username: e.target.value,
+                        })
+                      }
+                      fullWidth
+                      margin="normal"
+                      className="text-field"
+                    />
+                    <TextField
+                      label="Email"
+                      value={updatedDetails.email || ""}
+                      onChange={(e) =>
+                        setUpdatedDetails({
+                          ...updatedDetails,
+                          email: e.target.value,
+                        })
+                      }
+                      fullWidth
+                      margin="normal"
+                      className="text-field"
+                    />
+                    <TextField
+                      label="New Password"
+                      type="password"
+                      value={updatedDetails.password || ""}
+                      onChange={(e) =>
+                        setUpdatedDetails({
+                          ...updatedDetails,
+                          password: e.target.value,
+                        })
+                      }
+                      fullWidth
+                      margin="normal"
+                      className="text-field"
+                    />
+                    <div className="button-group">
+                      <Button
+                        variant="contained"
+                        onClick={handleUpdate}
+                        style={{ marginRight: "10px", marginTop: "20px" }}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setEditMode(false)}
+                        sx={{
+                          marginTop: "20px",
+                          color: "#716cff",
+                          borderColor: "#716cff",
+                          '&:hover': {
+                            backgroundColor: "#716cff",
+                            color: "white",
+                            borderColor: "#716cff",
+                          }
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p>Loading...</p>
-          )}
+                )}
+              </div>
+            ) : (
+              <p>Loading...</p>
+            )}
+          </div>
         </div>
       </div>
       <Dialog open={openDialog} onClose={handleCloseDialog}>
