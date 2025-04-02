@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoCreateOutline } from "react-icons/io5";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { AiOutlineEdit } from "react-icons/ai";
 import { IoChevronForward } from "react-icons/io5";
+import { TbArrowsSort } from "react-icons/tb";
 import { FaTasks } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
@@ -19,10 +19,12 @@ const Transaction = ({ projectId }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [expandedTasks, setExpandedTasks] = useState(new Set());
   const [employees, setEmployees] = useState({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
   const [projectName, setProjectName] = useState("");
   const statusDropdownRef = useRef(null);
   const sortDropdownRef = useRef(null);
-  const [sortOption, setSortOption] = useState("default");
+  const [sortOption, setSortOption] = useState("All");
 
   useEffect(() => {
     if (!projectId) return;
@@ -32,7 +34,7 @@ const Transaction = ({ projectId }) => {
         const response = await axios.get(
           `http://localhost:8081/project/${projectId}`
         );
-        setProjectName(response.data.projectName); // Assuming the response contains the project name
+        setProjectName(response.data.projectName);
       } catch (error) {
         console.error("Error fetching project name:", error);
       }
@@ -40,12 +42,13 @@ const Transaction = ({ projectId }) => {
 
     fetchProjectName();
   }, [projectId]);
+
   const updateProjectProgress = async (progress) => {
     try {
       const response = await axios.put(
         `http://localhost:8081/update-progress/${projectId}`,
         {
-          progress: parseFloat(progress), // Ensure progress is a number
+          progress: parseFloat(progress),
         }
       );
 
@@ -56,6 +59,7 @@ const Transaction = ({ projectId }) => {
       console.error("Error updating project progress:", error);
     }
   };
+
   const updateTotalAmount = async (totalAmount) => {
     try {
       await axios.put("http://localhost:8081/update-total-amount", {
@@ -67,14 +71,7 @@ const Transaction = ({ projectId }) => {
       console.error("Error updating total amount:", error);
     }
   };
-  const calculatePastDueDays = (dueDate, status) => {
-    if (!dueDate || status === "Paid") return 0; // Return 0 if the task is paid or has no due date
-    const today = new Date();
-    const due = new Date(dueDate);
-    const timeDiff = today - due;
-    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    return daysDiff > 0 ? daysDiff : 0; // Return the number of days past due (or 0 if not past due)
-  };
+
   const sortTransactions = (transactions, option) => {
     const sorted = [...transactions];
 
@@ -139,21 +136,26 @@ const Transaction = ({ projectId }) => {
     }
   };
   const sortedTransactions = sortTransactions(transactions, sortOption);
-  const totalAmount = sortedTransactions.reduce((sum, transaction) => {
-    return sum + (transaction.amount || 0); // Use the amount field directly
+
+  const totalAmount = transactions.reduce((sum, transaction) => {
+    return sum + (transaction.amount || 0);
   }, 0);
-  const totalPaid = sortedTransactions.reduce((sum, transaction) => {
+
+  const totalPaid = transactions.reduce((sum, transaction) => {
     if (transaction.status === "Paid") {
       return sum + (transaction.amount || 0);
     }
     return sum;
   }, 0);
-  const paymentProgress = ((totalPaid / totalAmount) * 100).toFixed(2);
+
+  const paymentProgress = Math.round((totalPaid / totalAmount) * 100);
+
   useEffect(() => {
     if (transactions.length > 0) {
       updateProjectProgress(paymentProgress);
     }
   }, [paymentProgress]);
+
   const checkAndUpdateStatus = async (task) => {
     if (task.transaction_id && task.mode_of_payment && task.date_paid) {
       try {
@@ -175,6 +177,7 @@ const Transaction = ({ projectId }) => {
     }
     return false;
   };
+
   useEffect(() => {
     if (transactions.length > 0) {
       updateTotalAmount(totalAmount);
@@ -193,7 +196,6 @@ const Transaction = ({ projectId }) => {
     }
   };
 
-  // Calculate total paid amount
   const totalPaidAmount = transactions.reduce((sum, transaction) => {
     if (transaction.status === "Paid") {
       return sum + (transaction.amount || 0);
@@ -201,29 +203,27 @@ const Transaction = ({ projectId }) => {
     return sum;
   }, 0);
 
-  // Update the paid_amount in the database whenever totalPaidAmount changes
   useEffect(() => {
     if (transactions.length > 0) {
       updatePaidAmount(totalPaidAmount);
     }
   }, [totalPaidAmount]);
 
-  // Fetch employee data
   useEffect(() => {
     axios
-      .get("http://localhost:8081/employees/id") // Fetch employee data
+      .get("http://localhost:8081/employees/id")
       .then((response) => {
         const employeeMap = {};
         response.data.forEach((employee) => {
-          employeeMap[employee.id] = employee.fullName; // Map employee ID to fullName
+          employeeMap[employee.id] = employee.fullName;
         });
-        setEmployees(employeeMap); // Set the employee mapping
+        setEmployees(employeeMap);
       })
       .catch((error) => {
         console.error("Error fetching employees:", error);
       });
   }, []);
-  // Fetch tasks
+
   useEffect(() => {
     if (!projectId) return;
 
@@ -254,7 +254,7 @@ const Transaction = ({ projectId }) => {
           const miscellaneous = JSON.parse(task.miscellaneous || "[]").map(
             (item) => ({
               ...item,
-              fee: parseFloat(item.fee) || 0, // Ensure fee is a number
+              fee: parseFloat(item.fee) || 0,
             })
           );
 
@@ -291,7 +291,7 @@ const Transaction = ({ projectId }) => {
 
     fetchTasks();
   }, [projectId]);
-  // Handle clicks outside dropdowns
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -314,7 +314,7 @@ const Transaction = ({ projectId }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  // Handle creating a new task
+
   const handleCreateTask = async (newTask) => {
     try {
       const response = await axios.post("http://localhost:8081/tasks", {
@@ -327,7 +327,6 @@ const Transaction = ({ projectId }) => {
       });
 
       if (response.status === 201) {
-        // Fetch tasks again to update the list
         const fetchResponse = await fetch(
           `http://localhost:8081/admin/tasks?projectId=${projectId}`
         );
@@ -337,7 +336,6 @@ const Transaction = ({ projectId }) => {
         const data = await fetchResponse.json();
         const tasks = data.tasks;
 
-        // Map tasks to the expected transactions structure
         const mappedTransactions = tasks.map((task) => {
           const miscellaneous = JSON.parse(task.miscellaneous || "[]").map(
             (item) => ({
@@ -370,13 +368,7 @@ const Transaction = ({ projectId }) => {
       console.error("Error creating task:", error);
     }
   };
-  const navigateToCreateTask = () => {
-    navigate(`/create-task`, {
-      state: {
-        projectId: projectId, // Ensure projectId is passed here
-      },
-    });
-  };
+
   const handleEditTask = (taskIndex) => {
     const taskToEdit = transactions[taskIndex];
     navigate(`/create-task`, {
@@ -384,22 +376,22 @@ const Transaction = ({ projectId }) => {
         taskToEdit: {
           ...taskToEdit,
           index: taskIndex,
-          transactionId: taskToEdit.transaction_id, // Add transaction_id
-          modeOfPayment: taskToEdit.mode_of_payment, // Add mode_of_payment
-          paidDate: taskToEdit.date_paid, // Add date_paid
+          transactionId: taskToEdit.transaction_id,
+          modeOfPayment: taskToEdit.mode_of_payment,
+          paidDate: taskToEdit.date_paid,
         },
-        projectId: projectId, // Pass projectId for context
+        projectId: projectId,
       },
     });
   };
+
   const handleUpdateTask = (updatedTask) => {
     const updatedTransactions = [...transactions];
     updatedTransactions[updatedTask.index] = {
       ...updatedTask,
-      created_at: updatedTask.created_at || new Date().toISOString(), // Preserve or set created_at
+      created_at: updatedTask.created_at || new Date().toISOString(),
     };
 
-    // Sort transactions by created_at (newest first) and status (Paid last)
     const sortedTransactions = updatedTransactions.sort((a, b) => {
       if (a.status === "Paid" && b.status !== "Paid") return 1;
       if (b.status === "Paid" && a.status !== "Paid") return -1;
@@ -409,38 +401,47 @@ const Transaction = ({ projectId }) => {
     setShowTaskForm(false);
     setEditingTask(null);
   };
-  const handleDeleteTask = async (taskIndex) => {
-    const taskToDelete = transactions[taskIndex];
 
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
+  const handleDeleteClick = (taskIndex) => {
+    setTaskToDelete(taskIndex);
+    setShowDeleteConfirm(true);
+  };
 
-    if (!isConfirmed) {
-      return; // Exit if the user cancels the deletion
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setTaskToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (taskToDelete === null) {
+      setShowDeleteConfirm(false);
+      return;
     }
 
+    const taskToDeleteObj = transactions[taskToDelete];
+
     try {
-      // Send a DELETE request to the backend
       const response = await axios.delete(
-        `http://localhost:8081/tasks/${taskToDelete.id}`
+        `http://localhost:8081/tasks/${taskToDeleteObj.id}`
       );
 
       if (response.status === 200) {
-        // Remove the deleted task from the local state
         const updatedTransactions = transactions.filter(
-          (_, index) => index !== taskIndex
+          (_, index) => index !== taskToDelete
         );
         setTransactions(updatedTransactions);
-        console.log("Task deleted successfully:", response.data);
       }
     } catch (error) {
       console.error("Error deleting task:", error);
+    } finally {
+      setShowDeleteConfirm(false);
+      setTaskToDelete(null);
     }
   };
+
   const formatAmount = (amount) => {
     if (isNaN(amount)) {
-      return "₱0.00"; // Return a default value if amount is NaN
+      return "₱0.00";
     }
     return new Intl.NumberFormat("en-PH", {
       style: "currency",
@@ -449,6 +450,7 @@ const Transaction = ({ projectId }) => {
       maximumFractionDigits: 2,
     }).format(amount);
   };
+
   const formatDate = (dateString) => {
     if (!dateString) return "--";
     const date = new Date(dateString);
@@ -458,7 +460,16 @@ const Transaction = ({ projectId }) => {
       day: "numeric",
     });
   };
-  // Handle dropdown toggle
+
+  const calculatePastDueDays = (dueDate, status) => {
+    if (!dueDate || status === "Paid") return 0;
+    const today = new Date();
+    const due = new Date(dueDate);
+    const timeDiff = today - due;
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    return daysDiff > 0 ? daysDiff : 0;
+  };
+
   const toggleDropdown = (dropdownName) => {
     if (openDropdown === dropdownName) {
       setOpenDropdown(null);
@@ -466,7 +477,7 @@ const Transaction = ({ projectId }) => {
       setOpenDropdown(dropdownName);
     }
   };
-  // Toggle task details visibility
+
   const toggleTaskDetails = (taskIndex) => {
     const newExpandedTasks = new Set(expandedTasks);
     if (newExpandedTasks.has(taskIndex)) {
@@ -476,67 +487,35 @@ const Transaction = ({ projectId }) => {
     }
     setExpandedTasks(newExpandedTasks);
   };
-  const exportToCSV = () => {
-    if (transactions.length === 0) {
-      alert("No data available for export.");
-      return;
-    }
 
-    const headers = [
-      "Task Name",
-      "Due Date",
-      "Assigned Employee",
-      "Status",
-      "Date Paid",
-      "Amount",
-    ];
-
-    const csvRows = [headers.join(",")];
-
-    transactions.forEach((transaction) => {
-      const row = [
-        transaction.expenses,
-        transaction.dueDate ? formatDate(transaction.dueDate) : "--",
-        employees[transaction.assignedEmployee] || "Unassigned",
-        transaction.status,
-        transaction.date_paid ? formatDate(transaction.date_paid) : "--",
-        formatAmount(transaction.amount),
-      ];
-      csvRows.push(row.join(","));
-    });
-
-    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-
-    // Use projectName for the filename, with fallback to "transactions" if projectName is empty
-    const filename = projectName
-      ? `${projectName.replace(/[^a-z0-9]/gi, "_")}_transactions.csv`
-      : "transactions.csv";
-    link.setAttribute("download", filename);
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
   return (
     <div>
-      {/* Header with Project ID */}
-      <div className="header-container">
-        <h3 className="project-id">
-          <span className="project-name">MyProject</span>
-          <IoChevronForward className="chevron-icon" />
-          <span className="project-name">{projectName}</span>
-        </h3>
-        <button
-          className="create-task-button"
-          onClick={navigateToCreateTask} // Use the navigate function
-        >
-          Create <IoCreateOutline className="create-task-icon" />
-        </button>
-      </div>
-      {/* Task Creation/Edit Form */}
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="delete-confirmation-modal">
+          <div className="delete-confirmation-content">
+            <div className="delete-confirmation-header">
+              <MdOutlineDeleteOutline className="delete-project-icon" />
+              <h3>Confirm Deletion</h3>
+            </div>
+            <p>Are you sure you want to delete this task?</p>
+
+            <div className="delete-confirmation-buttons">
+              <button className="cancel-project-button" onClick={cancelDelete}>
+                Cancel
+              </button>
+              <button
+                className="confirm-project-button"
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="header-container"></div>
       {showTaskForm && (
         <TaskCreateForm
           onClose={() => {
@@ -549,55 +528,80 @@ const Transaction = ({ projectId }) => {
         />
       )}
 
-      {/* Details Section */}
       <div className="details-container">
         <div className="details-content">
-          {/* Left-aligned details */}
-          <div className="detail-row">
-            <div className="detail-item current-task">
-              <span className="detail-label">Current Task:</span>
-              <span className="detail-value">{transactions.length}</span>
-            </div>
-            <div className="detail-item past-dues">
-              <span className="detail-label">Past Dues:</span>
-              <span className="detail-value">
-                {
-                  transactions.filter(
-                    (transaction) =>
-                      calculatePastDueDays(
-                        transaction.dueDate,
-                        transaction.status
-                      ) > 0
-                  ).length
-                }
+          <div className="metrics-box">
+            <div className="metric-item">
+              <span className="metric-label">Current Task:</span>
+              <span className="detail-value current-task-value">
+                {transactions.length}
               </span>
             </div>
-            <div className="progress-container">
+
+            <div className="metric-item">
+              <span className="metric-label">Not Paid:</span>
+              <span className="detail-value not-paid-value">
+                {transactions.filter((t) => t.status !== "Paid").length}
+              </span>
+            </div>
+
+            <div className="metric-item">
+              <span className="metric-label">Paid:</span>
+              <span className="detail-value paid-value">
+                {transactions.filter((t) => t.status === "Paid").length}
+              </span>
+            </div>
+
+            <div className="progresstask-container">
               <span className="progress-text">
-                Progress: {paymentProgress}%
+                Progress: <span className="value">{paymentProgress}%</span>
               </span>
-              <div className="progress-bar">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${paymentProgress}%` }}
-                ></div>
+              <div className="progresstask-bar">
+                {paymentProgress > 0 && (
+                  <div
+                    className="progress-bar-fill"
+                    style={{ width: `${paymentProgress}%` }}
+                  ></div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Right-aligned buttons */}
           <div className="button-row">
-            <button onClick={exportToCSV} className="export-task-button">
-              <FontAwesomeIcon icon={faDownload} />
-              Export
-            </button>
+            <div className="status-task" ref={statusDropdownRef}>
+              <button
+                className="status-task-button"
+                onClick={() => toggleDropdown("status")}
+              >
+                <FaTasks size={20} className="button-icon" />
+                <span>Status</span>
+              </button>
+              {openDropdown === "status" && (
+                <div className="dropdown-task">
+                  <button onClick={() => setSortOption("All")}>All</button>
+                  <button onClick={() => setSortOption("Paid")}>Paid</button>
+                  <button onClick={() => setSortOption("Unpaid")}>
+                    Unpaid
+                  </button>
+                  <button onClick={() => setSortOption("Overdue")}>
+                    Overdue
+                  </button>
+                  <button onClick={() => setSortOption("Due Date")}>
+                    Due Date
+                  </button>
+                  <button onClick={() => setSortOption("Date Paid")}>
+                    Date Paid
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="sort-container" ref={sortDropdownRef}>
               <button
                 className="sort-task-button"
                 onClick={() => toggleDropdown("sort")}
               >
-                <FaTasks size={20} />
-                <span style={{ fontSize: "15px" }}>Sort</span>{" "}
+                <TbArrowsSort size={20} className="button-icon" />
+                <span>Sort</span>
               </button>
               {openDropdown === "sort" && (
                 <div className="sort-task-dropdown">
@@ -622,19 +626,19 @@ const Transaction = ({ projectId }) => {
         </div>
       </div>
 
-      {/* Transaction Table */}
       <div className="table-task">
         <table className="transaction-table">
           <thead>
             <tr>
+              <th>No.</th>
               <th>Task Name</th>
               <th>Type</th>
               <th>Amount</th>
-              <th>Assign Employee</th>
+              <th>Assigned Employee</th>
               <th>Due Date</th>
               <th>Date Paid</th>
               <th>Status</th>
-              <th>Action</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -646,6 +650,7 @@ const Transaction = ({ projectId }) => {
               return (
                 <React.Fragment key={index}>
                   <tr>
+                    <td className="number-column">{index + 1}</td>
                     <td>{transaction.expenses}</td>
                     <td>
                       <button
@@ -657,10 +662,10 @@ const Transaction = ({ projectId }) => {
                     </td>
                     <td className="amount-cell">
                       {expandedTasks.has(index)
-                        ? formatAmount(transaction.subItems[0].amount) // Show only Consultancy Fee when expanded
+                        ? formatAmount(transaction.subItems[0].amount)
                         : formatAmount(subtotal)}
                     </td>
-                    <td>{assignedEmployeeName}</td>{" "}
+                    <td>{assignedEmployeeName}</td>
                     <td
                       style={{
                         color:
@@ -690,22 +695,48 @@ const Transaction = ({ projectId }) => {
                         <button
                           className="edit-task"
                           onClick={() => handleEditTask(index)}
+                          disabled={transaction.status === "Paid"}
+                          style={{
+                            opacity: transaction.status === "Paid" ? 0.5 : 1,
+                            cursor:
+                              transaction.status === "Paid"
+                                ? "not-allowed"
+                                : "pointer",
+                          }}
+                          title={
+                            transaction.status === "Paid"
+                              ? "Cannot edit paid tasks"
+                              : ""
+                          }
                         >
                           <AiOutlineEdit />
                         </button>
                         <button
                           className="delete-task"
-                          onClick={() => handleDeleteTask(index)}
+                          onClick={() => handleDeleteClick(index)}
+                          disabled={transaction.status === "Paid"}
+                          style={{
+                            opacity: transaction.status === "Paid" ? 0.5 : 1,
+                            cursor:
+                              transaction.status === "Paid"
+                                ? "not-allowed"
+                                : "pointer",
+                          }}
+                          title={
+                            transaction.status === "Paid"
+                              ? "Cannot delete paid tasks"
+                              : ""
+                          }
                         >
                           <MdOutlineDeleteOutline />
                         </button>
                       </div>
                     </td>
                   </tr>
-                  {/* Sub-items (Miscellaneous) */}
                   {expandedTasks.has(index) &&
                     transaction.subItems.slice(1).map((subItem, subIndex) => (
                       <tr key={`sub-${subIndex}`}>
+                        <td></td>
                         <td></td>
                         <td>{subItem.expenses}</td>
                         <td className="amount-cell">
@@ -715,13 +746,12 @@ const Transaction = ({ projectId }) => {
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
                       </tr>
                     ))}
-                  {/* Subtotal Row for the Task */}
                   {expandedTasks.has(index) && (
                     <tr className="subtotal-row">
                       <td colSpan="2"></td>
+                      <td></td>
                       <td className="amount-cell">{formatAmount(subtotal)}</td>
                       <td></td>
                       <td></td>
@@ -736,8 +766,8 @@ const Transaction = ({ projectId }) => {
             <tr className="total-row">
               <td>Total</td>
               <td></td>
-              <td className="amount-cell">{formatAmount(totalAmount)}</td>
               <td></td>
+              <td className="amount-cell">{formatAmount(totalAmount)}</td>
               <td colSpan="4"></td>
               <td></td>
             </tr>
