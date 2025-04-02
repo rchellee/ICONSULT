@@ -1,5 +1,4 @@
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { AiOutlineEdit } from "react-icons/ai";
 import React, { useState, useEffect, useRef } from "react";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
@@ -8,7 +7,6 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
 import emptyFolder from "../../assets/empty-folder.png";
-import { MdUpload } from "react-icons/md";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
@@ -17,17 +15,15 @@ const FilesTab = ({ projectId }) => {
   const [uploading, setUploading] = useState(false);
   const [clientNames, setClientNames] = useState({});
   const [sortConfig, setSortConfig] = useState({
-    key: "name", // Default sort by name
-    direction: "asc", // Default ascending order
+    key: "name", 
+    direction: "asc",
   });
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
 
-  // Create a ref for the file input
   const fileInputRef = useRef(null);
 
-  // Function to trigger file input click
   const handleUploadButtonClick = () => {
     fileInputRef.current.click();
   };
