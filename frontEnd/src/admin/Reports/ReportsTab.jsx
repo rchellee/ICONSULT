@@ -14,37 +14,40 @@ import TaskReports from "./TaskReports";
 import ReviewReports from "./ReviewReports";
 import "./ReportsTab.css";
 
+
 const ReportsTab = () => {
   const [reportType, setReportType] = useState("appointments");
 
   return (
-    <div>
+    <div className="reports-page-container">
       <Topbar />
       <Sidebar />
-      <div className="reports-tab-container">
-        <div>
-          <div className="reports-select">
+      
+      <div className="reports-main-content">
+        {/* Fixed header with dropdown */}
+        <div className="reports-header">
+          <div className="report-type-selector">
             <select
-              className="border p-2 text-sm w-40 ml-auto"
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
             >
-              <option value="appointments">Appointments Reports</option>
-              <option value="clients">Clients Reports</option>
-              <option value="projects">Projects Reports</option>
-              <option value="tasks">Task Reports</option>
-              <option value="employees">Employees Reports</option>
-              <option value="payments">Financial Reports</option>
-              {/* <option value="review">Review Reports</option> */}
+              <option value="appointments">Appointments</option>
+              <option value="clients">Clients</option>
+              <option value="projects">Projects</option>
+              <option value="tasks">Tasks</option>
+              <option value="employees">Employees</option>
+              <option value="payments">Financial</option>
             </select>
           </div>
+        </div>
 
+        {/* Scrollable content area */}
+        <div className="reports-content">
           {reportType === "appointments" && <AppointmentReports />}
           {reportType === "clients" && <ClientReports />}
           {reportType === "payments" && <RevenueReports />}
           {reportType === "projects" && <ProjectReports />}
           {reportType === "tasks" && <TaskReports />}
-          {/* {reportType === "reviews" && <ReviewReports />} */}
           {reportType === "employees" && <EmployeeReports />}
         </div>
       </div>
