@@ -1,4 +1,4 @@
-.sidebar {
+.sidebarClient {
   position: fixed;
   left: 0;
   top: 69px;
@@ -10,7 +10,7 @@
   transition: all 0.3s ease;
 }
 
-.sidebar-links {
+.sidebarClient-links {
   list-style: none;
   padding: 20px 0;
   margin: 0;
@@ -18,22 +18,23 @@
   flex-direction: column;
   height: 100%;
 }
-.sidebar-links li {
+.sidebarClient-links li {
   margin-bottom: 20px;
   text-align: center;
 }
 
-.sidebar-links a {
+.sidebarClient-links a {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-decoration: none;
   color: #333;
+  font-size: 10px;
   padding: 10px 0;
   position: relative;
 }
 
-.sidebar-links .icon {
+.sidebarClient-links .icon {
   font-size: 24px;
   margin-bottom: 5px;
 }
@@ -211,7 +212,7 @@ span:hover {
 }
 
 @media (max-width: 768px) {
-  .sidebar {
+  .sidebarClient {
     top: auto;
     bottom: 0;
     left: 0;
@@ -220,14 +221,14 @@ span:hover {
     height: 60px;
   }
 
-  .sidebar-links {
+  .sidebarClient-links {
     flex-direction: row;
     justify-content: space-around;
     padding: 0;
     height: 60px;
   }
 
-  .sidebar-links li {
+  .sidebarClient-links li {
     margin: 0;
     flex: 1;
     display: flex;
@@ -235,14 +236,14 @@ span:hover {
     align-items: center;
   }
 
-  .sidebar-links a {
+  .sidebarClient-links a {
     flex-direction: column-reverse;
     padding: 5px;
     width: 100%;
     height: 100%;
   }
 
-  .sidebar-links .icon {
+  .sidebarClient-links .icon {
     margin-bottom: 0;
     margin-top: 3px;
     font-size: 20px;
