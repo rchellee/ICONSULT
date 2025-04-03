@@ -135,7 +135,6 @@ select {
 }
 
 .filter-select {
-  padding: 10px;
   font-size: 14px;
   text-align-last: center;
   direction: rtl;
@@ -329,7 +328,6 @@ select {
 /* ----------------------------- Project --------------------------- */
 /* General Page Styling */
 .project-p-4 {
-  background-color: #f4f6f9;
   font-family: "Arial", sans-serif;
 }
 
