@@ -131,7 +131,7 @@ const Topbar = () => {
         >
           <div className="user-info">
             <img alt={`${userName}'s avatar`} src={admin} />
-            <h2>{userName}</h2>
+            <h4>{userName}</h4>
           </div>
           <hr />
           <MenuItem onClick={handleAccountClick} class="sub-menu-link">
