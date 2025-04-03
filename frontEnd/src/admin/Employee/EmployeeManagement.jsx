@@ -131,13 +131,10 @@ const EmployeeManagement = () => {
             />
           ) : (
             <>
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="add-employee-btn"
-                >
+              <div className="employee-filters-section">
+              <button onClick={() => setShowForm(true)}className="add-employee-btn" >
                   Add Employee
                 </button>
-              <div className="employee-filters-section">
             <select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
               <option value="">Months</option>
               {months.map((month, index) => (

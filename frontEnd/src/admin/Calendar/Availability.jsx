@@ -256,7 +256,7 @@ const Availability = () => {
         <Sidebar />
         <div className="content-availability">
           <h3>Set Your Availability</h3>
-          <div style={{ display: "flex", gap: "70px" }}>
+          <div style={{ display: "flex", gap: "30px"}}>
             <AvailableCalendar
               availableDates={{ ...existingDates }}
               onDateSelect={handleDateSelect}
@@ -267,8 +267,7 @@ const Availability = () => {
                 height: 600,
                 padding: 2,
                 border: "1px solid #ccc",
-                borderRadius: 4,
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "white",
               }}
             >
               <strong>
@@ -359,7 +358,6 @@ const Availability = () => {
                   overflowY: "auto",
                   backgroundColor: "#ffffff",
                   border: "1px solid #ccc",
-                  borderRadius: 4,
                   padding: 1,
                 }}
               >

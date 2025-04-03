@@ -136,10 +136,10 @@ const ClientManagement = () => {
             />
           ) : (
             <>
+              <div className="client-filters-section">
               <button onClick={() => setIsAddingClient(true)} className="add-client-btn">
                 Add Client
               </button>
-              <div className="client-filters-section">
                 <select onChange={(e) => setSelectedMonth(e.target.value)} value={selectedMonth}>
                   <option value="">All Months</option>
                   {months.map((month, index) => (

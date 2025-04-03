@@ -59,13 +59,13 @@ select {
   align-items: center;
   justify-content: left;
   padding: 15px 25px;
-  background: white;
+  background: #f9f9f9;
   border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   position: sticky;
   top: 0;
   z-index: 10;
   margin-left: 85px;
+  margin-top: 20px;
 }
 
 .reports-header h2 {
@@ -135,7 +135,6 @@ select {
 }
 
 .filter-select {
-  width: auto;
   padding: 10px;
   font-size: 14px;
   text-align-last: center;

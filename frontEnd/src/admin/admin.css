@@ -7,11 +7,6 @@
   font-family: "Poppins", sans-serif;
 }
 
-.admin-home-page {
-  display: flex;
-  transition: margin-left 0.4s ease;
-  padding-top: 70px;
-}
 /******************** Dashboard *********************/
 
 /* Admin Dashboard Main Styles */
@@ -194,6 +189,7 @@
   font-size: 14px;
   color: #5a5c69;
 }
+
 
 .appointment-item p strong, .task-item p strong {
   color: #4e73df;

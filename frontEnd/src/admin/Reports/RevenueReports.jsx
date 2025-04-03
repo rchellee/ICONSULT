@@ -297,11 +297,19 @@ const RevenueReports = () => {
     const formatDate = (dateString) => {
       if (!dateString) return "";
       try {
-        return new Date(dateString).toISOString().split("T")[0];
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
       } catch (e) {
         return dateString;
       }
     };
+
     const clientNames = {};
     clients.forEach((client) => {
       clientNames[client.id] = `${client.firstName} ${client.lastName}`;
@@ -351,6 +359,14 @@ const RevenueReports = () => {
       );
       pdfDoc.setFont("helvetica", "normal").setFontSize(8);
       return { textX: 14 };
+    };
+
+    const formatAmount = (amount) => {
+      if (amount === null || amount === undefined) return "";
+      return amount.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     };
 
     const addFooter = (pdfDoc) => {
@@ -1078,11 +1094,19 @@ const RevenueReports = () => {
     const formatDate = (dateString) => {
       if (!dateString) return "";
       try {
-        return new Date(dateString).toISOString().split("T")[0];
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
       } catch (e) {
         return dateString;
       }
     };
+
     const clientNames = {};
     clients.forEach((client) => {
       clientNames[client.id] = `${client.firstName} ${client.lastName}`;
