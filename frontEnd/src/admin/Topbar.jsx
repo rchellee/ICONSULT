@@ -42,13 +42,13 @@ const Topbar = () => {
   };
 
   const handleAccountClick = () => {
-    setAnchorEl(null); // Close the menu
-    navigate("/admin-settings"); // Navigate to the account settings page
+    setAnchorEl(null); 
+    navigate("/admin-settings"); 
   };
 
   const handleReviewClick = () => {
-    setAnchorEl(null); // Close the menu
-    navigate("/admin-reviews"); // Navigate to the account settings page
+    setAnchorEl(null); 
+    navigate("/admin-reviews"); 
   };
 
   const handleMenuOpen = (event) => {
@@ -93,8 +93,8 @@ const Topbar = () => {
           src={logo} 
           alt="iConsult Logo" 
           style={{
-            height: "40px", // Adjust height as needed
-            width: "auto", // Maintain aspect ratio
+            height: "40px", 
+            width: "auto", 
             objectFit: "contain"
           }}
         />

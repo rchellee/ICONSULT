@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaFile, FaFileImage } from "react-icons/fa";
-import { BiDotsVerticalRounded } from "react-icons/bi";
+import { FaFile, FaFileImage, FaSort } from "react-icons/fa";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-import { MdUpload } from "react-icons/md";
+import { MdUpload, MdOutlineDeleteOutline } from "react-icons/md";
+import { MdDownload } from "react-icons/md";
 import emptyFolder from "../../assets/empty-folder.png";
 import "./ClientFiles.css";
 
@@ -13,8 +13,8 @@ function Files({ projectId, clientId }) {
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [actionVisible, setActionVisible] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [showSortOptions, setShowSortOptions] = useState(false);
   const [sortConfig, setSortConfig] = useState({
     key: "name",
     direction: "asc",
@@ -69,12 +69,17 @@ function Files({ projectId, clientId }) {
       });
   };
 
-  const handleActionClick = (fileId) => {
-    setActionVisible(actionVisible === fileId ? null : fileId);
-  };
+  const handleDownload = (fileId) => {
+    const file = files.find((f) => f.id === fileId);
+    if (!file) return;
 
-  const handleEdit = (fileId) => {
-    console.log("Edit file with id:", fileId);
+    const link = document.createElement('a');
+    link.href = file.webViewLink || `http://localhost:8081/uploads/${file.original_name}`;
+    link.download = file.original_name;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -90,6 +95,9 @@ function Files({ projectId, clientId }) {
   }, []);
 
   const handleDelete = async (fileId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this file?");
+    if (!confirmDelete) return;
+
     try {
       const response = await fetch(`http://localhost:8081/files/${fileId}`, {
         method: "DELETE",
@@ -153,31 +161,74 @@ function Files({ projectId, clientId }) {
 
   return (
     <div className="ClientFiles">
-      <div className="top-buttons">
-        <div className="left-section">
-          {!selectedFile ? (
-            <button 
-              onClick={openFileDialog} 
-              disabled={uploading}
-              className="upload-file-button"
-            >
-              {uploading ? "Uploading..." : <><MdUpload /> Upload</>}
-            </button>
-          ) : (
-            <button
-              onClick={handleUpload}
-              disabled={uploading || !selectedFile}
-              className="upload-file-button"
-            >
-              {uploading ? "Uploading..." : "Upload File"}
-            </button>
+      <div className="file-management-header">
+        <div className="upload-section">
+          <div className="action-buttons-row">
+            <div className="upload-button-container">
+              {!selectedFile ? (
+                <button 
+                  onClick={openFileDialog} 
+                  disabled={uploading}
+                  className="upload-file-button"
+                >
+                  {uploading ? "Uploading..." : <><MdUpload /> Upload File</>}
+                </button>
+              ) : (
+                <button
+                  onClick={handleUpload}
+                  disabled={uploading || !selectedFile}
+                  className="upload-file-button"
+                >
+                  {uploading ? "Uploading..." : "Confirm Upload"}
+                </button>
+              )}
+            </div>
+            
+            <div className="sort-button-container">
+              <button 
+                className="sortclient-docu"
+                onClick={() => setShowSortOptions(!showSortOptions)}
+              >
+                <FaSort /> Sort
+              </button>
+              
+              {showSortOptions && (
+                <div className="sort-options-dropdown">
+                  <button onClick={() => {
+                    handleSort("original_name");
+                    setShowSortOptions(false);
+                  }}>
+                    Sort by Name {sortConfig.key === "original_name" && (
+                      sortConfig.direction === "asc" ? "↑" : "↓"
+                    )}
+                  </button>
+                  <button onClick={() => {
+                    handleSort("upload_date");
+                    setShowSortOptions(false);
+                  }}>
+                    Sort by Date {sortConfig.key === "upload_date" && (
+                      sortConfig.direction === "asc" ? "↑" : "↓"
+                    )}
+                  </button>
+                  <button onClick={() => {
+                    handleSort("uploaded_by");
+                    setShowSortOptions(false);
+                  }}>
+                    Sort by Author {sortConfig.key === "uploaded_by" && (
+                      sortConfig.direction === "asc" ? "↑" : "↓"
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {selectedFile && (
+            <div className="file-info">
+              <span>Selected: {selectedFile.name}</span>
+            </div>
           )}
         </div>
-        {selectedFile && (
-          <div className="file-info">
-            <p>Selected File: {selectedFile.name}</p>
-          </div>
-        )}
       </div>
 
       <input
@@ -196,105 +247,108 @@ function Files({ projectId, clientId }) {
             className="empty-folder-image"
           />
           <div className="no-files-message">No files uploaded yet.</div>
+          <button 
+            onClick={openFileDialog} 
+            className="upload-file-button empty-state-button"
+          >
+            <MdUpload /> Upload Your First File
+          </button>
         </div>
       ) : (
-        <table className="file-table">
-          <thead>
-            <tr>
-              <th onClick={() => handleSort("original_name")}>
-                Name
-                {sortConfig.key === "original_name" &&
-                  (sortConfig.direction === "asc" ? (
-                    <FaArrowUp />
-                  ) : (
-                    <FaArrowDown />
-                  ))}
-              </th>
-              <th onClick={() => handleSort("upload_date")}>
-                Upload Date
-                {sortConfig.key === "upload_date" &&
-                  (sortConfig.direction === "asc" ? (
-                    <FaArrowUp />
-                  ) : (
-                    <FaArrowDown />
-                  ))}
-              </th>
-              <th onClick={() => handleSort("uploaded_by")}>
-                Uploaded By
-                {sortConfig.key === "uploaded_by" &&
-                  (sortConfig.direction === "asc" ? (
-                    <FaArrowUp />
-                  ) : (
-                    <FaArrowDown />
-                  ))}
-              </th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedFiles.map((file) => (
-              <tr key={file.id}>
-                <td>
-                  <a
-                    href={
-                      file.webViewLink ||
-                      `http://localhost:8081/uploads/${file.original_name}`
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={file.original_name}
-                  >
-                    {getFileIcon(file.original_name)} {file.original_name}
-                  </a>
-                </td>
-                <td>
-                  {new Date(file.upload_date).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </td>
-                <td>
-                  {file.uploaded_by === "admin" ? (
-                    "Admin"
-                  ) : (
-                    <span>{userName || "Client Name"}</span>
-                  )}
-                </td>
-                <td>
-                  <div className="action-container">
-                    <BiDotsVerticalRounded
-                      onClick={() => handleActionClick(file.id)}
-                      style={{ cursor: "pointer" }}
-                    />
-                    {actionVisible === file.id && (
-                      <div className="action-options">
-                        <button
-                          onClick={() => {
-                            const downloadLink =
-                              file.webContentLink ||
-                              `http://localhost:8081/uploads/${file.original_name}`;
-                            const a = document.createElement("a");
-                            a.href = downloadLink;
-                            a.download = file.original_name;
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                          }}
-                        >
-                          Download
-                        </button>
-                        <button onClick={() => handleDelete(file.id)}>
-                          Delete
-                        </button>
-                      </div>
-                    )}
+        <div className="tablefiles-container">
+          <table className="file-table">
+            <thead>
+              <tr>
+                <th onClick={() => handleSort("original_name")}>
+                  <div className="th-content">
+                    Name
+                    {sortConfig.key === "original_name" &&
+                      (sortConfig.direction === "asc" ? (
+                        <FaArrowUp className="sort-icon" />
+                      ) : (
+                        <FaArrowDown className="sort-icon" />
+                      ))}
                   </div>
-                </td>
+                </th>
+                <th onClick={() => handleSort("upload_date")}>
+                  <div className="th-content">
+                    Upload Date
+                    {sortConfig.key === "upload_date" &&
+                      (sortConfig.direction === "asc" ? (
+                        <FaArrowUp className="sort-icon" />
+                      ) : (
+                        <FaArrowDown className="sort-icon" />
+                      ))}
+                  </div>
+                </th>
+                <th onClick={() => handleSort("uploaded_by")}>
+                  <div className="th-content">
+                    Uploaded By
+                    {sortConfig.key === "uploaded_by" &&
+                      (sortConfig.direction === "asc" ? (
+                        <FaArrowUp className="sort-icon" />
+                      ) : (
+                        <FaArrowDown className="sort-icon" />
+                      ))}
+                  </div>
+                </th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sortedFiles.map((file) => (
+                <tr key={file.id}>
+                  <td>
+                    <a
+                      href={
+                        file.webViewLink ||
+                        `http://localhost:8081/uploads/${file.original_name}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="file-link"
+                    >
+                      {getFileIcon(file.original_name)} 
+                      <span className="file-name">{file.original_name}</span>
+                    </a>
+                  </td>
+                  <td>
+                    {new Date(file.upload_date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </td>
+                  <td>
+                    {file.uploaded_by === "admin" ? (
+                      "Admin"
+                    ) : (
+                      <span>{userName || "Client"}</span>
+                    )}
+                  </td>
+                  <td>
+                    <div className="fileclient-btn">
+                      <button
+                        className="fileclient-btn editclient-button"
+                        onClick={() => handleDownload(file.id)}
+                        title="Download"
+                      >
+                        <MdDownload />
+                      </button>
+                      <button
+                        className="fileclient-btn deleteclient-button"
+                        onClick={() => handleDelete(file.id)}
+                        title="Delete"
+                      >
+                        <MdOutlineDeleteOutline />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

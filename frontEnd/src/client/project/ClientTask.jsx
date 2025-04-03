@@ -11,6 +11,15 @@ const ClientTask = ({ tasks, projectId }) => {
     return new Date(date).toLocaleDateString("en-US", options);
   };
 
+  // New function to format currency with comma separators
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-PH', {
+      style: 'decimal',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  };
+
   const handlePay = (taskId, amount, isPaid) => {
     if (isPaid) return;
     console.log("Payment attempt for task:", taskId);
@@ -72,7 +81,7 @@ const ClientTask = ({ tasks, projectId }) => {
                     <div className="task-card-header">
                       <span className="task-name">{task.task_name}</span>
                       <span className="task-amount">
-                        ₱ {parseFloat(task.amount || 0).toFixed(2)}
+                        ₱ {formatCurrency(parseFloat(task.amount || 0))}
                       </span>
                     </div>
                     <div className="task-date overdue-date">
@@ -91,7 +100,7 @@ const ClientTask = ({ tasks, projectId }) => {
                 ))}
               </div>
               <div className="total-amount overdue-total">
-                Total Overdue: ₱ {totalPastDue.toFixed(2)}
+                Total Overdue: ₱ {formatCurrency(totalPastDue)}
               </div>
             </div>
           )}
@@ -106,7 +115,7 @@ const ClientTask = ({ tasks, projectId }) => {
                     <div className="task-card-header">
                       <span className="task-name">{task.task_name}</span>
                       <span className="task-amount">
-                        ₱ {parseFloat(task.amount || 0).toFixed(2)}
+                        ₱ {formatCurrency(parseFloat(task.amount || 0))}
                       </span>
                     </div>
                     <div className="task-date">
@@ -125,7 +134,7 @@ const ClientTask = ({ tasks, projectId }) => {
                 ))}
               </div>
               <div className="total-amount">
-                Total Due: ₱ {totalToPay.toFixed(2)}
+                Total Due: ₱ {formatCurrency(totalToPay)}
               </div>
             </div>
           )}
@@ -140,7 +149,7 @@ const ClientTask = ({ tasks, projectId }) => {
                     <div className="task-card-header">
                       <span className="task-name">{task.task_name}</span>
                       <span className="task-amount">
-                        ₱ {parseFloat(task.amount || 0).toFixed(2)}
+                        ₱ {formatCurrency(parseFloat(task.amount || 0))}
                       </span>
                     </div>
                     <div className="task-date">

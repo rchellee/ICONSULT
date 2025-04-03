@@ -5,9 +5,9 @@
 .submit-review-button {
   border-radius: 100px;
   padding: 10px 20px;
-  width: auto; /* Adjust based on content */
+  width: auto; 
   max-width: 200px;
-  margin-left: auto; /* Moves the button to the right */
+  margin-left: auto; 
   background-color: #3982d0; /* Background color (blue) */
   color: white; /* Text color */
   border: none; /* Removes border */
