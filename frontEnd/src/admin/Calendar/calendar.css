@@ -84,17 +84,17 @@ button:disabled {
 
 /***********Step 2: Form Fields */
 .step2form {
-  max-width: 900px;
+  max-width: 1106px;
   width: 100%;
   margin: 0 auto;
-  padding: 30px;
+  padding: 38px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .step2form .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .step2form label {

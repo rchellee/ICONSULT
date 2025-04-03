@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./Landing.css"; // Import your CSS file
+import "./Landing.css";
 import logo from "./assets/about.png";
 import logo4 from "./assets/logo4.png";
 import { useNavigate } from "react-router-dom";

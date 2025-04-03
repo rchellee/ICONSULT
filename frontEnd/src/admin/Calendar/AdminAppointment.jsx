@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
+
 function AdminAppointment() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -113,8 +114,6 @@ function AdminAppointment() {
             blockedTimes.add(times[bookedIndex + 2]);
         }
       });
-
-      // Mark times as booked or available
       const updatedTimes = times.map((time) => ({
         time,
         isBooked: blockedTimes.has(time),
@@ -123,20 +122,19 @@ function AdminAppointment() {
       setAvailableTimes(updatedTimes);
     } catch (error) {
       console.error("Error fetching times for date:", error);
-      setAvailableTimes(times.map((time) => ({ time, isBooked: false }))); // Default to all available
+      setAvailableTimes(times.map((time) => ({ time, isBooked: false })));
     }
   };
 
   const handleTimePeriodChange = (e) => {
     setTimePeriod(e.target.value);
-    setFormData({ ...formData, time: "" }); // Reset time when period changes
+    setFormData({ ...formData, time: "" }); 
   };
 
   const handleTimeSelect = (time) => {
     setFormData({ ...formData, time });
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -165,7 +163,6 @@ function AdminAppointment() {
         }
       } catch (error) {
         console.error("Error checking existing appointments:", error);
-        // Continue with the process even if check fails
       }
     }
     if (currentStep === 2) {
@@ -185,18 +182,6 @@ function AdminAppointment() {
   };
 
   const prevStep = () => setCurrentStep((prevStep) => prevStep - 1);
-
-  const validateForm = () => {
-    return (
-      formData.date &&
-      formData.time &&
-      formData.client &&
-      formData.consultationType &&
-      (formData.consultationType !== "Others" || formData.otherDetails) &&
-      formData.platform &&
-      formData.reminder
-    );
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -254,7 +239,6 @@ function AdminAppointment() {
       alert("Appointment Confirmed!");
       navigate("/calendar");
 
-      // Reset the form
       setCurrentStep(1);
       setFormData({
         date: "",
@@ -362,10 +346,10 @@ function AdminAppointment() {
                     );
                     setFormData({
                       ...formData,
-                      client: selectedClientId, // Set the client ID
+                      client: selectedClientId, 
                       clientName: selectedClient
                         ? `${selectedClient.firstName} ${selectedClient.lastName}`
-                        : "", // Set the client name for display purposes
+                        : "", 
                     });
                   }}
                   required
@@ -391,7 +375,7 @@ function AdminAppointment() {
                     setFormData({
                       ...formData,
                       consultationType: selectedValue,
-                      otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
+                      otherDetails: selectedValue === "Others" ? "" : undefined,
                     });
                   }}
                   required

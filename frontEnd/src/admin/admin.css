@@ -293,10 +293,20 @@
 
 /* Text Label Below Icon */
 .sidebar-links a span {
-  margin-top: 5px;
-  opacity: 0.7;
+  margin-top: 26px;
+  opacity: 1;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: opacity 0.3s ease;
+}
+
+.notification-mark-admin {
+  position: absolute;
+  top: -15px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
 }
 
 /* Tooltip on Hover */
@@ -361,12 +371,6 @@
 .sidebar-links a .icon {
   font-size: 24px;
   color: #061b38;
-}
-
-.sidebar-links a span {
-  margin-top: 5px;
-  opacity: 1;
-  transition: opacity 0.3s ease;
 }
 
 .sidebar.collapsed .sidebar-links a span {
