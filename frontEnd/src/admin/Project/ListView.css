@@ -533,7 +533,7 @@
 }
 
 /* eto sa mga button sa taas ng table */
-.sorting-button-container {
+.sortingbutton-container {
   display: flex;
   justify-content: space-between;
   align-items: center;

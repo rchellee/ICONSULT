@@ -203,7 +203,7 @@ const ListView = ({
 
   return (
     <div className="eto-parent">
-      <div className="sorting-button-container">
+      <div className="sortingbutton-container">
         <div className="status-counters">
           <span className="status-counter">
             <span className="counter-label">Total Projects:</span>
