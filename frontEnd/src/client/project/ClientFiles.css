@@ -1,7 +1,7 @@
 .ClientFiles {
-  margin-left: 80px; /* Same as sidebar width */
+  margin-left: 80px; 
   height: 100%;
-  padding: 10px 20px; /* Reduced top/bottom padding from 20px to 10px */
+  padding: 10px 20px; 
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -31,33 +31,6 @@
   gap: 15px;
   
 }
-
-/*.upload-file-button {
-  padding: 10px 20px;
-  background-color: #7683ba;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  transition: background-color 0.2s;
-}
-
-.upload-file-button:hover {
-  background-color: #6572a8;
-}
-
-.upload-file-button:disabled {
-  background-color: #a0a8cf;
-  cursor: not-allowed;
-}*/
-
-
-
-/* Add these styles to your existing ClientFiles.css */
 
 .action-buttons-row {
   display: flex;
@@ -120,29 +93,7 @@
   background-color: #f0f4f8;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .action-buttons-row {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
-  
-  .upload-button-container,
-  .sort-button-container {
-    width: 100%;
-  }
-  
-  .upload-file-button,
-  .sortclient-docu {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .sort-options-dropdown {
-    width: 100%;
-  }
-}
+
 
 
 
@@ -474,3 +425,25 @@
 }
 
 
+@media (max-width: 768px) {
+  .action-buttons-row {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .upload-button-container,
+  .sort-button-container {
+    width: 100%;
+  }
+  
+  .upload-file-button,
+  .sortclient-docu {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .sort-options-dropdown {
+    width: 100%;
+  }
+}
