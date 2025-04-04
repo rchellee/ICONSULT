@@ -88,9 +88,9 @@ const ChangePassword = ({ clientDetails, setIsUpdatingPassword }) => {
 
   const handleDialogClose = (confirm) => {
     if (confirm) {
-      handlePasswordChange(); // Proceed with password change if confirmed
+      handlePasswordChange(); 
     }
-    setOpenDialog(false); // Close the dialog
+    setOpenDialog(false); 
   };
 
   const handlePasswordChange = async (event) => {

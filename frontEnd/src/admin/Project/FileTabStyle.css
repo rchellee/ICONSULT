@@ -6,84 +6,117 @@
 }
 
 .files-tab-content {
-  margin-left: 100px;
-  padding: -20px;
-}
-
-
-.upload-files-section {
-  display: flex;
-  gap: 30px; 
-  
-  margin-bottom: 10px;
-  background-color: transparent;
-  margin-top: -100;
+  margin-left: 90px;
+  padding: 20px;
 }
 
 .sort-files {
   position: relative;
   display: inline-block;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
+/* Updated Upload--------------------------------------------------------------------------- */
 .upload-files-btn {
-  background-color: transparent; 
-  color: #333; 
-  padding: 10px 20px; 
-  border: none; 
-  border-radius: 5px; 
+  background-color: #716cff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px; 
-  font-weight: bold;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(74, 107, 255, 0.3);
+  border: 1px solid transparent;
 }
 
+.upload-files-btn:hover {
+  background-color: #716cff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(74, 107, 255, 0.3);
+}
+
+.upload-files-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 3px rgba(74, 107, 255, 0.3);
+}
+
+.upload-files-btn svg {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.upload-files-btn:hover svg {
+  transform: translateY(-2px);
+}
+
+.truncate-text {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.files-tab-content {
+  margin-left: 90px;
+  padding: 20px;
+}
+
+.upload-files-section {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 25px;
+  background-color: transparent;
+  margin-top: -18px;
+}
+/*--------------------------------------------------------------------------- */
 
 .sort-files-btn {
-  background-color: transparent; 
-  color: #333; 
-  padding: 10px 20px; 
-  border: none; 
-  border-radius: 5px; 
-  cursor: pointer; 
+  background-color: transparent;
+  color: #333;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px; 
+  gap: 5px;
   font-weight: bold;
 }
 
-.upload-files-btn:hover, .sort-files-btn:hover {
-  background-color: transparent; 
-  color: #333;
+.sort-files-btn:hover {
+  background-color: #ddd;
 }
 
 .sort-files-options {
   position: absolute;
-  top: 100%; 
+  top: 100%;
   left: 0;
-  background-color: #f9f9f9; 
-  min-width: 160px; 
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); 
-  z-index: 1001; 
-  border-radius: 5px; 
-  overflow: hidden; 
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .sort-files-options button {
   width: 100%;
-  padding: 10px 20px; 
-  text-align: left; 
-  border: none; 
-  background-color: transparent; 
+  padding: 10px 20px;
+  text-align: left;
+  border: none;
+  background-color: transparent;
   cursor: pointer;
   color: #333;
 }
 
 .sort-files-options button:hover {
-  background-color: #ddd; 
+  background-color: #ddd;
 }
-
 
 .file-list {
   border-collapse: collapse;
@@ -113,21 +146,18 @@
   box-shadow: none;
 }
 
-
 .file-list th,
 .file-list td {
   padding: 1px;
-  text-align: left; 
+  text-align: left;
   border: none;
   height: 40px;
   border: none;
-  
 }
 
 .file-list th {
   background-color: #eeecec;
   font-weight: bold;
-  
 }
 
 .file-list tr:hover {
@@ -143,8 +173,8 @@ table {
 th {
   position: sticky;
   top: 0;
-  background-color: #fff; 
-  z-index: 10; 
+  background-color: #fff;
+  z-index: 10;
   padding: 10px;
 }
 
@@ -198,12 +228,12 @@ td {
 }
 
 .file-type-icon {
-  margin-right: 30px; /
+  margin-right: 30px;
   font-size: 20px;
 }
 
 .upload-btn input {
-  display: none; 
+  display: none;
 }
 
 .file-actions-popup {
@@ -242,30 +272,80 @@ td {
   color: #888;
 }
 
-.name-header, .upload-date-header, .uploaded-by-header, .action-files {
+.name-header,
+.upload-date-header,
+.uploaded-by-header,
+.action-files {
   color: #333;
 }
 
-.files-action {
+/* Action buttons --------------------------------------------------------------- */
+.action-buttons-container {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.files-admin,
+.filestwo-admin {
   background: none;
   border: none;
   cursor: pointer;
-  margin: 0 5px;
-  font-size: 30px;
+  margin: 0;
+  font-size: 20px;
   color: #555;
-  appearance: none; /* Remove default browser styling */
-  -webkit-appearance: none; /* For Safari */
-  -moz-appearance: none; /* For Firefox */
-  padding: 0; /* Remove default padding */
+  padding: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.files-action:hover {
-  color: #000;
-  background: none; 
+.files-admin:hover {
+  color: #000000;
+  background: none;
 }
 
+.filestwo-admin:hover {
+  color: red;
+  background: none;
+}
 
-.files-action:focus {
+.files-admin:focus {
   outline: none;
 }
 
+.no-files-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-folder-image {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+
+  max-width: 100%;
+  max-height: 30vh;
+}
+
+.no-files-message {
+  font-size: 18px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* file color-------------------------------------------------------------- */
+.file-list a {
+  color: #242424;
+  text-decoration: none;
+}
+
+.file-list a:hover {
+  color: #555555;
+  text-decoration: underline;
+}
+/* file color-------------------------------------------------------------- */

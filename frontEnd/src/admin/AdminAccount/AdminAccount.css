@@ -1,124 +1,214 @@
-/* AdminAccount.css */
+/* Add this to your CSS file */
+.account-details-section > h2 {
+  color: #716cff;
+  text-align: left;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+}
 
 .account-settings {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px;
-  margin-left: 250px; /* Adjust based on the width of your sidebar */
-  margin-top: 70px; /* Adjust based on the height of your topbar */
+  background-color: white;
+  min-height: 95vh;
+  margin-left: 104px;
 }
 
-.content-admin {
-  background-color: #ffffff;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  width: 100%;
-  text-align: center;
+/* Account container with left (image) and right (details) sections */
+.account-container {
+  display: flex;
+  gap: 20px; /* Increased gap for better separation */
+  margin-top: 40px;
+  align-items: flex-start;
+  width: 90%;
+  max-width: 1200px;
 }
 
-.passwordd-admin {
+/* Left section - User image */
+.user-image-section {
+  flex: 1;
+  max-width: 4000px;
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  position: sticky;
+  top: 20px;
+  margin-right: 0;
+  padding-right: 0;
 }
 
-.password-image-admin {
-  width: 100px;
-  height: 100px;
+.user-image {
+  width: 300px;
+  height: 400px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: none;
 }
 
-h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333333;
+/* Right section - Account details */
+.account-details-section {
+  flex: 2;
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: none;
 }
 
-.admin-detail-row {
-  margin-bottom: 15px;
+.account-details-section h2 {
   text-align: left;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Detail rows styling */
+.admin-detail-row {
+  margin-bottom: 30px;
 }
 
 .label-admin {
-  font-weight: bold;
-  color: #555555;
+  font-weight: 600;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  color: #444;
+  font-size: 18px;
 }
 
 .value-admin {
-  color: #333333;
+  color: #555;
   font-size: 16px;
+  padding: 8px 0;
+  font-weight: 500;
 }
 
-.update-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* Consistent spacing between fields */
+/* Form elements */
+.text-field {
+  margin-bottom: 20px !important;
+  width: 80%;
+  max-width: 500px;
+}
+
+.text-field label {
+  font-size: 16px;
+  color: #333;
+}
+
+.text-field input {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 100%;
+  transition: border-color 0.3s;
+}
+
+.text-field input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
 }
 
 .text-field .MuiOutlinedInput-root {
-  border-radius: 8px !important;
+  background-color: #ffffff; /* Light gray background */
+  border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
 .text-field .MuiOutlinedInput-notchedOutline {
-  border: 1px solid #1976d2 !important; /* Single border for all input boxes */
+  border-color: #4947b2; /* Light gray border */
 }
 
+/* Text color inside input */
 .text-field .MuiOutlinedInput-input {
-  padding: 12px 14px !important; /* Consistent padding for all input boxes */
+  color: #333; /* Dark text */
+  padding: 14px;
 }
 
+/* Buttons */
 .button-group {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px; /* Spacing between buttons */
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.update-btn {
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.update-btn:hover {
+  background-color: #0069d9;
+}
+
+/* Dialog/message styles */
+.message {
   margin-top: 20px;
+  padding: 12px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
 }
 
-.save-button {
-  background-color: #1976d2 !important;
-  color: #ffffff !important;
-  text-transform: none !important;
-  font-size: 14px !important;
-  padding: 10px 20px !important;
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .account-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .user-image-section {
+    position: static;
+    max-width: 100%;
+  }
+
+  .user-image {
+    width: 250px;
+    height: 250px;
+  }
+
+  .account-details-section {
+    width: 100%;
+    padding: 30px;
+  }
 }
 
-.cancel-button {
-  border-color: #1976d2 !important;
-  color: #1976d2 !important;
-  text-transform: none !important;
-  font-size: 14px !important;
-  padding: 10px 20px !important;
-}
+@media (max-width: 576px) {
+  .account-container {
+    width: 100%;
+    padding: 10px;
+  }
 
-.save-button:hover {
-  background-color: #1565c0 !important;
-}
+  .user-image {
+    width: 200px;
+    height: 200px;
+  }
 
-.cancel-button:hover {
-  background-color: rgba(25, 118, 210, 0.04) !important;
-}
+  .account-details-section {
+    padding: 20px;
+  }
 
-/* Dialog styles */
-.MuiDialog-paper {
-  border-radius: 10px !important;
-  padding: 20px;
-}
+  .button-group {
+    flex-direction: column;
+  }
 
-.MuiDialogTitle-root {
-  font-size: 20px !important;
-  font-weight: bold !important;
-  color: #333333 !important;
-}
+  .admin-detail-row {
+    margin-bottom: 20px;
+  }
 
-.MuiDialogContent-root {
-  font-size: 16px !important;
-  color: #555555 !important;
-}
-
-.MuiDialogActions-root {
-  justify-content: flex-end !important;
+  .label-admin {
+    font-size: 16px;
+  }
 }

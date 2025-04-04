@@ -122,13 +122,19 @@ const OtpVerification = ({ email, role, clientId, onOtpSuccess }) => {
             type="button"
             onClick={handleVerifyOTP}
             className={inputOTP.every((digit) => digit) ? "active" : ""}
+            style={{ marginLeft: "90px" }}
           >
             Verify
           </button>
         </form>
         <div className="resend-section">
           <p>Didn't receive code?</p>
-          <button className="resend-btn" disabled={disable} onClick={resendOTP}>
+          <button
+            className="resend-btn"
+            disabled={disable}
+            onClick={resendOTP}
+            style={{ marginLeft: "10px" }}
+          >
             {disable ? `Resend OTP in ${timerCount}s` : "Resend OTP"}
           </button>
         </div>

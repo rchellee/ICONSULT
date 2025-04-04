@@ -2,11 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./overview.css";
-import Payment from "./payment";
 
 function formatDate(dateString) {
+  if (!dateString) return "N/A";
+
   const date = new Date(dateString);
-  return date.toISOString().split("T")[0];
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return date.toLocaleDateString("en-US", options);
+}
+
+function formatCurrency(amount) {
+  return `₱ ${amount?.toLocaleString("en-PH")}.00`;
 }
 
 function ProjectOverview({ projectId }) {
@@ -15,9 +21,6 @@ function ProjectOverview({ projectId }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const [isPaymentOverlayOpen, setIsPaymentOverlayOpen] = useState(false);
-  const [paymentDetails, setPaymentDetails] = useState({});
-
   useEffect(() => {
     axios
       .get(`http://localhost:8081/projects/${projectId}`)
@@ -50,18 +53,6 @@ function ProjectOverview({ projectId }) {
   if (isLoading) return <p>Loading project overview...</p>;
   if (error) return <p className="error">{error}</p>;
 
-  const totalPayment = (project?.contractPrice || 0) + tasksTotal;
-  const remainingPayment = totalPayment - (project?.downpayment || 0);
-
-  const handlePaymentClick = () => {
-    setPaymentDetails({ projectId, amount: remainingPayment });
-    setIsPaymentOverlayOpen(true);
-  };
-
-  const closePaymentOverlay = () => {
-    setIsPaymentOverlayOpen(false);
-  };
-
   const handleReviewClick = () => {
     navigate("/review", { state: { projectId, clientId: project.clientId } });
   };
@@ -75,18 +66,51 @@ function ProjectOverview({ projectId }) {
               <strong>Project Name:</strong> {project.projectName}
             </p>
             <span className="payment-status">
-              <strong>Payment Status:</strong> {project.paymentStatus}
+              <div className="progress-display" style={{ margin: "10px 0" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "5px",
+                  }}
+                >
+                  <strong style={{ marginRight: "10px" }}>Progress:</strong>
+                  <span>{project.progress}%</span>
+                </div>
+                <div
+                  className="progress-bar-container"
+                  style={{
+                    width: "100%",
+                    height: "10px",
+                    backgroundColor: "#e0e0e0",
+                    borderRadius: "5px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <div
+                    className="progress-bar"
+                    style={{
+                      width: `${project.progress}%`,
+                      height: "100%",
+                      backgroundColor: "#4070f4",
+                      transition: "width 0.3s ease",
+                    }}
+                  ></div>
+                </div>
+              </div>
             </span>
           </p>
           <p>
             <p className="description" style={{ marginTop: "-10px" }}>
               <strong>Description:</strong> {project.description}
             </p>
-
-            <span className="project-due">
-              <strong>Project Due:</strong>{" "}
+          </p>
+          <p>
+            <p className="project-due" style={{ marginTop: "-10px" }}>
+              <strong>Project Duration:</strong>{" "}
+              {project.startDate ? formatDate(project.startDate) : "N/A"} -{" "}
               {project.endDate ? formatDate(project.endDate) : "N/A"}
-            </span>
+            </p>
           </p>
           <p className="status-row" style={{ marginTop: "-10px" }}>
             <strong>Status:</strong> {project.status}
@@ -95,58 +119,34 @@ function ProjectOverview({ projectId }) {
           <table className="payment-table">
             <thead>
               <tr>
-                <th>Contract Fee</th>
-                <th>Tasks</th>
                 <th>Total</th>
-                <th>Downpayment</th>
+                <th>Paid Amount</th>
                 <th>Balance</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>₱ {project.contractPrice}.00</td>
-                <td>₱ {tasksTotal}.00</td>
-                <td>₱ {totalPayment}.00</td>
-                <td>₱ {project.downpayment}.00</td>
-                <td>₱ {remainingPayment}.00</td>
+                <td>{formatCurrency(project.total_amount)}</td>
+                <td>{formatCurrency(project.paid_amount)}</td>
+                <td>
+                  {formatCurrency(
+                    project.total_amount - (project.paid_amount || 0)
+                  )}
+                </td>
               </tr>
             </tbody>
           </table>
-          <div className="payment-button-container">
-            {project.paymentStatus !== "Paid" && remainingPayment > 0 && (
-              <button onClick={handlePaymentClick} className="pay-now-button">
-                Pay Now
-              </button>
-            )}
-          </div>
-
-          {remainingPayment <= 0 &&
-            project.paymentStatus === "Paid" &&
-            project.status === "Completed" &&
-            !project.isReview && (
-              <button
-                onClick={handleReviewClick}
-                style={{
-                  backgroundColor: "#007bff",
-                }}
-              >
-                Leave a Review
-              </button>
-            )}
+          {project.status === "Completed" && !project.isReview && (
+            <button
+              onClick={handleReviewClick}
+              style={{ backgroundColor: "#007bff" }}
+            >
+              Leave a Review
+            </button>
+          )}
         </div>
       ) : (
         <p>No project details found.</p>
-      )}
-      {isPaymentOverlayOpen && (
-        <div className="overlay">
-          <div className="overlay-content">
-            <Payment
-              projectId={paymentDetails.projectId}
-              amount={paymentDetails.amount}
-              onClose={closePaymentOverlay}
-            />
-          </div>
-        </div>
       )}
     </div>
   );

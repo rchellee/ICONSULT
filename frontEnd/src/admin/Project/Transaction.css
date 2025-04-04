@@ -1,162 +1,260 @@
 .header-container {
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
-  margin-left: 125px; 
-  margin-right: 125px;
-  margin-bottom: 20px; 
-}
-
-.project-id {
-  margin: 0; 
-  color: #333; 
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 90px;
+  margin-right: 20px;
+  margin-bottom: 20px;
 }
 
 .past-due {
-  color: red; /* Change this to your desired color */
-  font-weight: bold; /* Optional: Make the text bold */
+  color: red;
+  font-weight: bold;
 }
 
-/* Create Button */
-.create-task-button {
-  display: flex;
-  align-items: center;
-  gap: 5px; 
-  background-color: #547099;
-  color: white; 
-  border: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease;
-}
-
-.create-task-button:hover {
-  background-color: #45a049; 
-}
-
-.create-task-icon {
-  font-size: 18px; 
-}
+/*INSIGHT -------------------------------------------------------------------------------*/
 
 /* Progress Container */
 .progress-container {
   display: flex;
-  align-items: center; 
-  gap: 10px; 
+  align-items: center;
+  gap: 10px;
 }
 
 .progress-text {
-  color: #333; 
-  font-weight: bold; 
+  color: #333;
+  font-weight: bold;
 }
 
 /* Details Container */
 .details-container {
-  margin-left: 125px; 
-  margin-right: 125px; 
-  margin-bottom: 20px; 
+  margin-left: 100px;
+  margin-right: 20px;
+  margin-bottom: 10px;
   position: relative;
+  padding-left: 0;
 }
 
 .details-content {
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
+  justify-content: space-between;
+  align-items: center;
 }
 
 .detail-row {
   display: flex;
-  gap: 50px; 
-  align-items: center; 
+  align-items: center;
+  gap: 20px;
+  flex-grow: 1;
 }
 
-.detail-item {
+.detail-item,
+.progress-container,
+.status-task,
+.sort-container {
   display: flex;
   align-items: center;
-  gap: 5px; 
 }
 
 .detail-item.partial-payment,
 .detail-item.current-task,
 .detail-item.past-dues,
 .detail-item.progress {
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 .detail-label {
-  color: #333; 
+  color: #333;
 }
 
 .detail-value {
-  color: #555; 
+  color: #555;
 }
 
-/* Progress Container */
-.progress-container {
+/* Progress Container------------------------------------------------------- */
+.progresstask-container {
   display: flex;
-  align-items: center; 
+  align-items: center;
   gap: 10px;
 }
 
 .progress-text {
-  color: #333; 
-  font-weight: bold; 
+  color: #64748b;
+  font-weight: normal;
+  font-size: 14px;
 }
 
-.progress-bar {
-  width: 150px; 
+.progress-text span.value {
+  color: #6366f1;
+  font-weight: bold;
+}
+
+.progresstask-bar {
+  width: 150px;
   height: 10px;
-  background-color: #e0e0e0;
-  border-radius: 5px; 
-  overflow: hidden; 
+  background-color: #e0e0e0; /* Light gray background */
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #4caf50; 
-  transition: width 0.3s ease; 
+  background-color: #7d96e4;
+  transition: width 0.3s ease;
+  /* Add these new properties */
+  min-width: 0;
+  display: block;
 }
 
 /* Button Row */
 .button-row {
   display: flex;
-  gap: 10px; 
-  position: absolute;
-  margin-right: auto;
-  margin-top: 100px;
-  top: -40px;
-  right: 0;
-  
+  gap: 10px; /* Adjust spacing between buttons */
+  align-items: center; /* Vertically center buttons */
+  margin-right: -5px;
 }
 
-.button-row .export-button,
-.button-row .status-button,
-.button-row .sort-button {
-  background-color: transparent;
-  padding: 8px 16px;
-  border: none; 
-  border-radius: 4px;
-  cursor: pointer; 
-  font-size: 14px; 
-  color: #3b4f67; 
-  transition: color 0.3s ease, background-color 0.3s ease; 
+/* Metrics Box------------------------------------------------------------------------- */
+.metrics-box {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 16px 24px;
+  margin-right: auto;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.metrics-box {
+  margin-left: 0 !important;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metric-label {
+  font-weight: 500;
+  color: #666;
+}
+
+.metric-value {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Progress item can be styled differently if needed */
+.progress-item .metric-value {
+  color: #1890ff; /* Blue color for progress percentage */
+}
+
+.current-task-value {
+  color: #1890ff; /* Blue for current tasks */
   font-weight: bold;
 }
 
-/* Hover effect */
-.button-row .export-button:hover,
-.button-row .status-button:hover,
-.button-row .sort-button:hover {
-  color: #363636; 
-  background-color: #e1e1e1;
+.not-paid-value {
+  color: #ff4d4f; /* Red for not paid */
+  font-weight: bold;
 }
 
+.paid-value {
+  color: #52c41a; /* Green for paid */
+  font-weight: bold;
+}
 
+.metric-label {
+  font-weight: 500;
+  color: #64748b; /* New slate gray color */
+  font-size: 14px;
+}
 
+/*INSIGHT -------------------------------------------------------------------------------*/
 
+.sort-task-button,
+.status-task-button {
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  color: #3b4f67;
+  background: none;
+}
 
+.sort-task-button:hover {
+  background-color: white;
+  color: rgb(48, 148, 255);
+  border: none;
+}
+
+.status-task-button:hover {
+  background-color: white;
+  color: rgb(48, 148, 255);
+  border: none;
+}
+
+.dropdown-task,
+.sort-task-dropdown {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  z-index: 10;
+  margin-top: 5px;
+}
+
+.dropdown-task button,
+.sort-task-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sort-task-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 4px 8px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+.sort-task-dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+.misc-dropdown {
+  color: #333; /* Dark text color */
+  font-size: 16px;
+
+  border: none;
+  background: none; /* No background color */
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.misc-dropdown:hover {
+  background-color: #f0f0f0; /* Slightly darker text on hover */
+}
+
+.misc-dropdown:active {
+  transform: scale(0.98); /* Slightly shrink when clicked */
+}
+
+.misc-dropdown:focus {
+  outline: none;
+}
 
 /* Toggle Button */
 .toggle-misc-btn {
@@ -175,38 +273,34 @@
   color: #4caf50;
 }
 
-
-
-
-
-
-
-/* Table Container */
+/* Table Container--------------------------------- */
 .table-task {
-  max-height: 520px; 
-  overflow-y: auto; 
-  -webkit-overflow-scrolling: touch; 
-  margin-top: 40px;
-  margin-left: 125px; 
-  margin-right: 125px; 
+  max-height: 520px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  margin-left: 90px;
+  margin-right: 205px;
   border-radius: 10px;
-  background-color: transparent; 
-  padding: 10px; 
+  background-color: transparent;
+  padding: 10px;
   border: none;
+  justify-content: center;
+  width: 95%;
 }
 
 /* Webkit Custom Scrollbar */
 .table-task::-webkit-scrollbar {
-  width: 12px; 
+  width: 12px;
 }
 
 .table-task::-webkit-scrollbar-track {
-  background: #ccc; 
+  background: #ccc;
   border-radius: 10px;
 }
 
 .table-task::-webkit-scrollbar-thumb {
-  background-color: #547099; 
+  background-color: #547099;
   border-radius: 10px;
 }
 
@@ -214,15 +308,13 @@
   background-color: #365673;
 }
 
-
-
-
-/* Table Styles */
+/* Table Styles--------------------------------------------------- */
 .transaction-table {
-  width: 100%; 
-  border-collapse: collapse; 
-  background-color: transparent; 
+  width: 100%;
+  border-collapse: collapse;
+  background-color: transparent;
   border: none;
+  margin: 0 auto;
 }
 
 .transaction-table th,
@@ -239,16 +331,16 @@
 }
 
 .transaction-table th {
-  position: sticky; 
-  top: 0; 
-  background-color: #eeecec; 
+  position: sticky;
+  top: 0;
+  background-color: #eeecec;
   color: #333;
   padding: 10px;
-  z-index: 2; 
+  z-index: 2;
 }
 
 .transaction-table tr:hover {
-  background-color: rgba(255, 255, 255, 0.1); 
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Style for the Task Name row */
@@ -259,7 +351,7 @@
 }
 
 .total-row {
-  background-color: transparent; 
+  background-color: transparent;
   font-weight: bold;
   color: #333;
 }
@@ -270,6 +362,26 @@ td.amount-cell {
   width: 120px;
 }
 
+/* Add to your Transaction.css */
+.number-column {
+  width: 40px; /* or whatever narrow width you prefer */
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+  padding: 8px 4px !important; /* Reduce side padding */
+  font-weight: bold;
+}
+
+/* Add to your Transaction.css */
+.transaction-table td:nth-child(3),
+.transaction-table th:nth-child(3) {
+  /* Targets 3rd column (Type) */
+  width: 200px; /* Set fixed width */
+  min-width: 200px; /* Prevent shrinking */
+}
+
+/*---------------------------------------------------------------------*/
+
 .subtotal-amount {
   border-bottom: 2px solid black;
 }
@@ -278,13 +390,6 @@ td.amount-cell {
   font-weight: bold;
   color: #333;
 }
-
-
-
-
-
-
-
 
 /* Style for the status dropdown (button-like appearance) */
 .transaction-button {
@@ -297,8 +402,8 @@ td.amount-cell {
   cursor: pointer;
   transition: background-color 0.3s ease, border-color 0.3s ease;
   width: 150px;
-  max-width: 100%; 
-  box-sizing: border-box; 
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .transaction-button:hover {
@@ -309,7 +414,7 @@ td.amount-cell {
 .transaction-button:focus {
   outline: none;
   border-color: #3b4f67;
-  box-shadow:#3b4f67;
+  box-shadow: #3b4f67;
 }
 
 /* Style for the options inside the dropdown */
@@ -319,13 +424,10 @@ td.amount-cell {
   color: #333;
 }
 
-
-
-
 /* Action Buttons */
 .task-actions {
   display: flex;
-  gap: 8px; 
+  gap: 8px;
 }
 
 .edit-task,
@@ -353,12 +455,10 @@ td.amount-cell {
 
 .edit-task svg,
 .delete-task svg {
-  font-size: 24px; 
+  font-size: 24px;
 }
 
-
 .sort-container {
-  position: relative;
   display: inline-block;
 }
 
@@ -389,67 +489,66 @@ td.amount-cell {
   background-color: #f0f0f0;
 }
 
-
 /* Status Task Container */
 .status-task {
-  position: relative; 
-  display: inline-block; 
+  position: relative;
+  display: inline-block;
 }
 
 /* Status Button */
 .status-button {
-  background-color: transparent; 
-  border: 1px solid #ccc; 
-  border-radius: 4px; 
-  padding: 8px 16px; 
-  font-size: 14px; 
-  color: #3b4f67; 
+  background-color: transparent;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #3b4f67;
   cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease; 
-  font-weight: bold; 
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: bold;
 }
 
 .status-button:hover {
-  background-color: #e1e1e1; 
-  color: #363636; 
+  background-color: #e1e1e1;
+  color: #363636;
 }
 
 /* Dropdown Menu */
 .dropdown-task {
   position: absolute;
-  top: 100%; 
+  top: 100%;
   left: 0;
-  background-color: white; 
+  background-color: white;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  z-index: 10; 
-  margin-top: 5px; 
-  min-width: 150px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  margin-top: 5px;
+  min-width: 150px;
 }
 
 /* Dropdown Buttons */
 .dropdown-task button {
   display: block;
-  width: 100%; 
+  width: 100%;
   padding: 8px 16px;
-  font-size: 14px; 
-  color: #333; 
-  background-color: transparent; 
+  font-size: 14px;
+  color: #333;
+  background-color: transparent;
   border: none;
   text-align: left;
   cursor: pointer;
-  transition: background-color 0.3s ease; 
+  transition: background-color 0.3s ease;
 }
 
 .dropdown-task button:hover {
-  background-color: #f1f1f1; 
+  background-color: #f1f1f1;
 }
 
 /* MOP Dropdown */
 .mop-dropdown {
-  width: 150px; 
-  max-width: 100%; 
+  width: 150px;
+  max-width: 100%;
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 4px;

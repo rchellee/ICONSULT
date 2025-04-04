@@ -1,20 +1,15 @@
 /* Topbar styles */
-.topbar {
-  background-color: #d1bfbf;
-  height: 300px !important; /* Increased height */
-}
 
 .MuiAppBar-root {
-  background-color: #ffffff !important; /* Ensure the background color is applied */
-  height: 100px !important; /* Override the default height */
-  border-bottom: 1px solid #d1d1d1 !important; /* Add a 10px solid border with a light gray color */
-  box-shadow: none !important; /* Remove any shadow effect */
+  background-color: #ffffff !important;
+  height: 100px !important;
+  border-bottom: 1px solid #d1d1d1 !important;
+  box-shadow: none !important;
 }
-
 
 /* Toolbar customizations */
 .MuiToolbar-root {
-  min-height: 100px !important; /* Adjust toolbar height */
+  min-height: 100px !important;
   padding-left: 16px;
   padding-right: 16px;
 }
@@ -33,7 +28,12 @@
   width: auto;
 }
 
-/* Typography for the admin username */
+.logo img {
+  height: 40px;
+  width: auto;
+  margin-right: 10px;
+}
+
 .topbar-username {
   font-size: 16px;
   color: #143d58;
@@ -57,54 +57,41 @@
   color: #0056b3;
 }
 
-
-/* Additional Styling for Folder Search Box (if needed) */
-
-/* Search box styles */
+/* Search box styles 
 .search-box-topbar {
-  width: 70%; /* Adjust width for desired size */
-  max-width: 600px; /* Max width to prevent the search bar from getting too wide */
-  height: 60px !important; /* Set height */
-  padding: 20px; /* Adjust padding for larger space inside */
-  font-size: 20px; /* Increase font size */
-  border: 3px solid #1e88e5 !important; /* Set initial border color */
-  border-radius: 25px !important; /* Apply rounded corners */
+  width: 70%; 
+  max-width: 600px; 
+  height: 60px !important; 
+  padding: 20px; 
+  font-size: 20px; 
+  border: 3px solid #1e88e5 !important;
+  border-radius: 25px !important; 
   outline: none;
   box-sizing: border-box;
   background: #fff;
-  margin: 0 auto; /* Centers the search box */
-  display: block; /* Ensures the box is treated as a block element */
+  margin: 0 auto; 
+  display: block; */
+
+/* Search container styles gawa ni klerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr */
+.search-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30%;
+  height: 50px;
+  background: rgb(245, 245, 245);
+  border-radius: 40px;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  z-index: 90;
+  /*border: 2px solid #d6d6d6 !important;*/
+  /*box-shadow: 0 1px 10px rgba(0, 0, 0, 0.05);*/
+  margin-top: auto;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  border: none;
 }
 
-/* Add a hover effect for the border color */
-.search-box-topbar:hover {
-  border-color: #7fbcf6 !important; /* Force change on hover */
+.search-form.active {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow when active */
 }
-
-/* Add focus effect to the border */
-.search-box-topbar:focus {
-  border-color: #007dea !important; /* Change the border color when focused */
-  box-shadow: 0 0 5px rgba(120, 120, 121, 0.5); /* Add a light shadow for emphasis */
-}
-
-
-.home-topbar-icon {
-  font-size: 30px; /* Adjust the size of the icon */
-  color: #323232; /* Set the icon color */
-  margin-left: 15px; /* Space it out from the logo */
-  cursor: pointer; /* Make it clickable */
-  transition: color 0.3s ease; /* Add smooth transition effect */
-  align-items: flex-start;
-  margin: 600px    /* Push the icon to the right */
-  
-}
-
-.home-topbar-icon:hover {
-  color: #0056b3; /* Change color on hover */
-}
-
-
-
-
-
-

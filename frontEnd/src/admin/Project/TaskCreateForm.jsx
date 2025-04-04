@@ -5,6 +5,7 @@ import "./TaskCreate.css";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import { MdAddCircleOutline } from "react-icons/md";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const TaskCreateForm = () => {
@@ -26,6 +27,10 @@ const TaskCreateForm = () => {
   const [employees, setEmployees] = useState([]);
   const [projectDetails, setProjectDetails] = useState(null);
 
+  const validateTransactionId = (id) => {
+    return /^[A-Za-z0-9]*$/.test(id);
+  };
+
   useEffect(() => {
     if (projectId) {
       axios
@@ -38,7 +43,7 @@ const TaskCreateForm = () => {
         });
     }
   }, [projectId]);
-  // Fetch employees
+
   useEffect(() => {
     axios
       .get("http://localhost:8081/employees/id")
@@ -49,7 +54,6 @@ const TaskCreateForm = () => {
         console.error("Error fetching employees:", error);
       });
   }, []);
-  // Pre-fill form if editing a task
   useEffect(() => {
     if (taskToEdit) {
       setTaskName(taskToEdit.expenses);
@@ -78,6 +82,12 @@ const TaskCreateForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (transactionId && !validateTransactionId(transactionId)) {
+      alert(
+        "Transaction ID can only contain letters and numbers (no special characters)"
+      );
+      return;
+    }
     if (
       (transactionId && (!modeOfPayment || !paidDate)) ||
       (modeOfPayment && (!transactionId || !paidDate)) ||
@@ -106,10 +116,9 @@ const TaskCreateForm = () => {
       paidDate: paidDate || null,
     };
     if (taskToEdit) {
-      // Update task if editing
       try {
         const response = await axios.put(
-          `http://localhost:8081/tasks/${taskToEdit.id}`, // Use the task ID to update
+          `http://localhost:8081/tasks/${taskToEdit.id}`,
           {
             taskName: newTask.expenses,
             taskFee: newTask.subItems[0].amount,
@@ -125,13 +134,12 @@ const TaskCreateForm = () => {
 
         if (response.status === 200) {
           console.log("Task updated successfully:", response.data);
-          navigate(-1); // Go back to the previous page
+          navigate(-1);
         }
       } catch (error) {
         console.error("Error updating task:", error);
       }
     } else {
-      // Create new task if not editing
       try {
         const response = await axios.post("http://localhost:8081/tasks", {
           taskName: newTask.expenses,
@@ -147,7 +155,7 @@ const TaskCreateForm = () => {
 
         if (response.status === 201) {
           console.log("Task created successfully:", response.data);
-          navigate(-1); // Go back to the previous page
+          navigate(-1);
         }
       } catch (error) {
         console.error("Error creating task:", error);
@@ -159,9 +167,17 @@ const TaskCreateForm = () => {
       <Topbar />
       <Sidebar />
       <div className="task-create-form">
-        <h2>{taskToEdit ? "Update Task" : "Create Task"}</h2>
+        <div className="backkk">
+          <button
+            type="button"
+            className="back-satask"
+            onClick={() => navigate(-1)}
+          >
+            <IoArrowBackCircleOutline className="back-icontask" />
+          </button>
+          <h2>{taskToEdit ? "" : ""}</h2>
+        </div>
         <form onSubmit={handleSubmit}>
-          {/* Task Details Section */}
           <div className="form-section">
             <h3>Task Details</h3>
             <div className="form-row">
@@ -215,7 +231,6 @@ const TaskCreateForm = () => {
                 <MdAddCircleOutline />
               </button>
             </div>
-            {/* Display Added Miscellaneous Items */}
             <div className="misc-list-container">
               <div className="misc-grid">
                 {subItems.map((item, index) => (
@@ -272,7 +287,12 @@ const TaskCreateForm = () => {
                     type="text"
                     placeholder="Enter"
                     value={transactionId}
-                    onChange={(e) => setTransactionId(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (validateTransactionId(value)) {
+                        setTransactionId(value.toUpperCase());
+                      }
+                    }}
                   />
                 </div>
                 <div className="form-modal-field">
@@ -298,12 +318,7 @@ const TaskCreateForm = () => {
               </div>
             </div>
           )}
-
-          {/* Form Actions */}
           <div className="form-actions">
-            <button type="button" onClick={() => navigate(-1)}>
-              Back
-            </button>
             <button type="submit">{taskToEdit ? "Update" : "Create"}</button>
           </div>
         </form>

@@ -44,7 +44,7 @@ const Sidebar = () => {
             <div className="material-symbols-outlined icon">
               notifications
               {hasUnreadNotifications && (
-                <span className="notification-mark"></span>
+                <span className="notification-mark-admin"></span>
               )}
             </div>
             <span>Notifications</span>
@@ -57,19 +57,6 @@ const Sidebar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/transactions" data-tooltip="Transactions">
-            <div className="material-symbols-outlined icon">payments</div>
-            <span>Transactions</span>
-          </Link>
-        </li>
-
-        <li>
-          <Link to="/reports" data-tooltip="Reports">
-            <div className="material-symbols-outlined icon">analytics</div>
-            <span>Reports</span>
-          </Link>
-        </li>
-        <li>
           <Link to="/clients" data-tooltip="Clients">
             <div className="material-symbols-outlined icon">group</div>
             <span>Clients</span>
@@ -79,6 +66,12 @@ const Sidebar = () => {
           <Link to="/employee" data-tooltip="Employees">
             <div className="material-symbols-outlined icon">badge</div>
             <span>Employees</span>
+          </Link>
+        </li>
+        <li>
+          <Link to="/reports" data-tooltip="Reports">
+            <div className="material-symbols-outlined icon">analytics</div>
+            <span>Reports</span>
           </Link>
         </li>
       </ul>

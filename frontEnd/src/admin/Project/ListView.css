@@ -1,88 +1,199 @@
-/* Align numeric columns to the right */
+.eto-parent {
+  position: relative;
+  height: 100%;
+}
+
 .task-table .numeric-column {
   text-align: right;
 }
 
-
-.title-project{
-  position: absolute;
+.projects-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-right: auto;
+  padding: 0.5rem 0;
+  margin-top: 20px;
 }
 
-.project-list-wrapper{
+/*-------------------------------------------------------*/
+.list-view-header {
+  display: flex;
+  justify-content: space-between; /* This ensures left and right items stay at edges */
+  align-items: center;
+  position: relative;
+  z-index: 100;
+  margin-bottom: 20px;
+  width: 100%; /* Ensure it takes full width */
+  margin-top: 10px;
+}
+
+.create-project-btn {
+  top: auto;
+  background-color: #716cff;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 10px;
+  font-size: 20px;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+  height: 56px;
+  margin-left: auto;
+  margin-top: 15px;
+}
+
+.create-project-btn:hover {
+  background-color: #716cff;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.create-project-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.create-project-btn .icon {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.create-project-btn:hover .icon {
+  transform: scale(1.15);
+}
+
+/* Ripple effect */
+.create-project-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.create-project-btn:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
+
+/*-----------------------------------------------------------------------*/
+
+.title-project {
+  position: relative;
+}
+
+.project-list-wrapper {
   position: relative;
 }
 
 .project-list-wrapper td {
-  max-width: 150px; /* Adjust width as needed */
-  white-space: nowrap; /* Prevent text wrapping */
-  /* Hide overflow */
-  text-overflow: ellipsis; /* Add ellipsis for truncated text */
+  max-width: 150px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   -webkit-overflow-scrolling: touch;
-  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-y: auto;
 }
 
 .table-scroll-wrapper {
-  max-height: 687px; /* Set a height limit */
-  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 687px;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  
 }
 
-.right-align {
-  text-align: right;
-}
-
-.center-align{
+.center-align {
   text-align: center;
 }
 
 /* Custom Scrollbar for WebKit Browsers */
 .table-scroll-wrapper::-webkit-scrollbar {
-  width: 12px; /* Width of the vertical scrollbar */
-  height: 12px; /* Height of the horizontal scrollbar */
+  width: 12px;
+  height: 12px;
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Track color */
+  background: #f1f1f1;
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-thumb {
-  background: #a6a6a6; /* Thumb color */
-  border-radius: 10px; /* Rounded corners for the scrollbar */
+  background: #a6a6a6;
+  border-radius: 10px;
 }
 
 .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Thumb hover color */
+  background: #555;
 }
 
-.layout-toggle-icons {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  align-items: center;
-  justify-content: flex-end;
-  cursor: pointer;
-  padding-right: 50px;
+/* Remove all vertical lines between columns */
+.project-list-table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
-.layout-toggle-icons svg {
-  font-size: 30px;
-  color: #333;
-  cursor: pointer;
+.project-list-table td,
+.project-list-table th {
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-/* Grid view styles */
-.grid-view {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+/* Keep your existing number alignment */
+.project-list-table td:nth-child(6),
+.project-list-table td:nth-child(7),
+.project-list-table td:nth-child(8) {
+  text-align: right;
+  padding-right: 20px;
+  font-family: "Roboto Mono", monospace;
 }
 
-.grid-item {
-  background: #f1f1f1;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.project-list-table td:nth-child(9) {
+  text-align: center;
+}
+
+.project-list-table th:nth-child(9) {
+  text-align: center;
+}
+
+.project-list-table th:nth-child(6),
+.project-list-table th:nth-child(7),
+.project-list-table th:nth-child(8) {
+  text-align: right;
+  padding-right: 20px;
+}
+
+.project-list-table tr:hover td {
+  background-color: rgb(226, 226, 226);
+}
+
+.num-column {
+  font-weight: bold;
 }
 
 .project-list-table {
@@ -92,9 +203,8 @@
   font-size: 18px;
   position: absolute;
   margin-right: 50px;
-  margin-top: 100px;
+  margin-top: 20px;
   top: 70px;
-  
 }
 
 .project-list-table th,
@@ -114,20 +224,19 @@
 
 /*status ongoing and completed css*/
 .status-dropdown {
-  border-radius: 50px; /* Keep the button oval */
-  padding: 5px 15px; /* Smaller padding for a more compact size */
-  font-size: 15px; /* Smaller font size */
-  border: 1px solid #ccc; /* Optional: add a border */
-  background-color: #fff; /* Optional: set background color */
-  cursor: pointer; /* Optional: change cursor to pointer */
-  appearance: none; /* Hide the default dropdown icon in most browsers */
-  -webkit-appearance: none; /* For Safari */
-  -moz-appearance: none; /* For Firefox */
-  height: auto; /* Optional: adjust height to content */
-  width: auto; /* Optional: adjust width */
+  border-radius: 50px;
+  padding: 5px 15px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  height: auto;
+  width: auto;
 }
 
-/* Custom style to remove the default dropdown icon */
 .status-dropdown::-ms-expand {
   display: none; /* For Internet Explorer */
 }
@@ -199,7 +308,7 @@
 
 .project-list-table td:nth-child(1),
 .project-list-table td:nth-child(2) {
-  max-width: 200px; 
+  max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -209,8 +318,8 @@
   padding: 8px;
   border-radius: 4px;
   font-size: 14px;
-  border: 1px solid #ccc; 
-  background-color: white; 
+  border: 1px solid #ccc;
+  background-color: white;
   cursor: pointer;
   outline: none;
   width: 130px;
@@ -228,14 +337,14 @@
 
 /* Remove the dropdown arrow icon */
 .payment-status-dropdown::-ms-expand {
-  display: none; /* For Internet Explorer */
+  display: none;
 }
 
 .payment-status-dropdown {
-  -webkit-appearance: none; /* Remove the arrow for Safari */
-  -moz-appearance: none; /* Remove the arrow for Firefox */
-  appearance: none; /* Remove the arrow for other browsers */
-  background-image: none; 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: none;
   border-radius: 100px;
 }
 
@@ -246,9 +355,8 @@
   border: none;
 }
 
-
 .payment-status-dropdown.paid-status {
-  width: 90px; 
+  width: 90px;
 }
 
 .status-completed {
@@ -256,94 +364,203 @@
   color: white;
 }
 
-
-
 .paid-status {
-  background-color: #3b4f67; 
-  color: white; 
+  background-color: #3b4f67;
+  color: white;
 }
 
+/* total projects, ongoing, pending, completed, progress------------------------------------- */
 
-.eto-parent{
-  position: relative;
-}
-
-.sorting-button {
+.status-counters {
   display: flex;
-  gap: 10px;
-  align-items: center; 
-  
-  justify-content: flex-end;
-  background-color: transparent;
-  position: absolute;
-  right: 0; 
-  margin-right: 50px;
-  margin-top: 100px;
-  
-}
-
-.sorting-button-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
+  gap: 1.5rem;
   align-items: center;
-  justify-content: center; 
-  height: 40px; 
+  font-size: 0.9rem;
+  top: auto;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: auto;
+
+  margin-right: auto;
+}
+
+.status-counter {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: none;
+  transition: all 0.3s ease;
+}
+
+.status-counter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.counter-label {
+  font-weight: 500;
+  margin-right: 0.5rem;
+  color: #64748b; /*yung text*/
+}
+
+.status-value-list {
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Specific status colors */
+.status-counter:nth-child(1) .status-value-list {
+  /* Total Projects */
+  color: #334155;
+}
+
+.status-counter:nth-child(2) .status-value-list {
+  /* Ongoing */
+  color: #3b82f6;
+}
+
+.status-counter:nth-child(3) .status-value-list {
+  /* Pending */
+  color: #f59e0b;
+}
+
+.status-counter:nth-child(4) .status-value-list {
+  /* Completed */
+  color: #10b981;
+}
+
+.progress-counter {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.progress-counter:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.progress-label {
+  font-weight: 500;
+  color: #64748b;
+}
+
+.progress-value {
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.progress-bar-container {
+  width: 120px;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+}
+
+/* Animation for progress bar */
+.progress-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+/*----------------------------------------------------------------------------*/
+
+/* Action buttons */
+.action-list-buttons {
+  display: flex;
+  gap: 0.8rem;
+  margin-left: auto;
 }
 
 .action-button {
-  background-color: transparent;
-  color: rgb(0, 0, 0);
-  font-weight: bold;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s ease-in-out;
-  min-width: 120px;
-  height: 40px; 
   display: flex;
-  justify-content: center; 
-  align-items: center; 
-  text-align: center;
-  
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #3b4f67;
+  transition: color 0.2s ease;
+  font-weight: 500;
 }
 
 .action-button:hover {
-  background-color: #e2e2e2;
+  background: none;
+  color: #4070f4;
 }
 
+.button-icon {
+  margin-right: 0.5rem;
+}
+
+.dropdown-list-container {
+  position: relative;
+}
+
+/* eto sa mga button sa taas ng table */
+.sortingbutton-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0.5rem 0;
+  width: 100%;
+  margin-top: -10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Dropdown styles */
 .sorting-dropdown {
   position: absolute;
-  top: 100%; 
-  left: 0;
+  right: 0;
+  top: 100%;
   background: white;
-  border: none;
-  border-radius: 5px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 10;
-  display: flex;
-  flex-direction: column;
+  display: none;
   min-width: 120px;
-  padding: 5px 0;
-  opacity: 0; 
-  transform: translateY(-10px); 
-  visibility: hidden; 
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease,
-    visibility 0.3s ease;
+  color: #333;
 }
 
-
-.sorting-dropdown.visible {
-  opacity: 1; 
-  transform: translateY(0); 
-  visibility: visible;
-}
-
-/* Dropdown buttons */
 .sorting-dropdown button {
   background: none;
   border: none;
@@ -355,20 +572,31 @@
   color: #333;
 }
 
-.sorting-dropdown button:hover {
-  background-color: #f1f1f1;
+.sorting-dropdown.visible {
+  display: block;
 }
 
+.sorting-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sorting-dropdown button:hover {
+  background: #f3f4f6;
+}
 
 .sort-text {
-  font-size: 15px; 
+  font-size: 15px;
 }
-
-
 
 .project-action {
   display: flex;
-  gap: 8; 
+  gap: 8;
 }
 
 .project-edit,
@@ -396,24 +624,13 @@
 
 .project-edit svg,
 .project-delete svg {
-  font-size: 24px; 
+  font-size: 24px;
 }
-
-
-
-
-
-
 
 .toggle-buttons {
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  position: absolute;
-  top: 70px;
-  
-  
+  gap: 10px; /* Space between the toggle buttons */
+  margin-right: auto; /* Pushes the toggle buttons to the left */
 }
 
 .toggle-button {
@@ -424,17 +641,18 @@
   color: #3b4f67;
   font-size: 16px;
   cursor: pointer;
-  position: relative; 
+  position: relative;
   transition: color 0.3s ease;
+  margin-left: auto;
 }
 
 .toggle-button:hover {
-  color: #3b4f67; 
+  background: none;
 }
 
 .toggle-button.active {
-  color: #3b4f67; 
-  font-weight: bold; 
+  color: #8c7bf9;
+  font-weight: bold;
 }
 
 .toggle-button.active::after {
@@ -443,18 +661,186 @@
   left: 0;
   bottom: -5px;
   width: 100%;
-  height: 3px; 
-  background: linear-gradient(90deg, #3b4f67, #74C69D);
-  border-radius: 2px; 
-  box-shadow: 0 2px 5px rgba(59, 79, 103, 0.3); 
-  animation: slideIn 0.3s ease; 
+  height: 3px;
+  background: linear-gradient(90deg, #9773de, #74c69d);
+  border-radius: 2px;
+  box-shadow: none;
+  animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
   from {
-    transform: scaleX(0); 
+    transform: scaleX(0);
   }
   to {
-    transform: scaleX(1); 
+    transform: scaleX(1);
+  }
+}
+
+/* Table Project Status --------------------------------------------------------- */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 80px;
+  text-align: center;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Optional hover effect */
+.status-indicator:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific status styles */
+.status-indicator[style*="Ongoing"] {
+  border-color: rgba(64, 112, 244, 0.3);
+}
+
+.status-indicator[style*="Completed"] {
+  border-color: rgba(59, 79, 103, 0.3);
+}
+
+.status-indicator[style*="Pending"] {
+  border-color: rgba(252, 118, 118, 0.3);
+}
+
+/*----------------------------------------------------------------------*/
+
+/* Delete Confirmation Modal Styles */
+.delete-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  animation: fadeIn 0.2s ease-out;
+}
+
+.delete-confirmation-content {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transform: translateY(0);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.delete-project-icon-container {
+  background-color: #fff6f6;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  border: 1px solid #ffebee;
+}
+
+.delete-project-icon {
+  font-size: 2.5rem;
+  color: #ff4d4f;
+}
+
+.delete-confirmation-text {
+  margin-bottom: 2rem;
+}
+
+.delete-confirmation-text h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+.delete-confirmation-text p {
+  margin: 0.5rem 0;
+  color: #718096;
+  line-height: 1.5;
+}
+
+.warning-text {
+  color: #ff4d4f !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%; /* Add this */
+}
+
+.delete-confirmation-buttons button {
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  min-width: 120px; /* Changed from flex/max-width */
+}
+
+.cancel-project-button {
+  background-color: #f8f9fa;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.cancel-project-button:hover {
+  background-color: #edf2f7;
+  transform: translateY(-1px);
+}
+
+.confirm-project-button {
+  background-color: #ff4d4f;
+  color: white;
+  box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
+}
+
+.confirm-project-button:hover:hover {
+  background-color: #ff383a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 77, 79, 0.4);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

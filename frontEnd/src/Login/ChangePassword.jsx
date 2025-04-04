@@ -86,7 +86,7 @@ const ChangePassword = () => {
       <div className="right-side">
         <div className="wrapper-login">
           <form onSubmit={handleSubmit}>
-            <h2>Change Password</h2>
+            <h3>Change Password</h3>
             {error && <p style={{ color: "red" }}>{error}</p>}
             <div className="input-box">
               <input

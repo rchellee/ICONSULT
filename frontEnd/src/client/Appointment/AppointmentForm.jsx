@@ -107,6 +107,27 @@ function AppointmentForm() {
   };
 
   const handleDateSelect = async (date) => {
+    const clientId = localStorage.getItem("clientId");
+    try {
+      const checkResponse = await fetch(
+        `http://localhost:8081/appointments/client-check?clientId=${clientId}&date=${date}`
+      );
+
+      if (!checkResponse.ok)
+        throw new Error("Failed to check existing appointments");
+
+      const { hasAppointment } = await checkResponse.json();
+
+      if (hasAppointment) {
+        alert(
+          "You already have an appointment scheduled on this date. Please choose another date."
+        );
+        return;
+      }
+    } catch (error) {
+      console.error("Error checking existing appointments:", error);
+      // Continue with the process even if check fails
+    }
     setSelectedDate(date);
     setFormData({ ...formData, date });
 

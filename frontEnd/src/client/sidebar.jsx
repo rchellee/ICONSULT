@@ -35,8 +35,8 @@ const Sidebar = () => {
   const clientLastName = localStorage.getItem("lastName");
 
   return (
-    <div className="sidebar">
-      <ul className="sidebar-links">
+    <div className="sidebarClient">
+      <ul className="sidebarClient-links">
         <li>
           <Link to="/clientproject" data-tooltip="Home">
             <div className="material-symbols-outlined icon">home</div>

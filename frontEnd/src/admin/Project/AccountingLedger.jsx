@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
+import { SearchContext } from "../../components/SearchProvider";
 import axios from "axios";
 import "./AccountingLedger.css";
 import { FaTasks } from "react-icons/fa";
@@ -13,17 +14,33 @@ const AccountingLedger = ({
   const [payments, setPayments] = useState([]);
   const [subtotals, setSubtotals] = useState({});
   const [sortCriteria, setSortCriteria] = useState("projectName");
+  const { searchTerm } = useContext(SearchContext);
 
-  // Fetch and save paid tasks when the component mounts
+  const filterPayments = (payments, searchTerm) => {
+    if (!searchTerm) return payments;
+
+    const term = searchTerm.toLowerCase();
+
+    return payments.filter((payment) => {
+      return (
+        payment.projectName?.toLowerCase().includes(term) ||
+        payment.transaction_id?.toLowerCase().includes(term) ||
+        payment.payer_name?.toLowerCase().includes(term) ||
+        payment.description?.toLowerCase().includes(term) ||
+        payment.amount?.toString().includes(term) ||
+        payment.mode_of_payment?.toLowerCase().includes(term) ||
+        formatDate(payment.date_paid)?.toLowerCase().includes(term)
+      );
+    });
+  };
+
   useEffect(() => {
     const fetchAndSavePaidTasks = async () => {
       try {
-        // Fetch paid tasks
+        await axios.post("http://localhost:8081/payments/clean-duplicates");
         const response = await axios.get("http://localhost:8081/paid-tasks");
         const paidTasks = response.data;
-
         if (paidTasks.length > 0) {
-          // Save paid tasks to the payments table
           await axios.post("http://localhost:8081/payments/bulk", paidTasks);
           console.log("Paid tasks saved to payments table");
         }
@@ -31,18 +48,14 @@ const AccountingLedger = ({
         console.error("Error fetching or saving paid tasks:", error);
       }
     };
-
     fetchAndSavePaidTasks();
   }, []);
 
-  // Fetch payments when the component mounts
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         const response = await axios.get("http://localhost:8081/paymentLedger");
         setPayments(response.data);
-
-        // Calculate subtotals for each project
         const subtotalsMap = response.data.reduce((acc, payment) => {
           const key =
             sortCriteria === "mode_of_payment"
@@ -66,7 +79,7 @@ const AccountingLedger = ({
 
   useEffect(() => {
     if (sortCriteria === "date_paid") {
-      setSubtotals({}); // No subtotals for date_paid
+      setSubtotals({});
       return;
     }
 
@@ -100,7 +113,10 @@ const AccountingLedger = ({
       maximumFractionDigits: 2,
     })}`;
   };
-  const sortedPayments = [...payments].sort((a, b) => {
+
+  const filteredAndSortedPayments = [
+    ...filterPayments(payments, searchTerm),
+  ].sort((a, b) => {
     if (sortCriteria === "date_paid") {
       return new Date(a.date_paid) - new Date(b.date_paid);
     }
@@ -108,12 +124,40 @@ const AccountingLedger = ({
     if (a[sortCriteria] > b[sortCriteria]) return 1;
     return 0;
   });
+  useEffect(() => {
+    if (sortCriteria === "date_paid") {
+      setSubtotals({});
+      return;
+    }
+
+    const calculateFilteredSubtotals = () => {
+      const subtotalsMap = filteredAndSortedPayments.reduce((acc, payment) => {
+        let key = payment.projectName;
+
+        if (sortCriteria === "mode_of_payment") {
+          key = payment.mode_of_payment;
+        } else if (sortCriteria === "payer_name") {
+          key = payment.payer_name;
+        }
+
+        if (!acc[key]) {
+          acc[key] = 0;
+        }
+
+        acc[key] += parseFloat(payment.amount) || 0;
+        return acc;
+      }, {});
+
+      setSubtotals(subtotalsMap);
+    };
+
+    calculateFilteredSubtotals();
+  }, [sortCriteria, filteredAndSortedPayments]);
 
   return (
     <div className="accounting-ledger">
-      <h2>Accounting Ledger</h2>
-      <div className="sort-container">
-        <label style={{ marginLeft: "1190px" }}>Sort By: </label>
+      <div className="sortledger-container">
+        <label style={{ marginLeft: "1300px" }}>Sort By: </label>
         <select
           value={sortCriteria}
           onChange={(e) => setSortCriteria(e.target.value)}
@@ -124,7 +168,7 @@ const AccountingLedger = ({
           <option value="date_paid">Date Paid</option>
         </select>
       </div>
-      <div className="">
+      <div className="ok">
         <table className="accounting-table">
           <thead>
             <tr>
@@ -132,27 +176,36 @@ const AccountingLedger = ({
               <th>Transaction ID</th>
               <th>Paid By</th>
               <th>Description</th>
-              <th>Amount</th>
+              <th style={{ textAlign: "right", paddingRight: "20px" }}>
+                Amount
+              </th>
               <th>Mode of Payment</th>
               <th>Date Paid</th>
             </tr>
           </thead>
           <tbody>
-            {sortedPayments.map((payment, index) => (
+            {filteredAndSortedPayments.map((payment, index) => (
               <React.Fragment key={index}>
                 <tr>
                   <td>{payment.projectName}</td>
                   <td>{payment.transaction_id.toUpperCase()}</td>
                   <td>{payment.payer_name}</td>
                   <td>Payment for {payment.description}</td>
-                  <td>{formatAmount(payment.amount)}</td>
+                  <td
+                    style={{
+                      textAlign: "right",
+                      paddingRight: "20px",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {formatAmount(payment.amount)}
+                  </td>
                   <td>{payment.mode_of_payment}</td>
                   <td>{formatDate(payment.date_paid)}</td>
                 </tr>
-                {/* Display subtotal for the project */}
                 {sortCriteria !== "date_paid" &&
-                (index === sortedPayments.length - 1 ||
-                  sortedPayments[index + 1][sortCriteria] !==
+                (index === filteredAndSortedPayments.length - 1 ||
+                  filteredAndSortedPayments[index + 1][sortCriteria] !==
                     payment[sortCriteria]) ? (
                   <tr className="subtotal-row">
                     <td colSpan="4">
@@ -163,7 +216,17 @@ const AccountingLedger = ({
                         ? payment.payer_name
                         : payment.projectName}
                     </td>
-                    <td>{formatAmount(subtotals[payment[sortCriteria]])}</td>
+                    <td
+                      style={{
+                        textAlign: "right",
+                        paddingRight: "20px",
+                        fontWeight: "bold",
+
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {formatAmount(subtotals[payment[sortCriteria]])}
+                    </td>
                     <td colSpan="2"></td>
                   </tr>
                 ) : null}
@@ -172,7 +235,14 @@ const AccountingLedger = ({
             {sortCriteria !== "date_paid" && (
               <tr className="grand-total-row">
                 <td colSpan="4">Total</td>
-                <td>
+                <td
+                  style={{
+                    textAlign: "right",
+                    paddingRight: "20px",
+                    fontWeight: "bold",
+                    whiteSpace: "nowrap",
+                  }}
+                >
                   {formatAmount(
                     Object.values(subtotals).reduce(
                       (sum, amount) => sum + amount,

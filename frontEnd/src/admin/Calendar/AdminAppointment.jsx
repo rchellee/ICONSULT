@@ -26,6 +26,45 @@ function AdminAppointment() {
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
+  // Alert component
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    type: "error", // 'error' or 'success'
+  });
+
+  const showAlert = (message, type = "error") => {
+    setAlert({
+      show: true,
+      message,
+      type,
+    });
+    setTimeout(() => {
+      setAlert((prev) => ({ ...prev, show: false }));
+    }, 6000);
+  };
+
+  const AlertMessage = () => {
+    if (!alert.show) return null;
+
+    return (
+      <div className={`alert-message ${alert.type}`}>
+        <div className="alert-content">
+          <span className="alert-icon">
+            {alert.type === "error" ? "⚠️" : "✅"}
+          </span>
+          <span>{alert.message}</span>
+          <button
+            className="alert-close"
+            onClick={() => setAlert((prev) => ({ ...prev, show: false }))}
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   const fetchAppointmentCounts = async () => {
     try {
       const response = await fetch("http://localhost:8081/appointments/count");
@@ -89,7 +128,7 @@ function AdminAppointment() {
   const handleDateSelect = async (date) => {
     const today = new Date().toISOString().split("T")[0];
     if (date <= today) {
-      alert("You cannot select a past or current date.");
+      showAlert("You cannot select a past or current date.");
       return;
     }
     setSelectedDate(date);
@@ -114,7 +153,6 @@ function AdminAppointment() {
         }
       });
 
-      // Mark times as booked or available
       const updatedTimes = times.map((time) => ({
         time,
         isBooked: blockedTimes.has(time),
@@ -123,20 +161,19 @@ function AdminAppointment() {
       setAvailableTimes(updatedTimes);
     } catch (error) {
       console.error("Error fetching times for date:", error);
-      setAvailableTimes(times.map((time) => ({ time, isBooked: false }))); // Default to all available
+      setAvailableTimes(times.map((time) => ({ time, isBooked: false })));
     }
   };
 
   const handleTimePeriodChange = (e) => {
     setTimePeriod(e.target.value);
-    setFormData({ ...formData, time: "" }); // Reset time when period changes
+    setFormData({ ...formData, time: "" });
   };
 
   const handleTimeSelect = (time) => {
     setFormData({ ...formData, time });
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -155,7 +192,7 @@ function AdminAppointment() {
         !formData.platform ||
         !formData.reminder
       ) {
-        alert("Please fill out all required fields before proceeding.");
+        showAlert("Please fill out all required fields before proceeding.");
         return;
       }
     }
@@ -185,7 +222,7 @@ function AdminAppointment() {
     const client_Id = formData.client;
 
     if (!client_Id) {
-      alert("Please select a client.");
+      showAlert("Please select a client.");
       return;
     }
 
@@ -194,7 +231,7 @@ function AdminAppointment() {
     );
 
     if (!selectedClient) {
-      alert("Client not found. Please select a valid client.");
+      showAlert("Client not found. Please select a valid client.");
       return;
     }
 
@@ -229,10 +266,11 @@ function AdminAppointment() {
 
       const result = await response.json();
       console.log("Appointment Submitted:", result);
-      alert("Appointment Confirmed!");
-      navigate("/calendar");
+      showAlert("Appointment Confirmed!", "success");
+      setTimeout(() => {
+        navigate("/calendar");
+      }, 2000);
 
-      // Reset the form
       setCurrentStep(1);
       setFormData({
         date: "",
@@ -244,7 +282,7 @@ function AdminAppointment() {
       });
     } catch (error) {
       console.error("Error submitting appointment:", error);
-      alert("An error occurred. Please try again.");
+      showAlert("An error occurred. Please try again.");
     }
   };
 
@@ -252,6 +290,7 @@ function AdminAppointment() {
     <div>
       <Topbar />
       <Sidebar />
+      <AlertMessage />
 
       <div className="appointment-form-container">
         <div className="appointment-form-content">
@@ -340,10 +379,10 @@ function AdminAppointment() {
                     );
                     setFormData({
                       ...formData,
-                      client: selectedClientId, // Set the client ID
+                      client: selectedClientId,
                       clientName: selectedClient
                         ? `${selectedClient.firstName} ${selectedClient.lastName}`
-                        : "", // Set the client name for display purposes
+                        : "",
                     });
                   }}
                   required
@@ -369,7 +408,7 @@ function AdminAppointment() {
                     setFormData({
                       ...formData,
                       consultationType: selectedValue,
-                      otherDetails: selectedValue === "Others" ? "" : undefined, // Reset if "Others" selected
+                      otherDetails: selectedValue === "Others" ? "" : undefined,
                     });
                   }}
                   required
@@ -424,8 +463,8 @@ function AdminAppointment() {
                     <option value="Business Name Registration">
                       Business Name Registration
                     </option>
-                    <option value="SEC/DTI/Mayor’s Permit Assistance">
-                      SEC/DTI/Mayor’s Permit Assistance
+                    <option value="SEC/DTI/Mayor's Permit Assistance">
+                      SEC/DTI/Mayor's Permit Assistance
                     </option>
                     <option value="Compliance Consultation">
                       Compliance Consultation

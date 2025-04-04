@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { SearchContext } from "../../components/SearchProvider";
 import "./project.css";
-import { FaPlus } from "react-icons/fa";
 import pic4 from "../../assets/pic4.jpg";
 import ProjectForm from "./ProjectForm";
 import ProjectList from "./ProjectList";
@@ -41,24 +40,18 @@ const ProjectManagement = () => {
         (field || "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-
-    // Sort projects based on the selected sort order
     let sorted = [...filtered];
-
     if (sortOrder === "default") {
-      // Default sorting: Most recent first, except for completed projects
       sorted.sort((a, b) => {
         if (a.status === "Completed" && b.status !== "Completed") {
-          return 1; // Move completed projects to the bottom
+          return 1;
         } else if (a.status !== "Completed" && b.status === "Completed") {
-          return -1; // Move non-completed projects to the top
+          return -1;
         } else {
-          // Sort by creation date (most recent first)
           return new Date(b.created_at) - new Date(a.created_at);
         }
       });
     } else if (sortOrder === "name") {
-      // Sort alphabetically
       sorted.sort((a, b) => {
         const nameA = a.projectName.toLowerCase();
         const nameB = b.projectName.toLowerCase();
@@ -67,21 +60,18 @@ const ProjectManagement = () => {
         return 0;
       });
     } else if (sortOrder === "asc") {
-      // Ascending by start date
       sorted.sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
         return dateA - dateB;
       });
     } else if (sortOrder === "desc") {
-      // Descending by start date
       sorted.sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
         return dateB - dateA;
       });
     }
-
     setFilteredProjects(sorted);
   }, [projects, searchTerm, sortOrder]);
 
@@ -92,16 +82,11 @@ const ProjectManagement = () => {
         setProjects(data);
       })
       .catch((error) => console.error("Error fetching projects:", error));
-
     fetch("http://localhost:8081/clients")
       .then((response) => response.json())
       .then((data) => setClients(data))
       .catch((error) => console.error("Error fetching clients:", error));
   }, []);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -126,7 +111,7 @@ const ProjectManagement = () => {
       description,
       startDate,
       endDate,
-      status: "Pending", // Default status for new projects
+      status: "Pending",
     };
 
     fetch("http://localhost:8081/project", {
@@ -136,7 +121,6 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((newProject) => {
-        // Update the projects state with the new project
         setProjects((prevProjects) => [...prevProjects, newProject]);
         closeModal();
       })
@@ -153,7 +137,6 @@ const ProjectManagement = () => {
       endDate,
       actualFinish,
     };
-
     fetch(`http://localhost:8081/project/${editingProjectId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -161,7 +144,6 @@ const ProjectManagement = () => {
     })
       .then((response) => response.json())
       .then((updatedProject) => {
-        // Update the projects state with the updated project
         setProjects((prevProjects) =>
           prevProjects.map((project) =>
             project.id === editingProjectId ? updatedProject : project
@@ -270,8 +252,24 @@ const ProjectManagement = () => {
         toggleSortDropdown={toggleSortDropdown}
         isSortDropdownOpen={isSortDropdownOpen}
         requestSort={requestSort}
-        activeDropdown={activeDropdown}
         toggleDropdown={toggleDropdown}
+        activeDropdown={activeDropdown}
+        openModal={openModal}
+        clients={clients}
+        onSave={handleSave}
+        editingProjectId={editingProjectId}
+        projectName={projectName}
+        setProjectName={setProjectName}
+        clientId={clientId}
+        setClientId={setClientId}
+        clientName={clientName}
+        setClientName={setClientName}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        description={description}
+        setDescription={setDescription}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         onCancel={closeModal}
@@ -289,12 +287,6 @@ const ProjectManagement = () => {
       <Sidebar />
       <div className="project-management-page">
         <div className={`content-project ${isSidebarOpen ? "shifted" : ""}`}>
-          <div className="action-container">
-            <button className="create-button" onClick={openModal}>
-              <FaPlus className="icon" /> New
-            </button>
-          </div>
-
           {isModalOpen && (
             <ProjectForm
               projectName={projectName}

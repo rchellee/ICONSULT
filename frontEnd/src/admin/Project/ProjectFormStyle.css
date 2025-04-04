@@ -18,14 +18,14 @@
   width: 800px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 900px; 
+  max-width: 900px;
 }
 
 .form-modal-title {
-  text-align: left; 
-  margin-bottom: 30px; 
-  margin-left: 0; 
-  font-weight: bold; 
+  text-align: left;
+  margin-bottom: 30px;
+  margin-left: 0;
+  font-weight: bold;
   color: #5d6d90;
 }
 
@@ -59,10 +59,10 @@
   font-size: 16px;
   border: 1px solid #ccc;
   box-sizing: border-box;
-  appearance: none; 
-  -webkit-appearance: none; 
-  -moz-appearance: none; 
-  background: none; 
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: none;
   margin-top: -1px;
   border-radius: 10px;
 }
@@ -101,7 +101,6 @@
   background-color: #dcdcdc;
 }
 
-
 .form-project-details {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,21 +127,20 @@
 }
 
 .description-input {
-   
-  height: 100px; 
+  height: 100px;
   padding: 12px;
   font-size: 16px;
   border-radius: 10px;
   border: 1px solid #ccc;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .form-project-details .description-input {
-  grid-column: span 2; 
+  grid-column: span 2;
 }
 
 .date-picker {
-  display: none; 
+  display: none;
 }
 
 .custom-date-input {
@@ -189,9 +187,11 @@
 
 .form-create-cancel {
   display: flex;
-  justify-content: center;
-  gap: 500px; 
-  margin-top: 20px; 
+  justify-content: space-between; /* Changed from center */
+  gap: 20px; /* Reduced from 500px */
+  margin-top: 20px;
+  width: 100%;
+  padding: 0 20px; /* Add some padding if needed */
 }
 
 .form-cancel-project-button,
@@ -203,8 +203,21 @@
   border-radius: 100px;
   border: none;
   cursor: pointer;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+  text-align: center; /* Add this line to center the text */
+  display: flex; /* These next 3 lines will vertically and horizontally center the text */
+  align-items: center;
+  justify-content: center;
 }
 
+/* Optional: If you want the buttons centered with space between */
+.alternative-layout {
+  display: flex;
+  justify-content: center;
+  gap: 40px; /* Adjust as needed */
+  margin-top: 20px;
+  width: 100%;
+}
 .form-cancel-project-button {
   background-color: #f5f5f5;
   color: #000;
@@ -216,11 +229,22 @@
 }
 
 .form-cancel-project-button:hover {
-  background-color: #e0e0e0; 
+  background-color: #e0e0e0;
 }
 
 .form-create-project-button:hover {
-  background-color: #b0c2f8; 
+  background-color: #b0c2f8;
+}
+
+.error-input {
+  border: 1px solid red !important;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
 }
 
 /*prof fee, mop, tras id*/
@@ -312,3 +336,5 @@
 .dropdown-menu li:hover {
   background: #f0f0f0;
 }
+
+/* Button Container */

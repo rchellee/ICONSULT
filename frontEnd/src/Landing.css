@@ -32,7 +32,7 @@ nav {
   font-family: "Ubuntu", sans-serif;
 }
 nav.sticky {
-  background: #4070f4;
+  background: none;
   padding: 13px 0;
 }
 nav .navbar {
@@ -45,7 +45,7 @@ nav .navbar {
 nav .navbar .logo a {
   font-weight: 500;
   font-size: 35px;
-  color: #4070f4;
+  color: #8c7bf9;
 }
 nav.sticky .navbar .logo a {
   color: #fff;
@@ -125,17 +125,19 @@ nav.sticky .menu-btn {
 .home .text-one {
   font-size: 25px;
   color: #0e2431;
+  margin-bottom: 10px;
 }
 .home .text-two {
-  color: #0e2431;
+  color: #716cff;
   font-size: 75px;
   font-weight: 600;
   margin-left: -3px;
+  margin-bottom: -20px;
 }
 .home .text-three {
-  font-size: 40px;
+  font-size: 35px;
   margin: 5px 0;
-  color: #4070f4;
+  color: #818181;
 }
 .home .text-four {
   font-size: 23px;
@@ -151,11 +153,12 @@ nav.sticky .menu-btn {
   border-radius: 6px;
   font-size: 25px;
   font-weight: 400;
-  background: #7E83C2;
+  background: #716cff;
   color: #fff;
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.4s ease;
+  box-shadow: 0 4px 8px rgba(106, 90, 205, 0.2);
 }
 .home .button-landing button:hover {
   border-color: #4070f4;
@@ -163,8 +166,7 @@ nav.sticky .menu-btn {
   color: #4070f4;
 }
 /* About Section Styling */
-/* Those Elements Where We Have Apply Same CSS,
- I'm Selecting Directly 'Section Tag' and 'Class'  */
+
 section {
   padding-top: 40px;
 }
@@ -219,7 +221,7 @@ section .title span::after {
   width: 55%;
 }
 section .topic {
-  color: #0e2431;
+  color: #6e8da0;
   font-size: 25px;
   font-weight: 500;
   margin-bottom: 10px;
@@ -237,7 +239,7 @@ section .button button {
   border-radius: 4px;
   font-size: 25px;
   font-weight: 400;
-  background: #7E83C2;
+  background: #716cff;
   color: #fff;
   border: 2px solid transparent;
   cursor: pointer;
@@ -299,7 +301,7 @@ section .button button:hover {
 }
 .skills-details .boxes .per {
   font-size: 60px;
-  color: #4070f4;
+  color: #3154b6;
 }
 /* My Services CSS */
 .services .boxes {
@@ -318,13 +320,13 @@ section .button button:hover {
   transition: all 0.4s ease;
 }
 .services .boxes .box:hover {
-  background: #999eda;
+  background: #8783ff; /*card hover*/
   color: #fff;
 }
 .services .boxes .box .icon {
   height: 50px;
   width: 50px;
-  background: #7777DF;
+  background: #605bff; /*card */
   border-radius: 50%;
   text-align: center;
   line-height: 50px;
@@ -336,7 +338,7 @@ section .button button:hover {
 
 .boxes .box:hover .icon {
   background-color: #fff;
-  color: #3b4f67;
+  color: #605bff; /*card */
 }
 .services .boxes .box:hover .topic,
 .services .boxes .box:hover p {
@@ -360,9 +362,38 @@ section .button button:hover {
   text-align: center;
   margin: auto;
 }
+
+.contact .button button {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  color: white;
+  padding: 12px 30px;
+  text-align: right;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 15px 0;
+  cursor: pointer;
+  border-radius: 30px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.contact .button button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #a777e3, #6e8efb);
+}
+
+.contact .button button a {
+  color: white;
+  text-decoration: none;
+}
+
 /* Footer CSS */
 footer {
-  background:  #7777DF;
+  background: #6490ff;
   padding: 15px 0;
   text-align: center;
   font-family: "Poppins", sans-serif;
@@ -385,7 +416,7 @@ footer .text span a:hover {
   bottom: 20px;
   right: 20px;
   color: #fff;
-  background: #7E83C2;
+  background: #918dff;
   padding: 7px 12px;
   font-size: 18px;
   border-radius: 6px;
@@ -432,7 +463,7 @@ footer .text span a:hover {
     position: fixed;
     left: -100%;
     top: 0;
-    background: #7777DF;
+    background: #7777df;
     height: 100vh;
     max-width: 400px;
     width: 100%;
@@ -451,7 +482,7 @@ footer .text span a:hover {
     margin: 10px 0;
   }
   nav.sticky .menu a:hover {
-    color: #C8D9E6;
+    color: #c8d9e6;
   }
   nav .navbar .media-icons {
     display: none;

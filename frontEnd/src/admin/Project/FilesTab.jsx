@@ -1,5 +1,4 @@
 import { MdOutlineDeleteOutline } from "react-icons/md";
-import { AiOutlineEdit } from "react-icons/ai";
 import React, { useState, useEffect, useRef } from "react";
 import { FaFile, FaFileImage } from "react-icons/fa";
 import { CiFileOn } from "react-icons/ci";
@@ -7,6 +6,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa6";
 import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
+import emptyFolder from "../../assets/empty-folder.png";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
@@ -15,15 +15,15 @@ const FilesTab = ({ projectId }) => {
   const [uploading, setUploading] = useState(false);
   const [clientNames, setClientNames] = useState({});
   const [sortConfig, setSortConfig] = useState({
-    key: "name", // Default sort by name
-    direction: "asc", // Default ascending order
+    key: "name",
+    direction: "asc",
   });
-  const [showSortOptions, setShowSortOptions] = useState(false); // State to toggle sort options
+  const [showSortOptions, setShowSortOptions] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState(null);
 
-  // Create a ref for the file input
   const fileInputRef = useRef(null);
 
-  // Function to trigger file input click
   const handleUploadButtonClick = () => {
     fileInputRef.current.click();
   };
@@ -99,14 +99,34 @@ const FilesTab = ({ projectId }) => {
     }
   };
 
-  const handleDelete = async (fileId) => {
+  const handleDeleteClick = (fileId) => {
+    setFileToDelete(fileId);
+    setShowDeleteConfirm(true);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setFileToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!fileToDelete) {
+      setShowDeleteConfirm(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`http://localhost:8081/files/${fileId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `http://localhost:8081/files/${fileToDelete}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
-        setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+        setFiles((prevFiles) =>
+          prevFiles.filter((file) => file.id !== fileToDelete)
+        );
         console.log("File record deleted successfully.");
       } else {
         const errorData = await response.json();
@@ -114,6 +134,9 @@ const FilesTab = ({ projectId }) => {
       }
     } catch (error) {
       console.error("Error deleting file record:", error);
+    } finally {
+      setShowDeleteConfirm(false);
+      setFileToDelete(null);
     }
   };
 
@@ -189,11 +212,33 @@ const FilesTab = ({ projectId }) => {
 
   return (
     <div className="files-tab-content">
+      {showDeleteConfirm && (
+        <div className="delete-confirmation-modal">
+          <div className="delete-confirmation-content">
+            <div className="delete-confirmation-header">
+              <MdOutlineDeleteOutline className="delete-project-icon" />
+              <h3>Confirm Deletion</h3>
+            </div>
+            <p>Are you sure you want to delete this file?</p>
+
+            <div className="delete-confirmation-buttons">
+              <button className="cancel-project-button" onClick={cancelDelete}>
+                Cancel
+              </button>
+              <button
+                className="confirm-project-button"
+                onClick={confirmDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="upload-files-section">
-        {/* Upload Button */}
         <button className="upload-files-btn" onClick={handleUploadButtonClick}>
           Upload <MdOutlineFileUpload />
-          {/* Hidden file input */}
           <input
             type="file"
             onChange={handleFileUpload}
@@ -202,8 +247,6 @@ const FilesTab = ({ projectId }) => {
             ref={fileInputRef} // Attach the ref
           />
         </button>
-
-        {/* Sort Button */}
         <div className="sort-files">
           <button
             className="sort-files-btn"
@@ -237,9 +280,9 @@ const FilesTab = ({ projectId }) => {
                       <FaArrowDown />
                     )}
                   </th>
-                  <th className="upload-date-header">Upload Date</th>
-                  <th className="uploaded-by-header">Uploaded By</th>
-                  <th className="action-files">Actions</th>
+                  <th className="upload-date-header">Modified Date</th>
+                  <th className="uploaded-by-header">Modified By</th>
+                  <th className="action-files"></th>
                 </tr>
               </thead>
               <tbody>
@@ -271,28 +314,30 @@ const FilesTab = ({ projectId }) => {
                         : clientNames[file.uploaded_by] || "Unknown"}
                     </td>
                     <td>
-                      <button
-                        className="files-action"
-                        onClick={() => {
-                          const downloadLink =
-                            file.webContentLink ||
-                            `http://localhost:8081/uploads/${file.original_name}`;
-                          const a = document.createElement("a");
-                          a.href = downloadLink;
-                          a.download = file.original_name;
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                        }}
-                      >
-                        <IoMdDownload /> {/* Download icon */}
-                      </button>
-                      <button
-                        className="files-action"
-                        onClick={() => handleDelete(file.id)}
-                      >
-                        <MdOutlineDeleteOutline /> {/* Delete icon */}
-                      </button>
+                      <div className="action-buttons-container">
+                        <button
+                          className="files-admin"
+                          onClick={() => {
+                            const downloadLink =
+                              file.webContentLink ||
+                              `http://localhost:8081/uploads/${file.original_name}`;
+                            const a = document.createElement("a");
+                            a.href = downloadLink;
+                            a.download = file.original_name;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                          }}
+                        >
+                          <IoMdDownload /> {/* Download icon */}
+                        </button>
+                        <button
+                          className="filestwo-admin"
+                          onClick={() => handleDeleteClick(file.id)}
+                        >
+                          <MdOutlineDeleteOutline /> {/* Delete icon */}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -302,7 +347,14 @@ const FilesTab = ({ projectId }) => {
         )}
 
         {files.length === 0 && (
-          <div className="no-files-message">No files uploaded yet.</div>
+          <div className="no-files-container">
+            <img
+              src={emptyFolder}
+              alt="Empty folder"
+              className="empty-folder-image"
+            />
+            <div className="no-files-message">No files uploaded yet.</div>
+          </div>
         )}
       </div>
     </div>
