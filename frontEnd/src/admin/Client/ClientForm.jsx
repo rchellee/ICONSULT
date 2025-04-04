@@ -119,9 +119,7 @@ const ClientForm = ({ clients, setClients, showToast, hideToast, goBack }) => {
 
   return (
     <div className="client-home-page">
-      <Sidebar />
       <div className="client-content">
-        <h4>Account Information</h4>
         <form onSubmit={handleSubmit} className="client-form-grid">
           {/* Account Section */}
           <div className="client-row">

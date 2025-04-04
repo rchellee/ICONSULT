@@ -8,6 +8,7 @@ import logout from "../assets/logout.png";
 import profile from "../assets/profile.png";
 import admin from "../assets/admin.jpg";
 import "./topbar.css";
+import logo from "../assets/logo3.png";
 
 const Topbar = () => {
   const [menuActive, setMenuActive] = useState(false);
@@ -83,18 +84,25 @@ const Topbar = () => {
   };
 
   return (
-    <nav style={{ backgroundColor: "#fbfbfb" }}>
-      <div className="logo" style={{ color: "#6a5acd" }}>iConsult.</div>
+    <nav className="topbar-container topbar-border">
+      <div className="logo">
+              <img 
+                src={logo} 
+                alt="iConsult Logo" 
+                style={{
+                  height: "40px", 
+                  width: "auto", 
+                  objectFit: "contain"
+                }}
+              />
+            </div>
       <div className="search-icon" onClick={handleSearchClick}>
-        <span className="fas fa-search"></span>
+        
       </div>
-      <div
-        className={`cancel-icon ${menuActive || searchActive ? "show" : ""}`}
-        onClick={handleCancelClick}
-      >
-        <span className="fas fa-times"></span>
+      <div className={`cancel-icon ${searchActive ? "show" : ""}`} onClick={handleCancelClick}>
+        
       </div>
-      <form className={`${searchActive ? "active" : ""}`} action="#">
+      <form className={`search-form ${searchActive ? "active" : ""}`}>
         <input
           type="search"
           className="search-data"

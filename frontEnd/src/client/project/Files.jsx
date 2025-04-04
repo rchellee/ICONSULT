@@ -171,7 +171,7 @@ function Files({ projectId, clientId }) {
                   disabled={uploading}
                   className="upload-file-button"
                 >
-                  {uploading ? "Uploading..." : <><MdUpload /> Upload File</>}
+                  {uploading ? "Uploading..." : <><MdUpload /> Upload </>}
                 </button>
               ) : (
                 <button

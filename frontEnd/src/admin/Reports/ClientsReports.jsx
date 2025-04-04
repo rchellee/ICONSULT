@@ -363,7 +363,7 @@ const ClientsReports = () => {
             canvas.toDataURL("image/png"),
             "PNG",
             5,
-            startY += 40,
+            (startY += 40),
             chartWidth,
             chartHeight
           );
@@ -438,7 +438,7 @@ const ClientsReports = () => {
             canvas.toDataURL("image/png"),
             "PNG",
             40,
-            startY += 40,
+            (startY += 40),
             chartWidth,
             chartHeight
           );
@@ -520,7 +520,7 @@ const ClientsReports = () => {
             canvas.toDataURL("image/png"),
             "PNG",
             40,
-            startY += 40,
+            (startY += 40),
             chartWidth,
             chartHeight
           );
@@ -615,7 +615,7 @@ const ClientsReports = () => {
             canvas.toDataURL("image/png"),
             "PNG",
             40,
-            startY += 40,
+            (startY += 40),
             chartWidth,
             chartHeight
           );

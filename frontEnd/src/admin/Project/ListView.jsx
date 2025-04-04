@@ -202,7 +202,7 @@ const ListView = ({
   return (
     <div className="eto-parent">
       <div className="sorting-button-container">
-        <div className="status-counters">
+        <div className="status-countersproj">
           <span className="status-counter">
             <span className="counter-label">Total Projects:</span>
             <span className="status-value-list">{totalProjects}</span>
@@ -237,9 +237,9 @@ const ListView = ({
           </span>
         </div>
         <div className="action-list-buttons">
-          <div className="dropdown-list-container">
+          <div className="listproj-container">
             <button
-              className="action-button status-list-button"
+              className="actionproj-button status-list-button"
               onClick={toggleStatusDropdown}
               ref={statusButtonRef}
             >
@@ -266,7 +266,7 @@ const ListView = ({
           </div>
           <div className="dropdown-list-container">
             <button
-              className="action-button sort-button"
+              className="actionproj-button sort-button"
               onClick={toggleSortDropdown}
               ref={sortButtonRef}
             >

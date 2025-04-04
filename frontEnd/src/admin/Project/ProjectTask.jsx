@@ -74,7 +74,7 @@ const ProjectTask = ({ onBack }) => {
         {/* Project Header with Breadcrumbs and Create Button */}
         <div className="project-header">
           <h3 className="project-id">
-            <span className="project-name">My Project</span>
+            <span className="project-name">Project</span>
             <IoChevronForward className="chevron-icon" />
             <span className="project-name" style={{  color: '#000' }}>
               {projectName}

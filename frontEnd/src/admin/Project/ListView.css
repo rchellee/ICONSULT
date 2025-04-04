@@ -215,7 +215,7 @@
   font-size: 18px;
   position: absolute;
   margin-right: 50px;
-  margin-top: 20px;
+  margin-top: 100;
   top: 70px;
 }
 
@@ -226,6 +226,7 @@
   border: none;
   overflow: hidden;
   font-size: 15px;
+  
 }
 
 .project-list-table th {
@@ -383,7 +384,7 @@
 
 /* total projects, ongoing, pending, completed, progress------------------------------------- */
 
-.status-counters {
+.status-countersproj {
   display: flex;
   gap: 1.5rem;
   align-items: center;
@@ -392,7 +393,7 @@
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  margin-top: auto;
+  margin-top: 30px;
   
   margin-right: auto;
 }
@@ -509,17 +510,15 @@
 /*----------------------------------------------------------------------------*/
 
 
-
-
-
 /* Action buttons */
 .action-list-buttons {
   display: flex;
   gap: 0.8rem;
   margin-left: auto; 
+  margin-top: -50px; /*para tumaas sort and status*/
 }
 
-.action-button {
+.actionproj-button {
   display: flex;
   align-items: center;
   padding: 0.5rem 1rem;
@@ -532,7 +531,7 @@
 }
 
 
-.action-button:hover {
+.actionproj-button:hover {
   background: none;
   color: #4070f4;
 }
@@ -541,7 +540,7 @@
   margin-right: 0.5rem;
 }
 
-.dropdown-list-container {
+.listproj-container {
   position: relative;
 }
 
@@ -551,10 +550,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   padding: 0.5rem 0;
   width: 100%;
   margin-top: -10px;
+   
 }
 
 /* Dropdown styles */
