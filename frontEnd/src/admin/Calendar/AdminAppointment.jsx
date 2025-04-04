@@ -8,7 +8,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
-
 function AdminAppointment() {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -26,6 +25,45 @@ function AdminAppointment() {
   const [availableDates, setAvailableDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+
+  // Alert component
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    type: "error", // 'error' or 'success'
+  });
+
+  const showAlert = (message, type = "error") => {
+    setAlert({
+      show: true,
+      message,
+      type,
+    });
+    setTimeout(() => {
+      setAlert((prev) => ({ ...prev, show: false }));
+    }, 6000);
+  };
+
+  const AlertMessage = () => {
+    if (!alert.show) return null;
+
+    return (
+      <div className={`alert-message ${alert.type}`}>
+        <div className="alert-content">
+          <span className="alert-icon">
+            {alert.type === "error" ? "⚠️" : "✅"}
+          </span>
+          <span>{alert.message}</span>
+          <button
+            className="alert-close"
+            onClick={() => setAlert((prev) => ({ ...prev, show: false }))}
+          >
+            &times;
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const fetchAppointmentCounts = async () => {
     try {
@@ -90,7 +128,7 @@ function AdminAppointment() {
   const handleDateSelect = async (date) => {
     const today = new Date().toISOString().split("T")[0];
     if (date <= today) {
-      alert("You cannot select a past or current date.");
+      showAlert("You cannot select a past or current date.");
       return;
     }
     setSelectedDate(date);
@@ -114,6 +152,7 @@ function AdminAppointment() {
             blockedTimes.add(times[bookedIndex + 2]);
         }
       });
+
       const updatedTimes = times.map((time) => ({
         time,
         isBooked: blockedTimes.has(time),
@@ -128,7 +167,7 @@ function AdminAppointment() {
 
   const handleTimePeriodChange = (e) => {
     setTimePeriod(e.target.value);
-    setFormData({ ...formData, time: "" }); 
+    setFormData({ ...formData, time: "" });
   };
 
   const handleTimeSelect = (time) => {
@@ -143,28 +182,7 @@ function AdminAppointment() {
     }));
   };
 
-  const nextStep = async () => {
-    if (currentStep === 2 && formData.client && formData.date) {
-      try {
-        const checkResponse = await fetch(
-          `http://localhost:8081/appointments/client-check?clientId=${formData.client}&date=${formData.date}`
-        );
-
-        if (!checkResponse.ok)
-          throw new Error("Failed to check existing appointments");
-
-        const { hasAppointment } = await checkResponse.json();
-
-        if (hasAppointment) {
-          alert(
-            "This client already has an appointment scheduled on this date. Please choose another date or client."
-          );
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking existing appointments:", error);
-      }
-    }
+  const nextStep = () => {
     if (currentStep === 2) {
       if (
         !formData.client ||
@@ -174,7 +192,7 @@ function AdminAppointment() {
         !formData.platform ||
         !formData.reminder
       ) {
-        alert("Please fill out all required fields before proceeding.");
+        showAlert("Please fill out all required fields before proceeding.");
         return;
       }
     }
@@ -182,6 +200,18 @@ function AdminAppointment() {
   };
 
   const prevStep = () => setCurrentStep((prevStep) => prevStep - 1);
+
+  const validateForm = () => {
+    return (
+      formData.date &&
+      formData.time &&
+      formData.client &&
+      formData.consultationType &&
+      (formData.consultationType !== "Others" || formData.otherDetails) &&
+      formData.platform &&
+      formData.reminder
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -192,7 +222,7 @@ function AdminAppointment() {
     const client_Id = formData.client;
 
     if (!client_Id) {
-      alert("Please select a client.");
+      showAlert("Please select a client.");
       return;
     }
 
@@ -201,7 +231,7 @@ function AdminAppointment() {
     );
 
     if (!selectedClient) {
-      alert("Client not found. Please select a valid client.");
+      showAlert("Client not found. Please select a valid client.");
       return;
     }
 
@@ -236,8 +266,10 @@ function AdminAppointment() {
 
       const result = await response.json();
       console.log("Appointment Submitted:", result);
-      alert("Appointment Confirmed!");
-      navigate("/calendar");
+      showAlert("Appointment Confirmed!", "success");
+      setTimeout(() => {
+        navigate("/calendar");
+      }, 2000);
 
       setCurrentStep(1);
       setFormData({
@@ -250,7 +282,7 @@ function AdminAppointment() {
       });
     } catch (error) {
       console.error("Error submitting appointment:", error);
-      alert("An error occurred. Please try again.");
+      showAlert("An error occurred. Please try again.");
     }
   };
 
@@ -258,6 +290,7 @@ function AdminAppointment() {
     <div>
       <Topbar />
       <Sidebar />
+      <AlertMessage />
 
       <div className="appointment-form-container">
         <div className="appointment-form-content">
@@ -346,10 +379,10 @@ function AdminAppointment() {
                     );
                     setFormData({
                       ...formData,
-                      client: selectedClientId, 
+                      client: selectedClientId,
                       clientName: selectedClient
                         ? `${selectedClient.firstName} ${selectedClient.lastName}`
-                        : "", 
+                        : "",
                     });
                   }}
                   required
@@ -430,8 +463,8 @@ function AdminAppointment() {
                     <option value="Business Name Registration">
                       Business Name Registration
                     </option>
-                    <option value="SEC/DTI/Mayor’s Permit Assistance">
-                      SEC/DTI/Mayor’s Permit Assistance
+                    <option value="SEC/DTI/Mayor's Permit Assistance">
+                      SEC/DTI/Mayor's Permit Assistance
                     </option>
                     <option value="Compliance Consultation">
                       Compliance Consultation
