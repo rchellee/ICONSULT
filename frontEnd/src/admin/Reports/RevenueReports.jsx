@@ -297,11 +297,19 @@ const RevenueReports = () => {
     const formatDate = (dateString) => {
       if (!dateString) return "";
       try {
-        return new Date(dateString).toISOString().split("T")[0];
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
       } catch (e) {
         return dateString;
       }
     };
+
     const clientNames = {};
     clients.forEach((client) => {
       clientNames[client.id] = `${client.firstName} ${client.lastName}`;
@@ -351,6 +359,14 @@ const RevenueReports = () => {
       );
       pdfDoc.setFont("helvetica", "normal").setFontSize(8);
       return { textX: 14 };
+    };
+
+    const formatAmount = (amount) => {
+      if (amount === null || amount === undefined) return "";
+      return amount.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
     };
 
     const addFooter = (pdfDoc) => {
@@ -550,7 +566,7 @@ const RevenueReports = () => {
             (payment) => [
               payment.task_id,
               payment.task_name,
-              `${payment.amount.toFixed(2)}`,
+              `PHP ${payment.amount.toFixed(2)}`,
               payment.transaction_id || "N/A",
               payment.mode_of_payment || "N/A",
               payment.date_paid
@@ -588,7 +604,7 @@ const RevenueReports = () => {
             .setFontSize(10)
             .setFont("helvetica", "bolditalic")
             .setTextColor(40)
-            .text(`Total Amount: ${receivedTotal.toFixed(2)}`, 14, yPos);
+            .text(`Total Amount: PHP ${receivedTotal.toFixed(2)}`, 14, yPos);
         }
 
         if (exportType === "All" || exportType === "Pending") {
@@ -610,7 +626,7 @@ const RevenueReports = () => {
             (payment) => [
               payment.task_id,
               payment.task_name,
-              `${payment.amount.toFixed(2)}`,
+              `PHP ${payment.amount.toFixed(2)}`,
               payment.due_date
                 ? new Date(payment.due_date).toLocaleDateString()
                 : "N/A",
@@ -646,7 +662,7 @@ const RevenueReports = () => {
             .setFontSize(10)
             .setFont("helvetica", "bolditalic")
             .setTextColor(40)
-            .text(`Total Amount: ${pendingTotal.toFixed(2)}`, 14, yPos);
+            .text(`Total Amount: PHP ${pendingTotal.toFixed(2)}`, 14, yPos);
         }
       } catch (error) {
         console.error("Error generating PDF:", error);
@@ -753,7 +769,7 @@ const RevenueReports = () => {
               project?.projectName || "N/A",
               task?.task_name || "N/A",
               r.payer_name || "N/A",
-              `${r.amount.toFixed(2)}`,
+              `PHP ${r.amount.toFixed(2)}`,
               r.mode_of_payment || "N/A",
               r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
             ];
@@ -848,7 +864,7 @@ const RevenueReports = () => {
         doc
           .setFontSize(12)
           .setFont("helvetica", "bold")
-          .text(`TOTAL: ${grandTotal.toFixed(2)}`, 14, startY);
+          .text(`TOTAL: PHP ${grandTotal.toFixed(2)}`, 14, startY);
       }
     }
     if (selectedReport === "Revenue per Project") {
@@ -959,7 +975,7 @@ const RevenueReports = () => {
               r.transaction_id || "N/A",
               task?.task_name || "N/A",
               r.payer_name || "N/A",
-              `₱${r.amount.toFixed(2)}`,
+              `PHP ${r.amount.toFixed(2)}`,
               r.mode_of_payment || "N/A",
               r.date_paid ? new Date(r.date_paid).toLocaleDateString() : "N/A",
             ];
@@ -990,7 +1006,7 @@ const RevenueReports = () => {
             .setFontSize(10)
             .setFont("helvetica", "bolditalic")
             .text(
-              `Project Revenue Total: ₱${projectTotal.toFixed(2)}`,
+              `Project Revenue Total: PHP ${projectTotal.toFixed(2)}`,
               14,
               startY
             );
@@ -1026,7 +1042,7 @@ const RevenueReports = () => {
             0
           );
 
-          return [project.projectName, `₱${projectTotal.toFixed(2)}`];
+          return [project.projectName, `PHP ${projectTotal.toFixed(2)}`];
         });
 
         autoTable(doc, {
@@ -1053,7 +1069,7 @@ const RevenueReports = () => {
           .setFontSize(10)
           .setFont("helvetica", "bold")
           .text(
-            `Total Revenue for ${totalProjects} Projects: ₱${grandTotalRevenue.toFixed(
+            `Total Revenue for ${totalProjects} Projects: PHP ${grandTotalRevenue.toFixed(
               2
             )}`,
             14,
@@ -1078,11 +1094,19 @@ const RevenueReports = () => {
     const formatDate = (dateString) => {
       if (!dateString) return "";
       try {
-        return new Date(dateString).toISOString().split("T")[0];
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
       } catch (e) {
         return dateString;
       }
     };
+
     const clientNames = {};
     clients.forEach((client) => {
       clientNames[client.id] = `${client.firstName} ${client.lastName}`;
@@ -1161,7 +1185,7 @@ const RevenueReports = () => {
       csvData.push([
         payment.task_id,
         payment.task_name,
-        `₱${payment.amount.toFixed(2)}`,
+        `PHP ${payment.amount.toFixed(2)}`,
         payment.transaction_id,
         payment.mode_of_payment,
         payment.date_paid
@@ -1520,7 +1544,7 @@ const RevenueReports = () => {
         </div>
       </div>
 
-      <div className="revenue-grid">
+      <div className="app-charts-container">
         <div className="chart-container" id="receivable-graph">
           <h3>Accounts Receivable Overview</h3>
           <p>
@@ -1570,67 +1594,66 @@ const RevenueReports = () => {
             />
           </LineChart>
         </div>
-
-        {/* Total Revenue per Project */}
-        <div className="chart-container scrollable-chart" id="revenue-chart">
-          <h3>Total Revenue per Project</h3>
-          <p>Displays the total revenue generated by each project.</p>{" "}
-          <div className="filter-buttons">
-            <label>
-              Filter by Payment Status:
-              <select
-                value={paymentStatusFilter}
-                onChange={(e) => setPaymentStatusFilter(e.target.value)}
-              >
-                <option value="All">All</option>
-                <option value="Paid">Paid</option>
-                <option value="Not Paid">Unpaid</option>
-              </select>
-            </label>
-          </div>
-          <BarChart width={1500} height={400} data={totalPerProject}>
-            <XAxis dataKey="project_name" angle={-15} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="total_revenue" fill="#82ca9d" />
-          </BarChart>
+      </div>
+      {/* Total Revenue per Project */}
+      <div className="chart-container scrollable-chart" id="revenue-chart">
+        <h3>Total Revenue per Project</h3>
+        <p>Displays the total revenue generated by each project.</p>{" "}
+        <div className="filter-buttons">
+          <label>
+            Filter by Payment Status:
+            <select
+              value={paymentStatusFilter}
+              onChange={(e) => setPaymentStatusFilter(e.target.value)}
+            >
+              <option value="All">All</option>
+              <option value="Paid">Paid</option>
+              <option value="Not Paid">Unpaid</option>
+            </select>
+          </label>
         </div>
+        <BarChart width={1500} height={400} data={totalPerProject}>
+          <XAxis dataKey="project_name" angle={-15} />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="total_revenue" fill="#82ca9d" />
+        </BarChart>
+      </div>
 
-        {/* Payment Received vs. Remaining Balances */}
-        <div className="chart-container scrollable-chart">
-          <h3>Payment Received vs. Remaining Balances</h3>
-          <p>
-            Compares payments already received with remaining balances for
-            various projects.
-          </p>{" "}
-          <LineChart
-            width={1500}
-            height={400}
-            data={receivedVsRemaining}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" angle={-15} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="received"
-              stroke="#4CAF50"
-              activeDot={{ r: 8 }}
-              name="Received"
-            />
-            <Line
-              type="monotone"
-              dataKey="remaining"
-              stroke="#FF5252"
-              activeDot={{ r: 8 }}
-              name="Remaining"
-            />
-          </LineChart>
-        </div>
+      {/* Payment Received vs. Remaining Balances */}
+      <div className="chart-container scrollable-chart">
+        <h3>Payment Received vs. Remaining Balances</h3>
+        <p>
+          Compares payments already received with remaining balances for various
+          projects.
+        </p>{" "}
+        <LineChart
+          width={1500}
+          height={400}
+          data={receivedVsRemaining}
+          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" angle={-15} />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="received"
+            stroke="#4CAF50"
+            activeDot={{ r: 8 }}
+            name="Received"
+          />
+          <Line
+            type="monotone"
+            dataKey="remaining"
+            stroke="#FF5252"
+            activeDot={{ r: 8 }}
+            name="Remaining"
+          />
+        </LineChart>
       </div>
 
       <div className="chart-container scrollable-chart" id="payments-chart">

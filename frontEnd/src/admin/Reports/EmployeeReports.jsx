@@ -363,7 +363,7 @@ const EmployeeReports = () => {
 
     doc.save(`${selectedReport.replace(/\s+/g, "_").toLowerCase()}.pdf`);
   };
-  
+
   const formatTasksAssignedtoEachEmployeeCSV = () => {
     let csvData = [["Employee", "Task", "Fee", "Total", "Status", "Due Date"]];
 

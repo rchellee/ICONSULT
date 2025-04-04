@@ -56,13 +56,6 @@ const Sidebar = () => {
             <span>Projects</span>
           </Link>
         </li>
-
-        <li>
-          <Link to="/reports" data-tooltip="Reports">
-            <div className="material-symbols-outlined icon">analytics</div>
-            <span>Reports</span>
-          </Link>
-        </li>
         <li>
           <Link to="/clients" data-tooltip="Clients">
             <div className="material-symbols-outlined icon">group</div>
@@ -73,6 +66,12 @@ const Sidebar = () => {
           <Link to="/employee" data-tooltip="Employees">
             <div className="material-symbols-outlined icon">badge</div>
             <span>Employees</span>
+          </Link>
+        </li>
+        <li>
+          <Link to="/reports" data-tooltip="Reports">
+            <div className="material-symbols-outlined icon">analytics</div>
+            <span>Reports</span>
           </Link>
         </li>
       </ul>
