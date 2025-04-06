@@ -57,6 +57,11 @@
   transition: all 0.2s ease;
 }
 
+/* Hide mobile sort by default */
+.mobile-sort {
+  display: none;
+}
+
 .sortclient-docu:hover {
   background-color: #ebf0f7;
   border-color: #cbd5e0;
@@ -382,6 +387,72 @@
 
 
 
+/* Add these styles to your CSS file */
+
+.mobile-upload-container {
+  position: relative;
+}
+
+.upload-file-button.desktop-upload {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-file-button.mobile-upload {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .upload-file-button.desktop-upload {
+    display: none;
+  }
+  
+  .mobile-upload-container {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    z-index: 1000;
+  }
+  
+  .upload-file-button.mobile-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    transition: all 0.2s ease;
+  }
+  
+  .upload-file-button.mobile-upload svg {
+    font-size: 28px;
+  }
+  
+  .upload-file-button.mobile-upload:hover {
+    background-color: #3a79cc;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Adjust the main content padding to prevent overlap */
+  .ClientFiles {
+    padding-bottom: 100px;
+    margin-left: auto;
+  }
+
+  .desktop-sort {
+    display: none;
+  }
+
+  
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -446,4 +517,5 @@
   .sort-options-dropdown {
     width: 100%;
   }
+  
 }

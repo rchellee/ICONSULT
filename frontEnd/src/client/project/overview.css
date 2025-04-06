@@ -11,7 +11,6 @@
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
-  
 }
 
 .loading, .error {
@@ -218,5 +217,12 @@
   
   .progress-bar {
     width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-overview-container {
+    margin: -30px auto;
+    
   }
 }

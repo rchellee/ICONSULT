@@ -95,7 +95,6 @@ const ClientNotification = () => {
       <Topbar />
       <Sidebar />
       <div className="content-notification">
-        <h3>Client Notifications</h3>
         <div className="filter-buttons">
           <button
             className={`filter-button ${filter === "all" ? "active" : ""}`}

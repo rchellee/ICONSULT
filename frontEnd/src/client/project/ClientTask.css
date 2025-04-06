@@ -252,7 +252,8 @@
 @media (max-width: 480px) {
   .task-container {
     padding: 10px;
-    margin: 0 -10px;
+    /*margin: 0 -10px;*/
+    margin: -50px -10px 0;
   }
 
   .task-box {

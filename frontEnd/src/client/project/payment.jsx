@@ -145,22 +145,8 @@ const Payment = ({ taskId, amount, projectId, onClose }) => {
     <div>
       <h3>Payment</h3>
       <div id="paypal-button-container"></div>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          marginTop: "20px",
-          padding: "10px 20px",
-          backgroundColor: "#007bff",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Go Back
-      </button>
       <button onClick={onClose} className="closepayment-button">
-        Close
+        Back
       </button>
     </div>
   );

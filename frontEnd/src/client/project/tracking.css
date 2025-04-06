@@ -1,15 +1,7 @@
-/* Container for the whole page */
-.client-project-page {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-}
-
 .content-tracking {
   margin-left: 75px;
   padding: 20px;
   overflow-y: auto;
-  
 }
 /* Tabs section at the top both project and client details---------------------------------------------- */
 
@@ -76,3 +68,12 @@
   }
 }
 
+@media (max-width: 768px) {
+  .content-tracking {
+    margin-left: auto;
+    padding: 20px;
+    overflow-y: auto;
+    margin-bottom: 0;
+    
+  }
+}

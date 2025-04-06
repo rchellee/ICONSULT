@@ -4,6 +4,7 @@ import { FaFile, FaFileImage, FaSort } from "react-icons/fa";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { MdUpload, MdOutlineDeleteOutline } from "react-icons/md";
 import { MdDownload } from "react-icons/md";
+import { FaPlus } from "react-icons/fa";
 import emptyFolder from "../../assets/empty-folder.png";
 import "./ClientFiles.css";
 
@@ -164,33 +165,51 @@ function Files({ projectId, clientId }) {
       <div className="file-management-header">
         <div className="upload-section">
           <div className="action-buttons-row">
-            <div className="upload-button-container">
-              {!selectedFile ? (
-                <button 
-                  onClick={openFileDialog} 
-                  disabled={uploading}
-                  className="upload-file-button"
-                >
-                  {uploading ? "Uploading..." : <><MdUpload /> Upload </>}
-                </button>
-              ) : (
-                <button
-                  onClick={handleUpload}
-                  disabled={uploading || !selectedFile}
-                  className="upload-file-button"
-                >
-                  {uploading ? "Uploading..." : "Confirm Upload"}
-                </button>
-              )}
-            </div>
+          <div className="file-management-header">
+  {/* ... other header content ... */}
+</div>
+
+{/* Add this floating button container outside the header */}
+<div className="mobile-upload-container">
+  <div className="upload-button-container">
+    {!selectedFile ? (
+      <>
+        <button 
+          onClick={openFileDialog} 
+          disabled={uploading}
+          className="upload-file-button desktop-upload"
+        >
+          {uploading ? "Uploading..." : <><MdUpload /> Upload </>}
+        </button>
+        <button 
+          onClick={openFileDialog} 
+          disabled={uploading}
+          className="upload-file-button mobile-upload"
+          aria-label="Upload"
+        >
+          <FaPlus />
+        </button>
+      </>
+    ) : (
+      <button
+        onClick={handleUpload}
+        disabled={uploading || !selectedFile}
+        className="upload-file-button"
+      >
+        {uploading ? "Uploading..." : "Confirm Upload"}
+      </button>
+    )}
+  </div>
+</div>
             
             <div className="sort-button-container">
               <button 
-                className="sortclient-docu"
+                className="sortclient-docu desktop-sort"
                 onClick={() => setShowSortOptions(!showSortOptions)}
               >
                 <FaSort /> Sort
               </button>
+              
               
               {showSortOptions && (
                 <div className="sort-options-dropdown">
@@ -247,12 +266,6 @@ function Files({ projectId, clientId }) {
             className="empty-folder-image"
           />
           <div className="no-files-message">No files uploaded yet.</div>
-          <button 
-            onClick={openFileDialog} 
-            className="upload-file-button empty-state-button"
-          >
-            <MdUpload /> Upload Your First File
-          </button>
         </div>
       ) : (
         <div className="tablefiles-container">
