@@ -2,25 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./overview.css";
+import { GoProject } from "react-icons/go";
 
 function formatDate(dateString) {
   if (!dateString) return "N/A";
-
   const date = new Date(dateString);
-  const options = { year: "numeric", month: "long", day: "numeric" };
+  const options = { year: "numeric", month: "short", day: "numeric" };
   return date.toLocaleDateString("en-US", options);
 }
 
 function formatCurrency(amount) {
-  return `₱ ${amount?.toLocaleString("en-PH")}.00`;
+  return `₱ ${amount?.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`;
 }
 
 function ProjectOverview({ projectId }) {
   const [project, setProject] = useState(null);
-  const [tasksTotal, setTasksTotal] = useState(0);
+  const [recentTasks, setRecentTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get(`http://localhost:8081/projects/${projectId}`)
@@ -36,11 +37,9 @@ function ProjectOverview({ projectId }) {
       });
 
     axios
-      .get(`http://localhost:8081/admin/tasks?projectId=${projectId}`)
+      .get(`http://localhost:8081/admin/tasks?projectId=${projectId}&limit=10`)
       .then((response) => {
-        const tasks = response.data.tasks || [];
-        const totalAmount = tasks.reduce((sum, task) => sum + task.amount, 0);
-        setTasksTotal(totalAmount);
+        setRecentTasks(response.data.tasks || []);
       })
       .catch((err) => {
         console.error("Error fetching tasks:", err);
@@ -50,103 +49,86 @@ function ProjectOverview({ projectId }) {
       });
   }, [projectId]);
 
-  if (isLoading) return <p>Loading project overview...</p>;
-  if (error) return <p className="error">{error}</p>;
+  if (isLoading)
+    return <div className="loading">Loading project details...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   const handleReviewClick = () => {
     navigate("/review", { state: { projectId, clientId: project.clientId } });
   };
 
   return (
-    <div className="project-overview">
+    <div className="project-overview-container">
       {project ? (
-        <div className="project-details">
-          <p>
-            <p className="pro-name">
-              <strong>Project Name:</strong> {project.projectName}
-            </p>
-            <span className="payment-status">
-              <div className="progress-display" style={{ margin: "10px 0" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "5px",
-                  }}
-                >
-                  <strong style={{ marginRight: "10px" }}>Progress:</strong>
-                  <span>{project.progress}%</span>
-                </div>
-                <div
-                  className="progress-bar-container"
-                  style={{
-                    width: "100%",
-                    height: "10px",
-                    backgroundColor: "#e0e0e0",
-                    borderRadius: "5px",
-                    overflow: "hidden",
-                  }}
-                >
+        <>
+          <div className="projectclient-header">
+            <h2>
+              <GoProject className="projectclient-icon" />
+              {project.projectName}{" "}
+              <span className="statusclient-tag">{project.status}</span>
+            </h2>
+            <div className="recent-tasks">
+              {recentTasks.length} recent task
+              {recentTasks.length !== 1 ? "s" : ""}
+            </div>
+          </div>
+
+          <div className="projectcliet-details">
+            <div className="detailclient-row">
+              <span className="detailclient-label">Description:</span>
+              <span className="detailclient-value">{project.description}</span>
+            </div>
+            <div className="detailclient-row">
+              <span className="detailclient-label">Duration:</span>
+              <span className="detailclient-value">
+                {formatDate(project.startDate)} - {formatDate(project.endDate)}
+              </span>
+            </div>
+            <div className="detailclient-row">
+              <span className="detailclient-prog">Progress: </span>
+              <span className="progressclient-container">
+                <span className="progressclient-text">{project.progress}%</span>
+                <div className="progressclient-bar">
                   <div
-                    className="progress-bar"
-                    style={{
-                      width: `${project.progress}%`,
-                      height: "100%",
-                      backgroundColor: "#4070f4",
-                      transition: "width 0.3s ease",
-                    }}
+                    className="progressclient-fill"
+                    style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
-              </div>
-            </span>
-          </p>
-          <p>
-            <p className="description" style={{ marginTop: "-10px" }}>
-              <strong>Description:</strong> {project.description}
-            </p>
-          </p>
-          <p>
-            <p className="project-due" style={{ marginTop: "-10px" }}>
-              <strong>Project Duration:</strong>{" "}
-              {project.startDate ? formatDate(project.startDate) : "N/A"} -{" "}
-              {project.endDate ? formatDate(project.endDate) : "N/A"}
-            </p>
-          </p>
-          <p className="status-row" style={{ marginTop: "-10px" }}>
-            <strong>Status:</strong> {project.status}
-          </p>
+              </span>
+            </div>
+          </div>
 
-          <table className="payment-table">
-            <thead>
-              <tr>
-                <th>Total</th>
-                <th>Paid Amount</th>
-                <th>Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{formatCurrency(project.total_amount)}</td>
-                <td>{formatCurrency(project.paid_amount)}</td>
-                <td>
-                  {formatCurrency(
-                    project.total_amount - (project.paid_amount || 0)
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="financial-summary">
+            <div className="financial-item">
+              <div className="financial-label">Total Budget</div>
+              <div className="financial-value">
+                {formatCurrency(project.total_amount)}
+              </div>
+            </div>
+            <div className="financial-item">
+              <div className="financial-label">Amount Paid</div>
+              <div className="financial-value">
+                {formatCurrency(project.paid_amount)}
+              </div>
+            </div>
+            <div className="financial-item">
+              <div className="financial-label">Remaining Balance</div>
+              <div className="financial-value">
+                {formatCurrency(
+                  project.total_amount - (project.paid_amount || 0)
+                )}
+              </div>
+            </div>
+          </div>
+
           {project.status === "Completed" && !project.isReview && (
-            <button
-              onClick={handleReviewClick}
-              style={{ backgroundColor: "#007bff" }}
-            >
+            <button className="review-button" onClick={handleReviewClick}>
               Leave a Review
             </button>
           )}
-        </div>
+        </>
       ) : (
-        <p>No project details found.</p>
+        <div className="no-project">No project details found.</div>
       )}
     </div>
   );

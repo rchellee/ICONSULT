@@ -1,3 +1,8 @@
+.topbar-container {
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: none;
+}
+
 nav {
   display: flex;
   flex-wrap: wrap;
@@ -7,7 +12,7 @@ nav {
   padding: 0 100px;
 }
 nav .logo {
-  color: #fff;
+  color: #3b4f67;
   font-size: 30px;
   font-weight: 600;
   letter-spacing: -1px;
@@ -43,7 +48,7 @@ nav form .search-data {
   width: 100%;
   height: 100%;
   padding: 0 10px;
-  color: #000000;
+  color: #fff;
   font-size: 17px;
   border: none;
   font-weight: 500;

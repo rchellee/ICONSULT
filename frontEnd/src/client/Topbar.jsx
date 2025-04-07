@@ -8,6 +8,7 @@ import logout from "../assets/logout.png";
 import profile from "../assets/profile.png";
 import admin from "../assets/admin.jpg";
 import "./topbar.css";
+import logo from "../assets/logo3.png";
 
 const Topbar = () => {
   const [menuActive, setMenuActive] = useState(false);
@@ -83,18 +84,24 @@ const Topbar = () => {
   };
 
   return (
-    <nav style={{ backgroundColor: "#4070f4" }}>
-      <div className="logo">iConsult.</div>
-      <div className="search-icon" onClick={handleSearchClick}>
-        <span className="fas fa-search"></span>
+    <nav className="topbar-container topbar-border">
+      <div className="logo">
+        <img
+          src={logo}
+          alt="iConsult Logo"
+          style={{
+            height: "40px",
+            width: "auto",
+            objectFit: "contain",
+          }}
+        />
       </div>
+      <div className="search-icon" onClick={handleSearchClick}></div>
       <div
-        className={`cancel-icon ${menuActive || searchActive ? "show" : ""}`}
+        className={`cancel-icon ${searchActive ? "show" : ""}`}
         onClick={handleCancelClick}
-      >
-        <span className="fas fa-times"></span>
-      </div>
-      <form className={`${searchActive ? "active" : ""}`} action="#">
+      ></div>
+      <form className={`search-form ${searchActive ? "active" : ""}`}>
         <input
           type="search"
           className="search-data"
@@ -131,7 +138,7 @@ const Topbar = () => {
         >
           <div className="user-info">
             <img alt={`${userName}'s avatar`} src={admin} />
-            <h4>{userName}</h4>
+            <h2>{userName}</h2>
           </div>
           <hr />
           <MenuItem onClick={handleAccountClick} class="sub-menu-link">

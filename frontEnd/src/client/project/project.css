@@ -4,10 +4,10 @@
   height: 100vh;
 }
 
-.content-client-project {
-  margin-left: 55px;
+.content {
   flex-grow: 1;
   padding: 10px;
+  margin-left: 55px;
   overflow-y: auto;
 }
 
@@ -55,7 +55,7 @@ h1 {
 .project-header {
   display: flex;
   align-items: center;
-  margin-bottom: -10px;
+  margin-bottom: 10px;
 }
 
 .logo-box {

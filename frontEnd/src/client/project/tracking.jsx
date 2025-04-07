@@ -60,7 +60,6 @@ function Tracking() {
     }
   };
 
-
   return (
     <div>
       <Topbar />
@@ -90,7 +89,7 @@ function Tracking() {
           </div>
 
           {/* Content Area */}
-          <div className="content-area">
+          <div className="contentmenu-area">
             {activeTab === "overview" && (
               <ProjectOverview projectId={projectId} />
             )}

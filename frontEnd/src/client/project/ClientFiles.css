@@ -1,141 +1,503 @@
-table {
-  position: relative;
-  overflow: visible; /* Allow content to overflow the table boundaries */
-}
-
-tbody {
-  overflow: visible; /* Ensure rows do not clip floating content */
-}
-
-.ClientFiles .file-table th {
-  background-color: #f4f4f4; /* Light background for headers */
-  font-weight: bold;
-  color: #333; /* Change text color (dark gray or any color of your choice) */
-}
-
-.ClientFiles .file-table {
-  width: 80%; /* Adjust the table width */
-  margin: 0 auto; /* Center the table */
-  font-size: 0.9rem; /* Reduce the font size */
-  border-collapse: collapse; /* Collapse table borders */
-}
-
-.ClientFiles .file-table th,
-.ClientFiles .file-table td {
-  padding: 8px 12px; /* Adjust padding for smaller cells */
-  text-align: left; /* Align text to the left */
-}
-
-.ClientFiles .file-table th {
-  background-color: #e4e4e4; /* Light background for headers */
-  font-weight: bold;
-}
-
-.ClientFiles .file-table td {
-  border-bottom: 1px solid #ddd; /* Add a border between rows */
-}
-
-.ClientFiles .file-table tr:hover {
-  background-color: #f1f1f1; /* Highlight row on hover */
-}
-
-.ClientFiles .top-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Space out left and right sections */
-  margin-top: -65px; /* Adjust as necessary */
-  margin-left: 180px;
-}
-
-.ClientFiles .left-section {
-  display: flex;
-  gap: 15px; /* Adjust space between the left buttons */
-}
-
-.loading {
-  margin-left: 100px;
-}
-
-.ClientFiles .right-section {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Space between the buttons */
-  margin-right: 200px; /* Decrease the margin-left to move them closer to the center */
-  padding-left: 10px; /* Optional: Add padding to adjust the position further */
-}
-
-.ClientFiles .left-section button {
-  padding: 8px 15px;
-  background-color: transparent;
-  color: rgb(0, 0, 0);
-  border: 2px solid #758add; /* Border color */
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.ClientFiles .left-section button:hover {
-  background-color: #bbc8ff;
-  border-color: #758add; /* Keep the same border color */
-  outline: none; /* Remove any outline */
-}
-
-.ClientFiles svg {
-  font-size: 19px;
-  cursor: pointer;
-}
-
-.ClientFiles .action-container {
-  position: relative;
-  display: inline-block;
-}
-
-.ClientFiles .action-options {
-  position: absolute;
-  top: -45px; /* Move it above the row */
-  right: 0;
-  background-color: #fff;
-  border: 2px solid #758add;
-  border-radius: 4px;
+.ClientFiles {
+  margin-left: 80px;
+  height: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  visibility: hidden; /* Initially hidden */
-  opacity: 0;
-  transition: opacity 0.3s ease, visibility 0s 0.3s;
+  transition: margin-left 0.3s ease;
+  margin-top: -70px;
+  margin-bottom: auto;
 }
 
-.ClientFiles .action-container:hover .action-options {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s ease, visibility 0s 0s;
+.file-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 10px;
 }
 
-.ClientFiles .action-options button {
-  padding: 6px 12px;
+.file-management-header h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.upload-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.action-buttons-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.upload-button-container,
+.sort-button-container {
+  position: relative;
+}
+
+.sortclient-docu {
+  padding: 10px 20px;
+  background-color: #f5f7fa;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.9rem;
-  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+/* Hide mobile sort by default */
+.mobile-sort {
+  display: none;
+}
+
+.sortclient-docu:hover {
+  background-color: #ebf0f7;
+  border-color: #cbd5e0;
+}
+
+.sort-options-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.sort-options-dropdown button {
+  padding: 8px 16px;
+  text-align: left;
+  background: none;
   border: none;
   cursor: pointer;
+  color: #4a5568;
+  transition: background-color 0.2s;
+  display: flex;
+  justify-content: space-between;
 }
 
-.ClientFiles .action-options button:hover {
-  background-color: #bbc8ff;
+.sort-options-dropdown button:hover {
+  background-color: #f0f4f8;
+}
+
+.file-info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.tablefiles-container {
+  width: 100%;
+  overflow-x: auto;
+  flex: 1;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.file-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  table-layout: fixed;
+  margin-top: auto;
+}
+
+.file-table th {
+  background-color: #f5f7fa;
+  color: #4a5568;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.file-table th:hover {
+  background-color: #ebf0f7;
+}
+
+.th-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-icon {
+  font-size: 0.8rem;
+}
+
+.file-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+.file-table tr:last-child td {
+  border-bottom: none;
+}
+
+.file-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.file-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.file-type-icon {
+  font-size: 1.2rem;
+  color: #718096;
+  flex-shrink: 0;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-container {
+  position: relative;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #718096;
+}
+
+.action-button:hover {
+  color: #4a5568;
+}
+
+.action-options {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.action-options button {
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #4a5568;
 }
 
 .action-options button:hover {
-  background-color: #f0f0f0; /* Hover background color */
-  color: #007bff; /* Change font color on hover (e.g., blue) */
-}
-
-/* Specific colors for Edit and Delete */
-.action-options button:nth-child(1) {
-  /* Edit button */
-  color: #2c2c2c; /* Green font color */
+  background-color: #f0f4f8;
+  color: #2d3748;
 }
 
 .action-options button:nth-child(2) {
-  /* Delete button */
-  color: #dc3545; /* Red font color */
+  color: #e53e3e;
+}
+
+.action-options button:nth-child(2):hover {
+  background-color: #fff5f5;
+}
+
+.no-files-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 20px;
+  padding: 40px 0;
+}
+
+.empty-folder-image {
+  width: 150px;
+  opacity: 0.7;
+}
+
+.no-files-message {
+  font-size: 1.1rem;
+  color: #718096;
+}
+
+.empty-state-button {
+  margin-top: 15px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #4a5568;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  color: #e53e3e;
+}
+
+/*action----------------------------------------------------------*/
+
+.fileclient-btn {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.fileclient-btn button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+/* Icon sizing */
+.fileclient-btn svg {
+  font-size: 25px;
+  width: 1em;
+  height: 1em;
+}
+
+.editclient-button {
+  color: #4a89dc;
+  border: 1px solid #4a89dc;
+}
+
+.editclient-button:hover {
+  background-color: #4a89dc;
+  color: white;
+}
+
+.deleteclient-button {
+  color: #e9573f;
+  border: 1px solid #e9573f;
+}
+
+.deleteclient-button:hover {
+  background-color: #e9573f;
+  color: white;
+}
+
+/* Tooltip styles */
+.fileclient-btn button {
+  position: relative;
+}
+
+.fileclient-btn button::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.fileclient-btn button:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/*-----------*/
+.sortclient-files-dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.sortclient-files-dropdown button {
+  padding: 8px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #4a5568;
+  transition: background-color 0.2s;
+}
+
+.sortclient-files-dropdown button:hover {
+  background-color: #f0f4f8;
+}
+
+/* Add these styles to your CSS file */
+
+.mobile-upload-container {
+  position: relative;
+}
+
+.upload-file-button.desktop-upload {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-file-button.mobile-upload {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .upload-file-button.desktop-upload {
+    display: none;
+  }
+
+  .mobile-upload-container {
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
+    z-index: 1000;
+  }
+
+  .upload-file-button.mobile-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #4a89dc;
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    transition: all 0.2s ease;
+  }
+
+  .upload-file-button.mobile-upload svg {
+    font-size: 28px;
+  }
+
+  .upload-file-button.mobile-upload:hover {
+    background-color: #3a79cc;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Adjust the main content padding to prevent overlap */
+  .ClientFiles {
+    padding-bottom: 100px;
+    margin-left: auto;
+  }
+
+  .desktop-sort {
+    display: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .fileclient-btn {
+    gap: 5px;
+  }
+
+  .fileclient-btn button {
+    padding: 4px;
+  }
+
+  .fileclient-btn svg {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .file-management-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .upload-section {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .file-table th,
+  .file-table td {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .file-name {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .action-buttons-row {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .upload-button-container,
+  .sort-button-container {
+    width: 100%;
+  }
+
+  .upload-file-button,
+  .sortclient-docu {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sort-options-dropdown {
+    width: 100%;
+  }
 }
