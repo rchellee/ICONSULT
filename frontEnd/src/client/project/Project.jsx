@@ -105,8 +105,8 @@ function Project() {
                   >
                     <div className="project-box">
                       <div className="project-header">
-                        <div className="logo-box">{project.projectName[0]}</div>
-                        <h2 className="project-title">{project.projectName}</h2>
+                        <div className="logoclient-box">{project.projectName[0]}</div>
+                        <h2 className="projectclient-title">{project.projectName}</h2>
                       </div>
                       <div className="project-info">
                         <p>
@@ -148,7 +148,7 @@ function Project() {
                   >
                     <div className="project-box">
                       <div className="project-header">
-                        <div className="logo-box">{project.projectName[0]}</div>
+                        <div className="logoclient-box">{project.projectName[0]}</div>
                         <h2 className="project-title">{project.projectName}</h2>
                       </div>
                       <div className="project-info">
