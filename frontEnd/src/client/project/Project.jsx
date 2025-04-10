@@ -81,9 +81,9 @@ function Project() {
 
   return (
     <div>
+      <Sidebar />
       <Topbar />
       <div className="client-project-page">
-        <Sidebar />
         <div className="content-client-project">
           <div
             className="toggle-button-projects"

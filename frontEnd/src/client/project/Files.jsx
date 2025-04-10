@@ -170,11 +170,6 @@ function Files({ projectId, clientId }) {
       <div className="file-management-header">
         <div className="upload-section">
           <div className="action-buttons-row">
-            <div className="file-management-header">
-              {/* ... other header content ... */}
-            </div>
-
-            {/* Add this floating button container outside the header */}
             <div className="mobile-upload-container">
               <div className="upload-button-container">
                 {!selectedFile ? (
@@ -321,7 +316,7 @@ function Files({ projectId, clientId }) {
                       ))}
                   </div>
                 </th>
-                <th>Actions</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>

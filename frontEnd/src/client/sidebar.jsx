@@ -57,9 +57,7 @@ const Sidebar = () => {
           >
             <div className="material-symbols-outlined icon">
               notifications
-              {hasUnreadNotifications && (
-                <span className="notification-mark"></span>
-              )}
+              
             </div>
             <span>Notifications</span>
           </Link>

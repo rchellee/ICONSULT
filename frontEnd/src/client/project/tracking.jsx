@@ -62,9 +62,9 @@ function Tracking() {
 
   return (
     <div>
+      <Sidebar />
       <Topbar />
       <div className="client-task-page">
-        <Sidebar />
         <div className="content-tracking">
           {/* Tabs */}
           <div className="tabs">

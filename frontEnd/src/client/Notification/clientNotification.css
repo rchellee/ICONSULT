@@ -1,11 +1,6 @@
-.content-consultation {
+.content-notification-client {
   margin-left: 85px;
-  padding: 20px;
-  transition: margin-left 0.4s ease;
-}
-
-.content-notification {
-  margin-left: 85px;
+  margin-top: 70px;
   padding: 20px;
   transition: margin-left 0.4s ease;
 }

@@ -109,10 +109,10 @@ const Transaction = () => {
 
   return (
     <div className="transactions-page">
-      <Topbar />
       <Sidebar />
+      <Topbar />
+
       <div className="content-transactions">
-        <h4>Transactions</h4>
         {transactions.length > 0 ? (
           <table className="transactions-table">
             <thead>

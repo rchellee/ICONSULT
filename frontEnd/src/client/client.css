@@ -35,22 +35,12 @@
 }
 
 .sidebarClient-links .icon {
-  font-size: 24px;
+  font-size: 30px;
   margin-bottom: 5px;
 }
 
 .link-text {
   font-size: 12px;
-}
-
-.notification-mark {
-  position: absolute;
-  top: 11px;
-  right: 20px;
-  width: 8px;
-  height: 8px;
-  background-color: red;
-  border-radius: 50%;
 }
 
 .content-client {

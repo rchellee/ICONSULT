@@ -159,9 +159,6 @@ const Payment = ({ taskId, amount, projectId, onClose }) => {
       >
         Go Back
       </button>
-      <button onClick={onClose} className="closepayment-button">
-        Close
-      </button>
     </div>
   );
 };

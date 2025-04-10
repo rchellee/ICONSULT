@@ -48,9 +48,10 @@ const AccountSettings = () => {
 
   return (
     <div>
-      <Topbar />
       <Sidebar />
-      <div className="account-settings">
+      <Topbar />
+
+      <div className="account-settings-client">
         {isUpdatingPassword ? (
           <ChangePassword
             clientDetails={clientDetails}

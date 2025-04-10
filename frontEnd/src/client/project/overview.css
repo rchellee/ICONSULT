@@ -6,11 +6,11 @@
 
 .project-overview-container {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 1000px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 30px;
   background-color: #fff;
   border-radius: 8px;
+
 }
 
 .loading,

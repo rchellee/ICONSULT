@@ -535,10 +535,10 @@ function AppointmentForm() {
                     -- Select Platform --
                   </option>
                   <option value="In-Person">In-Person</option>
-                  <option value="Video Call">Zoom</option>
-                  <option value="Video Call">Google Meet</option>
+                  <option value="Zoom">Zoom</option>
+                  <option value="Google Meet">Google Meet</option>
                   <option value="Phone Call">Phone Call</option>
-                  <option value="Phone Call">Microsoft Teams</option>
+                  <option value="Microsoft Teams">Microsoft Teams</option>
                 </select>
               </div>
 

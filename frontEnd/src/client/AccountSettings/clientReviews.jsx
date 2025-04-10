@@ -135,12 +135,12 @@ const ClientReviews = () => {
   };
 
   return (
-    <div>
-      <Topbar />
+    <div className="client-reviews-container">
       <Sidebar />
+      <Topbar />
 
       <div className="review-section">
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           My Reviews
         </Typography>
 
@@ -163,21 +163,19 @@ const ClientReviews = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "white" }}>
+                <TableCell sx={{ color: "black" }}>
                   <strong>Project</strong>
                 </TableCell>
-                <TableCell sx={{ color: "white" }}>
+                <TableCell sx={{ color: "black" }}>
                   <strong>Rating</strong>
                 </TableCell>
-                <TableCell sx={{ color: "white" }}>
+                <TableCell sx={{ color: "black" }}>
                   <strong>Comment</strong>
                 </TableCell>
-                <TableCell sx={{ color: "white" }}>
+                <TableCell sx={{ color: "black" }}>
                   <strong>Date</strong>
                 </TableCell>
-                <TableCell
-                  sx={{ color: "white" }}
-                ></TableCell>
+                <TableCell sx={{ color: "black" }}></TableCell>
               </TableRow>
             </TableHead>
 

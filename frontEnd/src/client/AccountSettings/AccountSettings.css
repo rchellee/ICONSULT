@@ -4,7 +4,16 @@
   box-sizing: border-box; /* Ensures padding doesn't affect the total width */
 }
 
-/*to make it progressive margin is flex start then add yung padding*/
+.account-settings-client {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  background-color: white;
+  margin-left: 104px;
+  margin-top: 60px;
+}
+
 
 .account-settings .content {
   display: flex;
@@ -101,4 +110,10 @@ table tr {
   margin-left: 600px;
   margin-top: -140px;
   padding: 16px;
+}
+
+
+.client-reviews-container{
+  margin-left: 100px;
+  margin-top: 80px;
 }

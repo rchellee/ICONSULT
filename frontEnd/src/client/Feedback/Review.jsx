@@ -22,7 +22,6 @@ function Review() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  // const { projectId, clientId } = location.state || {};
   const { projectId = 1, clientId = 1 } = location.state || {};
 
   if (!projectId || !clientId) {
@@ -32,14 +31,6 @@ function Review() {
       </Typography>
     );
   }
-
-  const handleRatingChange = (event) => {
-    setRating(Number(event.target.value));
-  };
-
-  const handleCommentChange = (event) => {
-    setComment(event.target.value);
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -61,7 +52,7 @@ function Review() {
         setError(null);
         setRating(0);
         setComment("");
-        setTimeout(() => navigate("/clientproject"), 3000); // Redirect after 3 seconds
+        setTimeout(() => navigate("/clientproject"), 3000);
       })
       .catch((err) => {
         setError("Failed to submit the review. Please try again later.");
@@ -70,9 +61,9 @@ function Review() {
 
   return (
     <div>
+      <Sidebar />
       <Topbar />
       <Box display="flex">
-        <Sidebar />
         <Box
           flex="1"
           p={5}

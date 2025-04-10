@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Login from "./Login/LoginForm";
 import AdminHomePage from "./admin/AdminHomePage";
-import ClientDashboard from "./client/ClientDashboard";
 import LandingPage from "../src/Landingpage.jsx";
 import ProjectManagement from "./admin/Project/ProjectManagement";
 import ClientManagement from "./admin/Client/ClientManagement.jsx";
@@ -49,7 +48,6 @@ function App() {
         <Route path="/admin" element={<AdminHomePage />} />
         <Route path="/project" element={<ProjectManagement />} />
         <Route path="/clients" element={<ClientManagement />} />
-        <Route path="/clientdashboard" element={<ClientDashboard />} />
         <Route path="/employee" element={<EmployeeManagement />} />
         <Route path="/appointments/new" element={<AppointmentForm />} />
         <Route path="/clientproject" element={<Project />} />
