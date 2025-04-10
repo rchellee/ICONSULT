@@ -11,7 +11,6 @@
   background-color: #3982d0; /* Background color (blue) */
   color: white; /* Text color */
   border: none; /* Removes border */
-  /* Make text bold */
   cursor: pointer; /* Changes cursor to pointer on hover */
   transition: background-color 0.3s ease; /* Smooth transition for color change */
 }

@@ -1,209 +1,225 @@
-.project-overview {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.project-overview-container {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 8px;
+
+}
+
+.loading,
+.error {
   padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-}
-
-.project-overview h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333333;
-}
-
-.project-overview p {
+  text-align: center;
   font-size: 16px;
-  margin: 10px 0;
-  color: #555555;
-  display: flex;
-  align-items: center; /* Align the content vertically */
-  justify-content: space-between; /* Ensure the items are spaced out evenly */
 }
 
-.project-overview p strong {
-  color: #000;
+.error {
+  color: #e74c3c;
+}
+
+.projectclient-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+}
+
+.projectclient-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+}
+
+.statusclient-tag {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 12px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  text-transform: lowercase;
+}
+
+.statusclient-tag::first-letter {
+  text-transform: uppercase;
+}
+
+.recent-tasks {
+  font-size: 14px;
+  color: #7f8c8d;
+}
+
+.projectclient-details {
+  margin-bottom: 25px;
+}
+
+.detailclient-row {
+  display: flex;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.detailclient-label {
+  font-weight: 600;
+  color: #555;
+  min-width: 100px;
+}
+
+.detailclient-value {
+  color: #555;
+  flex-grow: 1;
+}
+
+.progressclient-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.progressclient-text {
+  min-width: 40px;
   margin-right: 10px;
 }
 
-/* Customize the distance between Payment Status and Project Due */
-.payment-status {
-  margin-right: 700px; /* Adjust this to control the distance from Project Name */
-  margin-bottom: 0px;
+.progressclient-bar {
+  flex-grow: 1;
+  height: 8px;
+  background-color: #ecf0f1;
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 300px;
 }
 
-.project-due {
-  margin-right: 718px; /* Adjust this for controlling the distance between Payment Status and Project Due */
-  margin-top: -20px;
+.progressclient-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  max-width: 100%;
 }
 
-/* New style for Status row to align Status and value in a row without side-by-side */
-.project-overview .status-row {
-  display: block; /* Keep Status in a block to prevent it from floating side-by-side */
-  margin-top: 5px; /* Optional: Add space between rows */
+.detailclient-prog {
+  font-weight: 700;
+  color: #6366f1;
 }
 
-.project-overview .status-row strong {
-  margin-right: 10px; /* Adds space between the label and value */
-  margin-top: -10px;
+.progressclient-text {
+  font-weight: 700;
+  color: #6366f1;
+  margin-left: 10px;
 }
 
-.description {
-  margin-top: 10px;
+.financial-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1px;
+  margin-bottom: 20px;
+  gap: 15px;
 }
 
-/* Styling the table */
-.payment-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 50px;
-}
-
-.payment-table th,
-.payment-table td {
-  border-top: 1px solid #ccc; /* Horizontal top border */
-  border-bottom: 1px solid #ccc; /* Horizontal bottom border */
-  border-left: none; /* Remove column separation */
-  border-right: none; /* Remove column separation */
-  padding: 10px;
+.financial-item {
+  flex: 1;
+  padding: 15px;
+  background-color: #edf6ff;
   text-align: center;
 }
 
-/* Add left and right borders for the table */
-.payment-table th:first-child,
-.payment-table td:first-child {
-  border-left: 1px solid #ccc;
+.financial-label {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 8px;
 }
 
-.payment-table th:last-child,
-.payment-table td:last-child {
-  border-right: 1px solid #ccc;
-}
-
-.payment-table th {
-  background-color: #c5d0ee;
-  font-weight: bold;
-}
-
-.payment-table td {
-  color: #333333;
-}
-
-/* Styling the buttons */
-button {
-  padding: 10px 20px;
-  margin-top: 10px;
+.financial-value {
   font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: opacity 0.3s ease, transform 0.2s ease;
+  font-weight: 600;
+  color: #2c3e50;
 }
 
-button:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-button[style*="background-color: #28a745"] {
-  background-color: #3a5b84;
-  color: #fff;
-}
-
-button[style*="background-color: #007bff"] {
-  background-color: #007bff;
-  color: #fff;
-}
-
-/* Styling the Pay Now button */
-.pay-now-button {
-  background-color: #547099;
+.review-button {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 20px auto 0;
+  padding: 10px 15px;
+  background-color: #3498db;
   color: white;
   border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-style: italic;
   border-radius: 4px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 20%;
+  transition: background-color 0.2s;
 }
 
-.pay-now-button:hover {
-  background-color: #3a5b84; /* Darker green on hover */
+.review-button:hover {
+  background-color: #2980b9;
 }
 
-.pay-now-button:active {
-  background-color: #4c709c; /* Even darker green on click */
+.no-project {
+  text-align: center;
+  color: #7f8c8d;
+  padding: 20px;
 }
 
-.pay-now-button:focus {
-  outline: none; /* Removes the default outline */
-  box-shadow: #4c709c; /* Green shadow on focus */
+/* Add this to your existing CSS */
+.projectclient-icon {
+  margin-right: 10px;
+  font-size: 20px;
+  color: #250c36;
+  vertical-align: middle;
 }
 
-.payment-button-container {
-  display: flex;
-  justify-content: flex-end; /* Aligns the button to the right */
-  margin-top: 20px; /* Adjust as needed */
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+/* Modify the h2 styles to ensure proper alignment */
+.projectclient-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #2c3e50;
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
 }
 
-.overlay-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  width: 90%;
-  max-width: 600px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+@media (max-width: 600px) {
+  .projectclient-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .financial-summary {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .progress-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .progress-bar {
+    width: 100%;
+  }
 }
 
-.closepayment-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Responsive design */
 @media (max-width: 768px) {
-  .project-overview {
-    padding: 15px;
-  }
-
-  .project-overview h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
-
-  .project-overview p {
-    font-size: 14px;
-  }
-
-  .payment-table th,
-  .payment-table td {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  button {
-    font-size: 14px;
-    padding: 8px 15px;
+  .project-overview-container {
+    margin: -30px auto;
   }
 }

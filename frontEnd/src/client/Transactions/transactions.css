@@ -1,5 +1,6 @@
 .content-transactions {
   margin-left: 85px;
+  margin-top: 70px;
   padding: 20px;
   transition: margin-left 0.4s ease;
 }

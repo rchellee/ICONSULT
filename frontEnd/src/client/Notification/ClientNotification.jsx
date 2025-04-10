@@ -92,10 +92,10 @@ const ClientNotification = () => {
 
   return (
     <div className="client-notification-wrapper">
-      <Topbar />
       <Sidebar />
-      <div className="content-notification">
-        <h3>Client Notifications</h3>
+      <Topbar />
+
+      <div className="content-notification-client">
         <div className="filter-buttons">
           <button
             className={`filter-button ${filter === "all" ? "active" : ""}`}

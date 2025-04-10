@@ -16,26 +16,25 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 
 const HelpCentre = () => {
-  const [expandedFAQ, setExpandedFAQ] = useState(null); // Tracks the expanded FAQ
-  const [showMoreFAQs, setShowMoreFAQs] = useState(false); // To show/hide more FAQs
+  const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [showMoreFAQs, setShowMoreFAQs] = useState(false);
   const navigate = useNavigate();
 
   const handleGoBack = () => {
-    navigate("/clientdashboard"); // Navigate back to /clientdashboard
+    navigate("/clientproject");
   };
 
   const handleSearch = (event) => {
     const query = event.target.value;
     console.log("Search query:", query);
-    // Add functionality to handle search (e.g., filter FAQs, tutorials, etc.)
   };
 
   const handleFAQClick = (index) => {
-    setExpandedFAQ(expandedFAQ === index ? null : index); // Toggle the expanded FAQ
+    setExpandedFAQ(expandedFAQ === index ? null : index);
   };
 
   const handleViewMoreFAQs = () => {
-    setShowMoreFAQs(!showMoreFAQs); // Toggle visibility of additional FAQs
+    setShowMoreFAQs(!showMoreFAQs);
   };
 
   return (

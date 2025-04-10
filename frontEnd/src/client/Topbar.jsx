@@ -8,6 +8,7 @@ import logout from "../assets/logout.png";
 import profile from "../assets/profile.png";
 import admin from "../assets/admin.jpg";
 import "./topbar.css";
+import logo from "../assets/logo3.png";
 
 const Topbar = () => {
   const [menuActive, setMenuActive] = useState(false);
@@ -41,7 +42,6 @@ const Topbar = () => {
   };
 
   useEffect(() => {
-    // Retrieve data from localStorage
     const clientId = localStorage.getItem("clientId");
     const firstName = localStorage.getItem("firstName");
     const lastName = localStorage.getItem("lastName");
@@ -83,80 +83,101 @@ const Topbar = () => {
   };
 
   return (
-    <nav style={{ backgroundColor: "#fbfbfb" }}>
-      <div className="logo">iConsult.</div>
-      <div className="search-icon" onClick={handleSearchClick}>
-        <span className="fas fa-search"></span>
-      </div>
-      <div
-        className={`cancel-icon ${menuActive || searchActive ? "show" : ""}`}
-        onClick={handleCancelClick}
-      >
-        <span className="fas fa-times"></span>
-      </div>
-      <form className={`${searchActive ? "active" : ""}`} action="#">
-        <input
-          type="search"
-          className="search-data"
-          placeholder="Search"
-          required
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </form>
-      {/* <div className="logo">{userName}</div> */}
-      <div
-        className="user-pic"
+    <div style={{ position: "relative" }}>
+      <nav
         style={{
-          backgroundColor: userColor,
+          backgroundColor: "#fff",
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
-          color: "#fff",
-          borderRadius: "50%",
-          width: "40px",
-          height: "40px",
-          fontSize: "16px",
-          cursor: "pointer",
+          justifyContent: "space-between",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
         }}
-        onClick={handleMenuOpen}
       >
-        {getUserInitials(userName)}
-      </div>
-      <div className="sub-menu-wrap">
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
+        <div className="logo">
+          <img
+            src={logo}
+            alt="iConsult Logo"
+            style={{
+              height: "40px",
+              width: "auto",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+        <div className="search-icon" onClick={handleSearchClick}></div>
+        <div
+          className={`cancel-icon ${searchActive ? "show" : ""}`}
+          onClick={handleCancelClick}
+        ></div>
+        <form className={`search-form ${searchActive ? "active" : ""}`}>
+          <input
+            type="search"
+            className="search-data"
+            placeholder="Search"
+            required
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </form>
+        {/* <div className="logo">{userName}</div> */}
+        <div
+          className="user-pic"
+          style={{
+            backgroundColor: userColor,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#fff",
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            fontSize: "16px",
+            cursor: "pointer",
+          }}
+          onClick={handleMenuOpen}
         >
-          <div className="user-info">
-            <img alt={`${userName}'s avatar`} src={admin} />
-            <h4>{userName}</h4>
-          </div>
-          <hr />
-          <MenuItem onClick={handleAccountClick} class="sub-menu-link">
-            <img alt="Edit Profile Icon" src={profile} />
-            <p>Edit Profile</p>
-            <span>&gt;</span>
-          </MenuItem>
-          <MenuItem onClick={handleReviewsClick} class="sub-menu-link">
-            <img alt="Feedback Icon" src={profile} />
-            <p>My Reviews</p>
-            <span>&gt;</span>
-          </MenuItem>
-          <MenuItem onClick={handleHelpCentreClick} class="sub-menu-link">
-            <img alt="Help & Support Icon" src={help} />
-            <p>Help & Support</p>
-            <span>&gt;</span>
-          </MenuItem>
-          <MenuItem onClick={handleLogout} class="sub-menu-link">
-            <img alt="Logout Icon" src={logout} />
-            <p>Logout</p>
-            <span>&gt;</span>
-          </MenuItem>
-        </Menu>
-      </div>
-    </nav>
+          {getUserInitials(userName)}
+        </div>
+        <div className="sub-menu-wrap">
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <div className="user-info">
+              <img alt={`${userName}'s avatar`} src={admin} />
+              <h2>{userName}</h2>
+            </div>
+            <hr />
+            <MenuItem onClick={handleAccountClick} class="sub-menu-link">
+              <img alt="Edit Profile Icon" src={profile} />
+              <p>Edit Profile</p>
+              <span>&gt;</span>
+            </MenuItem>
+            <MenuItem onClick={handleReviewsClick} class="sub-menu-link">
+              <img alt="Feedback Icon" src={profile} />
+              <p>My Reviews</p>
+              <span>&gt;</span>
+            </MenuItem>
+            <MenuItem onClick={handleHelpCentreClick} class="sub-menu-link">
+              <img alt="Help & Support Icon" src={help} />
+              <p>Help & Support</p>
+              <span>&gt;</span>
+            </MenuItem>
+            <MenuItem onClick={handleLogout} class="sub-menu-link">
+              <img alt="Logout Icon" src={logout} />
+              <p>Logout</p>
+              <span>&gt;</span>
+            </MenuItem>
+          </Menu>
+        </div>
+      </nav>
+    </div>
   );
 };
 
