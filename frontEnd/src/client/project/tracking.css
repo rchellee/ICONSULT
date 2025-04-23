@@ -1,6 +1,7 @@
 .content-tracking {
   margin-left: 75px;
   overflow-y: auto;
+  margin-top: 75px;
 }
 /* Tabs section at the top both project and client details---------------------------------------------- */
 
