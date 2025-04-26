@@ -33,26 +33,25 @@
 }
 
 .create-project-btn {
-  top: auto;
   background-color: #716cff;
   color: white;
   border: none;
-  padding: 16px 32px; 
-  border-radius: 10px; 
+  padding: 16px 32px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 12px; 
+  gap: 12px;
   margin-right: 10px;
-  font-size: 20px; 
+  font-size: 20px;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); 
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
-  min-width: 160px; 
-  height: 56px; 
-  margin-left: auto; 
+  min-width: 160px;
+  height: 56px;
+  margin-left: auto;
   margin-top: 15px;
 }
 
@@ -76,6 +75,11 @@
 .create-project-btn:hover .icon {
   transform: scale(1.15); 
 }
+
+.mobile-floating-btn-container {
+  display: none;
+}
+
 
 /* Ripple effect */
 .create-project-btn::after {
@@ -160,6 +164,7 @@
 .project-list-table {
   border-collapse: collapse;
   border-spacing: 0;
+  margin-top: 15px;
 }
 
 .project-list-table td,
@@ -394,8 +399,11 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-top: 30px;
-  
+ 
   margin-right: auto;
+  flex: 1; /* Allow it to grow */
+  min-width: 0;
+
 }
 
 .status-counter {
@@ -514,8 +522,14 @@
 .action-list-buttons {
   display: flex;
   gap: 0.8rem;
-  margin-left: auto; 
-  margin-top: -50px; /*para tumaas sort and status*/
+  padding: 0.5rem 0;
+  margin-left: auto;
+  margin-top: 50px;
+}
+
+.listproj-container, 
+.dropdown-list-container {
+  position: relative; /* For dropdown positioning */
 }
 
 .actionproj-button {
@@ -550,11 +564,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0;
-  padding: 0.5rem 0;
   width: 100%;
-  margin-top: -10px;
-   
+  padding: 1rem 0;
+  position: relative; /* Establish positioning context */
+  flex-wrap: wrap; /* Allow wrapping if needed */
 }
 
 /* Dropdown styles */
@@ -861,5 +874,107 @@
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* Add this at the end of your CSS file */
+@media (max-width: 768px) {
+ 
+  
+  .action-list-buttons {
+    display: none; /* This will hide both sort and status buttons */
+  }
+  
+  .sorting-button-container {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 10px; /* Add some spacing if needed */
+  }
+  
+  /* Optional: Adjust table layout for mobile */
+  .project-list-table {
+    font-size: 0.9rem; /* Slightly smaller text */
+  }
+  
+  .project-list-table th, 
+  .project-list-table td {
+    padding: 8px 4px; /* Reduce padding */
+  }
+  
+}
+
+
+@media (max-width: 768px) {
+  .create-project-btn {
+    display: none;
+  }
+
+  .mobile-floating-btn-container {
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .mobile-floating-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #716cff;
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-floating-btn:hover {
+    background-color: #5a55e0;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .mobile-floating-btn:active {
+    transform: translateY(0);
+  }
+
+  .mobile-floating-btn .icon {
+    font-size: 24px;
+  }
+}
+
+/* Ripple effect */
+.create-project-btn::after,
+.mobile-floating-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.create-project-btn:focus:not(:active)::after,
+.mobile-floating-btn:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
   }
 }

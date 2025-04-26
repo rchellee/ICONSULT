@@ -82,13 +82,21 @@ const ProjectTask = ({ onBack }) => {
           </h3>
           
           {showCreateButton && (
-            <button
-              className="create-task-button"
-              onClick={handleCreateTask}
-            >
-              <FaPlus className="icon" /> Create 
-            </button>
-          )}
+  <>
+    <button
+      className="create-task-button"
+      onClick={handleCreateTask}
+    >
+      <FaPlus className="icon" /> Create 
+    </button>
+    <button
+      className="create-task-button-mobile"
+      onClick={handleCreateTask}
+    >
+      <FaPlus className="icon" />
+    </button>
+  </>
+)}
         </div>
 
         {/* Tab Navigation */}

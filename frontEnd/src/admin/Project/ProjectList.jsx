@@ -62,7 +62,6 @@ const ProjectList = ({
       return acc;
     }, {});
 
-    // Only update state if the new state is different
     if (JSON.stringify(newStatuses) !== JSON.stringify(statuses)) {
       setStatuses(newStatuses);
     }
@@ -171,7 +170,6 @@ const ProjectList = ({
   return (
     <div className="project-list-wrapper">
       <div className="list-view-header">
-        {/*<div className="projects-title">My Projects</div>*/}
         <div className="toggle-buttons">
           <button
             className={`toggle-button ${
@@ -196,7 +194,8 @@ const ProjectList = ({
 
         {activeView === "overview" && (
           <button className="create-project-btn" onClick={openModal}>
-            <FaPlus className="icon" /> New
+            <FaPlus className="icon" />
+            <span className="button-text">New</span>
           </button>
         )}
       </div>
@@ -244,6 +243,15 @@ const ProjectList = ({
             activeDropdown={activeDropdown}
             toggleDropdown={toggleDropdown}
           />
+        )}
+      </div>
+
+      {/* Mobile floating action button */}
+      <div className="mobile-floating-btn-container">
+        {activeView === "overview" && (
+          <button className="mobile-floating-btn" onClick={openModal}>
+            <FaPlus className="icon" />
+          </button>
         )}
       </div>
     </div>

@@ -8,6 +8,8 @@ import { IoMdDownload } from "react-icons/io";
 import "./FileTabStyle.css";
 import emptyFolder from "../../assets/empty-folder.png"; 
 import { MdUpload } from "react-icons/md";
+import { IoMdAdd } from "react-icons/io";
+import { FaPlus } from "react-icons/fa";
 
 const FilesTab = ({ projectId }) => {
   const [files, setFiles] = useState([]);
@@ -16,19 +18,22 @@ const FilesTab = ({ projectId }) => {
   const [uploading, setUploading] = useState(false);
   const [clientNames, setClientNames] = useState({});
   const [sortConfig, setSortConfig] = useState({
-    key: "name", // Default sort by name
-    direction: "asc", // Default ascending order
+    key: "name",
+    direction: "asc",
   });
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [fileToDelete, setFileToDelete] = useState(null);
+  const [mobileActionMenu, setMobileActionMenu] = useState(null);
 
-  // Create a ref for the file input
   const fileInputRef = useRef(null);
 
-  // Function to trigger file input click
   const handleUploadButtonClick = () => {
     fileInputRef.current.click();
+  };
+
+  const toggleMobileMenu = (fileId) => {
+    setMobileActionMenu(mobileActionMenu === fileId ? null : fileId);
   };
 
   useEffect(() => {
@@ -194,10 +199,10 @@ const FilesTab = ({ projectId }) => {
 
   const changeSort = (direction) => {
     setSortConfig({
-      key: "name", // Always sort by name
-      direction: direction, // Set the direction (asc or desc)
+      key: "name",
+      direction: direction,
     });
-    setShowSortOptions(false); // Hide sort options after selection
+    setShowSortOptions(false);
   };
 
   if (loading) {
@@ -208,9 +213,10 @@ const FilesTab = ({ projectId }) => {
     return <p className="error">{error}</p>;
   }
 
+  
+
   return (
     <div className="files-tab-content">
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="delete-confirmation-modal">
           <div className="delete-confirmation-content">
@@ -232,43 +238,53 @@ const FilesTab = ({ projectId }) => {
         </div>
       )}
 
-      <div className="upload-files-section">
-        {/* Upload Button */}
-        <button className="upload-files-btn" onClick={handleUploadButtonClick}>
-        <MdUpload />Upload 
-          {/* Hidden file input */}
-          <input
-            type="file"
-            onChange={handleFileUpload}
-            disabled={uploading}
-            style={{ display: "none" }}
-            ref={fileInputRef} // Attach the ref
-          />
-        </button>
+<div className="upload-files-section">
+  {/* Upload Button - now first in the DOM */}
+  <button className="upload-files-btn desktop-upload-btn" onClick={handleUploadButtonClick}>
+    <MdUpload className="upload-icon" />
+    <span className="upload-text">Upload</span>
+    <input
+      type="file"
+      onChange={handleFileUpload}
+      disabled={uploading}
+      style={{ display: "none" }}
+      ref={fileInputRef}
+    />
+  </button>
 
-        {/* Sort Button */}
-        <div className="sort-files">
-          <button
-            className="sort-files-btn"
-            onClick={() => setShowSortOptions(!showSortOptions)}
-          >
-           <FaArrowDown /> Sort 
-          </button>
-          {showSortOptions && (
-            <div className="sort-files-options">
-              <button onClick={() => changeSort("asc")}>Name (A-Z)</button>
-              <button onClick={() => changeSort("asc")}>Ascending</button>
-              <button onClick={() => changeSort("desc")}>Descending</button>
-            </div>
-          )}
-        </div>
+  {/* Desktop Upload Button */}
+  <div className="sort-files">
+    <button
+      className="sort-files-btn"
+      onClick={() => setShowSortOptions(!showSortOptions)}
+    >
+      <FaArrowDown /> Sort 
+    </button>
+    {showSortOptions && (
+      <div className="sort-files-options">
+        <button onClick={() => changeSort("asc")}>Name (A-Z)</button>
+        <button onClick={() => changeSort("asc")}>Ascending</button>
+        <button onClick={() => changeSort("desc")}>Descending</button>
       </div>
-
-      {/* File List Table */}
+    )}
+  </div>
+{/* Mobile Upload Button */}
+<button className="upload-files-btn mobile-upload-btn" onClick={handleUploadButtonClick}>
+  <FaPlus className="icon" />
+  <input
+    type="file"
+    onChange={handleFileUpload}
+    disabled={uploading}
+    style={{ display: "none" }}
+    ref={fileInputRef}
+  />
+</button>
+  </div>
       <div className="file-list">
-        {files.length > 0 && (
+        {files.length > 0 ? (
           <div className="file-list-scrollable">
-            <table>
+            {/* Desktop Table */}
+            <table className="desktop-files-table">
               <thead>
                 <tr>
                   <th onClick={() => changeSort("asc")} className="name-header">
@@ -308,39 +324,92 @@ const FilesTab = ({ projectId }) => {
                         : clientNames[file.uploaded_by] || "Unknown"}
                     </td>
                     <td>
-                    <div className="action-buttons-container">
-                      <button
-                        className="files-admin"
-                        onClick={() => {
-                          const downloadLink =
-                            file.webContentLink ||
-                            `http://localhost:8081/uploads/${file.original_name}`;
-                          const a = document.createElement("a");
-                          a.href = downloadLink;
-                          a.download = file.original_name;
-                          document.body.appendChild(a);
-                          a.click();
-                          document.body.removeChild(a);
-                        }}
-                      >
-                        <IoMdDownload /> {/* Download icon */}
-                      </button>
-                      <button
-                        className="filestwo-admin"
-                        onClick={() => handleDeleteClick(file.id)}
-                      >
-                        <MdOutlineDeleteOutline /> {/* Delete icon */}
-                      </button>
+                      <div className="action-buttons-container">
+                        <button
+                          className="files-admin"
+                          onClick={() => {
+                            const downloadLink =
+                              file.webContentLink ||
+                              `http://localhost:8081/uploads/${file.original_name}`;
+                            const a = document.createElement("a");
+                            a.href = downloadLink;
+                            a.download = file.original_name;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                          }}
+                        >
+                          <IoMdDownload />
+                        </button>
+                        <button
+                          className="filestwo-admin"
+                          onClick={() => handleDeleteClick(file.id)}
+                        >
+                          <MdOutlineDeleteOutline />
+                        </button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
 
-        {files.length === 0 && (
+            {/* Mobile File Cards */}
+            <div className="mobile-files-list">
+              {sortedFiles.map((file) => (
+                <div key={file.id} className="file-card">
+                  <div className="file-info">
+                    <div className="file-icon-name">
+                      {getFileIcon(file.original_name)}
+                      <span className="file-name" title={file.original_name}>
+                        {file.original_name}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="file-actions-mobile">
+                    <button 
+                      className="mobile-actions-button"
+                      onClick={() => toggleMobileMenu(file.id)}
+                    >
+                      •••
+                    </button>
+                    
+                    {mobileActionMenu === file.id && (
+                      <div className="mobile-actions-menu show">
+                        <div 
+                          className="mobile-action-item"
+                          onClick={() => {
+                            const downloadLink = file.webContentLink || 
+                              `http://localhost:8081/uploads/${file.original_name}`;
+                            const a = document.createElement("a");
+                            a.href = downloadLink;
+                            a.download = file.original_name;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            setMobileActionMenu(null);
+                          }}
+                        >
+                          <IoMdDownload /> Download
+                        </div>
+                        <div 
+                          className="mobile-action-item delete-action"
+                          onClick={() => {
+                            handleDeleteClick(file.id);
+                            setMobileActionMenu(null);
+                          }}
+                        >
+                          <MdOutlineDeleteOutline /> Delete
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
           <div className="no-files-container">
             <img 
               src={emptyFolder} 

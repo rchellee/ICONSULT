@@ -5,7 +5,7 @@ import "./TaskCreate.css";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import { MdAddCircleOutline } from "react-icons/md";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
+{/*import { IoArrowBackCircleOutline } from "react-icons/io5";*/}
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const TaskCreateForm = () => {
@@ -161,7 +161,7 @@ const TaskCreateForm = () => {
       <Sidebar />
       
       <div className="task-create-form">
-      <div className="backkk">
+      {/*<div className="backkk">
             <button 
               type="button" 
               className="back-satask"
@@ -171,7 +171,7 @@ const TaskCreateForm = () => {
                 
             </button>
             <h2>{taskToEdit ? "" : ""}</h2>
-        </div>
+        </div>*/}
         
         <form onSubmit={handleSubmit}>
           {/* Task Details Section */}
@@ -242,7 +242,7 @@ const TaskCreateForm = () => {
                       className="remove-misc-button"
                       onClick={() => handleRemoveMiscellaneous(index)}
                     >
-                      <IoIosCloseCircleOutline />
+                      <IoIosCloseCircleOutline /> 
                     </button>
                   </div>
                 ))}
@@ -314,9 +314,9 @@ const TaskCreateForm = () => {
 
           {/* Form Actions */}
           <div className="form-actions">
-           {/* <button type="button" onClick={() => navigate(-1)}>
+            <button type="button" onClick={() => navigate(-1)}>
               Back
-            </button>*/}
+            </button>
             <button type="submit">{taskToEdit ? "Update" : "Create"}</button>
           </div>
         </form>
