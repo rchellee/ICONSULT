@@ -5,6 +5,10 @@
 
 /*-----------------------------------------------------------*/
 
+.sort-controls{
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
 
 /* Sort dropdown container */
 .sort-ledger {

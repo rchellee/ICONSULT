@@ -189,11 +189,11 @@
 
 .form-create-cancel {
   display: flex;
-  justify-content: space-between; /* Changed from center */
-  gap: 20px; /* Reduced from 500px */
+  justify-content: space-between;
+  gap: 20px; 
   margin-top: 20px;
   width: 100%;
-  padding: 0 20px; /* Add some padding if needed */
+  padding: 0 20px; 
 }
 
 .form-cancel-project-button,
@@ -205,18 +205,18 @@
   border-radius: 100px;
   border: none;
   cursor: pointer;
-  flex-shrink: 0; /* Prevent buttons from shrinking */
-  text-align: center; /* Add this line to center the text */
-  display: flex; /* These next 3 lines will vertically and horizontally center the text */
+  flex-shrink: 0; 
+  text-align: center; 
+  display: flex; 
   align-items: center;
   justify-content: center;
 }
 
-/* Optional: If you want the buttons centered with space between */
+
 .alternative-layout {
   display: flex;
   justify-content: center;
-  gap: 40px; /* Adjust as needed */
+  gap: 40px; 
   margin-top: 20px;
   width: 100%;
 }
@@ -250,22 +250,17 @@
   display: block;
 }
 
-
-
-
-
-
 /*prof fee, mop, tras id*/
 
 .form-modal-field-container {
   display: flex;
-  gap: 20px; /* Adjust the gap between fields as needed */
+  gap: 20px; 
   margin-bottom: 15px;
   margin-top: 10px;
 }
 
 .form-modal-field-container .form-modal-field {
-  flex: 1; /* Ensures all fields take equal width */
+  flex: 1; 
 }
 
 .form-modal-field-container .form-modal-field input,
@@ -311,7 +306,7 @@
 }
 
 .dropdown-toggle span:first-child {
-  color: #303030; /* Light gray color for "Select MOP" */
+  color: #303030; 
 }
 
 .dropdown-icon {
@@ -345,7 +340,62 @@
   background: #f0f0f0;
 }
 
+@media (max-width: 786px) {
 
+  .form-modal-overlay {
+    position: fixed;
+    z-index: 9999; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+  }
 
+  .form-modal-content {
+    padding: 20px;
+    width: 90%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
 
-/* Button Container */
+  .form-project-details {
+    grid-template-columns: 1fr; 
+    gap: 15px;
+  }
+
+  .form-project-details .description-input {
+    grid-column: span 1;
+  }
+
+  .form-modal-field input,
+  .form-modal-field select,
+  .description-input {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+ 
+  .form-create-cancel {
+    flex-direction: row; 
+    gap: 10px;
+    padding: 0;
+  }
+
+  .form-cancel-project-button,
+  .form-create-project-button {
+    width: 50%; 
+    height: 45px;
+    font-size: 14px; 
+    
+  }
+
+  .form-create-project-button {
+    margin-left: -5px; 
+  }
+
+  .form-modal-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+}
