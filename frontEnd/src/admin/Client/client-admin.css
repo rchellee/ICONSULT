@@ -56,23 +56,6 @@
   height: 1rem;
   width: 1rem;
 }
-
-/* Responsive Adjustments */
-@media (max-width: 640px) {
-  .filter-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  
-  .filter-select {
-    width: 100%;
-  }
-  
-  .filter-select select {
-    width: 100%;
-  }
-}
 /************************** Client Management **************/
 /* Scroll */
 .scrollable-table-container {
@@ -362,6 +345,12 @@ select:focus {
   display: flex;
   justify-content: space-between;
   gap: 20px; /* Adds spacing between the dropdowns */
+}
+.client-button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem; /* optional: space between buttons */
+  margin-top: 1rem; /* optional: spacing above the button group */
 }
 
 /***********************Client Details *******************/

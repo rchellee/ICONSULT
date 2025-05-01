@@ -95,6 +95,7 @@ const AdminDynamicCalendar = ({ availableDates, onDateSelect }) => {
 
   return (
     <div className="calendar-form-container">
+      <h3>Set Your Appointment</h3>
       <div className="admin-wrapper">
         <header>
           <p className="current-date">

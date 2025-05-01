@@ -336,7 +336,7 @@ const ClientForm = ({ clients, setClients, showToast, hideToast, goBack }) => {
             />
           </div>
           {/* Submit Button */}
-          <button type="submit">Add Client</button>
+          <button type="submit">Submit</button>
         </form>
       </div>
     </div>

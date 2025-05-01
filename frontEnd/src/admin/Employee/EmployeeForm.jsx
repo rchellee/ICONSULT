@@ -214,9 +214,9 @@ const EmployeeForm = ({
                 <i className="fa fa-calendar"></i>
               </div>
             </div>
-            <div className="button-group">
+            <div className="employee-button-group">
               <button type="submit">
-                {editingEmployee ? "Update Employee" : "Add Employee"}
+                {editingEmployee ? "Update Employee" : "Submit"}
               </button>
               <button className="btn-back" onClick={goBack}>
                 Back

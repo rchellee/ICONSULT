@@ -1,7 +1,8 @@
 .appointment-form-container {
-  max-width: 1100px;
+  max-width: 1800px;
+  margin: 10px auto; /* Center horizontally */
   padding: 0;
-  margin-left: 250px;
+  margin-left: 50px;
 }
 
 .content-calendar {
@@ -24,7 +25,7 @@ h3 {
   font-weight: 500;
 }
 
-button {
+/* button {
   padding: 10px 20px;
   color: white;
   border: none;
@@ -35,7 +36,7 @@ button {
 
 button:hover {
   background-color: #042c57;
-}
+} */
 
 /* Calendar grid */
 .calendar-container {
@@ -84,6 +85,9 @@ button:hover {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background-color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .time-slot {
@@ -148,6 +152,31 @@ header .current-date {
 
 .fully-booked:hover {
   background-color: #f5c6cb;
+}
+
+.step2.button {
+  margin-top: 20px;           /* Space above the buttons */
+  margin-right: 10px;         /* Space between buttons (for the Back button) */
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step2.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.step2.button:hover:not(:disabled) {
+  background-color: #0056b3;
 }
 
 /* Mobile responsiveness */

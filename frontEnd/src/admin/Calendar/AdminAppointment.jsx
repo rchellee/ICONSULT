@@ -536,20 +536,20 @@ function AdminAppointment() {
                 />
               </div>
 
-              <button onClick={prevStep}>
-                {" "}
-                <i className="fas fa-arrow-left"></i>Back
-              </button>
-              <button
-                onClick={nextStep}
-                disabled={
-                  !formData.consultationType ||
-                  (formData.consultationType === "Others" &&
-                    !formData.otherDetails)
-                }
-              >
-                <i className="fas fa-arrow-right"></i>Next
-              </button>
+              <button onClick={prevStep} className="step2 button">
+  <i className="fas fa-arrow-left"></i> Back
+</button>
+<button
+  onClick={nextStep}
+  disabled={
+    !formData.consultationType ||
+    (formData.consultationType === "Others" && !formData.otherDetails)
+  }
+  className="step2 button"
+>
+  <i className="fas fa-arrow-right"></i> Next
+</button>
+
             </div>
           )}
           {currentStep === 3 && (

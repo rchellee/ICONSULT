@@ -308,9 +308,7 @@ function AppointmentForm() {
         <div className="content-calendar">
           {currentStep === 1 && (
             <div>
-              <h4>
-                <em>Select date and time for consulation</em>
-              </h4>
+           
               <div className="calendar-time-container">
                 <DynamicCalendar
                   availableDates={availableDates}
@@ -333,7 +331,7 @@ function AppointmentForm() {
                     </h5>
                     <div className="time-dropdowns">
                       <label htmlFor="timePeriod" className="required-label">
-                        AM/PM *
+                        AM/PM
                       </label>
                       <select
                         id="timePeriod"
@@ -341,7 +339,7 @@ function AppointmentForm() {
                         onChange={handleTimePeriodChange}
                       >
                         <option value="" disabled>
-                          -- Select --
+                          Select
                         </option>
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
@@ -359,7 +357,7 @@ function AppointmentForm() {
                           disabled={!timePeriod}
                         >
                           <option value="" disabled>
-                            -- Select Time --
+                            Select Time
                           </option>
                           {availableTimes
                             .filter(({ time }) => time.endsWith(timePeriod))
@@ -376,15 +374,18 @@ function AppointmentForm() {
                         </select>
                       </div>
                     )}
-                  </div>
-                )}
-              </div>
-              <button
+                                  <button
                 onClick={nextStep}
                 disabled={!formData.date || !formData.time}
               >
                 <i className="fas fa-arrow-right"> </i>Next
               </button>
+                  </div>
+                  
+                )}
+                
+              </div>
+              
             </div>
           )}
           {currentStep === 2 && (

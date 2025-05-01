@@ -429,6 +429,12 @@ input:checked + .slider:before {
   font-size: 14px;
   color: #555;
 }
+
+.employee-button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem; /* Optional: adds space between buttons */
+}
 /**************************** Editing form */
 .employee-editing-form-grid {
   display: grid;

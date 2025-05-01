@@ -252,14 +252,14 @@ const ClientDetails = ({
                 {/* Save and Cancel Buttons */}
                 <div className="buttonClient-group">
                   <button type="submit" className="btn-save">
-                    <i className="fas fa-save"></i> Save Changes
+                 Save Changes
                   </button>
                   <button
                     type="button"
                     className="btn-cancel"
                     onClick={toggleEdit}
                   >
-                    <i className="fas fa-times"></i> Cancel
+                     Cancel
                   </button>
                 </div>
               </form>
@@ -326,10 +326,10 @@ const ClientDetails = ({
                 <div className="buttonClient-group">
                   <button className="btn-edit" onClick={toggleEdit}>
                     {" "}
-                    <i className="fas fa-edit"></i>Edit
+                   Edit
                   </button>
                   <button className="btn-back" onClick={goBack}>
-                    <i className="fas fa-arrow-left"></i>Back
+                    Back
                   </button>
                 </div>
               </div>

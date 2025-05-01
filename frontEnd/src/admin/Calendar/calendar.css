@@ -61,7 +61,7 @@ button + button {
   grid-template-columns: 1fr 2fr;
   gap: 20px;
   margin-bottom: 20px;
-  margin-left: 100px;
+  margin-left: 60px;
 }
 
 .time-dropdowns {
@@ -82,6 +82,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.content-availability h3{
+  font-weight: bold;
+}
+
 /***********Step 2: Form Fields */
 .step2form {
   max-width: 1000px;
@@ -91,7 +95,7 @@ button:disabled {
   background-color: #fff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin-top: 50px;
-  margin-left: 200px;
+  /* margin-left: 200px; */
 }
 
 .step2form .form-group {
@@ -110,25 +114,6 @@ button:disabled {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.step2form button {
-  padding: 10px 20px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.step2form button:disabled {
-  background-color: #ddd;
-  cursor: not-allowed;
-}
-
-.step2form button:not(:disabled):hover {
-  background-color: #0056b3;
 }
 
 /********* Step 3: Confirmation Step */
@@ -377,7 +362,7 @@ button:disabled {
   margin: 0px;
   background-color: white;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  margin-top:80px;
+  margin-top: 50px;
 }
 
 .admin-wrapper {
@@ -386,7 +371,7 @@ button:disabled {
   border-radius: 5px;
   background: white;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  margin-top: 80px;
+  
 }
 
 header .icons {
@@ -486,4 +471,8 @@ header .current-date {
   cursor: pointer;
   transition: background-color 0.3s;
   margin-right: 1075px;
+}
+
+.calendar-form-container h3{
+  font-weight: bold;
 }
