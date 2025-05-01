@@ -279,6 +279,7 @@ const FilesTab = ({ projectId }) => {
     ref={fileInputRef}
   />
 </button>
+
   </div>
       <div className="file-list">
         {files.length > 0 ? (

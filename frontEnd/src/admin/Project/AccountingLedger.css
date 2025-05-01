@@ -25,21 +25,21 @@
 .sort-ledger label {
   font-weight: 500;
   color: #3b4f67;
-  height: 36px; /* Match select height */
+  height: 36px; 
   display: flex;
   align-items: center;
 }
 
 .sort-ledger select {
   padding: 8px 12px;
-  border: 1px solid #ddd; /* Added border for better visibility */
-  border-radius: 4px; /* Added for better appearance */
+  border: 1px solid #ddd; 
+  border-radius: 4px; 
   background-color: white;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  height: 36px; /* Fixed height */
-  box-sizing: border-box; /* Ensures padding is included in height */
+  height: 36px; 
+  box-sizing: border-box; 
 }
 
 .sort-ledger select:hover {
@@ -63,7 +63,6 @@
   margin-right: 50px;
   margin-top: 30px;
   top: 10px;
-  /* Ensure columns respect their widths */
 }
 
 .accounting-table th,
@@ -78,7 +77,7 @@
   background-color: #eeecec;
   color: rgb(71, 70, 70);
   overflow: hidden;
-  resize: horizontal; /* Make columns resizable */
+  /*resize: horizontal;  Make columns resizable */
   overflow: auto; /* Required for resize to work */
 }
 
@@ -89,23 +88,23 @@
 .accounting-table td:nth-child(4), /* Amount column */
 .accounting-table td:nth-child(5), /* Date Paid column */
 .accounting-table td:nth-child(6) {
-  /* Mode of Payment column */
-  max-width: 150px; /* Adjust this value to fit your design */
+ 
+  max-width: 150px; 
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Subtotal row styling */
+
 .subtotal-row td {
-  border-top: 1px solid #ddd; /* Add a border above the subtotal row */
-  padding-top: 10px; /* Add some padding above the subtotal */
+  border-top: 1px solid #ddd; 
+  padding-top: 10px; 
 }
 
-/* Grand total row styling */
+
 .grand-total-row td {
-  border-top: 2px solid #000; /* Add a border above the grand total row */
+  border-top: 2px solid #000;
   font-weight: bold;
-  padding-top: 15px; /* Add some padding above the grand total */
+  padding-top: 15px; 
 }
 
 .accounting-scroll {
@@ -143,59 +142,7 @@
 
 
 /* sortledger dropdown-------------------------------------------------------------- */
+
 .sortledger-container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 20px 125px 10px 0; /* Adjusted margins */
-  top: 100px;
-  margin-top: -60px;
+  margin-left: 20px;
 }
-
-.sortledger-container label {
-  font-weight: 500;
-  color: #3b4f67;
-  margin-right: 10px;
-  font-size: 14px;
-}
-
-.sortledger-container select {
-  padding: 8px 32px 8px 12px; /* Right padding for arrow */
-  border: none;
-  border-radius: 6px;
-  background-color: white;
-  font-size: 14px;
-  color: #3b4f67;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  appearance: none; /* Remove default arrow */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
-  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.1);
-  min-width: 180px; /* Ensure consistent width */
-  color: #333;
-}
-
-.sortledger-container select:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-.sortledger-container select {
-  /* Remove default arrow */
-  -webkit-appearance: none; /* For Chrome, Safari */
-  -moz-appearance: none;    /* For Firefox */
-  appearance: none;         /* Standard syntax */
-  
-  /* Remove IE default arrow */
-  &::-ms-expand {
-    display: none;
-  }
-  
-  /* Your existing styles */
-  padding: 8px 12px; /* Adjust right padding since we removed the arrow */
-  background-image: none; /* Remove any background image */
-}
-

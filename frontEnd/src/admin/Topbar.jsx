@@ -116,6 +116,7 @@ const Topbar = () => {
           required
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ color: "black" }}
         />
       </form>
       {/* <div className="logo">{userName}</div> */}

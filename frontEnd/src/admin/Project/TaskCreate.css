@@ -8,6 +8,7 @@
   position: relative;
   left: 50px;
   top: auto;
+  margin-top: -5px;
 }
 
 .task-create-form h2 {

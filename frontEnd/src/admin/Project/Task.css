@@ -233,10 +233,14 @@
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  position: absolute; /* Changed from fixed to absolute */
+  top: 20px; /* Position from top of its container */
+  right: 20px; /* Position from right of its container */
   z-index: 1000;
+
+  margin-bottom: 20px; /* Add some space below the button */
+    margin-top: 700px; /* Pull up slightly to overlap with content */
+    margin-right: 50px;
 }
 
 .create-task-button-mobile:hover {

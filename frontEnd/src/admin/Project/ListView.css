@@ -746,7 +746,8 @@
 /*----------------------------------------------------------------------*/
 
 
-/* Delete Confirmation Modal Styles */
+/* Delete Confirmation Modal Styles--------------------------------------------- */
+/* Delete Confirmation Modal Styles--------------------------------------------- */
 .delete-confirmation-modal {
   position: fixed;
   top: 0;
@@ -758,13 +759,12 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  
   animation: fadeIn 0.2s ease-out;
 }
 
 .delete-confirmation-content {
   background-color: white;
-  padding: 2.5rem;
+  padding: 1.5rem;
   border-radius: 16px;
   width: 90%;
   max-width: 420px;
@@ -775,44 +775,31 @@
   border: 1px solid #f0f0f0;
 }
 
-.delete-project-icon-container {
-  background-color: #fff6f6;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+.delete-confirmation-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  border: 1px solid #ffebee;
+  margin-bottom: 1rem;
 }
 
 .delete-project-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #ff4d4f;
+  margin-bottom: 0.5rem;
 }
 
-.delete-confirmation-text {
-  margin-bottom: 2rem;
-}
-
-.delete-confirmation-text h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.5rem;
+.delete-confirmation-content h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
   color: #2d3748;
   font-weight: 600;
 }
 
-.delete-confirmation-text p {
+.delete-confirmation-content p {
   margin: 0.5rem 0;
   color: #718096;
   line-height: 1.5;
-}
-
-.warning-text {
-  color: #ff4d4f !important;
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .delete-confirmation-buttons {
@@ -820,18 +807,17 @@
   justify-content: center;
   gap: 1rem;
   margin-top: 1.5rem;
-  width: 100%; /* Add this */
 }
 
 .delete-confirmation-buttons button {
-  padding: 0.75rem 1.75rem;
+  padding: 0.6rem 1.25rem;
   border: none;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 1rem;
-  min-width: 120px; /* Changed from flex/max-width */
+  font-size: 0.9rem;
+  min-width: 100px;
 }
 
 .cancel-project-button {
@@ -857,6 +843,31 @@
   box-shadow: 0 4px 8px rgba(255, 77, 79, 0.4);
 }
 
+/* Media Queries for smaller screens */
+@media (min-width: 480px) {
+  .delete-confirmation-content {
+    padding: 2rem;
+  }
+  
+  .delete-project-icon {
+    font-size: 2.5rem;
+  }
+  
+  .delete-confirmation-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .delete-confirmation-content p {
+    font-size: 1rem;
+  }
+  
+  .delete-confirmation-buttons button {
+    padding: 0.75rem 1.75rem;
+    font-size: 1rem;
+    min-width: 120px;
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -877,28 +888,51 @@
   }
 }
 
+/*----------------------------------------------------------------------*/
+
+@media (max-width: 270px) {
+  .delete-confirmation-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .delete-confirmation-buttons button {
+    width: 100%;
+  }
+}
+
 /* Add this at the end of your CSS file */
 @media (max-width: 768px) {
- 
-  
-  .action-list-buttons {
-    display: none; /* This will hide both sort and status buttons */
-  }
+
+  /* .action-list-buttons {
+    display: none; /* This will hide both sort and status buttons 
+  }*/
   
   .sorting-button-container {
     flex-direction: column;
     align-items: flex-start;
-    padding-bottom: 10px; /* Add some spacing if needed */
+    padding-bottom: 10px; 
+    margin-bottom: 10px;
   }
   
   /* Optional: Adjust table layout for mobile */
   .project-list-table {
-    font-size: 0.9rem; /* Slightly smaller text */
+    font-size: 0.9rem; 
+    margin-top: 20px;
   }
   
   .project-list-table th, 
   .project-list-table td {
-    padding: 8px 4px; /* Reduce padding */
+    padding: 8px 4px; 
+    
+  }
+
+  .delete-confirmation-content {
+    padding: 2.5rem;
+  }
+  
+  .delete-confirmation-content h3 {
+    font-size: 1.5rem;
   }
   
 }
@@ -909,12 +943,24 @@
     display: none;
   }
 
-  .mobile-floating-btn-container {
+  /*.mobile-floating-btn-container {
     display: block;
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 1000;
+  }*/
+
+  .mobile-floating-btn-container {
+    display: block;
+    position: sticky; /* Changed from fixed to sticky */
+    top: 20px; /* Position from top of viewport */
+    right: 20px;
+    z-index: 1000;
+    float: right; /* Float to the right */
+    margin-bottom: 20px; /* Add some space below the button */
+    margin-top: 400px; /* Pull up slightly to overlap with content */
+    margin-right: 50px;
   }
 
   .mobile-floating-btn {

@@ -31,6 +31,7 @@
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 2px 5px rgba(74, 107, 255, 0.3);
+  
 }
 
 .upload-files-btn:hover {
@@ -284,12 +285,7 @@ td {
   background-color: #f0f0f0;
 }
 
-.no-files-message {
-  text-align: center;
-  padding: 20px;
-  font-size: 18px;
-  color: #888;
-}
+
 
 .name-header, .upload-date-header, .uploaded-by-header, .action-files {
   color: #333;
@@ -329,6 +325,8 @@ td {
   outline: none;
 }
 
+
+
 .no-files-container {
   display: flex;
   flex-direction: column;
@@ -336,23 +334,29 @@ td {
   justify-content: center;
   padding: 40px;
   text-align: center;
+}
+
+
+.no-files-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+  color: #888;
   
 }
 
 .empty-folder-image {
-  width: 300px;       
-  height: 300px;      
-  object-fit: contain; 
-  
- 
-  max-width: 100%;     
-  max-height: 30vh;  
+  width: 100%; 
+  max-width: 300px; 
+  height: auto; 
+  object-fit: contain;
+  margin: 0 auto 20px; 
 }
 
 .no-files-message {
-  font-size: 18px;
+  font-size: clamp(16px, 4vw, 18px);
   color: #666;
-  margin-top: 10px;
+  margin: -50px auto 20px; 
 }
 
 
@@ -371,6 +375,7 @@ td {
 
 .mobile-files-list {
   display: none;
+ 
 }
 
 
@@ -381,15 +386,28 @@ td {
 }
 
 .mobile-upload-icon {
-  display: none; /* Hide icon on desktop */
+  display: none; 
 }
 
 .mobile-upload-btn {
-  display: none; /* This hides mobile btn EVERYWHERE by default */
+  display: none; 
 }
 
 
+
+
 /* Mobile styles */
+
+@media (max-width:40px) {
+  .no-files-message {
+    font-size: 10px;
+    color: #666;
+    margin-top: -50px;
+  }
+  
+} 
+
+
 @media (max-width: 768px) {
   .upload-files-section {
     position: fixed;
@@ -403,11 +421,11 @@ td {
   }
 
   .desktop-upload-btn {
-    display: none; /* Hide desktop button on mobile */
+    display: none; 
   }
 
   .mobile-upload-btn {
-    display: flex; /* Show mobile btn ONLY on mobile */
+    display: flex; 
   }
 
   .mobile-upload-icon {
@@ -451,7 +469,8 @@ td {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     border: 1px solid #e0e0e0;.
-    margin: 0 5px; 
+    /*margin: 0 5px;*/ 
+   
   }
 
   .file-info {
