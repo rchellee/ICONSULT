@@ -1,108 +1,227 @@
-.account {
-  width: 60%; /* Adjust the width of the content to be 60% of the screen width */
-  max-width: 800px; /* Optional: limits the width to a maximum value */
-  box-sizing: border-box; /* Ensures padding doesn't affect the total width */
+/* Base Styles */
+:root {
+  --primary-color: #3498db;
+  --success-color: #2ecc71;
+  --error-color: #e74c3c;
+  --text-color: #333;
+  --text-light: #666;
+  --border-color: #e0e0e0;
+  --bg-color: #f5f5f5;
+  --card-bg: #ffffff;
+  --hover-bg: #f9f9f9;
 }
 
-/*to make it progressive margin is flex start then add yung padding*/
-
-.account-settings .content {
+.account-settings-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding-left: 10px;
-  width: calc(100% - 250px);
-  margin-left: flex-start;
-  margin-top: 1px;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.account-settings-content {
+  margin-left: 250px;
+  padding: 2rem;
+  flex-grow: 1;
+  transition: all 0.3s ease;
+}
+
+.account-settings-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
 
-.account-settings{
-  background-color: rgb(85, 52, 52);
+.account-settings-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.account-settings h2 {
+.account-settings-title {
+  font-size: 1.75rem;
+  color: var(--text-color);
+  margin: 0;
+  font-weight: 600;
+}
+
+.account-settings-subtitle {
+  color: var(--text-light);
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+}
+
+.settings-sections {
   display: flex;
-  justify-content: flex-start;
-}
-
-/* Info-box styles */
-.info-box table {
-  width: 10;
-  border-collapse: collapse;
-  border: none;
-  box-shadow: none;
-  background-color: transparent;
-}
-
-.info-box table td {
-  padding: 8px 12px;
-  vertical-align: middle;
-  font-size: 17px;
-  border: none;
-  background-color: transparent;
-}
-
-.info-box table td:first-child {
-  width: 25%; /* Adjust this value to resize the label column */
-  font-weight: normal;
-  background-color: transparent;
-}
-
-.info-box table td:last-child {
-  width: 100%; /* Adjust this value to resize the value column */
-  text-align: left;
-  font-weight: normal;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0 2rem 2rem;
 }
 
 .info-box {
-  border: 1px solid #ddd; /* Add border to create a box */
-  padding: 16px;
-  margin-bottom: 20px;
-  background-color: transparent; /* Light background color */
-  border-radius: 8px; /* Rounded corners */
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
 }
 
-/* Remove alternate row background color */
-table tr:nth-child(even),
-table tr:nth-child(odd) {
-  background-color: transparent; /* Set to transparent to remove any color */
+.info-box:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
 }
 
-/* Alternatively, you can target the table rows more specifically */
-table tr {
-  background-color: transparent; /* Ensures all rows have no background color */
-}
-
-.create-password-text {
-  margin-bottom: 10px; /* Add space below the text */
-}
-
-.password-section {
+.info-box-title {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  margin: 0 0 1.25rem;
+  font-weight: 600;
   display: flex;
-  justify-content: space-between; /* Move the icon to the far right */
   align-items: center;
-  width: 100%; /* Ensure the container takes the full width of the parent */
+  gap: 0.5rem;
+}
+
+.info-box-icon {
+  font-size: 1.2rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+}
+
+.info-label {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  flex: 0 0 150px;
+}
+
+.info-value {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: right;
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+.password-info-text {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.password-change-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background-color: var(--hover-bg);
+  border: none;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  color: var(--text-color);
 }
 
-.password-field {
-  flex-grow: 1; /* Take up the available space for password text */
-  margin-top: 10px;
+.password-change-button:hover {
+  background-color: #f0f0f0;
 }
 
-.password-icon {
-  cursor: pointer;
-  font-size: 30px; /* Adjust size as needed */
-  margin-left: 10px; /* Add some space between the text and the icon */
-  margin-top: -10px;
+.password-change-icon {
+  color: var(--text-light);
+  font-size: 1.25rem;
 }
 
-.account-settings-icon {
-  width: 200px;
-  height: 150px;
-  margin-left: 600px;
-  margin-top: -140px;
-  padding: 16px;
+.status-message {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin: 1rem 2rem 0;
+  font-size: 0.9rem;
+}
+
+.status-message.success {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(46, 204, 113, 0.2);
+}
+
+.status-message.error {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--error-color);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: var(--text-light);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .account-settings-content {
+    margin-left: 0;
+    padding-top: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .account-settings-wrapper {
+    border-radius: 0;
+  }
+  
+  .account-settings-header,
+  .settings-sections {
+    padding: 1rem;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .info-label,
+  .info-value {
+    flex: none;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .info-label {
+    font-size: 0.85rem;
+  }
+  
+  .info-value {
+    font-weight: normal;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-settings-content {
+    padding: 1rem;
+  }
+  
+  .account-settings-title {
+    font-size: 1.5rem;
+  }
+  
+  .info-box {
+    padding: 1rem;
+  }
 }

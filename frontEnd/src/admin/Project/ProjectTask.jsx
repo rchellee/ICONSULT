@@ -13,6 +13,7 @@ import { IoChevronForward } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
 import noTaskIllust from "../../assets/no-task-illust.png"; // Import the image
 
+
 const ProjectTask = ({ onBack }) => {
   const { projectId } = useParams();
   const { searchTerm } = useContext(SearchContext);
@@ -74,7 +75,7 @@ const ProjectTask = ({ onBack }) => {
         {/* Project Header with Breadcrumbs and Create Button */}
         <div className="project-header">
           <h3 className="project-id">
-            <span className="project-name">Project</span>
+            <span className="project-name">llss</span>
             <IoChevronForward className="chevron-icon" />
             <span className="project-name" style={{  color: '#000' }}>
               {projectName}
@@ -90,7 +91,7 @@ const ProjectTask = ({ onBack }) => {
       <FaPlus className="icon" /> Create 
     </button>
     <button
-      className="create-task-button-mobile"
+      className="mobile-floating-btn"
       onClick={handleCreateTask}
     >
       <FaPlus className="icon" />

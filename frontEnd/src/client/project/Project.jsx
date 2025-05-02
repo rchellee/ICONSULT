@@ -104,20 +104,26 @@ function Project() {
                     onClick={() => handleTrackingClick(project.id)}
                   >
                     <div className="project-box">
-                      <div className="project-header">
+                      <div className="project-client-header">
                         <div className="logoclient-box">{project.projectName[0]}</div>
                         <h2 className="projectclient-title">{project.projectName}</h2>
                       </div>
                       <div className="project-info">
                         <p>
                           <span className="icon-with-gap">
-                            <FaInfoCircle /> {project.status}
+                          <FaInfoCircle 
+                            size={16} 
+                            style={{ 
+                              color:'#6E5B9A'  // Default color for other statuses
+                            }} 
+                          /> 
+                          {project.status}
                           </span>
                           <span className="icon-with-gap">
-                            <FaTasks /> {getTaskCountForProject(project.id)}
+                            <FaTasks style={{ color: 'green' }} /> {getTaskCountForProject(project.id)}
                           </span>
                           <span className="icon-with-gap">
-                            <FaChartLine /> {calculateProgress(project.id)}%
+                            <FaChartLine style={{ color: 'red' }} /> {calculateProgress(project.id)}%
                           </span>
                         </p>
                       </div>

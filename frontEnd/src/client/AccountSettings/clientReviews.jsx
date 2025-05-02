@@ -17,12 +17,24 @@ import {
   InputLabel,
   Modal,
   TextField,
+  useMediaQuery,
+  useTheme,
+  IconButton,
+  Grid,
+  Card,
+  CardContent,
+  Stack,
 } from "@mui/material";
 import Topbar from "../Topbar";
 import Sidebar from "../sidebar";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import EditIcon from "@mui/icons-material/Edit";
 
 const ClientReviews = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  
   const [reviews, setReviews] = useState([]);
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -134,84 +146,151 @@ const ClientReviews = () => {
     return project ? project.projectName.toUpperCase() : "UNKNOWN PROJECT";
   };
 
-  return (
-    <div>
-      <Topbar />
-      <Sidebar />
-
-      <div className="review-section">
-        <Typography variant="h4" gutterBottom>
-          My Reviews
-        </Typography>
-
-        <FormControl style={{ marginBottom: "20px", minWidth: 200 }}>
-          <InputLabel>Rating</InputLabel>
-          <Select
-            value={filterRating}
-            onChange={(e) => setFilterRating(e.target.value)}
+  const renderStars = (rating) => {
+    return (
+      <Box display="flex" alignItems="center">
+        {[...Array(5)].map((_, i) => (
+          <Typography
+            key={i}
+            color={i < rating ? "gold" : "text.secondary"}
+            fontSize={isMobile ? "1rem" : "1.25rem"}
           >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="5">5 Stars</MenuItem>
-            <MenuItem value="4">4 Stars</MenuItem>
-            <MenuItem value="3">3 Stars</MenuItem>
-            <MenuItem value="2">2 Stars</MenuItem>
-            <MenuItem value="1">1 Star</MenuItem>
-          </Select>
-        </FormControl>
+            ★
+          </Typography>
+        ))}
+        {!isMobile && <Typography ml={1}>({rating})</Typography>}
+      </Box>
+    );
+  };
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ color: "white" }}>
-                  <strong>Project</strong>
-                </TableCell>
-                <TableCell sx={{ color: "white" }}>
-                  <strong>Rating</strong>
-                </TableCell>
-                <TableCell sx={{ color: "white" }}>
-                  <strong>Comment</strong>
-                </TableCell>
-                <TableCell sx={{ color: "white" }}>
-                  <strong>Date</strong>
-                </TableCell>
-                <TableCell
-                  sx={{ color: "white" }}
-                ></TableCell>
-              </TableRow>
-            </TableHead>
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+      <Topbar />
+      <Box sx={{ display: "flex" }}>
+        <Sidebar />
+        
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            width: { sm: `calc(100% - ${theme.spacing(8)})` },
+            marginLeft: { sm: `${theme.spacing(8)}` },
+          }}
+        >
+          {/*<Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
+            My Reviews
+          </Typography>*/}
 
-            <TableBody>
+          <FormControl style={{ marginBottom: "20px", minWidth: isMobile ? "100%" : 200 }}>
+            {/*<InputLabel>Rating</InputLabel>*/}
+            <Select
+              value={filterRating}
+              onChange={(e) => setFilterRating(e.target.value)}
+              size={isMobile ? "small" : "medium"}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="5">5 Stars</MenuItem>
+              <MenuItem value="4">4 Stars</MenuItem>
+              <MenuItem value="3">3 Stars</MenuItem>
+              <MenuItem value="2">2 Stars</MenuItem>
+              <MenuItem value="1">1 Star</MenuItem>
+            </Select>
+          </FormControl>
+
+          {isMobile || isTablet ? (
+            <Grid container spacing={2}>
               {filteredReviews.length > 0 ? (
                 filteredReviews.map((review) => (
-                  <TableRow key={review.id}>
-                    <TableCell>{getProjectName(review.project_id)}</TableCell>
-                    <TableCell>{review.rating}</TableCell>
-                    <TableCell>{review.comment}</TableCell>
-                    <TableCell>
-                      {format(new Date(review.created_at), "MMMM dd, yyyy")}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        onClick={() => handleEditClick(review)}
-                      >
-                        <i className="fas fa-edit"></i>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
+                  <Grid item xs={12} key={review.id}>
+                    <Card>
+                      <CardContent>
+                        <Stack spacing={1}>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {getProjectName(review.project_id)}
+                          </Typography>
+                          {renderStars(review.rating)}
+                          <Typography variant="body2">
+                            {review.comment}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {format(new Date(review.created_at), "MMMM dd, yyyy")}
+                          </Typography>
+                          <Box>
+                            <IconButton
+                              color="primary"
+                              onClick={() => handleEditClick(review)}
+                              size="small"
+                            >
+                              <EditIcon fontSize={isMobile ? "small" : "medium"} />
+                            </IconButton>
+                          </Box>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
                 ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    No reviews available.
-                  </TableCell>
-                </TableRow>
+                <Grid item xs={12}>
+                  <Typography align="center">No reviews available.</Typography>
+                </Grid>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
+            </Grid>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: theme.palette.primary.main }}>
+                    <TableCell sx={{ color: "white" }}>
+                      <strong>Project</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      <strong>Rating</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      <strong>Comment</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}>
+                      <strong>Date</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "white" }}></TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {filteredReviews.length > 0 ? (
+                    filteredReviews.map((review) => (
+                      <TableRow key={review.id}>
+                        <TableCell>{getProjectName(review.project_id)}</TableCell>
+                        <TableCell>{renderStars(review.rating)}</TableCell>
+                        <TableCell>{review.comment}</TableCell>
+                        <TableCell>
+                          {format(new Date(review.created_at), "MMMM dd, yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleEditClick(review)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        No reviews available.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Box>
+      </Box>
+
       <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
         <Box
           sx={{
@@ -223,10 +302,12 @@ const ClientReviews = () => {
             p: 4,
             boxShadow: 24,
             borderRadius: 2,
-            width: 400,
+            width: isMobile ? "90%" : 400,
           }}
         >
-          <Typography variant="h6">Edit Review</Typography>
+          <Typography variant="h6" gutterBottom>
+            Edit Review
+          </Typography>
           <TextField
             fullWidth
             label="Rating"
@@ -236,6 +317,7 @@ const ClientReviews = () => {
               setEditReview({ ...editReview, rating: e.target.value })
             }
             margin="normal"
+            inputProps={{ min: 1, max: 5 }}
           />
           <TextField
             fullWidth
@@ -245,13 +327,24 @@ const ClientReviews = () => {
               setEditReview({ ...editReview, comment: e.target.value })
             }
             margin="normal"
+            multiline
+            rows={4}
           />
-          <Button variant="contained" onClick={handleEditSubmit} sx={{ mt: 2 }}>
-            Save
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+            <Button
+              variant="outlined"
+              onClick={() => setEditModalOpen(false)}
+              sx={{ mr: 2 }}
+            >
+              Cancel
+            </Button>
+            <Button variant="contained" onClick={handleEditSubmit}>
+              Save
+            </Button>
+          </Box>
         </Box>
       </Modal>
-    </div>
+    </Box>
   );
 };
 

@@ -7,8 +7,10 @@
   max-width: 90%;
   position: relative;
   left: 50px;
-  top: auto;
-  margin-top: -5px;
+  top: 0; 
+  margin-top: 20px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+  border-radius: 8px; 
 }
 
 .task-create-form h2 {

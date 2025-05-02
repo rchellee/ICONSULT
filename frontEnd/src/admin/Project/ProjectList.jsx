@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import ListView from "./ListView";
 import AccountingLedger from "./AccountingLedger";
 import "./ListView.css";
+import "./ProjectList.css";
 import { FaPlus } from "react-icons/fa";
 import ProjectForm from "./ProjectForm";
 
@@ -192,10 +193,11 @@ const ProjectList = ({
           </button>
         </div>
 
+        {/* Desktop button with text */}
         {activeView === "overview" && (
-          <button className="create-project-btn" onClick={openModal}>
+          <button className="create-project-btn desktop-only" onClick={openModal}>
             <FaPlus className="icon" />
-            <span className="button-text">New</span>
+            <span className="button-proj-text">New</span>
           </button>
         )}
       </div>
@@ -247,13 +249,11 @@ const ProjectList = ({
       </div>
 
       {/* Mobile floating action button */}
-      <div className="mobile-floating-btn-container">
-        {activeView === "overview" && (
-          <button className="mobile-floating-btn" onClick={openModal}>
-            <FaPlus className="icon" />
-          </button>
-        )}
-      </div>
+      {activeView === "overview" && (
+        <button className="mobile-floating-btn" onClick={openModal}>
+          <FaPlus className="icon" />
+        </button>
+      )}
     </div>
   );
 };

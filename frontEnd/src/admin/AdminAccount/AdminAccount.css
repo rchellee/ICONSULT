@@ -15,15 +15,14 @@
   padding: 20px;
   background-color: white;
   min-height: 95vh;
-  margin-left: 200px;
+  margin-left: 200px; /* Sidebar width */
 }
 
 /* Account container with left (image) and right (details) sections */
 .account-container {
   display: flex;
-  gap: 20px; /* Increased gap for better separation */
+  gap: 20px;
   margin-top: 40px;
-  align-items: flex-start;
   width: 90%;
   max-width: 1200px;
 }
@@ -57,7 +56,7 @@
   background-color: white;
   padding: 40px;
   border-radius: 10px;
-  box-shadow: none;
+  transition: all 0.3s ease;
 }
 
 .account-details-section h2 {
@@ -142,8 +141,16 @@
 /* Buttons */
 .button-group {
   display: flex;
-  gap: 15px;
+  gap: 10px; /* Reduce gap for small screens */
   margin-top: 30px;
+  flex-wrap: nowrap; /* Prevent wrapping to new line */
+}
+
+.button-group .MuiButton-root {
+  min-width: 80px !important; /* Force small width */
+  padding: 6px 12px !important; /* Reduce padding */
+  white-space: nowrap; /* Prevent text wrapping */
+  font-size: 14px !important; /* Smaller text if needed */
 }
 
 .update-btn {
@@ -212,7 +219,12 @@
   }
   
   .button-group {
-    flex-direction: column;
+    gap: 8px; /* Reduce gap further */
+  }
+  
+  .button-group .MuiButton-root {
+    min-width: 70px !important; /* Even smaller on mobile */
+    padding: 5px 10px !important;
   }
   
   .admin-detail-row {
@@ -221,5 +233,39 @@
   
   .label-admin {
     font-size: 16px;
+  }
+}
+
+@media (max-width: 989px) {
+  .user-image-section {
+    display: none;
+  }
+  
+  .account-details-section {
+    flex: 1; /* Take full available width */
+    padding: 40px 20px; /* Adjust padding */
+    margin-left: 0;/* Remove any left margin */
+    
+    width: 100%; /* Ensure full width */
+  }
+  
+  /* If you want to adjust the main container padding */
+  .account-settings {
+    margin-left: 70px;  /* Remove sidebar margin if sidebar is collapsed */
+    padding: 20px 10px;
+    margin-top: -50px;
+  }
+}
+
+/* For even smaller screens */
+@media (max-width: 768px) {
+  .account-details-section {
+    padding: 30px 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .account-details-section {
+    padding: 20px 10px;
   }
 }

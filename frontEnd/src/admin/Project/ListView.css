@@ -14,110 +14,13 @@
   padding: 0.5rem 0;
   margin-top: 20px;
 }
-
-
-
-
-
-
-/*-------------------------------------------------------*/
-.list-view-header {
-  display: flex;
-  justify-content: space-between; /* This ensures left and right items stay at edges */
-  align-items: center;
-  position: relative;
-  z-index: 100;
-  margin-bottom: 20px;
-  width: 100%; /* Ensure it takes full width */
-  margin-top: 10px;
-}
-
-.create-project-btn {
-  background-color: #716cff;
-  color: white;
-  border: none;
-  padding: 16px 32px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-right: 10px;
-  font-size: 20px;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: hidden;
-  min-width: 160px;
-  height: 56px;
-  margin-left: auto;
-  margin-top: 15px;
-}
-
-.create-project-btn:hover {
-  background-color: #716cff;
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
-}
-
-.create-project-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-}
-
-.create-project-btn .icon {
-  font-size: 20px;
-  transition: transform 0.3s ease;
-}
-
-.create-project-btn:hover .icon {
-  transform: scale(1.15); 
-}
-
-.mobile-floating-btn-container {
-  display: none;
-}
-
-
-/* Ripple effect */
-.create-project-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-.create-project-btn:focus:not(:active)::after {
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(20, 20); 
-    opacity: 0;
-  }
-}
-
 /*-----------------------------------------------------------------------*/
 
 .title-project {
   position: relative;
 }
 
-.project-list-wrapper {
+/*.project-list-wrapper {
   position: relative;
 }
 
@@ -127,7 +30,7 @@
   text-overflow: ellipsis;
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
-}
+}*/
 
 .table-scroll-wrapper {
   max-height: 687px;
@@ -653,56 +556,7 @@
   font-size: 24px;
 }
 
-.toggle-buttons {
-  display: flex;
-  gap: 10px; /* Space between the toggle buttons */
-  margin-right: auto; /* Pushes the toggle buttons to the left */
-  
-}
 
-.toggle-button {
-  padding: 10px 20px;
-  margin: 0 10px;
-  border: none;
-  background-color: transparent;
-  color: #3b4f67;
-  font-size: 16px;
-  cursor: pointer;
-  position: relative;
-  transition: color 0.3s ease;
-  margin-left: auto;
-}
-
-.toggle-button:hover {
-  background: none;
-}
-
-.toggle-button.active {
-  color: #8c7bf9;
-  font-weight: bold;
-}
-
-.toggle-button.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -5px;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #9773de, #74c69d);
-  border-radius: 2px;
-  box-shadow: none;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
 
 
 
@@ -747,7 +601,6 @@
 
 
 /* Delete Confirmation Modal Styles--------------------------------------------- */
-/* Delete Confirmation Modal Styles--------------------------------------------- */
 .delete-confirmation-modal {
   position: fixed;
   top: 0;
@@ -759,15 +612,16 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+
   animation: fadeIn 0.2s ease-out;
 }
 
 .delete-confirmation-content {
   background-color: white;
-  padding: 1.5rem;
+  padding: 2.5rem;
   border-radius: 16px;
   width: 90%;
-  max-width: 420px;
+  max-width: 420px; /*size nung box*/
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   text-align: center;
   transform: translateY(0);
@@ -790,16 +644,16 @@
 
 .delete-confirmation-content h3 {
   margin: 0 0 0.5rem 0;
-  font-size: 1.25rem;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
   color: #2d3748;
   font-weight: 600;
 }
 
 .delete-confirmation-content p {
-  margin: 0.5rem 0;
-  color: #718096;
+  margin: 0.5rem 0 1.5rem;
+  color: #4a5568;
   line-height: 1.5;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 3vw, 1rem);
 }
 
 .delete-confirmation-buttons {
@@ -809,16 +663,14 @@
   margin-top: 1.5rem;
 }
 
-.delete-confirmation-buttons button {
-  padding: 0.6rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-  min-width: 100px;
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%; 
 }
+
 
 .cancel-project-button {
   background-color: #f8f9fa;
@@ -843,50 +695,20 @@
   box-shadow: 0 4px 8px rgba(255, 77, 79, 0.4);
 }
 
-/* Media Queries for smaller screens */
-@media (min-width: 480px) {
-  .delete-confirmation-content {
-    padding: 2rem;
-  }
-  
-  .delete-project-icon {
-    font-size: 2.5rem;
-  }
-  
-  .delete-confirmation-content h3 {
-    font-size: 1.5rem;
-  }
-  
-  .delete-confirmation-content p {
-    font-size: 1rem;
-  }
-  
-  .delete-confirmation-buttons button {
-    padding: 0.75rem 1.75rem;
-    font-size: 1rem;
-    min-width: 120px;
-  }
-}
 
-@keyframes fadeIn {
+
+@keyframes fadeInSlide {
   from {
     opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
   }
   to {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -901,12 +723,16 @@
   }
 }
 
-/* Add this at the end of your CSS file */
+
+
+
 @media (max-width: 768px) {
 
   /* .action-list-buttons {
     display: none; /* This will hide both sort and status buttons 
   }*/
+
+ 
   
   .sorting-button-container {
     flex-direction: column;
@@ -915,7 +741,7 @@
     margin-bottom: 10px;
   }
   
-  /* Optional: Adjust table layout for mobile */
+ 
   .project-list-table {
     font-size: 0.9rem; 
     margin-top: 20px;
@@ -924,11 +750,11 @@
   .project-list-table th, 
   .project-list-table td {
     padding: 8px 4px; 
-    
   }
 
   .delete-confirmation-content {
     padding: 2.5rem;
+    max-width: 450px;
   }
   
   .delete-confirmation-content h3 {
@@ -938,89 +764,3 @@
 }
 
 
-@media (max-width: 768px) {
-  .create-project-btn {
-    display: none;
-  }
-
-  /*.mobile-floating-btn-container {
-    display: block;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-  }*/
-
-  .mobile-floating-btn-container {
-    display: block;
-    position: sticky; /* Changed from fixed to sticky */
-    top: 20px; /* Position from top of viewport */
-    right: 20px;
-    z-index: 1000;
-    float: right; /* Float to the right */
-    margin-bottom: 20px; /* Add some space below the button */
-    margin-top: 400px; /* Pull up slightly to overlap with content */
-    margin-right: 50px;
-  }
-
-  .mobile-floating-btn {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background-color: #716cff;
-    color: white;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .mobile-floating-btn:hover {
-    background-color: #5a55e0;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .mobile-floating-btn:active {
-    transform: translateY(0);
-  }
-
-  .mobile-floating-btn .icon {
-    font-size: 24px;
-  }
-}
-
-/* Ripple effect */
-.create-project-btn::after,
-.mobile-floating-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-.create-project-btn:focus:not(:active)::after,
-.mobile-floating-btn:focus:not(:active)::after {
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(20, 20);
-    opacity: 0;
-  }
-}

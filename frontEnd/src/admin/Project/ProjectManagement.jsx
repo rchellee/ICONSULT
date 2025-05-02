@@ -287,7 +287,7 @@ const ProjectManagement = () => {
   };
 
   return (
-    <div>
+    <div className="app-container"> {/* Add this wrapper */}
       <Topbar />
       <Sidebar />
       <div className="project-management-page">

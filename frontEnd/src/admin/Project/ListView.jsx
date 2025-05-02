@@ -409,7 +409,7 @@ const ListView = ({
               <h3>Confirm Deletion</h3>
             </div>
             <p>Are you sure you want to delete this project?</p>
-           
+            
             <div className="delete-confirmation-buttons">
               <button className="cancel-project-button" onClick={cancelDelete}>
                 Cancel

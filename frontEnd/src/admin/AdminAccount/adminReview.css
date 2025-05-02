@@ -1,17 +1,20 @@
 * {
   word-wrap: break-word;
   overflow-wrap: break-word;
+  box-sizing: border-box;
 }
 
 .review-admin {
-  margin-left: 80px; /* Remove left margin */
+  margin-left: 80px;
   padding: 20px;
+  transition: margin-left 0.3s ease;
 }
 
 .reviews-admin-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 45px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  width: 100%;
 }
 
 .reviews-admin-list .review-box {
@@ -23,11 +26,11 @@
 .MuiFormControl-root {
   width: 200px;
   margin-bottom: 20px;
-  align-self: flex-start;
+  margin-left: 10px;
 }
 
 .MuiRating-icon {
-  font-size: 3.5rem;
+  font-size: 1.5rem;
 }
 
 .review-comment {
@@ -51,8 +54,9 @@
   align-items: center;
 }
 
-.review-header .date {
-  font-style: italic;
+.review-details {
+  display: flex;
+  flex-direction: column;
 }
 
 .review-details {
@@ -66,4 +70,48 @@
 
 .review-comment strong {
   display: block;
+}
+
+
+@media (max-width: 1200px) {
+  .review-admin {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 992px) {
+  .reviews-admin-list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .review-admin {
+    margin-left: 100;
+    padding: 15px;
+  }
+  
+  .reviews-admin-list {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .MuiFormControl-root {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .review-admin {
+    padding: 10px;
+  }
+  
+  .MuiRating-icon {
+    font-size: 1.2rem;
+  }
+  
+  .review-header .date {
+    margin-left: 10px;
+  }
 }
