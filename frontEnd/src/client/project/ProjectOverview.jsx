@@ -63,7 +63,7 @@ function ProjectOverview({ projectId }) {
           <div className="projectclient-header">
             
             <h2>
-            <GoProject className="projectclient-icon" />
+            {/*<GoProject className="projectclient-icon" />*/}
               {project.projectName} <span className="statusclient-tag">{project.status}</span>
             </h2>
             <div className="recent-tasks">

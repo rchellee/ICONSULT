@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import "./LoginForm.css";
 import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -117,7 +117,7 @@ const Login = () => {
         <div className="logo-container">
           <img src={logo} alt="Logo" className="logo" />
         </div>
-        <div>
+        <div className="welcome-text">
           <h2>Welcome back!</h2>
           <p>Organize. Collaborate. Deliver.</p>
         </div>
@@ -149,7 +149,7 @@ const Login = () => {
               </span>
             </div>
 
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
 
             <div className="forgot">
               <a
@@ -167,16 +167,15 @@ const Login = () => {
           </form>
         </div>
       </div>
-      <footer className="footer" style={{ color: 'white' }}>
+      <footer className="footer" style={{ backgroundColor: "#EFEFF0", color: "#fff" }}>
         <p>
-          <a href="#about" onClick={() => navigate("/", { hash: "about" })} style={{ color: 'white' }}
-          >
+          <a href="#about" onClick={() => navigate("/", { hash: "about" })}>
             About
           </a>{" "}
           <span className="separator"> | </span>  
-          <a href="#contact" style={{ color: 'white' }}>Contact</a>
+          <a href="#contact">Contact</a>
         </p>
-        <p style={{ color: 'white' }}>&copy; Bautista, Cabigting, Rueras, Sandiego 2025</p>
+        <p>&copy; Bautista, Cabigting, Rueras, Sandiego 2025</p>
       </footer>
 
       {isOtpOverlayVisible && (

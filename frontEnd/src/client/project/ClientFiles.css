@@ -19,12 +19,6 @@
   
 }
 
-.file-management-header h2 {
-  color: #333;
-  font-size: 1.5rem;
-  margin: 0;
-}
-
 .upload-section {
   display: flex;
   align-items: center;
@@ -43,8 +37,14 @@
   position: relative;
 }
 
+.sort-button-container {
+  position: relative;
+  display: flex;
+  gap: 10px;
+}
+
 .sortclient-docu {
-  padding: 10px 20px;
+  padding: 10px;
   background-color: #f5f7fa;
   color: #4a5568;
   border: 1px solid #e2e8f0;
@@ -60,6 +60,7 @@
 /* Hide mobile sort by default */
 .mobile-sort {
   display: none;
+  padding: 10px;
 }
 
 .sortclient-docu:hover {
@@ -175,12 +176,12 @@
 }
 
 .file-type-icon {
-  font-size: 1.2rem;
   color: #718096;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
-.file-name {
+.file-name-client {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -355,6 +356,18 @@
   visibility: visible;
 }
 
+.file-card-body {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #718096;
+}
+
+.file-meta {
+  display: flex;
+  gap: 15px;
+}
+
 
 
 /*-----------*/
@@ -389,9 +402,7 @@
 
 /* Add these styles to your CSS file */
 
-.mobile-upload-container {
-  position: relative;
-}
+
 
 .upload-file-button.desktop-upload {
   display: flex;
@@ -399,13 +410,112 @@
   gap: 8px;
 }
 
+
+
+/* Mobile Actions Dropdown */
+.mobile-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.mobile-actions-toggle {
+  background: none;
+  border: none;
+  color: #718096;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-actions-toggle:hover {
+  color: #4a5568;
+}
+
+.mobile-actions-dropdown {
+  position: absolute;
+  right: 0;
+  bottom: 100%; /* Show above instead of below when needed */
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  max-height: none; /* Remove any height restrictions */
+  /* Add this to make it appear above when near bottom */
+  transform: translateY(0);
+}
+
+.mobile-actions-dropdown button {
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-actions-dropdown button:hover {
+  background-color: #f0f4f8;
+}
+
+.mobile-actions-dropdown button:nth-child(2) {
+  color: #e53e3e;
+}
+
+.mobile-actions-dropdown button:nth-child(2):hover {
+  background-color: #fff5f5;
+}
+
 .upload-file-button.mobile-upload {
   display: none;
 }
 
+/* Remove any fixed heights from file cards */
+.file-card-client {
+  height: auto;
+  min-height: 0;
+  padding: 12px;
+}
+
+/* This will make the dropdown appear above when near bottom of screen */
+.mobile-actions.drop-up .mobile-actions-dropdown {
+  bottom: 100%;
+  top: auto;
+  transform: translateY(0);
+}
+
+
+
+
+@media (min-width: 769px) {
+  .mobile-actions {
+    display: none;
+  }
+}
+
+
+
 @media (max-width: 768px) {
   .upload-file-button.desktop-upload {
     display: none;
+  }
+
+  .fileclient-btn {
+    display: none;
+  }
+
+  .mobile-actions {
+    display: block;
   }
   
   .mobile-upload-container {
@@ -428,6 +538,9 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     padding: 0;
     transition: all 0.2s ease;
+    position: fixed;
+    bottom: 100px;
+    right: 30px;
   }
   
   .upload-file-button.mobile-upload svg {
@@ -450,27 +563,24 @@
     display: none;
   }
 
-  
-}
 
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
   .fileclient-btn {
     gap: 5px;
   }
   
   .fileclient-btn button {
-    padding: 4px;
+    padding: 5px;
   }
   
   .fileclient-btn svg {
     font-size: 16px;
   }
-}
 
+  .file-table thead {
+    display: none;
+  }
 
-@media (max-width: 768px) {
   .file-management-header {
     flex-direction: column;
     align-items: flex-start;
@@ -490,13 +600,32 @@
     font-size: 0.8rem;
   }
   
-  .file-name {
-    max-width: 150px;
+  .file-card-header-client {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
   }
-}
+  
+  .file-name-client {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0; /* Allows text truncation */
+  }
+  
+  .file-name-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    color: #2d3748;
+    font-size: 14px;
+  }
 
 
-@media (max-width: 768px) {
+
   .action-buttons-row {
     flex-direction: column;
     align-items: flex-start;
@@ -505,7 +634,11 @@
   
   .upload-button-container,
   .sort-button-container {
-    width: 100%;
+    width: 23%;
+  }
+
+  .sort-button-container {
+    position: relative;
   }
   
   .upload-file-button,
@@ -514,8 +647,74 @@
     justify-content: center;
   }
   
-  .sort-options-dropdown {
-    width: 100%;
+  .mobile-sort {
+    display: flex;
+    justify-content: left;
+    align-items: center;
   }
   
+  .sort-options-dropdown {
+    /* Adjust these properties */
+    right: 0;
+    left: auto;
+    min-width: 180px; /* Ensure consistent width */
+  }
+
+  .file-table {
+    display: none;
+  }
+
+  .tablefiles-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 10px;
+    box-shadow: none;
+  }
+
+ 
+
+  .file-card-header-client {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .file-name-client {
+    font-weight: 500;
+    color: #525252;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+    font-size: 13px;
+  }
+
+  .file-card-body {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #718096;
+  }
+
+  .mobile-files-container {
+    display: block;
+  }
+
 }
+
+
+@media (max-width: 480px) {
+  .sort-options-dropdown {
+    width: 50vw;
+    right: -10px; /* Adjust based on your padding */
+    left: -10px; /* Adjust based on your padding */
+    min-width: auto;
+  }
+}
+
+
+
+
+
+

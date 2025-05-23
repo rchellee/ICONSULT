@@ -1,48 +1,53 @@
-.custom-rating .MuiRating-icon {
-  font-size: 60px; /* Adjust the size here */
+/* Add any custom animations if needed */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.submit-review-button {
-  border-radius: 100px;
-  padding: 10px 20px;
-  width: auto; 
-  max-width: 200px;
-  margin-left: auto; 
-  background-color: #3982d0; /* Background color (blue) */
-  color: white; /* Text color */
-  border: none; /* Removes border */
-  /* Make text bold */
-  cursor: pointer; /* Changes cursor to pointer on hover */
-  transition: background-color 0.3s ease; /* Smooth transition for color change */
+/* Add this to your CSS file */
+.MuiRating-decimal {
+  background-color: transparent !important;
 }
 
-.submit-review-button:hover {
-  background-color: #2e66a2; /* Darker blue on hover */
+.MuiRating-icon {
+  background-color: transparent !important;
 }
 
-.review-form-box {
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
-  margin-top: 200px; /* Reduce this value to move the form up */
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
+/* Custom rating hover effects */
+.MuiRating-root {
+  transition: all 0.3s ease;
 }
 
-.leave-review-title {
-  text-align: center; /* Keep it centered */
-  font-weight: bold;
+.MuiRating-iconEmpty {
+  color: #e0e0e0;
 }
 
-.comment-review-box .MuiOutlinedInput-root {
-  border-radius: 8px; /* Rounded edges */
+/* Floating label animation */
+.MuiInputLabel-root {
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-.comment-review-box .MuiOutlinedInput-notchedOutline {
-  border: 3px solid #98caff; /* Thicker border */
+.MuiInputLabel-shrink {
+  transform: translate(0, -24px) scale(0.9);
+  color: #3982d0;
 }
 
-.comment-review-box
-  .MuiOutlinedInput-root:hover
-  .MuiOutlinedInput-notchedOutline {
-  border-color: #98caff; /* Border color on hover */
+/* Custom scrollbar for textarea */
+textarea {
+  scrollbar-width: thin;
+  scrollbar-color: #3982d0 #f0f0f0;
+}
+
+textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #3982d0;
+  border-radius: 3px;
 }

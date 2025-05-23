@@ -3,8 +3,30 @@
   gap: 20px;
   padding: 20px;
   flex-direction: row;
-  margin: -40px -50px 0;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box; /* Include padding in width calculation */
+  margin-top: -60px;
 }
+
+.task-container:has(> :only-child) {
+  justify-content: flex-start; /* Align to left */
+}
+
+.task-container:has(> :only-child) .task-box {
+  flex: 0 1 200px; /* Wider fixed width (adjust 600px as needed) */
+  min-width: 400px; /* Minimum width */
+  margin-left: 0;
+}
+
+/* Make the single card wider */
+.task-container:has(> :only-child) .task-card {
+  width: 100%; /* Card takes full width of its container */
+}
+
+
+
+
 
 .task-box {
   flex: 1;
@@ -216,6 +238,8 @@
   margin: 20px;
 }
 
+
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .task-container {
@@ -250,11 +274,11 @@
 }
 
 @media (max-width: 480px) {
-  .task-container {
+  /*.task-container {
     padding: 10px;
-    /*margin: 0 -10px;*/
+    /*margin: 0 -10px;
     margin: -50px -10px 0;
-  }
+  }*/
 
   .task-box {
     padding: 12px;

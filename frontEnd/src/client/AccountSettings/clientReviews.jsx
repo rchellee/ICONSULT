@@ -241,19 +241,19 @@ const ClientReviews = () => {
               <Table>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: theme.palette.primary.main }}>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "black" }}>
                       <strong>Project</strong>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "black" }}>
                       <strong>Rating</strong>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "black" }}>
                       <strong>Comment</strong>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}>
+                    <TableCell sx={{ color: "black" }}>
                       <strong>Date</strong>
                     </TableCell>
-                    <TableCell sx={{ color: "white" }}></TableCell>
+                    <TableCell sx={{ color: "black" }}></TableCell>
                   </TableRow>
                 </TableHead>
 

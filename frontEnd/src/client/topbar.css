@@ -1,5 +1,6 @@
 .topbar-container {
   border-bottom: 1px solid #e0e0e0;
+  
   box-shadow: none;
 }
 
@@ -269,4 +270,39 @@ nav .search-icon {
     margin: 0 10px;
     font-size: 16px;
   }
+}
+
+
+/* Add to topbar.css */
+@media (max-width: 768px) {
+  .search-form {
+    width: 70% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+  
+  .search-form.active {
+    width: 80% !important;
+  }
+  
+  .search-icon {
+    margin-left: 20px;
+  }
+  
+  .user-pic {
+    margin-right: 20px;
+  }
+}
+
+.search-icon, .cancel-icon {
+  cursor: pointer;
+  padding: 0 15px;
+}
+
+.cancel-icon {
+  display: none;
+}
+
+.cancel-icon.show {
+  display: block;
 }

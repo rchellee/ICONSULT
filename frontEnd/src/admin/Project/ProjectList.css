@@ -1,5 +1,6 @@
 .project-list-wrapper {
     position: relative;
+    
   }
   
   .project-list-wrapper td {
@@ -20,6 +21,7 @@
     margin-bottom: 20px;
     width: 100%; /* Ensure it takes full width */
     margin-top: 10px;
+    
   }
 
   .toggle-buttons {

@@ -2,10 +2,9 @@
 .login-container {
   display: flex;
   height: calc(100vh - 60px);
-  justify-content: center; /* Center content horizontally */
-  position: relative; /* To use positioning for right adjustment */
+  justify-content: center;
+  position: relative;
   margin-left: 150px;
-  
 }
 
 /* Move the content further to the right */
@@ -17,7 +16,7 @@
 .left-side {
   flex: 1;
   display: flex;
-  flex-direction: column; /* Stack logo and text */
+  flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   padding: 0 80px;
@@ -52,12 +51,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-right: auto;
 }
 
 .wrapper-login {
   background: #fff;
   width: 550px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  /*box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);*/
+  box-shadow: none;
   border-radius: 12px;
   padding: 50px 60px;
   margin-bottom: 30px;
@@ -168,27 +169,26 @@ footer {
   padding: 10px;
   background-color: transparent;
   font-size: 16px;
-  position: fixed; /* Fixed position to keep at the bottom */
+  position: fixed;
   bottom: 0;
   left: 0;
-  
 }
 
 footer p {
   margin: 5px 0;
-  color: #333;
+  color: #252525;
 }
 
 footer a {
-  color: #333;
-  text-decoration: none; /* Remove underline */
+  color: #252525;
+  text-decoration: none;
 }
 
 footer a:hover {
   text-decoration: underline;
 }
 
-.separator{
+.separator {
   color: white;
 }
 
@@ -232,4 +232,205 @@ footer a:hover {
 
 .eye-icon:hover {
   color: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .login-container {
+    margin-left: 100px;
+  }
+  
+  .left-side {
+    padding: 0 60px;
+  }
+  
+  .logo {
+    max-width: 220px;
+  }
+  
+  .left-side h2 {
+    font-size: 48px;
+  }
+  
+  .left-side p {
+    font-size: 24px;
+  }
+  
+  .wrapper-login {
+    width: 500px;
+    padding: 40px 50px;
+  }
+}
+
+@media (max-width: 992px) {
+  .login-container {
+    margin-left: 50px;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure it takes full viewport height */
+    padding-top: auto;
+    padding-bottom: 0; /* Remove bottom padding */
+    position: relative; /* Add this for footer positioning */
+  }
+  
+  .left-side, .right-side {
+    flex: none;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .left-side > div {
+    margin-top: 0;
+  }
+  
+  .logo-container {
+    margin-bottom: 40px;
+    top: 0;
+    right: 0;
+  }
+  
+  .right-side {
+    margin-right: 0;
+    margin-top: 40px;
+  }
+  
+  .wrapper-login {
+    margin-bottom: 0;
+  }
+  
+  footer {
+    position: fixed; /* Keep it fixed at bottom */
+    bottom: 0;
+    width: 100%;
+    margin-top: 0; /* Remove any margin that might push it down */
+    background-color: #EFEFF0; /* Match your footer color */
+    padding: 10px 0; /* Adjust padding as needed */
+  }
+}
+
+
+
+
+@media (max-width: 768px) {
+  .login-container {
+    margin-left: auto;
+    padding-bottom: 100px; /* Increase padding to accommodate footer */
+  }
+  
+  footer {
+    padding: 15px 0; /* Adjust padding for smaller screens */
+  }
+
+  .left-side {
+    padding: 0 30px;
+  }
+  
+  .logo {
+    max-width: 200px;
+  }
+  
+  .left-side h2 {
+    font-size: 36px;
+  }
+  
+  .left-side p {
+    font-size: 20px;
+  }
+  
+  .wrapper-login {
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+  }
+  
+  .input-box {
+    height: 60px;
+    margin: 20px 0;
+  }
+  
+  .input-box input {
+    font-size: 18px;
+    padding: 20px 50px 20px 20px;
+  }
+  
+  .input-box input::placeholder {
+    font-size: 18px;
+  }
+  
+  .input-box .icon {
+    font-size: 20px;
+    right: 20px;
+  }
+  
+  .wrapper-login button {
+    height: 50px;
+    font-size: 20px;
+  }
+  
+  .wrapper-login .forgot {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-side {
+    padding: 0 20px;
+  }
+
+  
+  
+  .logo {
+    max-width: 180px;
+  }
+  
+  .left-side h2 {
+    font-size: 32px;
+  }
+  
+  .left-side p {
+    font-size: 18px;
+  }
+  
+  .wrapper-login {
+    padding: 25px;
+  }
+  
+  .input-box {
+    height: 50px;
+  }
+  
+  .input-box input {
+    font-size: 16px;
+    padding: 15px 40px 15px 15px;
+  }
+  
+  .input-box input::placeholder {
+    font-size: 16px;
+  }
+  
+  .wrapper-login button {
+    height: 45px;
+    font-size: 18px;
+  }
+  
+  .wrapper-login .forgot {
+    font-size: 16px;
+  }
+  
+  footer {
+    font-size: 14px;
+  }
+
+
+  .login-container {
+    padding-bottom: 90px; /* Further adjustment for very small screens */
+  }
+  
+  footer {
+    padding: 10px 0;
+  }
+  
+  footer p {
+    font-size: 14px; /* Make footer text smaller on tiny screens */
+  }
 }
