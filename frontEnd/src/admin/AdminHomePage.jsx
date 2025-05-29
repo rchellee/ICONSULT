@@ -8,7 +8,6 @@ function AdminHomePage() {
   const [projectStats, setProjectStats] = useState(0);
   const [taskStats, setTaskStats] = useState(0);
   const [appointmentStats, setAppointmentStats] = useState(0);
-  const [revenueStats, setRevenueStats] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [recentNotifications, setRecentNotifications] = useState([]);
   const [todaysAppointments, setTodaysAppointments] = useState([]);
@@ -17,18 +16,10 @@ function AdminHomePage() {
   const [totalProjects, setTotalProjects] = useState(0);
   const [totalTasks, setTotalTasks] = useState(0);
   const [upcomingAppointments, setUpcomingAppointments] = useState(0);
-  const [totalRevenue, setTotalRevenue] = useState("$0");
-
-  // States to control dropdown visibility for each card
-  const [showDropdown, setShowDropdown] = useState(null);
   const [showClientFilter, setShowClientFilter] = useState(false);
   const [showProjectFilter, setShowProjectFilter] = useState(false);
   const [showTaskFilter, setShowTaskFilter] = useState(false);
   const [showAppointmentFilter, setShowAppointmentFilter] = useState(false);
-  const [showRevenueFilter, setShowRevenueFilter] = useState(false);
-  const [selectedProjectFilter, setSelectedProjectFilter] = useState("All");
-  const [selectedTaskFilter, setSelectedTaskFilter] = useState("All");
-  const [selectedClientFilter, setSelectedClientFilter] = useState("All");
 
   const fetchClientStats = async (filter) => {
     try {
@@ -86,17 +77,7 @@ function AdminHomePage() {
       console.error("Error fetching upcoming appointments:", error);
     }
   };
-  const fetchRevenueStats = async (filter) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8081/projectDashboard/revenue?filter=${filter}`
-      );
-      const data = await response.json();
-      setRevenueStats(data.totalRevenues);
-    } catch (error) {
-      console.error("Error fetching client stats:", error);
-    }
-  };
+
   const fetchRecentNotifications = async () => {
     try {
       const response = await fetch("http://localhost:8081/latest-activity");
@@ -165,20 +146,11 @@ function AdminHomePage() {
     fetchTaskStats("all");
     fetchAppointmentStats("all");
     fetchUpcomingAppointments();
-    fetchRevenueStats("all");
     fetchRecentNotifications();
     fetchTodaysAppointments();
     fetchTodaysTasks();
   }, []);
 
-  const toggleDropdown = (key) => {
-    setShowDropdown(showDropdown === key ? null : key);
-  };
-  const handleRevenueFilterSelect = (filter) => {
-    setSelectedFilter(filter);
-    setShowRevenueFilter(false);
-    fetchRevenueStats(filter.toLowerCase());
-  };
   const handleAppointmentFilterSelect = (filter) => {
     setSelectedFilter(filter);
     setShowAppointmentFilter(false);
@@ -205,12 +177,6 @@ function AdminHomePage() {
     fetchClientStats(filter.toLowerCase());
   };
 
-  const toggleClientFilter = () => setShowClientFilter(!showClientFilter);
-  const toggleProjectFilter = () => setShowProjectFilter(!showProjectFilter);
-  const toggleTaskFilter = () => setShowTaskFilter(!showTaskFilter);
-  const toggleAppointmentFilter = () =>
-    setShowAppointmentFilter(!showAppointmentFilter);
-  const toggleRevenueFilter = () => setShowRevenueFilter(!showRevenueFilter);
 
   return (
     <div>
@@ -343,32 +309,6 @@ function AdminHomePage() {
                         <button
                           key={filter}
                           onClick={() => handleAppointmentFilterSelect(filter)}
-                        >
-                          {filter}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Total Revenue */}
-              <div className="metric-card">
-                <h3>Total Revenue</h3>
-                <p>{revenueStats}</p>
-                <div className="three-line-dropdown">
-                  <button
-                    className="filter-icon"
-                    onClick={() => setShowRevenueFilter(!showRevenueFilter)}
-                  >
-                    ☰
-                  </button>
-                  {showRevenueFilter && (
-                    <div className="dropdown-menu">
-                      {["All", "Weekly", "Yearly"].map((filter) => (
-                        <button
-                          key={filter}
-                          onClick={() => handleRevenueFilterSelect(filter)}
                         >
                           {filter}
                         </button>
