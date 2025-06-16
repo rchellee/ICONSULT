@@ -8,13 +8,13 @@ Client Password: client12345
 
 Group4
 
-Project Manager - (Rueras, Ritchelle T.)
+Project Manager, Back-end Developer - (Rueras, Ritchelle T.)
 
 Front-end Developer - (Bautista, Clarieza H.)
 
 Front-end Developer - (Cabigting, Monique Kyle)
 
-Back-end Developer - (San Diego, Trishia I.)
+Resercher - (San Diego, Trishia I.)
 
 iConsult is a user-friendly web-based application designed to empower business consultancies to improve efficiency, communication, and client satisfaction. It integrates comprehensive project management and client management functionalities into a single platform.
 
